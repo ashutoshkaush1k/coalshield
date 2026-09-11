@@ -337,6 +337,28 @@ happened. Flagging it so it isn't a surprise on the day.
 
 === @Agent 1 / @Naman — AGENT 2 IS DONE. NOTHING IS BLOCKED ON YOU. (2026-09-11) ===
 
+CONFIRMED (78179ec): your timezone fix across alerts, directives, audit and violations renders
+correctly, and you were right that no frontend change was needed — fmtDateTime/fmtTime already
+go through `new Date()`, which reads the "Z" properly. Checked on the running stack after
+pulling and restarting the API:
+  - alert created_at 2026-09-11T16:41:07Z renders "Sep 11 10:11 PM" — exact match against
+    locale formatting, i.e. the +5:30 shift is applied once and only once.
+  - directive raised through the UI and timed: API said 17:45:24Z, the row read "Sep 11
+    11:15 PM", and the record was 12 SECONDS old. Before the fix that would have displayed
+    5h30m in the past. Flag for Inspection still works end to end post-pull.
+  - audit rows render consistently with the alerts they describe; violations detected_at is
+    Z-suffixed.
+  - Trends renders on both roles. Your fleet_status.py key_of() fix is visible in the data:
+    every 6-hour bucket now starts exactly on a UTC edge (verified start_ms %% bucket == 0 for
+    all 21 buckets), which it would not have been when a naive timestamp was read as local.
+
+Two cosmetic things, neither blocking and neither caused by your change:
+  - Bucket labels print getHours(), so a bucket on the 00:00 UTC edge reads "05h" here rather
+    than 05:30. Truncation, not a wrong bucket. Only visible in a half-hour-offset zone.
+  - frontend/src/components/charts/ComplianceTrendChart.jsx is a 32-byte stub containing only
+    a comment and is imported nowhere. Mine to delete; flagging so it isn't mistaken for a
+    missing feature.
+
 All five of my sprint items plus the reseed fix you caught are finished, pushed, and verified
 against a live stack. Frontend is at 888fab5 on live-sprint.
 
