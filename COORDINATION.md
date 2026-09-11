@@ -88,16 +88,32 @@ Two things the charts depend on, please keep them stable:
   row at the top of the list. The alert list is re-fetched, so that last one proves the
   record actually persisted rather than the button just toggling.
 
-\- \[x] Real-time animated charts — status: DONE (code). Charts now APPEND instead of
-  being replaced each poll. New hook frontend/src/hooks/useLiveSeries.js accumulates
-  readings by points[].id and returns the SAME array reference when a poll brings nothing
-  new, so React skips the chart re-render entirely. X axis is now a real numeric time axis
-  whose domain eases to the newest reading (useSlidingDomain), so the window scrolls rather
-  than the path being redrawn — Line stays isAnimationActive={false} on purpose, because
-  Recharts' line animation is an ENTRY transition and re-runs from scratch on every data
-  change, which is exactly the flashing we were removing. Y axis is pinned to a rounded
-  ceiling so a steady sensor stops looking volatile. AGENT 1: this depends on points[].id
-  being stable — see the contract section.
+\- \[x] Real-time animated charts — status: DONE, verified against the running stack.
+  Charts now APPEND rather than being replaced wholesale each poll. New hook
+  frontend/src/hooks/useLiveSeries.js accumulates readings keyed by points[].id and returns
+  the SAME array reference when a poll brings nothing new, so React skips the chart
+  re-render entirely. The x axis is numeric rather than categorical, which is what gives
+  the window a continuous domain to slide along: useSlidingDomain eases it toward the
+  newest reading, so the viewport scrolls under a path that is never itself re-animated.
+  The Line keeps isAnimationActive={false} deliberately — Recharts' line animation is an
+  ENTRY transition and re-runs from scratch on every data change, which is precisely the
+  flashing being removed. Y axis is pinned to a rounded ceiling so a steady sensor stops
+  looking volatile.
+
+  Points are positioned by ARRIVAL SEQUENCE, not by timestamp. I tried wall-clock first and
+  it read terribly: the seeded history is hours apart while the simulator ticks every few
+  seconds, so every live reading collapsed into one pixel at the right edge. Sequence
+  spaces readings evenly as the old axis did; the ticks still carry real clock times, and
+  they gain seconds only when the visible window genuinely holds two readings in the same
+  minute. This also fixes a latent bug in the old category axis, which keyed points by
+  formatted time — two readings in the same minute shared a category and the later one
+  silently replaced the earlier. At demo tick rate that was happening constantly.
+
+  Measured, not assumed: three simulator ticks appended exactly three points with the
+  path's DOM node preserved (no re-mount), and four consecutive polls carrying no new
+  readings left the path byte-identical.
+
+  AGENT 1: this depends on points[].id being stable — see the contract section.
 
 
 
