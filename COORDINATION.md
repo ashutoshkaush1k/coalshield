@@ -66,6 +66,10 @@ Agent 1 confirmation (2026-09-11) - everything above holds, with these notes:
       trend points[] and GET /sensors/{id} rows : "anomaly_score": float|null
       GET /sensors                               : top-level "anomalous_mines": int,
                                                    per mine "anomaly_score", "is_anomaly"
+  - 2026-09-12, rolling breach window: `compliance.breach_count` (every endpoint that returns a
+    score) and dashboard `stats.total_breaches` now count only breaches INSIDE the scoring window,
+    not all-time. New additive fields: `compliance.breach_window_hours` and
+    `stats.breach_window_hours` (float hours; null = all-time). Sensor response shapes unchanged.
 
 B. LIVE SENSOR FEED v1 - OPTIONAL, additive (Agent 1). Built before Agent 1 could see section A
    (Agent 1's pushes were blocked). The frontend as built (trend + dedupe by id) is correct and
@@ -198,6 +202,21 @@ Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Gove
   Tests: backend/tests/test_utc_timestamps.py (6, each fails on the old code) + 4 CLI tests in
   test_iot_simulator.py. Full suite 261 passed. Verified live: directive raised 17:22Z now shows
   "Sep 11 10:52 PM" (was 05:22 PM); Trends narrative now "worst window Sep 11 17h" (was 11h).
+
+\- \[x] Rolling breach window, scores now recover (2026-09-12) — status: DONE. The environmental
+  penalty counts only breaches from the last BREACH_WINDOW_HOURS (default 0.01h = 36s = six 6s
+  simulator ticks = half a replay pass). PPE violations are unchanged: they still need a clean
+  re-inspection. Every simulator tick re-scores every mine and records recoveries on the trend
+  line; band changes are audited in both directions. `--loop` no longer grinds mines to zero.
+  Seed retuned, as docs/architecture.md always said a window would need: under a short window
+  every seeded breach has aged out, which left 0 High mines (avg 91.8). Violations were topped up
+  for mines below the Low band -> 6 High / 21 Medium / 47 Low as before, avg 83.2 (was 78.7).
+  Named mines now 100 / 80 / 70 / 60 / 45; Jharia has 0 PPE violations (sensor-only). Only
+  violations.json changed, purely appended; mines/users/readings are byte-identical.
+  E2E on the real stack (backend + frontend + `run_simulator.py --loop`, ~4 min, 37 ticks): Jharia's
+  Mine Head dashboard went 100 -> 97 -> 94 -> 91 and back up repeatedly, no reload, no action;
+  after Ctrl+C it was at 100 within 38s and the whole fleet back at baseline (avg 83.2, 6 High).
+  Tests: backend/tests/test_breach_window.py (18) + 1 drift test. Full suite 280 passed.
 
 
 
@@ -422,3 +441,14 @@ scores look flattened, re-run `scripts/seed_db.py`.
   until Ctrl+C (it silently stopped after 12 ticks before) - every pass lowers scores, so reseed
   before the demo. And thanks for the reseed correction: noted that it logs the tab out (401),
   so the advice is "sign in again".
+
+\- \[Agent 1 -> Agent 2] FYI, NO FRONTEND CHANGE REQUIRED (2026-09-12). Compliance scores now go UP
+  as well as down: sensor breaches age out of a rolling window (36s by default), so the numbers you
+  already poll climb back on their own - nothing to wire up. Two things you will notice:
+  (1) the "Breaches" stat on the score cards, the formula line and the Overview tally now mean
+  "breaches inside the window", so they sit at 0 on a fresh seed and rise and fall with the
+  simulator. If you want copy for that, `compliance.breach_window_hours` /
+  `stats.breach_window_hours` (new, additive) give the window in hours (0.01 = 36s).
+  (2) The clean baseline changed: national avg 83.2 (was 78.7), named mines 100/80/70/60/45.
+  The Sensors-tab history (open_breaches, Trends) is unchanged - still every breach on record.
+  After pulling: `python scripts/seed_db.py --reset` and restart the backend (sign in again).

@@ -5,21 +5,18 @@ scenario.
 
 ---
 
-## READ THIS FIRST: scores are cumulative, so re-seed before every run
+## READ THIS FIRST: re-seed before every run
 
-**Compliance scoring counts every violation and every breach on record, for the life of the
-database. There is no rolling window.** A mine's score only ever goes down.
-
-**This is a deliberate Round 3 scope decision, not a defect.** It is what makes the demo work:
-a PPE detection or a sensor breach visibly moves a mine's score and risk band the moment it lands,
-with arithmetic simple enough to explain to a judge in one sentence. A rolling window would be
-more correct for a production system (see `docs/architecture.md`), and would also change every one
-of the tuned baseline scores. Deferred on purpose.
+**Scores fall and recover.** A sensor breach counts against its mine only inside a rolling window
+(`BREACH_WINDOW_HOURS`, 36 s by default), so the simulator pulls scores down and they climb back
+on their own as breaches age out. A PPE violation still counts until a clean re-inspection
+resolves it (see `docs/architecture.md`).
 
 The consequence you must plan around:
 
-> **Every demo run permanently degrades the database. A second run starts from an already
-> lowered board and will not match this script.**
+> **PPE violations from a CV demo or a rehearsal persist. A second run starts from a board that
+> already carries them and will not match this script.** Simulator breaches clear themselves
+> within about half a minute; violations do not.
 
 ### The rule
 
@@ -32,15 +29,15 @@ a second. Treat it as part of powering on the laptop.
 
 ### The safety net
 
-`run_simulator.py` pre-flights the database and prints a loud banner if state has drifted from the
-clean baseline:
+`run_simulator.py` pre-flights the database and prints a loud banner if scores have drifted from
+the clean baseline:
 
 ```
 ==============================================================================
-  WARNING: DATABASE IS NOT AT THE CLEAN BASELINE
+  WARNING: SCORES DO NOT MATCH THE CLEAN BASELINE
 ==============================================================================
   MINE                   SCORE       PPE    BREACHES
-  MP-SGR-02           83 -> 75        +1          +1  LOW -> MEDIUM
+  MP-SGR-02           80 -> 75        +1           -  LOW -> MEDIUM
   ...
   FIX BEFORE DEMOING:  python scripts/seed_db.py --reset
 ==============================================================================
@@ -64,7 +61,7 @@ very demo it is meant to protect. Use `--require-clean` when you want the hard g
 
 - [ ] **`python scripts/seed_db.py --reset`** (required after pulling the directives change -
       SQLite cannot add the new alert columns to an existing database)
-- [ ] Have a photograph ready to attach as resolution proof, and know its path — the board must read 88 / 83 / 70 / 59 / 46
+- [ ] Have a photograph ready to attach as resolution proof, and know its path — the board must read 100 / 80 / 70 / 60 / 45
 - [ ] `python scripts/run_simulator.py --check-only` — must print `Pre-flight : OK`
 - [ ] **Double-click `run_all.bat`** - it pre-flights the setup, opens `SIH-Backend` and
       `SIH-Frontend` windows, waits for both ports, and opens the dashboard. It warns loudly if
@@ -79,21 +76,23 @@ very demo it is meant to protect. Use `--require-clean` when you want the hard g
 - [ ] A sample image ready to pick in the file dialog — know the path before you are on stage
 - [ ] A terminal ready with the re-seed command already typed, not yet run
 
-Clean baseline: **74 mines across 10 states**, national average **78.7**.
+Clean baseline: **74 mines across 10 states**, national average **83.2**.
 
 The Overview board defaults to the five highest-risk mines nationally, not all 74. The five
-original named mines are still in the dataset under their real states, and their scores are
-unchanged:
+original named mines are still in the dataset under their real states. With the rolling breach
+window their opening scores come from open PPE violations alone (the seeded readings are days
+old), retuned to keep the same bands:
 
 | Mine | District, State | Score | Risk |
 |---|---|---|---|
-| JH-DHN-01 Jharia | Dhanbad, Jharkhand | 88 | LOW (green) |
-| MP-SGR-02 Singrauli | Singrauli, Madhya Pradesh | 83 | LOW (green) |
+| JH-DHN-01 Jharia | Dhanbad, Jharkhand | 100 | LOW (green) - no PPE violations; moves only with its sensors |
+| MP-SGR-02 Singrauli | Singrauli, Madhya Pradesh | 80 | LOW (green) - one detection tips it to Medium |
 | CG-KRB-03 Korba | Korba, Chhattisgarh | 70 | MEDIUM (yellow) |
-| WB-RNG-04 Raniganj | Raniganj, West Bengal | 59 | MEDIUM (yellow) |
-| OD-TLC-05 Talcher | Angul, Odisha | 46 | HIGH (red) |
+| WB-RNG-04 Raniganj | Raniganj, West Bengal | 60 | MEDIUM (yellow) |
+| OD-TLC-05 Talcher | Angul, Odisha | 45 | HIGH (red) |
 
-If the national average does not read 78.7, **re-seed before continuing.**
+If the national average does not read 83.2 before the simulator starts, **re-seed before
+continuing.**
 
 ---
 
@@ -106,7 +105,7 @@ If the national average does not read 78.7, **re-seed before continuing.**
 
    **Then use the Region dropdown** on the Core Sample Board. Pick Jharkhand: the board fills
    with all 13 of that state's mines, and every number above it rescopes - the average drops
-   from 78.7 national to 71.9 for Jharkhand. The selection follows you to the Priority Queue,
+   from 83.2 national to 78.1 for Jharkhand. The selection follows you to the Priority Queue,
    Sensors and Trends tabs, so an official working one region never has to reselect it.
 2. **Inspection priority** → `/gov/inspections`. All five ranked most urgent first, each with
    plain-language reasoning and a trend arrow. Talcher is #1.
@@ -115,17 +114,21 @@ If the national average does not read 78.7, **re-seed before continuing.**
    `backend/data/samples/images/metro_shaft_workers.jpg` and press *Run PPE detection*.
 
    Real YOLO inference on a real photograph. The panel shows the annotated frame with the
-   violation boxed in red, and the score move **83 → 78, LOW → MEDIUM**.
+   violation boxed in red, and the score move **80 → 75, LOW → MEDIUM**.
 
    Now switch back to the **Government tab without reloading it**: Singrauli has already turned
    yellow and the fleet counts have moved. That hand-off is the strongest moment in the demo —
    an operator uploads footage, and the authority's board changes on its own within ~5 seconds.
 
    (`python scripts/demo_vision.py` still works and is the fallback if the browser misbehaves.)
-4. **IoT simulator** → `python scripts/run_simulator.py --interval 2`
-   Live sensor telemetry. Breaches raise alerts and drive scores down tick by tick. Over a full
-   12-tick pass, three mines cross a risk band. Expect the pre-flight banner here — step 3 already
-   moved Singrauli, which is exactly the drift it is reporting.
+4. **IoT simulator** → `python scripts/run_simulator.py --loop`
+   (keep the default 6 s ticks - the breach window is tuned for them.) Live sensor telemetry.
+   Breaches raise alerts and pull scores down tick by tick, and each one stops counting 36 s
+   later, so mines dip and climb back on their own. Watch **Jharia** on a Mine Head tab: it has no
+   PPE violations, so every move is its air - down on a breach, back up as the breach ages out,
+   with nobody touching anything. The terminal marks those ticks `(older breaches aged out)`.
+   Press Ctrl+C and the whole board is back at baseline within about half a minute. Expect the
+   pre-flight banner here — step 3 already moved Singrauli, which is exactly the drift it reports.
 5. **Drill down** → click any tile. Score with the formula shown, active alerts, three sensor
    charts with dashed limit lines and red breach markers, PPE violation log, and audit trail.
 6. **Back to inspection priority** → the moved mine has climbed the ranking. Closes the loop from
@@ -169,15 +172,16 @@ If the national average does not read 78.7, **re-seed before continuing.**
 
 ---
 
-## If a judge asks "why does the score never recover?"
+## If a judge asks "how does a mine get its score back?"
 
-Answer honestly, it is a good question and there is a good answer:
+Two ways, on purpose:
 
-> "Scoring counts all recorded violations and breaches — deliberately simple and transparent for
-> this round, so every number on screen can be traced to specific records. Production would score
-> over a rolling window, so a mine that fixes a problem climbs back out of red. The scoring
-> function already takes its counts as arguments, so that is a change to two queries, not to the
-> formula or the dashboard."
+> "Environmental breaches are conditions, so they age out: a breach counts only inside a rolling
+> window, and once the air has been clean for the whole window the penalty is gone - you just
+> watched Jharia do that. PPE violations are findings about how people were working, so they
+> stay until a clean re-inspection resolves them. Nothing is ever deleted; every breach and
+> violation is still in the log and the audit trail. The demo window is 36 seconds so you can see
+> it happen; a real deployment would set it in hours."
 
 ---
 

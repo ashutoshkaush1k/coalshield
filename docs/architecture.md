@@ -41,11 +41,12 @@ Storing a running score would make it impossible to explain a number to a judge 
 `weight_ppe` / `weight_env` mid-demo. Recomputing from the violation and breach counts means a
 weight change takes effect on the next tick and the arithmetic stays inspectable.
 
-## Scores can now recover, but only through a clean re-inspection
+## Scores recover: violations through a clean re-inspection, breaches by ageing out
 
-`compute_compliance_score` counts **open** violations and **open** breaches. A record is never
-deleted; resolving one sets `resolved` plus `resolved_at` so it stops counting against the score
-while staying visible in the violation log and the audit trail.
+`compute_compliance_score` counts **open** violations and **open, in-window** breaches. A record is
+never deleted; a resolved violation sets `resolved` plus `resolved_at`, and an aged-out breach simply
+falls outside the window, so both stop counting against the score while staying visible in the logs,
+the charts and the audit trail.
 
 This partially lifts the limitation previously recorded here, that a score could only ever fall
 and a mine that fixed a problem carried it forever.
@@ -63,21 +64,41 @@ The workforce check is not incidental. Zero violations on its own is not evidenc
 photograph of an empty corridor also contains zero violations. Without that guard, any image at all
 would clear a mine's history.
 
-### What this deliberately does not do
+### How environmental penalties recover: the rolling breach window
 
-**Breaches are structurally resolvable but nothing resolves them.** `SensorReading` carries the
-same two fields and `_breach_counts` already filters on them, so the two penalties cannot drift
-apart. No code sets the flag, so environmental penalties behave exactly as before. That is on
-purpose: sensor readings arrive continuously and mostly clean, so "one clean reading clears the
-history" would erase the environmental penalty almost immediately and make the IoT half of the
-demo meaningless. Clearing a breach history needs a deliberate signal - an inspector sign-off, or a
-sustained clean window - and neither exists yet.
+**Breaches are not resolved, they age out.** `_breach_counts` counts only breaches recorded inside
+the window (`BREACH_WINDOW_HOURS`), measured against the wall clock the readings are stamped with.
+This is the "sustained clean window" this section used to say was missing: one clean reading clears
+nothing, because the penalty only falls as each breach in the window expires. A mine whose sensors
+have run clean for the whole window has no environmental penalty left, and its score is back where
+its open PPE violations put it - with no resolve action and nothing deleted.
 
-**There is no rolling time window.** A violation from last month still counts until something
-resolves it. A window (`score_mine(since=...)`) remains the more complete answer and is still
-unimplemented, for the reason recorded before: the seeded scores are tuned against all-time
-counting, so a window changes every one of them and needs the seed generator retuned in the same
-change.
+**Violations are deliberately not windowed.** A PPE violation is a finding about how people were
+working, not a passing condition, so it still counts until a clean re-inspection resolves it.
+
+**Every simulator tick re-scores every mine**, breaching or not, and writes a history point on any
+movement, so recoveries reach the trend line and band changes are audited in both directions. The
+dashboards recompute on every poll, so they show a recovery even between ticks and after the feed
+stops. `--loop` no longer grinds mines to zero: the environmental penalty is capped at one window's
+worth of breaches.
+
+**The default is 0.01 h (36 s), tuned for the demo.** The simulator stamps readings with real time
+and replays one 6-hour seed slot per 6-second tick, so there is no "simulated hour" to measure in:
+two replayed hours would be a third of a tick. 36 s is six ticks at the default interval - half a
+replay pass, which maximises the visible rise-and-fall while looping (a window of a whole pass holds
+an almost constant count). Production would use hours; `BREACH_WINDOW_HOURS=0` restores all-time
+counting. If the simulator's `--interval` changes, scale the window with it.
+
+**The seed was retuned in the same change**, as this note always said it would need to be. Every
+seeded reading is days old, so under any short window the opening board is set by violations alone,
+which left no red on it (avg 91.8, 0 High / 6 Medium / 68 Low). `scripts/generate_sensor_data.py`
+now re-expresses the historical breach penalty of every mine below the Low band as extra open
+violations, putting each back within 2 points of its old score: 6 High / 21 Medium / 47 Low as
+before, avg 83.2. The five named mines are set by hand; Jharia keeps zero violations as the
+sensor-only mine whose score moves purely with its air.
+
+`SensorReading.resolved` stays, so an explicit inspector sign-off can be added later without the two
+penalties drifting apart.
 
 ### The simplification worth knowing about
 
