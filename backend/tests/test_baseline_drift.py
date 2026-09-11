@@ -5,27 +5,34 @@ tests cover the guard that makes that visible before a run rather than on stage.
 """
 
 import json
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from app.db import seed as seed_module
 from app.db.seed import BaselineReport, MineDrift, baseline_report
+from app.models.sensor_reading import SensorReading
 from app.models.violation import Violation
 
 
 @pytest.fixture
 def seeded_expectations(monkeypatch, tmp_path):
-    """Point the baseline helpers at a tiny synthetic seed: mine expects 1 violation, 2 breaches."""
+    """Point the baseline helpers at a tiny synthetic seed: mine expects 1 violation, 2 breaches.
+
+    The seeded readings are stamped now, so they sit inside the scoring window the way
+    make_mine's do and both sides of the comparison see the same two breaches.
+    """
 
     def _install(mine_id: int):
         violations = tmp_path / "violations.json"
         violations.write_text(
             json.dumps([{"mine_id": mine_id, "violation_type": "no_helmet"}]), encoding="utf-8"
         )
+        now = datetime.now(UTC).isoformat()
         readings = [
-            {"mine_id": str(mine_id), "sensor_type": "gas", "value": "80.0"},   # breach
-            {"mine_id": str(mine_id), "sensor_type": "gas", "value": "90.0"},   # breach
-            {"mine_id": str(mine_id), "sensor_type": "gas", "value": "10.0"},   # clean
+            {"mine_id": str(mine_id), "sensor_type": "gas", "value": "80.0", "recorded_at": now},
+            {"mine_id": str(mine_id), "sensor_type": "gas", "value": "90.0", "recorded_at": now},
+            {"mine_id": str(mine_id), "sensor_type": "gas", "value": "10.0", "recorded_at": now},
         ]
         monkeypatch.setattr(seed_module, "_read_json", lambda name: json.loads(
             violations.read_text(encoding="utf-8")
@@ -80,6 +87,19 @@ class TestBaselineReport:
         assert drift.expected_risk == "LOW"
         assert drift.actual_risk == "MEDIUM"
         assert baseline_report(db).bands_changed == [drift]
+
+    def test_breaches_that_have_aged_out_are_not_drift(self, db, make_mine, seeded_expectations):
+        """A simulator run from a few minutes ago leaves breach rows behind, but they no longer
+        cost anything - the board matches the baseline again, so the guard must say so."""
+        mine = make_mine(violations=1, breaches=2)
+        seeded_expectations(mine.id)
+        for _ in range(5):
+            db.add(SensorReading(mine_id=mine.id, sensor_type="gas", value=80.0, unit="ppm",
+                                 breached=True,
+                                 recorded_at=datetime.now(UTC) - timedelta(minutes=10)))
+        db.flush()
+
+        assert baseline_report(db).is_clean is True
 
     def test_report_covers_every_mine_not_just_drifted_ones(self, db, make_mine,
                                                             seeded_expectations):

@@ -27,6 +27,7 @@ def to_compliance_out(result: ComplianceResult) -> ComplianceOut:
         environmental_penalty=result.environmental_penalty,
         weight_ppe=result.weights.weight_ppe,
         weight_env=result.weights.weight_env,
+        breach_window_hours=result.breach_window_hours,
     )
 
 

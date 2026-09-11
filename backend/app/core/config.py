@@ -44,6 +44,15 @@ class Settings(BaseSettings):
     weight_ppe: float = 5.0
     weight_env: float = 3.0
 
+    # Rolling window for the environmental penalty. A breach counts against the score only while
+    # it is younger than this, so a mine recovers on its own once its sensors run clean. PPE
+    # violations are not windowed - they count until a clean re-inspection resolves them.
+    # Real wall-clock hours; fractions are fine. 0 counts every breach on record (old behaviour).
+    # Default 0.01h = 36s: six 6s simulator ticks, half a replay pass, so scores visibly dip and
+    # climb back during a looping demo. Production would use hours (e.g. 2). If you change the
+    # simulator's --interval, scale this with it.
+    breach_window_hours: float = 0.01
+
     # Sensor thresholds (PRD 4.2). A reading strictly above the limit is a breach.
     threshold_gas_ppm: float = 50.0
     threshold_dust_mgm3: float = 10.0

@@ -24,8 +24,9 @@ from app.models.sensor_reading import SensorReading
 from app.models.user import User
 from app.models.violation import Violation
 from app.services.alerts.engine import alert_for_breach, alert_for_violation
-from app.services.compliance.scoring import record_score, score_mine
+from app.services.compliance.scoring import breach_window_start, record_score, score_mine
 from app.services.iot.thresholds import SensorType, is_breach
+from app.utils.datetimes import as_utc
 
 
 class SeedDataMissingError(FileNotFoundError):
@@ -146,7 +147,8 @@ def seed_database(db: Session) -> dict[str, int]:
                 entity_id=mine.id,
                 detail=(
                     f"Opening score {result.score} ({result.risk_level.value}) from "
-                    f"{result.violation_count} violations and {result.breach_count} breaches."
+                    f"{result.violation_count} open violations and {result.breach_count} "
+                    f"breaches inside the scoring window."
                 ),
             )
         )
@@ -158,14 +160,14 @@ def seed_database(db: Session) -> dict[str, int]:
 
 # --- Baseline drift ---------------------------------------------------------------------------
 #
-# Compliance scoring counts every violation and breach on record, for the life of the database.
-# That is a deliberate Round 3 scope decision (see docs/architecture.md and docs/demo-script.md),
-# not a defect - but it means demo runs are cumulative. A database that has already had the vision
-# demo or a simulator pass applied to it starts lower than the tuned baseline, and a second run on
-# top of it can push mines into bands the script does not expect.
+# Open PPE violations count until a clean re-inspection resolves them, so a database that has had
+# the vision demo applied starts lower than the tuned baseline until it is re-seeded. Breaches only
+# count inside the rolling window (BREACH_WINDOW_HOURS), so a simulator run drifts the board only
+# while its breaches are still recent - they age out on their own, and nothing needs re-seeding.
 #
-# These helpers compare live state against the seed files so that drift is something a script can
-# detect and say out loud, rather than something noticed on stage.
+# These helpers compare live scores against the seed files, with the same window applied to both
+# sides, so that drift is something a script can detect and say out loud rather than something
+# noticed on stage.
 
 
 @dataclass(frozen=True)
@@ -225,11 +227,12 @@ class BaselineReport:
         return [m for m in self.mines if m.band_changed]
 
 
-def expected_counts() -> tuple[dict[int, int], dict[int, int]]:
+def expected_counts(since: datetime | None = None) -> tuple[dict[int, int], dict[int, int]]:
     """(violations, breaches) per mine as described by the seed files.
 
     Breaches are re-derived with the live thresholds rather than read from a stored flag, so a
-    retuned threshold shifts the baseline instead of making every mine look drifted.
+    retuned threshold shifts the baseline instead of making every mine look drifted. With `since`
+    only seeded breaches inside the scoring window count - normally none, as the seed is days old.
     """
     violations: dict[int, int] = {}
     for row in _read_json("violations.json"):
@@ -239,20 +242,22 @@ def expected_counts() -> tuple[dict[int, int], dict[int, int]]:
     for row in _read_readings():
         mine_id = int(row["mine_id"])
         breaches.setdefault(mine_id, 0)
+        if since is not None and as_utc(datetime.fromisoformat(row["recorded_at"])) < since:
+            continue
         if is_breach(SensorType(row["sensor_type"]), float(row["value"])):
             breaches[mine_id] += 1
     return violations, breaches
 
 
-def baseline_report(db: Session) -> BaselineReport:
-    """Compare live scores against a freshly-seeded database."""
+def baseline_report(db: Session, now: datetime | None = None) -> BaselineReport:
+    """Compare live scores against a freshly-seeded database, both under the same window."""
     from app.services.compliance.scoring import compute_compliance_score
 
-    expected_violations, expected_breaches = expected_counts()
+    expected_violations, expected_breaches = expected_counts(since=breach_window_start(now))
     rows: list[MineDrift] = []
 
     for mine in db.scalars(select(Mine).order_by(Mine.id)).all():
-        actual = score_mine(db, mine.id)
+        actual = score_mine(db, mine.id, now=now)
         expected = compute_compliance_score(
             violation_count=expected_violations.get(mine.id, 0),
             breach_count=expected_breaches.get(mine.id, 0),

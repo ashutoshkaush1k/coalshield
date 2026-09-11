@@ -26,7 +26,8 @@ BACKEND = ROOT / "backend"
 SEED_DIR = BACKEND / "data" / "seed"
 sys.path.insert(0, str(BACKEND))
 
-from app.services.compliance.scoring import compute_compliance_score  # noqa: E402
+from app.services.compliance.risk import RiskLevel  # noqa: E402
+from app.services.compliance.scoring import breach_window_start, compute_compliance_score  # noqa: E402
 from app.services.compliance.weights import ScoringWeights  # noqa: E402
 from app.services.iot.thresholds import SensorType  # noqa: E402
 
@@ -126,6 +127,27 @@ STATE_WEIGHTS = {
 
 TOTAL_SYNTHETIC = sum(STATE_WEIGHTS.values())
 
+# --- Rolling-window retune ---------------------------------------------------
+#
+# Scoring now counts breaches only inside a short rolling window (BREACH_WINDOW_HOURS), and every
+# seeded reading is days old by the time anyone seeds a demo, so the opening board is set by open
+# PPE violations alone. With the counts above that board has no red on it at all (avg 91.8,
+# 0 High / 6 Medium / 68 Low, against 78.7 and 6 / 21 / 47 under all-time scoring).
+#
+# So a mine that sat below the Low band under all-time scoring gets its historical breach penalty
+# re-expressed as extra open violations - round(breaches x weight_env / weight_ppe) - which puts it
+# back within 2 points of its old score and in the same band. Mines already in Low keep their
+# counts: they stay Low either way, and it leaves mines whose only penalty is environmental, which
+# the live feed visibly pulls down and lets back up. The band spread comes out identical.
+#
+# The extra violations come from a separate RNG stream, so mines, readings and every original
+# violation stay byte-identical and the top-ups are purely appended.
+TOPUP_SEED_OFFSET = 1
+
+# The named mines are set by hand instead. Jharia stays sensor-only (the recovery demo), Singrauli
+# sits exactly on the Low line so one live PPE detection tips it to Medium, and Talcher stays red.
+NAMED_WINDOW_VIOLATIONS = {1: 0, 2: 4, 3: 6, 4: 8, 5: 11}
+
 def build_mines(rng: random.Random) -> list[dict]:
     """The five named mines plus a synthetic national spread around them."""
     mines = [dict(m) for m in NAMED_MINES]
@@ -220,35 +242,57 @@ def generate_sensor_readings(mines: list[dict], rng: random.Random, now: datetim
     return rows
 
 
+def _violation_rows(mine: dict, count: int, rng: random.Random, now: datetime) -> list[dict]:
+    """`count` PPE violations for one mine over the last 72 hours, weighted toward recent."""
+    rows: list[dict] = []
+    if not count:
+        return rows
+    slot_count = 24
+    slots = list(range(slot_count))
+    weights = [_recency_weight(i, slot_count) for i in slots]
+    for slot in sorted(_weighted_sample(rng, slots, weights, count)):
+        hours_ago = (slot_count - 1 - slot) * 3
+        rows.append(
+            {
+                "mine_id": mine["id"],
+                "violation_type": rng.choice(PPE_VIOLATION_TYPES),
+                "confidence": round(rng.uniform(0.52, 0.94), 2),
+                "source": "VISION",
+                "frame_ref": f"annotated/{mine['code'].lower()}_frame_{rng.randint(1, 999):04d}.jpg",
+                "detected_at": (
+                    now - timedelta(hours=hours_ago, minutes=rng.randint(0, 55))
+                ).isoformat(),
+            }
+        )
+    return rows
+
+
 def generate_violations(mines: list[dict], rng: random.Random, now: datetime) -> list[dict]:
     """Historical PPE violations so mines start with a spread of scores.
 
     Live detections from the CV module append to this same table during the demo, which is what
     makes the score visibly drop on stage.
     """
-    violations: list[dict] = []
+    return [row for mine in mines for row in _violation_rows(mine, mine["violations"], rng, now)]
+
+
+def window_topups(mines: list[dict], weights: ScoringWeights) -> dict[int, int]:
+    """Extra violations per mine for the rolling-window retune (see NAMED_WINDOW_VIOLATIONS)."""
+    topups: dict[int, int] = {}
     for mine in mines:
-        count = mine["violations"]
-        if not count:
+        if mine["id"] in NAMED_WINDOW_VIOLATIONS:
+            topups[mine["id"]] = NAMED_WINDOW_VIOLATIONS[mine["id"]] - mine["violations"]
             continue
-        slot_count = 24
-        slots = list(range(slot_count))
-        weights = [_recency_weight(i, slot_count) for i in slots]
-        for slot in sorted(_weighted_sample(rng, slots, weights, count)):
-            hours_ago = (slot_count - 1 - slot) * 3
-            violations.append(
-                {
-                    "mine_id": mine["id"],
-                    "violation_type": rng.choice(PPE_VIOLATION_TYPES),
-                    "confidence": round(rng.uniform(0.52, 0.94), 2),
-                    "source": "VISION",
-                    "frame_ref": f"annotated/{mine['code'].lower()}_frame_{rng.randint(1, 999):04d}.jpg",
-                    "detected_at": (
-                        now - timedelta(hours=hours_ago, minutes=rng.randint(0, 55))
-                    ).isoformat(),
-                }
-            )
-    return violations
+        all_time = compute_compliance_score(mine["violations"], mine["breaches"], weights)
+        if all_time.risk_level is not RiskLevel.LOW:
+            topups[mine["id"]] = round(mine["breaches"] * weights.weight_env / weights.weight_ppe)
+    return {mine_id: n for mine_id, n in topups.items() if n > 0}
+
+
+def generate_topup_violations(
+    mines: list[dict], topups: dict[int, int], rng: random.Random, now: datetime
+) -> list[dict]:
+    return [row for mine in mines for row in _violation_rows(mine, topups.get(mine["id"], 0), rng, now)]
 
 
 def generate_users(mines: list[dict]) -> list[dict]:
@@ -291,11 +335,17 @@ def _write_json(payload, path: Path) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
-def _score_mines(mines, readings, violations, weights):
-    """Project every mine's score from the generated data, using the real engine."""
+def _score_mines(mines, readings, violations, weights, since=None):
+    """Project every mine's score from the generated data, using the real engine.
+
+    `since` applies the rolling breach window the way the live engine does; None counts every
+    breach, which is how the dataset scored before the window existed.
+    """
     breach_limits = {s.value: s.limit for s in SensorType}
     breach_by_mine, ppe_by_mine = {}, {}
     for r in readings:
+        if since is not None and datetime.fromisoformat(r["recorded_at"]) < since:
+            continue
         if r["value"] > breach_limits[r["sensor_type"]]:
             breach_by_mine[r["mine_id"]] = breach_by_mine.get(r["mine_id"], 0) + 1
     for v in violations:
@@ -317,11 +367,22 @@ def _report(mines: list[dict], readings: list[dict], violations: list[dict]) -> 
     state rather than listed per mine: at ~70 mines a full listing is unreadable.
     """
     weights = ScoringWeights.from_settings()
-    scores = _score_mines(mines, readings, violations, weights)
+    since = breach_window_start()
+    scores = _score_mines(mines, readings, violations, weights, since)
+    all_time = _score_mines(mines, readings, violations, weights)
+
+    def spread(results) -> str:
+        bands = [r.risk_level.value for r in results.values()]
+        avg = round(sum(r.score for r in results.values()) / len(results), 1)
+        return (f"avg {avg}  High {bands.count('HIGH')} / Medium {bands.count('MEDIUM')} / "
+                f"Low {bands.count('LOW')}")
 
     print()
     print(f"Mines   : {len(mines)}   Readings: {len(readings)}   Violations: {len(violations)}")
     print(f"Weights : weight_ppe={weights.weight_ppe}  weight_env={weights.weight_env}")
+    print(f"Board   : {spread(scores)}   (open violations + breaches inside the scoring window;"
+          f" the seeded readings have aged out)")
+    print(f"          all-time scoring would give {spread(all_time)}")
     print()
 
     by_state: dict[str, list] = {}
@@ -367,6 +428,10 @@ def main() -> int:
     mines = build_mines(rng)
     readings = generate_sensor_readings(mines, rng, now)
     violations = generate_violations(mines, rng, now)
+    topups = window_topups(mines, ScoringWeights.from_settings())
+    violations += generate_topup_violations(
+        mines, topups, random.Random(args.seed + TOPUP_SEED_OFFSET), now
+    )
 
     # The PRD's 150-200 figure was written against the original five mines. What it was
     # really asking for is a realistic density per mine, which is unchanged - so the

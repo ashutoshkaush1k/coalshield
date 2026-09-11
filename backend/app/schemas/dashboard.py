@@ -15,7 +15,9 @@ class FleetStats(BaseModel):
     medium_risk_count: int
     low_risk_count: int
     total_violations: int
+    # Breaches currently counting against scores - inside the rolling window, not all-time.
     total_breaches: int
+    breach_window_hours: float | None = None
 
 
 class DashboardOut(BaseModel):

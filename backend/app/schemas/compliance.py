@@ -17,6 +17,8 @@ class ComplianceOut(BaseModel):
     environmental_penalty: float
     weight_ppe: float
     weight_env: float
+    # Hours of breach history `breach_count` covers; null means every breach on record.
+    breach_window_hours: float | None = None
 
 
 class ComplianceHistoryPoint(BaseModel):

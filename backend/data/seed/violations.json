@@ -974,5 +974,1021 @@
     "source": "VISION",
     "frame_ref": "annotated/up-son-73_frame_0693.jpg",
     "detected_at": "2026-09-08T23:53:00+00:00"
+  },
+  {
+    "mine_id": 2,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.73,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sgr-02_frame_0821.jpg",
+    "detected_at": "2026-09-08T20:15:00+00:00"
+  },
+  {
+    "mine_id": 2,
+    "violation_type": "no_helmet",
+    "confidence": 0.52,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sgr-02_frame_0372.jpg",
+    "detected_at": "2026-09-09T05:39:00+00:00"
+  },
+  {
+    "mine_id": 2,
+    "violation_type": "no_gloves",
+    "confidence": 0.82,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sgr-02_frame_0381.jpg",
+    "detected_at": "2026-09-09T08:45:00+00:00"
+  },
+  {
+    "mine_id": 3,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.66,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-krb-03_frame_0779.jpg",
+    "detected_at": "2026-09-07T11:47:00+00:00"
+  },
+  {
+    "mine_id": 3,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.79,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-krb-03_frame_0514.jpg",
+    "detected_at": "2026-09-07T20:13:00+00:00"
+  },
+  {
+    "mine_id": 3,
+    "violation_type": "no_gloves",
+    "confidence": 0.67,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-krb-03_frame_0288.jpg",
+    "detected_at": "2026-09-09T08:12:00+00:00"
+  },
+  {
+    "mine_id": 4,
+    "violation_type": "no_helmet",
+    "confidence": 0.58,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-rng-04_frame_0256.jpg",
+    "detected_at": "2026-09-07T23:20:00+00:00"
+  },
+  {
+    "mine_id": 4,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.6,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-rng-04_frame_0930.jpg",
+    "detected_at": "2026-09-08T14:30:00+00:00"
+  },
+  {
+    "mine_id": 4,
+    "violation_type": "no_helmet",
+    "confidence": 0.56,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-rng-04_frame_0445.jpg",
+    "detected_at": "2026-09-08T23:15:00+00:00"
+  },
+  {
+    "mine_id": 4,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.68,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-rng-04_frame_0521.jpg",
+    "detected_at": "2026-09-09T05:26:00+00:00"
+  },
+  {
+    "mine_id": 5,
+    "violation_type": "no_helmet",
+    "confidence": 0.56,
+    "source": "VISION",
+    "frame_ref": "annotated/od-tlc-05_frame_0150.jpg",
+    "detected_at": "2026-09-06T17:08:00+00:00"
+  },
+  {
+    "mine_id": 5,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.79,
+    "source": "VISION",
+    "frame_ref": "annotated/od-tlc-05_frame_0150.jpg",
+    "detected_at": "2026-09-07T08:43:00+00:00"
+  },
+  {
+    "mine_id": 5,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.57,
+    "source": "VISION",
+    "frame_ref": "annotated/od-tlc-05_frame_0768.jpg",
+    "detected_at": "2026-09-08T14:14:00+00:00"
+  },
+  {
+    "mine_id": 5,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.92,
+    "source": "VISION",
+    "frame_ref": "annotated/od-tlc-05_frame_0798.jpg",
+    "detected_at": "2026-09-09T05:26:00+00:00"
+  },
+  {
+    "mine_id": 5,
+    "violation_type": "no_helmet",
+    "confidence": 0.61,
+    "source": "VISION",
+    "frame_ref": "annotated/od-tlc-05_frame_0213.jpg",
+    "detected_at": "2026-09-09T08:23:00+00:00"
+  },
+  {
+    "mine_id": 8,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.86,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-08_frame_0680.jpg",
+    "detected_at": "2026-09-07T17:33:00+00:00"
+  },
+  {
+    "mine_id": 8,
+    "violation_type": "no_helmet",
+    "confidence": 0.55,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-08_frame_0835.jpg",
+    "detected_at": "2026-09-07T20:19:00+00:00"
+  },
+  {
+    "mine_id": 8,
+    "violation_type": "no_gloves",
+    "confidence": 0.62,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-08_frame_0857.jpg",
+    "detected_at": "2026-09-07T23:39:00+00:00"
+  },
+  {
+    "mine_id": 8,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.62,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-08_frame_0097.jpg",
+    "detected_at": "2026-09-08T23:52:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.66,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0739.jpg",
+    "detected_at": "2026-09-06T11:58:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.68,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0271.jpg",
+    "detected_at": "2026-09-06T17:10:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0239.jpg",
+    "detected_at": "2026-09-07T17:58:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_helmet",
+    "confidence": 0.66,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0833.jpg",
+    "detected_at": "2026-09-08T05:21:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.74,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0335.jpg",
+    "detected_at": "2026-09-08T12:00:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.83,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0407.jpg",
+    "detected_at": "2026-09-08T14:35:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.76,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0640.jpg",
+    "detected_at": "2026-09-08T17:47:00+00:00"
+  },
+  {
+    "mine_id": 10,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.88,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-10_frame_0513.jpg",
+    "detected_at": "2026-09-09T08:16:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.71,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0272.jpg",
+    "detected_at": "2026-09-06T17:18:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.81,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0282.jpg",
+    "detected_at": "2026-09-07T14:27:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.89,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0392.jpg",
+    "detected_at": "2026-09-08T08:43:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_gloves",
+    "confidence": 0.54,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0822.jpg",
+    "detected_at": "2026-09-08T11:56:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_gloves",
+    "confidence": 0.87,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0931.jpg",
+    "detected_at": "2026-09-08T14:19:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.71,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0232.jpg",
+    "detected_at": "2026-09-09T02:34:00+00:00"
+  },
+  {
+    "mine_id": 12,
+    "violation_type": "no_helmet",
+    "confidence": 0.66,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-haz-12_frame_0565.jpg",
+    "detected_at": "2026-09-09T08:25:00+00:00"
+  },
+  {
+    "mine_id": 15,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.81,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-15_frame_0100.jpg",
+    "detected_at": "2026-09-07T05:41:00+00:00"
+  },
+  {
+    "mine_id": 15,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.82,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-15_frame_0836.jpg",
+    "detected_at": "2026-09-08T05:10:00+00:00"
+  },
+  {
+    "mine_id": 15,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.65,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-ram-15_frame_0026.jpg",
+    "detected_at": "2026-09-08T11:22:00+00:00"
+  },
+  {
+    "mine_id": 17,
+    "violation_type": "no_helmet",
+    "confidence": 0.53,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-17_frame_0973.jpg",
+    "detected_at": "2026-09-07T20:18:00+00:00"
+  },
+  {
+    "mine_id": 17,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.93,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-17_frame_0644.jpg",
+    "detected_at": "2026-09-08T12:00:00+00:00"
+  },
+  {
+    "mine_id": 17,
+    "violation_type": "no_gloves",
+    "confidence": 0.69,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-17_frame_0451.jpg",
+    "detected_at": "2026-09-09T02:33:00+00:00"
+  },
+  {
+    "mine_id": 17,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/jh-lat-17_frame_0476.jpg",
+    "detected_at": "2026-09-09T08:40:00+00:00"
+  },
+  {
+    "mine_id": 20,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.53,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-20_frame_0425.jpg",
+    "detected_at": "2026-09-07T11:33:00+00:00"
+  },
+  {
+    "mine_id": 20,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.57,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-20_frame_0335.jpg",
+    "detected_at": "2026-09-07T14:25:00+00:00"
+  },
+  {
+    "mine_id": 20,
+    "violation_type": "no_helmet",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-20_frame_0273.jpg",
+    "detected_at": "2026-09-08T17:26:00+00:00"
+  },
+  {
+    "mine_id": 25,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.75,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-25_frame_0946.jpg",
+    "detected_at": "2026-09-06T11:27:00+00:00"
+  },
+  {
+    "mine_id": 25,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-25_frame_0356.jpg",
+    "detected_at": "2026-09-08T02:54:00+00:00"
+  },
+  {
+    "mine_id": 25,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.89,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-25_frame_0733.jpg",
+    "detected_at": "2026-09-08T14:07:00+00:00"
+  },
+  {
+    "mine_id": 25,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.72,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-25_frame_0832.jpg",
+    "detected_at": "2026-09-08T17:15:00+00:00"
+  },
+  {
+    "mine_id": 25,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.64,
+    "source": "VISION",
+    "frame_ref": "annotated/od-sun-25_frame_0430.jpg",
+    "detected_at": "2026-09-09T08:14:00+00:00"
+  },
+  {
+    "mine_id": 28,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.83,
+    "source": "VISION",
+    "frame_ref": "annotated/od-ang-28_frame_0412.jpg",
+    "detected_at": "2026-09-07T17:55:00+00:00"
+  },
+  {
+    "mine_id": 28,
+    "violation_type": "no_helmet",
+    "confidence": 0.91,
+    "source": "VISION",
+    "frame_ref": "annotated/od-ang-28_frame_0440.jpg",
+    "detected_at": "2026-09-07T20:24:00+00:00"
+  },
+  {
+    "mine_id": 28,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.75,
+    "source": "VISION",
+    "frame_ref": "annotated/od-ang-28_frame_0047.jpg",
+    "detected_at": "2026-09-08T03:00:00+00:00"
+  },
+  {
+    "mine_id": 28,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.91,
+    "source": "VISION",
+    "frame_ref": "annotated/od-ang-28_frame_0843.jpg",
+    "detected_at": "2026-09-08T23:40:00+00:00"
+  },
+  {
+    "mine_id": 30,
+    "violation_type": "no_gloves",
+    "confidence": 0.73,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-rai-30_frame_0785.jpg",
+    "detected_at": "2026-09-07T05:07:00+00:00"
+  },
+  {
+    "mine_id": 30,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.53,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-rai-30_frame_0691.jpg",
+    "detected_at": "2026-09-08T14:51:00+00:00"
+  },
+  {
+    "mine_id": 30,
+    "violation_type": "no_helmet",
+    "confidence": 0.55,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-rai-30_frame_0145.jpg",
+    "detected_at": "2026-09-08T17:48:00+00:00"
+  },
+  {
+    "mine_id": 30,
+    "violation_type": "no_helmet",
+    "confidence": 0.84,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-rai-30_frame_0691.jpg",
+    "detected_at": "2026-09-08T23:43:00+00:00"
+  },
+  {
+    "mine_id": 30,
+    "violation_type": "no_gloves",
+    "confidence": 0.86,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-rai-30_frame_0842.jpg",
+    "detected_at": "2026-09-09T08:33:00+00:00"
+  },
+  {
+    "mine_id": 32,
+    "violation_type": "no_gloves",
+    "confidence": 0.62,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-kor-32_frame_0671.jpg",
+    "detected_at": "2026-09-07T02:08:00+00:00"
+  },
+  {
+    "mine_id": 32,
+    "violation_type": "no_helmet",
+    "confidence": 0.81,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-kor-32_frame_0850.jpg",
+    "detected_at": "2026-09-07T14:39:00+00:00"
+  },
+  {
+    "mine_id": 32,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.69,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-kor-32_frame_0023.jpg",
+    "detected_at": "2026-09-08T05:26:00+00:00"
+  },
+  {
+    "mine_id": 32,
+    "violation_type": "no_helmet",
+    "confidence": 0.93,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-kor-32_frame_0196.jpg",
+    "detected_at": "2026-09-09T08:38:00+00:00"
+  },
+  {
+    "mine_id": 33,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.72,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-bil-33_frame_0167.jpg",
+    "detected_at": "2026-09-06T14:46:00+00:00"
+  },
+  {
+    "mine_id": 33,
+    "violation_type": "no_gloves",
+    "confidence": 0.93,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-bil-33_frame_0676.jpg",
+    "detected_at": "2026-09-07T23:36:00+00:00"
+  },
+  {
+    "mine_id": 33,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.53,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-bil-33_frame_0026.jpg",
+    "detected_at": "2026-09-08T08:07:00+00:00"
+  },
+  {
+    "mine_id": 33,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.82,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-bil-33_frame_0893.jpg",
+    "detected_at": "2026-09-09T05:13:00+00:00"
+  },
+  {
+    "mine_id": 36,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.83,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-sur-36_frame_0109.jpg",
+    "detected_at": "2026-09-08T11:13:00+00:00"
+  },
+  {
+    "mine_id": 36,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.81,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-sur-36_frame_0953.jpg",
+    "detected_at": "2026-09-08T17:58:00+00:00"
+  },
+  {
+    "mine_id": 36,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.91,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-sur-36_frame_0351.jpg",
+    "detected_at": "2026-09-08T23:42:00+00:00"
+  },
+  {
+    "mine_id": 36,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.89,
+    "source": "VISION",
+    "frame_ref": "annotated/cg-sur-36_frame_0823.jpg",
+    "detected_at": "2026-09-09T08:20:00+00:00"
+  },
+  {
+    "mine_id": 41,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.88,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-asa-41_frame_0036.jpg",
+    "detected_at": "2026-09-07T05:45:00+00:00"
+  },
+  {
+    "mine_id": 41,
+    "violation_type": "no_helmet",
+    "confidence": 0.67,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-asa-41_frame_0932.jpg",
+    "detected_at": "2026-09-07T14:06:00+00:00"
+  },
+  {
+    "mine_id": 41,
+    "violation_type": "no_gloves",
+    "confidence": 0.59,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-asa-41_frame_0837.jpg",
+    "detected_at": "2026-09-08T21:00:00+00:00"
+  },
+  {
+    "mine_id": 41,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.87,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-asa-41_frame_0312.jpg",
+    "detected_at": "2026-09-09T08:18:00+00:00"
+  },
+  {
+    "mine_id": 42,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.94,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-pur-42_frame_0406.jpg",
+    "detected_at": "2026-09-07T14:35:00+00:00"
+  },
+  {
+    "mine_id": 42,
+    "violation_type": "no_gloves",
+    "confidence": 0.56,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-pur-42_frame_0605.jpg",
+    "detected_at": "2026-09-07T17:29:00+00:00"
+  },
+  {
+    "mine_id": 42,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.53,
+    "source": "VISION",
+    "frame_ref": "annotated/wb-pur-42_frame_0955.jpg",
+    "detected_at": "2026-09-08T02:56:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_helmet",
+    "confidence": 0.6,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0694.jpg",
+    "detected_at": "2026-09-06T17:05:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.63,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0798.jpg",
+    "detected_at": "2026-09-07T20:14:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_gloves",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0157.jpg",
+    "detected_at": "2026-09-07T23:47:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.63,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0431.jpg",
+    "detected_at": "2026-09-08T02:47:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.77,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0922.jpg",
+    "detected_at": "2026-09-08T08:10:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.72,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0426.jpg",
+    "detected_at": "2026-09-09T02:48:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_helmet",
+    "confidence": 0.62,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0854.jpg",
+    "detected_at": "2026-09-09T05:54:00+00:00"
+  },
+  {
+    "mine_id": 49,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.85,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sha-49_frame_0007.jpg",
+    "detected_at": "2026-09-09T08:23:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.66,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0821.jpg",
+    "detected_at": "2026-09-07T12:00:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.85,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0150.jpg",
+    "detected_at": "2026-09-07T14:46:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.74,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0099.jpg",
+    "detected_at": "2026-09-07T23:24:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_gloves",
+    "confidence": 0.73,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0068.jpg",
+    "detected_at": "2026-09-08T14:19:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.67,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0345.jpg",
+    "detected_at": "2026-09-08T17:39:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_helmet",
+    "confidence": 0.76,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0114.jpg",
+    "detected_at": "2026-09-08T20:22:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.54,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0116.jpg",
+    "detected_at": "2026-09-08T23:47:00+00:00"
+  },
+  {
+    "mine_id": 51,
+    "violation_type": "no_helmet",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-anu-51_frame_0173.jpg",
+    "detected_at": "2026-09-09T08:52:00+00:00"
+  },
+  {
+    "mine_id": 52,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.81,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-bet-52_frame_0500.jpg",
+    "detected_at": "2026-09-07T11:32:00+00:00"
+  },
+  {
+    "mine_id": 52,
+    "violation_type": "no_gloves",
+    "confidence": 0.89,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-bet-52_frame_0072.jpg",
+    "detected_at": "2026-09-07T23:20:00+00:00"
+  },
+  {
+    "mine_id": 52,
+    "violation_type": "no_gloves",
+    "confidence": 0.7,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-bet-52_frame_0538.jpg",
+    "detected_at": "2026-09-08T05:59:00+00:00"
+  },
+  {
+    "mine_id": 52,
+    "violation_type": "no_helmet",
+    "confidence": 0.69,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-bet-52_frame_0679.jpg",
+    "detected_at": "2026-09-08T17:32:00+00:00"
+  },
+  {
+    "mine_id": 52,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.75,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-bet-52_frame_0622.jpg",
+    "detected_at": "2026-09-09T02:38:00+00:00"
+  },
+  {
+    "mine_id": 53,
+    "violation_type": "no_helmet",
+    "confidence": 0.68,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sin-53_frame_0342.jpg",
+    "detected_at": "2026-09-07T11:59:00+00:00"
+  },
+  {
+    "mine_id": 53,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.65,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sin-53_frame_0872.jpg",
+    "detected_at": "2026-09-07T14:40:00+00:00"
+  },
+  {
+    "mine_id": 53,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.75,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sin-53_frame_0780.jpg",
+    "detected_at": "2026-09-07T20:20:00+00:00"
+  },
+  {
+    "mine_id": 53,
+    "violation_type": "no_helmet",
+    "confidence": 0.69,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sin-53_frame_0565.jpg",
+    "detected_at": "2026-09-07T23:33:00+00:00"
+  },
+  {
+    "mine_id": 53,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.92,
+    "source": "VISION",
+    "frame_ref": "annotated/mp-sin-53_frame_0063.jpg",
+    "detected_at": "2026-09-08T14:50:00+00:00"
+  },
+  {
+    "mine_id": 63,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.75,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-63_frame_0550.jpg",
+    "detected_at": "2026-09-07T08:29:00+00:00"
+  },
+  {
+    "mine_id": 63,
+    "violation_type": "no_gloves",
+    "confidence": 0.7,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-63_frame_0710.jpg",
+    "detected_at": "2026-09-08T11:35:00+00:00"
+  },
+  {
+    "mine_id": 63,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.59,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-63_frame_0022.jpg",
+    "detected_at": "2026-09-08T20:38:00+00:00"
+  },
+  {
+    "mine_id": 63,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-63_frame_0643.jpg",
+    "detected_at": "2026-09-09T05:58:00+00:00"
+  },
+  {
+    "mine_id": 64,
+    "violation_type": "no_gloves",
+    "confidence": 0.61,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-64_frame_0656.jpg",
+    "detected_at": "2026-09-07T20:50:00+00:00"
+  },
+  {
+    "mine_id": 64,
+    "violation_type": "no_gloves",
+    "confidence": 0.56,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-64_frame_0306.jpg",
+    "detected_at": "2026-09-08T17:43:00+00:00"
+  },
+  {
+    "mine_id": 64,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.61,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-64_frame_0458.jpg",
+    "detected_at": "2026-09-08T23:19:00+00:00"
+  },
+  {
+    "mine_id": 64,
+    "violation_type": "no_helmet",
+    "confidence": 0.9,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-64_frame_0733.jpg",
+    "detected_at": "2026-09-09T08:26:00+00:00"
+  },
+  {
+    "mine_id": 67,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-67_frame_0915.jpg",
+    "detected_at": "2026-09-07T23:24:00+00:00"
+  },
+  {
+    "mine_id": 67,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.58,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-67_frame_0871.jpg",
+    "detected_at": "2026-09-08T14:44:00+00:00"
+  },
+  {
+    "mine_id": 67,
+    "violation_type": "no_dust_mask",
+    "confidence": 0.63,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-67_frame_0627.jpg",
+    "detected_at": "2026-09-08T20:35:00+00:00"
+  },
+  {
+    "mine_id": 67,
+    "violation_type": "no_gloves",
+    "confidence": 0.63,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-cha-67_frame_0329.jpg",
+    "detected_at": "2026-09-08T23:28:00+00:00"
+  },
+  {
+    "mine_id": 68,
+    "violation_type": "no_safety_vest",
+    "confidence": 0.57,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-68_frame_0463.jpg",
+    "detected_at": "2026-09-07T05:37:00+00:00"
+  },
+  {
+    "mine_id": 68,
+    "violation_type": "no_helmet",
+    "confidence": 0.71,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-68_frame_0107.jpg",
+    "detected_at": "2026-09-07T17:05:00+00:00"
+  },
+  {
+    "mine_id": 68,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.9,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-68_frame_0442.jpg",
+    "detected_at": "2026-09-08T08:17:00+00:00"
+  },
+  {
+    "mine_id": 68,
+    "violation_type": "no_helmet",
+    "confidence": 0.61,
+    "source": "VISION",
+    "frame_ref": "annotated/mh-nag-68_frame_0742.jpg",
+    "detected_at": "2026-09-09T00:00:00+00:00"
+  },
+  {
+    "mine_id": 71,
+    "violation_type": "no_safety_boots",
+    "confidence": 0.8,
+    "source": "VISION",
+    "frame_ref": "annotated/as-tin-71_frame_0495.jpg",
+    "detected_at": "2026-09-06T23:12:00+00:00"
+  },
+  {
+    "mine_id": 71,
+    "violation_type": "no_gloves",
+    "confidence": 0.86,
+    "source": "VISION",
+    "frame_ref": "annotated/as-tin-71_frame_0768.jpg",
+    "detected_at": "2026-09-07T05:38:00+00:00"
+  },
+  {
+    "mine_id": 71,
+    "violation_type": "no_helmet",
+    "confidence": 0.83,
+    "source": "VISION",
+    "frame_ref": "annotated/as-tin-71_frame_0460.jpg",
+    "detected_at": "2026-09-07T08:35:00+00:00"
+  },
+  {
+    "mine_id": 71,
+    "violation_type": "no_gloves",
+    "confidence": 0.85,
+    "source": "VISION",
+    "frame_ref": "annotated/as-tin-71_frame_0323.jpg",
+    "detected_at": "2026-09-07T23:31:00+00:00"
+  },
+  {
+    "mine_id": 73,
+    "violation_type": "no_gloves",
+    "confidence": 0.72,
+    "source": "VISION",
+    "frame_ref": "annotated/up-son-73_frame_0948.jpg",
+    "detected_at": "2026-09-06T20:05:00+00:00"
+  },
+  {
+    "mine_id": 73,
+    "violation_type": "no_gloves",
+    "confidence": 0.52,
+    "source": "VISION",
+    "frame_ref": "annotated/up-son-73_frame_0809.jpg",
+    "detected_at": "2026-09-07T17:11:00+00:00"
+  },
+  {
+    "mine_id": 73,
+    "violation_type": "no_helmet",
+    "confidence": 0.6,
+    "source": "VISION",
+    "frame_ref": "annotated/up-son-73_frame_0298.jpg",
+    "detected_at": "2026-09-08T05:24:00+00:00"
+  },
+  {
+    "mine_id": 73,
+    "violation_type": "no_helmet",
+    "confidence": 0.89,
+    "source": "VISION",
+    "frame_ref": "annotated/up-son-73_frame_0016.jpg",
+    "detected_at": "2026-09-09T05:57:00+00:00"
   }
 ]

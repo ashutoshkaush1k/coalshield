@@ -15,7 +15,7 @@ from app.core.roles import Role
 from app.schemas.dashboard import DashboardOut, FleetStats
 from app.schemas.mine import MineSummary
 from app.services.compliance.risk import RiskLevel
-from app.services.compliance.scoring import score_mines
+from app.services.compliance.scoring import configured_breach_window, score_mines
 from app.services.risk.prioritisation import build_inspection_queue
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
@@ -60,6 +60,7 @@ def get_dashboard(
         low_risk_count=levels.count(RiskLevel.LOW),
         total_violations=sum(r.violation_count for r in results.values()),
         total_breaches=sum(r.breach_count for r in results.values()),
+        breach_window_hours=configured_breach_window(),
     )
 
     # Worst first. Nationally the board is capped; within a state every mine is shown,

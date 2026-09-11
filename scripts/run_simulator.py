@@ -5,15 +5,17 @@ move the mine's compliance score, exactly like a CV detection does.
 
 Usage:
     python scripts/run_simulator.py                    # 6s ticks, one full pass, then stop
-    python scripts/run_simulator.py --interval 2       # faster, for rehearsal
+    python scripts/run_simulator.py --loop             # keep cycling until Ctrl+C - the live demo
+    python scripts/run_simulator.py --interval 2       # faster, for rehearsal (see the window note)
     python scripts/run_simulator.py --ticks 5          # stop after 5 ticks
-    python scripts/run_simulator.py --loop             # keep cycling (see the warning below)
     python scripts/run_simulator.py --dry-run          # roll back; nothing is persisted
     python scripts/run_simulator.py --check-only       # pre-flight the database, run nothing
     python scripts/run_simulator.py --require-clean    # refuse to start unless state is pristine
 
-Warning: scoring counts every breach on record, so each pass permanently lowers every mine. One
-pass is the demo. --loop will grind all five mines to zero.
+Scores fall AND recover: a breach counts against its mine only for BREACH_WINDOW_HOURS (36s by
+default - six ticks at the default 6s interval), so --loop settles into a live rise-and-fall rather
+than grinding mines to zero, and stopping the feed lets every mine climb back within one window.
+The window is tuned for 6s ticks; at --interval 2 set BREACH_WINDOW_HOURS=0.0033 to keep it at six.
 """
 
 from __future__ import annotations
@@ -28,21 +30,27 @@ sys.path.insert(0, str(BACKEND))
 
 from app.db.seed import BaselineReport, baseline_report  # noqa: E402
 from app.db.session import SessionLocal  # noqa: E402
+from app.services.compliance.scoring import configured_breach_window  # noqa: E402
 from app.services.iot.simulator import SensorSimulator  # noqa: E402
 
 ARROW = "->"
 RULE = "=" * 78
 
 
+def _window_label() -> str:
+    hours = configured_breach_window()
+    return "all-time (no window)" if hours is None else f"{hours * 3600:.0f}s"
+
+
 def preflight(report: BaselineReport) -> bool:
     """Report how far the database has drifted from a freshly seeded baseline.
 
-    Scores are cumulative by design (see docs/demo-script.md), so every demo run permanently
-    lowers every mine. Running the simulator twice without re-seeding starts from an already
-    degraded board and lands mines in bands the demo script does not expect. This makes that
-    visible before a run instead of on stage.
+    Open PPE violations persist until a clean re-inspection resolves them, so extra ones from an
+    earlier run - a CV demo, a rehearsal - start the board lower than the demo script expects.
+    Breaches only count inside the rolling window, so breach drift clears on its own and shows
+    here only if a run finished moments ago. This makes both visible before a run, not on stage.
 
-    Returns True when the database is pristine.
+    Returns True when the scores match the seeded baseline.
     """
     if report.is_clean:
         print(f"Pre-flight   : OK - all {len(report.mines)} mines match the seeded baseline.")
@@ -50,12 +58,11 @@ def preflight(report: BaselineReport) -> bool:
 
     print()
     print(RULE)
-    print("  WARNING: DATABASE IS NOT AT THE CLEAN BASELINE")
+    print("  WARNING: SCORES DO NOT MATCH THE CLEAN BASELINE")
     print(RULE)
-    print("  Compliance scoring counts every violation and breach on record (all-time, by")
-    print("  design). This database already carries results from an earlier demo run, so")
-    print("  scores start LOWER than the rehearsed baseline and this run will push them")
-    print("  further than the demo script expects.")
+    print("  Extra PPE violations below persist until a clean re-inspection resolves them.")
+    print(f"  Extra breaches are recent ones still inside the {_window_label()} scoring window;")
+    print("  those age out on their own, so if a run just ended, wait a moment and re-check.")
     print()
     print(f"  {'MINE':<12}{'SCORE':>16}{'PPE':>10}{'BREACHES':>12}")
     for mine in report.mines:
@@ -80,22 +87,23 @@ def preflight(report: BaselineReport) -> bool:
 
 
 def render(tick) -> None:
+    """One line per mine, measured from its last recorded score so recoveries show as well."""
     stamp = time.strftime("%H:%M:%S")
-    print(f"\n[{stamp}] tick {tick.index}  "
-          f"readings={tick.total_readings}  breaches={tick.total_breaches}")
+    print(f"\n[{stamp}] tick {tick.index}  readings={tick.total_readings}  "
+          f"breaches={tick.total_breaches}  recovering={len(tick.recovered)}")
 
     for mine in tick.mines:
-        before, after = mine.score_before, mine.score_after
-        flag = "  <-- RISK LEVEL CHANGED" if mine.risk_changed else ""
-        breach_note = ""
+        after = mine.score_after
+        flag = "  <-- RISK LEVEL CHANGED" if mine.band_moved else ""
+        note = ""
         if mine.breaches:
-            breach_note = "  " + ", ".join(
-                f"{r.sensor_type}={r.value}{r.unit}" for r in mine.breaches
-            )
-        delta = f"{mine.score_delta:+.0f}" if mine.score_delta else "  ."
-        print(f"   {mine.code:<11} {before.score:>5.1f} {ARROW} {after.score:>5.1f} "
+            note = "  " + ", ".join(f"{r.sensor_type}={r.value}{r.unit}" for r in mine.breaches)
+        elif mine.recovered:
+            note = "  (older breaches aged out)"
+        delta = f"{mine.movement:+.0f}" if mine.movement else "  ."
+        print(f"   {mine.code:<11} {mine.reference_score:>5.1f} {ARROW} {after.score:>5.1f} "
               f"({delta:>3})  {after.risk_level.value:<6} {after.risk_level.colour:<6}"
-              f"{breach_note}{flag}")
+              f"{note}{flag}")
 
 
 def tick_limit(ticks: int | None, loop: bool, full_pass: int) -> int | None:
@@ -182,6 +190,18 @@ def main() -> int:
         print(f"Interval     : {args.interval}s   -> {duration}")
         print(f"Mode         : {'LOOP' if args.loop else 'single pass'}"
               f"{'  (dry run)' if args.dry_run else ''}")
+        window = configured_breach_window()
+        if window is None:
+            print("Score window : none - every breach counts forever (BREACH_WINDOW_HOURS=0)")
+        else:
+            seconds = window * 3600
+            print(f"Score window : {seconds:.0f}s (BREACH_WINDOW_HOURS={window:g}) = "
+                  f"{seconds / args.interval:.0f} ticks at this interval")
+            if seconds >= sim.total_ticks * args.interval:
+                # A window of a whole pass or more holds an almost constant breach count while
+                # looping, so the rise-and-fall the window exists for would not be visible.
+                print("  NOTE: the window spans a full pass at this interval - while looping, "
+                      "scores will barely move. Shorten BREACH_WINDOW_HOURS or raise --interval.")
         print("Ctrl+C to stop.")
 
         completed = replay(sim, limit, args.interval, commit=not args.dry_run)

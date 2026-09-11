@@ -50,6 +50,18 @@ def weights() -> ScoringWeights:
     return ScoringWeights(weight_ppe=5.0, weight_env=3.0)
 
 
+@pytest.fixture(autouse=True)
+def shipped_breach_window(monkeypatch):
+    """Pin the rolling breach window to the shipped default, for the same reason as `weights`.
+
+    Tests create their breaches "now" and score them within seconds, so the 36s default keeps
+    them in-window; a local BREACH_WINDOW_HOURS of, say, 0.0001 would quietly expire them.
+    """
+    from app.core import config
+
+    monkeypatch.setattr(config.settings, "breach_window_hours", 0.01)
+
+
 @pytest.fixture
 def make_mine(db: Session):
     """Create a mine with a given number of PPE violations and breaching sensor readings."""
