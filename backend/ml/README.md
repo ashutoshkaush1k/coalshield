@@ -82,3 +82,29 @@ python scripts/demo_vision.py --dry-run
 Prints the detector backend, every raw class the model emitted with its canonical mapping, and the
 before/after compliance score. `--dry-run` rolls the database back, so it is safe to run
 repeatedly while tuning.
+
+## Sensor anomaly model
+
+A second, much smaller model: an IsolationForest over each tick's gas, dust and temperature
+(`services/iot/anomaly.py`). It is **advisory** - it adds `anomaly_score` / `is_anomaly` to the
+sensor endpoints and never touches breaches, alerts or compliance scores, which stay threshold-based.
+
+| | |
+|---|---|
+| File | `ml/weights/sensor_anomaly.joblib` (~3 MB, gitignored like the YOLO weights) |
+| Trained by | `python scripts/train_sensor_model.py` (`--dry-run` to report without saving) |
+| Data | `data/seed/sensor_readings.csv` -> 888 ticks (74 mines x 12) |
+| Settings | 200 trees, `contamination=0.05`, `random_state=26024` |
+| Threshold | `anomaly_score >= 0.603` flags a tick (served as `anomaly_threshold`) |
+
+`anomaly_score` is the paper's isolation score, 0..1: typical ticks sit around 0.42, a tick with
+every sensor just under its limit around 0.54, a three-sensor breach around 0.72.
+
+**No weights file is fine.** On first use the API loads the file if present, otherwise fits the
+same model in memory from the same seed data (identical settings and seed, so identical scores).
+Without scikit-learn installed the fields are served as `null` and nothing else changes.
+
+Honest limit: the seed generator draws each sensor independently and uniformly, so there is no
+cross-sensor pattern to learn. On this data every flagged tick is also a threshold breach - the model
+acts as a severity ranking of how extreme a tick is, not a detector of things the thresholds miss.
+Real telemetry, with correlated gas and temperature, is where it would start earning its place.

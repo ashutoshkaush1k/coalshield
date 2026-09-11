@@ -13,6 +13,8 @@ class SensorReadingOut(BaseModel):
     unit: str
     breached: bool
     recorded_at: UTCDateTime
+    # Score of the tick this reading belongs to. Advisory; `breached` is still the rule.
+    anomaly_score: float | None = None
 
     model_config = {"from_attributes": True}
 

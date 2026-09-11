@@ -27,9 +27,13 @@ class MineSensorStandingOut(BaseModel):
     breaching_now: int
     total_open_breaches: int
     sensors: list[SensorStandingOut]
+    # From the anomaly model over this mine's latest reading per sensor. Advisory only.
+    anomaly_score: float | None = None
+    is_anomaly: bool | None = None
 
 
 class FleetSensorOut(BaseModel):
     mine_count: int
     breaching_mines: int
+    anomalous_mines: int = 0
     mines: list[MineSensorStandingOut]

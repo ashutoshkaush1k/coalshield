@@ -112,7 +112,22 @@ for a single-mine drill-down.
   it server-side for the sensor endpoints in the task-3 push (they'll end in "Z"). Your
   fmtTime/new Date() code will then be correct with no change. Don't add a +5:30 workaround.
 
-\- \[ ] Sensor anomaly model trained — status:
+\- \[x] Sensor anomaly model trained — status: DONE. IsolationForest (200 trees, contamination 0.05,
+  random_state 26024) trained on the 888 seeded ticks by scripts/train_sensor_model.py, saved to
+  backend/ml/weights/sensor_anomaly.joblib (gitignored like ppe.pt; if it's missing the API fits the
+  identical model in memory from the seed CSV, so you get the same scores without running anything).
+  Threshold = 0.603. All contract fields now populated: /live readings anomaly_score + is_anomaly,
+  envelope anomaly_threshold; /sensors per-mine anomaly_score + is_anomaly and top-level
+  anomalous_mines (2 of 74 at the seed baseline); /sensors/{id} and /trend rows anomaly_score
+  (all three sensor rows of a tick share one score). Strictly additive: breached flags, alerts,
+  compliance scores and the fleet sort order are untouched (tests prove it). Typical values:
+  ordinary tick ~0.42, every sensor just under its limit ~0.54, 3-sensor breach ~0.72.
+  Honest limit: on this synthetic data every flagged tick is also a threshold breach. Read it as
+  "how extreme is this tick", not "found something the thresholds missed". Plotting the score as a
+  line against anomaly_threshold still gives a graded early signal before limits are hit.
+  ACTION for Agent 2: `pip install -r backend/requirements.txt` (adds scikit-learn). Without it
+  the anomaly fields are null and everything else works. Tests: backend/tests/test_sensor_anomaly.py
+  (17). Full suite 251 passed.
 
 \- \[ ] Raise Alert backend confirmed — status:
 

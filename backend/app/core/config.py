@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     threshold_dust_mgm3: float = 10.0
     threshold_temp_c: float = 45.0
 
+    # Sensor anomaly model (IsolationForest), written by scripts/train_sensor_model.py.
+    # Advisory only - it scores ticks alongside the thresholds and never decides a breach.
+    sensor_anomaly_model_path: str = "ml/weights/sensor_anomaly.joblib"
+
 
 @lru_cache
 def get_settings() -> Settings:

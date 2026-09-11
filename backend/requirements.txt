@@ -23,6 +23,9 @@ numpy
 
 # --- IoT simulation / data prep ---
 pandas
+# Sensor anomaly model (IsolationForest). Optional at runtime: without it the API serves
+# anomaly_score as null and everything else is unchanged.
+scikit-learn
 
 # --- Tests ---
 pytest

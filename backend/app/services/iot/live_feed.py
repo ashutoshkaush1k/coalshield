@@ -150,3 +150,29 @@ def fetch_ticks(
 
     ticks = {mine_id: group_into_ticks(readings)[-limit:] for mine_id, readings in by_mine.items()}
     return FeedPage(cursor=snapshot, reset=reset, ticks=ticks)
+
+
+def ticks_for_readings(db: Session, mine_id: int, readings: list[SensorReading]) -> dict[int, Tick]:
+    """Reading id -> the tick it belongs to, for endpoints that return one row per sensor.
+
+    Those endpoints filter and cut their rows (by sensor type, by count), so a reading's
+    tick-mates may not be in the result. They are fetched back from either side of it,
+    within the span a tick can cover.
+    """
+    if not readings:
+        return {}
+    stamps = [as_utc(r.recorded_at) for r in readings]
+    context = db.scalars(
+        select(SensorReading).where(
+            SensorReading.mine_id == mine_id,
+            SensorReading.recorded_at >= min(stamps) - TICK_SPREAD,
+            SensorReading.recorded_at <= max(stamps) + TICK_SPREAD,
+        )
+    ).all()
+    wanted = {r.id for r in readings}
+    return {
+        reading.id: tick
+        for tick in group_into_ticks(list(context))
+        for reading in tick.readings.values()
+        if reading.id in wanted
+    }

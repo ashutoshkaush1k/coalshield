@@ -18,8 +18,9 @@ from app.schemas.sensor import (
     SensorTrendOut,
 )
 from app.api.v1.endpoints.mines import visible_mines
+from app.services.iot.anomaly import score_ticks, score_values
 from app.services.iot.fleet_status import BUCKET_HOURS, breach_buckets, fleet_sensor_standing
-from app.services.iot.live_feed import Tick, fetch_ticks
+from app.services.iot.live_feed import Tick, fetch_ticks, ticks_for_readings
 from app.services.access.scope import MineAccessDenied
 from app.services.iot.thresholds import SensorType
 from app.utils.datetimes import to_epoch_ms
@@ -35,12 +36,28 @@ def _require(scope, mine_id: int) -> int:
 
 
 def _feed_envelope(page) -> dict:
+    """Shared envelope for both live feeds. Scores every tick on the page in one model call."""
+    anomaly_threshold = score_ticks([t for ticks in page.ticks.values() for t in ticks])
     return {
         "cursor": page.cursor,
         "reset": page.reset,
         "thresholds": {s.value: s.limit for s in SensorType},
         "units": {s.value: s.unit for s in SensorType},
+        "anomaly_threshold": anomaly_threshold,
     }
+
+
+def _with_tick_scores(db, mine_id: int, rows: list[SensorReading]) -> list[SensorReadingOut]:
+    """Per-sensor rows, each carrying the anomaly score of the tick it belongs to."""
+    tick_of = ticks_for_readings(db, mine_id, rows)
+    score_ticks(list({id(t): t for t in tick_of.values()}.values()))
+    out = []
+    for row in rows:
+        reading = SensorReadingOut.model_validate(row)
+        tick = tick_of.get(row.id)
+        reading.anomaly_score = tick.anomaly_score if tick else None
+        out.append(reading)
+    return out
 
 
 def _tick_fields(tick: Tick) -> dict:
@@ -69,9 +86,12 @@ def fleet_standing(
     """
     mine_ids = [m.id for m in visible_mines(db, scope, state)] if state else None
     standings = fleet_sensor_standing(db, mine_ids)
+    # Additive: the order and every breach figure above still come from the thresholds alone.
+    anomalies = score_values([{s.sensor_type: s.value for s in m.sensors} for m in standings])
     return FleetSensorOut(
         mine_count=len(standings),
         breaching_mines=sum(1 for m in standings if m.breaching_now),
+        anomalous_mines=sum(1 for _, flagged in anomalies if flagged),
         mines=[
             MineSensorStandingOut(
                 mine_id=m.mine_id, code=m.code, name=m.name, location=m.location,
@@ -87,8 +107,10 @@ def fleet_standing(
                     )
                     for s in m.sensors
                 ],
+                anomaly_score=score,
+                is_anomaly=flagged,
             )
-            for m in standings
+            for m, (score, flagged) in zip(standings, anomalies, strict=True)
         ],
     )
 
@@ -140,6 +162,7 @@ def fleet_live_feed(
     """
     mines = {m.id: m for m in visible_mines(db, scope, state)}
     page = fetch_ticks(db, list(mines), after=after, limit=limit)
+    envelope = _feed_envelope(page)  # scores the ticks, so it must come before the rows
     readings = [
         FleetLiveReadingOut(
             mine_id=mine_id, code=mines[mine_id].code, name=mines[mine_id].name,
@@ -149,7 +172,7 @@ def fleet_live_feed(
         for tick in ticks
     ]
     readings.sort(key=lambda r: (r.timestamp_ms, r.mine_id))
-    return FleetLiveFeedOut(**_feed_envelope(page), readings=readings)
+    return FleetLiveFeedOut(**envelope, readings=readings)
 
 
 @router.get("/{mine_id}/live", response_model=MineLiveFeedOut)
@@ -170,8 +193,9 @@ def mine_live_feed(
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"Mine {mine_id} not found")
 
     page = fetch_ticks(db, [mine_id], after=after, limit=limit)
+    envelope = _feed_envelope(page)  # scores the ticks, so it must come before the rows
     return MineLiveFeedOut(
-        **_feed_envelope(page),
+        **envelope,
         mine_id=mine_id,
         readings=[LiveReadingOut(**_tick_fields(t)) for t in page.ticks.get(mine_id, [])],
     )
@@ -196,7 +220,7 @@ def list_readings(
         stmt = stmt.where(SensorReading.breached.is_(True))
     stmt = stmt.order_by(SensorReading.recorded_at.desc(), SensorReading.id.desc()).limit(limit)
 
-    return [SensorReadingOut.model_validate(r) for r in db.scalars(stmt).all()]
+    return _with_tick_scores(db, mine_id, list(db.scalars(stmt).all()))
 
 
 @router.get("/{mine_id}/trend", response_model=SensorTrendOut)
@@ -209,7 +233,7 @@ def sensor_trend(
     """One series per sensor type, oldest first, with the threshold for the limit line."""
     _require(scope, mine_id)
 
-    series = []
+    per_sensor = {}
     for sensor_type in SensorType:
         stmt = (
             select(SensorReading)
@@ -220,14 +244,20 @@ def sensor_trend(
             .order_by(SensorReading.recorded_at.desc(), SensorReading.id.desc())
             .limit(points)
         )
-        rows = list(db.scalars(stmt).all())[::-1]  # chart order: oldest to newest
-        series.append(
-            SensorSeries(
-                sensor_type=sensor_type.value,
-                unit=sensor_type.unit,
-                threshold=sensor_type.limit,
-                breach_count=sum(1 for r in rows if r.breached),
-                points=[SensorReadingOut.model_validate(r) for r in rows],
-            )
+        per_sensor[sensor_type] = list(db.scalars(stmt).all())[::-1]  # oldest to newest
+
+    # Scored across all three series at once, so each tick is scored exactly once.
+    scored = {r.id: r for r in _with_tick_scores(
+        db, mine_id, [row for rows in per_sensor.values() for row in rows])}
+
+    series = [
+        SensorSeries(
+            sensor_type=sensor_type.value,
+            unit=sensor_type.unit,
+            threshold=sensor_type.limit,
+            breach_count=sum(1 for r in rows if r.breached),
+            points=[scored[r.id] for r in rows],
         )
+        for sensor_type, rows in per_sensor.items()
+    ]
     return SensorTrendOut(mine_id=mine_id, series=series)

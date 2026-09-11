@@ -14,3 +14,4 @@ if (-not (Test-Path ".env")) { Copy-Item ".env.example" ".env" }
 Set-Location "$root"
 python scripts\generate_sensor_data.py
 python scripts\seed_db.py
+python scripts\train_sensor_model.py
