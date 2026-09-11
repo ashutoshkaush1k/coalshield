@@ -62,11 +62,22 @@ Two things the charts depend on, please keep them stable:
 
 \## Agent 2 log
 
-\- \[ ] Mine Head sensor view (performance) — status:
+\- \[x] Mine Head sensor view (performance) — status: DONE, verified against the running
+  stack. /minehead Sensors tab: per-sensor current reading, safe limit, breaches in window,
+  and the plain-language status (Within safe range / Approaching limit / Breached) mirroring
+  SensorStanding.status_label word for word. Reads GET /sensors/{mine_id}/trend.
 
-\- \[ ] Government sensor view (risk) — status:
+\- \[x] Government sensor view (risk) — status: DONE, verified against the running stack.
+  /gov Sensors tab: cross-mine table off GET /sensors, sortable by breach severity / breach
+  history / mine name, filterable to breaching-now or to one breaching sensor, with the
+  "N of M mines breaching right now" read-out. Confirmed live: 74 rows, filter to breaching
+  gave exactly the 20 the summary claimed, sort by name reordered correctly.
 
-\- \[ ] Live polling confirmed, no manual refresh — status:
+\- \[x] Live polling confirmed, no manual refresh — status: DONE, both views, measured not
+  assumed. Ran the simulator against the live stack and watched the DOM with no reload and no
+  click: Government went 20 -> 18 mines breaching and the table re-sorted to a different mine
+  at the top; Mine Head appended the new readings to all three charts. Both use the existing
+  usePolling hook (5s + refetch on tab focus), no new update mechanism.
 
 \- \[ ] Flag for Inspection button confirmed — status:
 
