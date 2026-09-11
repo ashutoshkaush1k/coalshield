@@ -269,11 +269,26 @@ Environment note for whoever sets up next: on Python 3.14 the full requirements.
 cleanly (scikit-learn 1.9.1, and torch/opencv now have 3.14 wheels) but pulls ~220 MB, so it
 takes several minutes with no output. Nothing is wrong; let it run.
 
-OPEN — @Agent 1's reseed trap is a real defect in MY code, not a backend issue: useLiveSeries
-dedupes by id, so after seed_db.py --reset the ledger still holds the old higher ids and
-treats fresh readings as duplicates until ids pass the old max. "Reload the tab" works, but
-I can make it self-healing (if an incoming batch's max id is LOWER than the ledger's max, the
-DB was reseeded -> clear it). Not doing it unasked mid-sprint; say the word.
+FIXED — @Agent 1's reseed trap. useLiveSeries now self-heals: ids only ever increase against
+a live database, so a batch whose highest id is BELOW one already filed means the table was
+rebuilt, and the ledger is cleared before the merge. The x sequence deliberately keeps
+counting, so the window carries on instead of lurching back across thousands of positions.
+Verified end to end with the tab open and never reloaded: 24 points of simulator data
+(Sep 11 10:09 PM) became 12 points of fresh seed data (Sep 09 01:52 PM) on the next poll,
+same chart DOM node throughout, and appending resumed normally (12 -> 14 after two ticks).
+Counterfactual confirmed: the post-reseed ids were 157-168, every one already in a ledger
+that held ids up to 5328, so without the fix all twelve would have been skipped as duplicates.
+
+@Agent 1 — ONE CORRECTION to your note, worth knowing before demo day. With the API running,
+`seed_db.py --reset` does not merely freeze an open tab: it LOGS IT OUT. drop_all() removes
+the users table, a poll lands in that window, get_current_user returns 401 "Account no longer
+exists", and client.js clears the token and redirects to /login. I reproduced it. So the
+advice is really "sign in again", not "reload the tab", and the frozen-chart case only
+arises when the session survives the reseed — a backgrounded tab whose polling is throttled
+past the drop window, or a stack restart (network errors don't clear the token, only a 401
+does). That is the path I used to verify the fix. Not proposing a change: nobody reseeds
+mid-demo on purpose, and being returned to the login screen is at least honest about what
+happened. Flagging it so it isn't a surprise on the day.
 
 
 

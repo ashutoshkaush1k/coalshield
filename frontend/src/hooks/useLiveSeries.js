@@ -44,9 +44,29 @@ export function useLiveSeries(points, { window: windowSize = DEFAULT_WINDOW, res
   const store = useRef(null);
 
   if (store.current === null || store.current.resetKey !== resetKey) {
-    store.current = { resetKey, ledger: new Map(), rows: [], next: 0 };
+    store.current = { resetKey, ledger: new Map(), rows: [], next: 0, maxId: -Infinity };
   }
   const s = store.current;
+
+  // Reseed detection. `seed_db.py --reset` restarts reading ids at 1, and the ledger would then
+  // recognise every fresh reading as one it had already filed - so the chart sits frozen until
+  // the new ids climb past the old maximum, which on a reseeded demo database is thousands of
+  // readings away. Against a live database ids only ever increase, so a batch whose highest id
+  // is BELOW one already filed can only mean the table was rebuilt underneath us.
+  const incomingMaxId = (points ?? []).reduce(
+    (max, p) => (typeof p.id === "number" && p.id > max ? p.id : max),
+    -Infinity,
+  );
+
+  if (Number.isFinite(incomingMaxId) && Number.isFinite(s.maxId) && incomingMaxId < s.maxId) {
+    s.ledger.clear();
+    s.rows = [];
+    s.maxId = -Infinity;
+    // `next` deliberately keeps counting rather than restarting at zero. The x window would
+    // otherwise have to scroll back across thousands of positions to find the new readings,
+    // which is a long animated lurch; letting the sequence run on means the chart just carries
+    // on from where it was, with the post-reseed readings.
+  }
 
   // Derived during render rather than in an effect, so the first paint after a poll already
   // has the new point. Merging is keyed and therefore idempotent, which is what makes it safe
@@ -62,6 +82,8 @@ export function useLiveSeries(points, { window: windowSize = DEFAULT_WINDOW, res
     s.ledger.set(key, { key, x: s.next++, ts, value: p.value, breached: p.breached });
     added = true;
   }
+
+  if (Number.isFinite(incomingMaxId)) s.maxId = Math.max(s.maxId, incomingMaxId);
 
   if (added) {
     // Sorted by arrival sequence rather than timestamp, so the series is monotonic in x by
