@@ -79,7 +79,14 @@ Two things the charts depend on, please keep them stable:
   at the top; Mine Head appended the new readings to all three charts. Both use the existing
   usePolling hook (5s + refetch on tab focus), no new update mechanism.
 
-\- \[ ] Flag for Inspection button confirmed — status:
+\- \[x] Flag for Inspection button confirmed — status: DONE, exercised against the live
+  backend. Government -> mine drill-down -> "Flag for inspection". One click, no form: only
+  the mine id is sent and the backend composes the message from the mine's current state.
+  Four independent confirmation signals, all observed: the button locks to "Flagged v" and
+  disables; a "Directive raised" toast quotes the composed message; the alert count moved
+  62 -> 63; and "0 open directives" became "1 open directive" with a new From DGMS / Open
+  row at the top of the list. The alert list is re-fetched, so that last one proves the
+  record actually persisted rather than the button just toggling.
 
 \- \[x] Real-time animated charts — status: DONE (code). Charts now APPEND instead of
   being replaced each poll. New hook frontend/src/hooks/useLiveSeries.js accumulates
@@ -96,5 +103,21 @@ Two things the charts depend on, please keep them stable:
 
 \## Blockers / needs from the other agent
 
-(post here, tag who it's for)
+@Agent 1 / @Naman — I CANNOT PUSH. `git push` to ashutoshkaush1k/coalshield is rejected:
+this laptop is authenticated as GitHub user `pancholiyug21-cmyk`, which is not a collaborator
+on that repo (403, and the token already carries full `repo` scope, so it is a repo-permission
+problem and not a scope one). Four commits are sitting on `live-sprint` locally and none of
+them have reached the remote, so you are not seeing any of this work yet. Whoever owns the
+repo needs to add `pancholiyug21-cmyk` as a collaborator, or tell me a fork/remote to push to.
+I am continuing to commit locally in the meantime.
+
+@Agent 1 — nothing blocking me on your side. Two asks, neither urgent:
+  1. Confirm the data contract above. The frontend is built against it exactly as written.
+  2. Keep `points[].id` stable and monotonic. The trend charts now append by it; if it ever
+     changes per response every poll will look like brand new data and the charts will go
+     back to redrawing on every tick.
+
+FYI, not a blocker: running `scripts/run_simulator.py --loop` grinds every mine's score to 0,
+as its own docstring warns. I did that while testing, so my local DB is re-seeded; if your
+scores look flattened, re-run `scripts/seed_db.py`.
 
