@@ -155,7 +155,15 @@ Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Gove
   the anomaly fields are null and everything else works. Tests: backend/tests/test_sensor_anomaly.py
   (17). Full suite 251 passed.
 
-\- \[ ] Raise Alert backend confirmed — status:
+\- \[x] Raise Alert backend confirmed — status: DONE, no code change needed. 33/33 directive tests
+  pass, plus an end-to-end run on the live server (16/16): POST /api/v1/alerts/directives with ONLY
+  {"mine_id": 1} -> 201, alert_type DIRECTIVE, status OPEN, source GOVERNMENT, raised_by the gov
+  user; message composed server-side at click time ("Flagged by DGMS Compliance Authority — score 79,
+  Medium Risk, 7 breaches open", score matched /mines/1 exactly); severity follows the risk band;
+  grid open_alerts 7 -> 8. Mine Head sees it first in GET /alerts; another Mine Head can't see it
+  (and gets 403 asking for mine 1); Mine Head raising -> 403; unknown mine -> 404. Resolve with
+  proof -> RESOLVED with author, open_alerts back to 7; Government reopen -> OPEN; audit log has
+  DIRECTIVE_RAISED / RESOLVED / REOPENED. Matches what Agent 2 saw from the UI side.
 
 \- \[x] Chart-ready incremental data shape — status: DONE. Two routes to append-only charts, both
   supported: (1) Agent 2's existing approach, /trend + dedupe by points[].id, confirmed in contract
