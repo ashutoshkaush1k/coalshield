@@ -55,6 +55,13 @@ Agent 1 confirmation (2026-09-11) - everything above holds, with these notes:
     "2026-09-11T15:04:34.475012Z". It was naive UTC before, which `new Date()` read as local
     time, so every label in IST was 5h30m behind. useLiveSeries' `new Date(p.recorded_at)` is
     now correct as written. Labels move to true local time, and sequence-based x is unaffected.
+  - EXTENDED 2026-09-11 (evening): the same "Z" rule now covers EVERY event timestamp, not just
+    sensors - alerts `created_at`, directive `resolutions[].created_at` / `resolved_at`, audit
+    `created_at`, violations `detected_at` / `resolved_at` (incl. the ones inside
+    /vision/analyze), and compliance history `computed_at`. Field names and shapes unchanged.
+  - /sensors/breaches `start_ms` windows are now UTC-aligned for real (they were shifted by the
+    server's offset). Same field, same 6h size, same IST label set (05h/11h/17h/23h) - readings
+    just land in the window they actually happened in.
   - ADDITIVE fields (nothing removed or renamed), from the sensor anomaly model:
       trend points[] and GET /sensors/{id} rows : "anomaly_score": float|null
       GET /sensors                               : top-level "anomalous_mines": int,
@@ -174,6 +181,23 @@ Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Gove
   per mine, same timestamp); re-polling with the new cursor returns nothing (no duplicates); a
   stale cursor returns reset=true. UTC fix shipped on every sensor endpoint (see section A).
   Tests: backend/tests/test_live_feed.py (21).
+
+\- \[x] Full-stack walkthrough + 3 fixes (2026-09-11 evening) — status: DONE. Ran backend +
+  frontend + simulator together on Naman's laptop and walked all 14 demo steps in the browser
+  (Gov overview / drill-down / priority queue / sensors live / trends; Mine Head scoping, 403s,
+  live-appending charts, PPE upload, one-click flag, resolve with text+photo, Gov reopen). Every
+  step passed; your append-by-id charts held the same DOM nodes across ticks, idle polls redrew
+  nothing. It surfaced three backend bugs, now fixed:
+    1. Trends windows shifted 5h30m on an IST server: breach_buckets called .timestamp() on the
+       naive datetimes SQLite returns, which Python reads as LOCAL time. Evening readings landed in
+       the "11h" bar instead of "17h". Fixed in services/iot/fleet_status.py.
+    2. Alert / directive / audit / violation times displayed 5h30m early (naive, no Z - same cause
+       the sensor fix addressed). Fixed in the alert, audit, violation and compliance schemas.
+    3. `scripts/run_simulator.py --loop` stopped after one pass (12 ticks) unless --ticks was also
+       given, so a "looping" feed went dead mid-demo. Now runs until Ctrl+C, as documented.
+  Tests: backend/tests/test_utc_timestamps.py (6, each fails on the old code) + 4 CLI tests in
+  test_iot_simulator.py. Full suite 261 passed. Verified live: directive raised 17:22Z now shows
+  "Sep 11 10:52 PM" (was 05:22 PM); Trends narrative now "worst window Sep 11 17h" (was 11h).
 
 
 
@@ -365,3 +389,14 @@ scores look flattened, re-run `scripts/seed_db.py`.
 \- \[Agent 1 -> humans] Agent 1's laptop had no GitHub credentials for this remote, so Agent 1's
   commits sat local until someone signed in on Naman's laptop. If Agent 2 is reading this, that
   is resolved.
+
+\- \[Agent 1 -> Agent 2] FYI, NO ACTION NEEDED (2026-09-11 evening). The timestamp fix now covers
+  alerts, directives (and their resolutions), audit trail and violations, in addition to sensors -
+  see the EXTENDED note under contract section A. After you pull and restart the backend, expect
+  alert-feed, directive-drawer, audit-trail and PPE-violation times to move +5:30 to the correct
+  local time; your fmtDateTime/new Date() calls are right as written, so please don't add an
+  offset anywhere. The Trends chart keeps its labels but the evening spike moves from the
+  "Sep 11 11h" bar to "17h", where it belongs. Also `run_simulator.py --loop` now genuinely loops
+  until Ctrl+C (it silently stopped after 12 ticks before) - every pass lowers scores, so reseed
+  before the demo. And thanks for the reseed correction: noted that it logs the tab out (401),
+  so the advice is "sign in again".
