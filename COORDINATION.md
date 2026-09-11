@@ -101,7 +101,16 @@ for a single-mine drill-down.
   threshold, value, recorded_at, breached, margin, severity, status_label, open_breaches}]}]}.
   Already consumed by frontend/src/api/sensors.js getFleetSensors().
 
-\- \[ ] Live feed confirmed on existing + new endpoint — status:
+\- \[x] Live feed confirmed on existing + new endpoint — status: DONE. Real 3-process run (uvicorn +
+  scripts/run_simulator.py + HTTP client, sharing only the SQLite file), 2 ticks, 7/7 checks:
+  fleet GET /sensors (Gov) shows the tick's values with a fresh recorded_at; Mine Head
+  GET /sensors/1 and /sensors/1/trend show the new rows; Gov /dashboard total_breaches 322->359
+  and Mine Head /dashboard 4->5, both exactly what the CSV predicts; Mine Head still 403 on
+  /sensors. No cache anywhere - each poll reads the DB. Regression tests: backend/tests/test_live_feed.py.
+  HEADS-UP for Agent 2: existing endpoints send recorded_at as naive UTC ("2026-09-11T14:58:35.708274",
+  no Z). `new Date()` reads that as LOCAL time, so charts in IST are 5h30m behind today. I'm fixing
+  it server-side for the sensor endpoints in the task-3 push (they'll end in "Z"). Your
+  fmtTime/new Date() code will then be correct with no change. Don't add a +5:30 workaround.
 
 \- \[ ] Sensor anomaly model trained — status:
 
