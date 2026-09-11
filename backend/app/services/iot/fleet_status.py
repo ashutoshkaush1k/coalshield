@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.models.mine import Mine
 from app.models.sensor_reading import SensorReading
 from app.services.iot.thresholds import SensorType, breach_margin
+from app.utils.datetimes import as_utc
 
 SEVERITY_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "OK": 3}
 
@@ -194,7 +195,9 @@ def breach_buckets(
     blank = {c: 0 for c in BREACH_CATEGORIES}
 
     def key_of(recorded_at) -> int:
-        return int(recorded_at.timestamp() // size) * size
+        # as_utc first: SQLite hands the time back naive, and a naive .timestamp() is read
+        # as the server's local time - on an IST machine every window landed 5h30m early.
+        return int(as_utc(recorded_at).timestamp() // size) * size
 
     stamps = [key_of(r[1]) for r in rows]
     first, last = min(stamps), max(stamps)

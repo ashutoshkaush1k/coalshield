@@ -1,8 +1,8 @@
 """Compliance score, risk level, and score-history schemas."""
 
-from datetime import datetime
-
 from pydantic import BaseModel
+
+from app.utils.datetimes import UTCDateTime
 
 
 class ComplianceOut(BaseModel):
@@ -22,6 +22,6 @@ class ComplianceOut(BaseModel):
 class ComplianceHistoryPoint(BaseModel):
     score: float
     risk_level: str
-    computed_at: datetime
+    computed_at: UTCDateTime
 
     model_config = {"from_attributes": True}

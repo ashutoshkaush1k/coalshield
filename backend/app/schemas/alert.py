@@ -1,8 +1,8 @@
 """Alert read/create schemas, covering system alerts and government directives."""
 
-from datetime import datetime
-
 from pydantic import BaseModel, Field
+
+from app.utils.datetimes import UTCDateTime
 
 
 class ResolutionOut(BaseModel):
@@ -11,8 +11,8 @@ class ResolutionOut(BaseModel):
     id: int
     description: str
     created_by: str
-    created_at: datetime
-    resolved_at: datetime | None
+    created_at: UTCDateTime
+    resolved_at: UTCDateTime | None
     proof_image_url: str | None = None
 
     model_config = {"from_attributes": True}
@@ -29,7 +29,7 @@ class AlertOut(BaseModel):
     status: str
     raised_by: str | None
     acknowledged: bool
-    created_at: datetime
+    created_at: UTCDateTime
 
     # Every resolution attempt, newest first. A reopened directive keeps its earlier
     # proof here rather than overwriting it.

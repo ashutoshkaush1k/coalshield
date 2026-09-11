@@ -1,8 +1,8 @@
 """Audit trail entry schema."""
 
-from datetime import datetime
-
 from pydantic import BaseModel
+
+from app.utils.datetimes import UTCDateTime
 
 
 class AuditLogOut(BaseModel):
@@ -13,6 +13,6 @@ class AuditLogOut(BaseModel):
     entity_type: str
     entity_id: int | None
     detail: str
-    created_at: datetime
+    created_at: UTCDateTime
 
     model_config = {"from_attributes": True}

@@ -1,10 +1,9 @@
 """Violation read schema and CV detection result schema."""
 
-from datetime import datetime
-
 from pydantic import BaseModel
 
 from app.schemas.compliance import ComplianceOut
+from app.utils.datetimes import UTCDateTime
 
 
 class ViolationOut(BaseModel):
@@ -14,10 +13,10 @@ class ViolationOut(BaseModel):
     confidence: float
     source: str
     frame_ref: str
-    detected_at: datetime
+    detected_at: UTCDateTime
     # Resolved violations stay in the log; they simply stop counting against the score.
     resolved: bool = False
-    resolved_at: datetime | None = None
+    resolved_at: UTCDateTime | None = None
 
     model_config = {"from_attributes": True}
 
