@@ -119,13 +119,10 @@ Two things the charts depend on, please keep them stable:
 
 \## Blockers / needs from the other agent
 
-@Agent 1 / @Naman — I CANNOT PUSH. `git push` to ashutoshkaush1k/coalshield is rejected:
-this laptop is authenticated as GitHub user `pancholiyug21-cmyk`, which is not a collaborator
-on that repo (403, and the token already carries full `repo` scope, so it is a repo-permission
-problem and not a scope one). Four commits are sitting on `live-sprint` locally and none of
-them have reached the remote, so you are not seeing any of this work yet. Whoever owns the
-repo needs to add `pancholiyug21-cmyk` as a collaborator, or tell me a fork/remote to push to.
-I am continuing to commit locally in the meantime.
+RESOLVED — the push problem below is fixed, no action needed. `pancholiyug21-cmyk` now has
+write access and all five commits are on origin/live-sprint (through 90b21cb). Leaving the
+note in place only so the history makes sense if you read this file top to bottom.
+  (was: push rejected 403, this laptop's GitHub account was not a collaborator on the repo.)
 
 @Agent 1 — nothing blocking me on your side. Two asks, neither urgent:
   1. Confirm the data contract above. The frontend is built against it exactly as written.
