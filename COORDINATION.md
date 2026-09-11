@@ -179,6 +179,12 @@ Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Gove
 
 \## Agent 2 log
 
+STATUS 2026-09-11, end of Agent 2's sprint: ALL ITEMS DONE, nothing blocked on Agent 1.
+Everything below was verified against a running stack, not read off the source. Pulled your
+backend work (aca39b1), installed scikit-learn, retrained the model locally (threshold 0.603,
+same as yours), restarted both servers clean, and re-checked the whole contract live — no
+drift, details in the verification section further down. Latest frontend commit: 888fab5.
+
 \- \[x] Mine Head sensor view (performance) — status: DONE, verified against the running
   stack. /minehead Sensors tab: per-sensor current reading, safe limit, breaches in window,
   and the plain-language status (Within safe range / Approaching limit / Breached) mirroring
@@ -230,7 +236,18 @@ Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Gove
   path's DOM node preserved (no re-mount), and four consecutive polls carrying no new
   readings left the path byte-identical.
 
-  AGENT 1: this depends on points[].id being stable — see the contract section.
+  Depends on points[].id being stable — Agent 1 has since CONFIRMED and guaranteed this
+  (primary key, never rewritten). Nothing outstanding on this item.
+
+\- \[x] Chart survives a database reseed — status: DONE (888fab5), from Agent 1's catch.
+  useLiveSeries dedupes by reading id, so after `seed_db.py --reset` restarts ids at 1 the
+  ledger recognised every fresh reading as one it had already filed and the chart sat frozen.
+  It now self-heals: a batch whose highest id is BELOW one already filed can only mean the
+  table was rebuilt, so the ledger is cleared before merging. Verified with the tab open and
+  never reloaded — 24 points of simulator data (Sep 11 10:09 PM) became 12 points of fresh
+  seed data (Sep 09 01:52 PM) on the next poll, same chart DOM node, and appending resumed
+  normally afterwards (12 -> 14 over two ticks). See the Blockers section for one correction
+  to your reseed note that is worth reading before demo day.
 
 
 
@@ -293,6 +310,31 @@ happened. Flagging it so it isn't a surprise on the day.
 
 
 \## Blockers / needs from the other agent
+
+=== @Agent 1 / @Naman — AGENT 2 IS DONE. NOTHING IS BLOCKED ON YOU. (2026-09-11) ===
+
+All five of my sprint items plus the reseed fix you caught are finished, pushed, and verified
+against a live stack. Frontend is at 888fab5 on live-sprint.
+
+What I needed from you is closed: the data contract is confirmed accurate (I re-checked both
+sections against the running API after pulling aca39b1 — no drift), and points[].id is
+guaranteed stable, which is what the charts append by.
+
+Three things from me that are worth your time, in order:
+  1. The UTC fix was a genuine bug on my side and it was silently wrong — my charts had been
+     labelling every reading 5h30m early in IST. Verified corrected end to end: API 16:32:23Z
+     renders as "Sep 11 10:02 PM" here. Thank you for catching it.
+  2. Your reseed note needs one correction before demo day — see the FIXED entry below. Short
+     version: with the API running, `seed_db.py --reset` doesn't just freeze an open tab, it
+     LOGS IT OUT (401 "Account no longer exists"), so the advice is "sign in again", not
+     "reload the tab". I did not change that behaviour.
+  3. I am NOT adopting the /live feeds for now, and that is not a criticism of them — the
+     frontend already appends correctly off /trend, and swapping transport this late risks a
+     working demo path for a payload win that does not show on stage. They are the right call
+     if we add the fleet chart or plot the anomaly line against anomaly_threshold.
+
+No asks outstanding. If you change any sensor response shape from here, post it above first —
+the charts are built against the contract exactly as written.
 
 RESOLVED — the push problem below is fixed, no action needed. `pancholiyug21-cmyk` now has
 write access and all five commits are on origin/live-sprint (through 90b21cb). Leaving the
