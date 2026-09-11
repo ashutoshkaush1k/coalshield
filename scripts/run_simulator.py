@@ -98,6 +98,36 @@ def render(tick) -> None:
               f"{breach_note}{flag}")
 
 
+def tick_limit(ticks: int | None, loop: bool, full_pass: int) -> int | None:
+    """How many ticks this run emits; None means until Ctrl+C.
+
+    An explicit --ticks always wins. Otherwise a single pass stops when the dataset does,
+    and --loop keeps cycling. It used to fall back to one full pass either way, so --loop
+    on its own stopped after 12 ticks and the dashboards went quiet mid-demo.
+    """
+    if ticks:
+        return ticks
+    return None if loop else full_pass
+
+
+def replay(sim, limit: int | None, interval: float, *, commit: bool = True,
+           on_tick=render, sleep=time.sleep) -> int:
+    """Tick until the limit, the end of a non-looping dataset, or Ctrl+C. Returns ticks run."""
+    completed = 0
+    try:
+        while limit is None or completed < limit:
+            if sim.exhausted and not sim.loop:
+                print("\nDataset exhausted - replay complete.")
+                break
+            on_tick(sim.tick(commit=commit))
+            completed += 1
+            if limit is None or completed < limit:
+                sleep(interval)
+    except KeyboardInterrupt:
+        print("\n\nStopped by user.")
+    return completed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Replay seeded sensor data as a live feed.")
     parser.add_argument("--interval", type=float, default=6.0, help="seconds between ticks")
@@ -143,28 +173,18 @@ def main() -> int:
             print("ERROR: no mines in the database. Run scripts/seed_db.py first.")
             return 1
 
-        limit = args.ticks or sim.total_ticks
+        limit = tick_limit(args.ticks, args.loop, sim.total_ticks)
         print(f"Mines        : {len(sim.mines)}")
         print(f"Full pass    : {sim.total_ticks} ticks "
               f"({sim.total_ticks * len(sim.mines) * 3} readings)")
-        print(f"Interval     : {args.interval}s   -> about "
-              f"{limit * args.interval:.0f}s for this run")
+        duration = ("until Ctrl+C" if limit is None
+                    else f"about {limit * args.interval:.0f}s for this run")
+        print(f"Interval     : {args.interval}s   -> {duration}")
         print(f"Mode         : {'LOOP' if args.loop else 'single pass'}"
               f"{'  (dry run)' if args.dry_run else ''}")
         print("Ctrl+C to stop.")
 
-        completed = 0
-        try:
-            while completed < limit:
-                if sim.exhausted and not args.loop:
-                    print("\nDataset exhausted - replay complete.")
-                    break
-                render(sim.tick(commit=not args.dry_run))
-                completed += 1
-                if completed < limit:
-                    time.sleep(args.interval)
-        except KeyboardInterrupt:
-            print("\n\nStopped by user.")
+        completed = replay(sim, limit, args.interval, commit=not args.dry_run)
 
         if args.dry_run:
             db.rollback()

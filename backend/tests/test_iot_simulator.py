@@ -184,3 +184,68 @@ class TestSimulator:
         first, second = make_mine(), make_mine()
         with pytest.raises(NoReplayDataError, match="no readings for mines"):
             SensorSimulator(db, csv_path=csv_path(first.id), mine_ids=[second.id])
+
+
+def _load_cli():
+    """scripts/run_simulator.py as a module - it is a script, not part of the app package."""
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[2] / "scripts" / "run_simulator.py"
+    spec = importlib.util.spec_from_file_location("run_simulator_cli", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture(scope="module")
+def cli():
+    return _load_cli()
+
+
+class TestSimulatorCli:
+    """How long `scripts/run_simulator.py` runs. `--loop` on its own used to stop after one
+    pass (12 ticks), because the tick budget fell back to a full pass whenever --ticks was
+    not given - so a looping demo feed quietly went dead after about a minute."""
+
+    @staticmethod
+    def ctrl_c_after(n):
+        """A stand-in for time.sleep that presses Ctrl+C on the nth wait."""
+        waits = []
+
+        def sleep(_):
+            waits.append(1)
+            if len(waits) == n:
+                raise KeyboardInterrupt
+        return sleep
+
+    def test_tick_limit(self, cli):
+        assert cli.tick_limit(None, loop=False, full_pass=12) == 12    # one pass
+        assert cli.tick_limit(None, loop=True, full_pass=12) is None   # until Ctrl+C
+        assert cli.tick_limit(5, loop=True, full_pass=12) == 5         # --ticks wins
+
+    def test_loop_keeps_cycling_past_one_pass(self, cli, db, make_mine, csv_path):
+        mine = make_mine()
+        sim = SensorSimulator(db, csv_path=csv_path(mine.id), loop=True)   # 2 ticks per pass
+        limit = cli.tick_limit(None, loop=True, full_pass=sim.total_ticks)
+
+        ran = cli.replay(sim, limit, 0, commit=False, on_tick=lambda _: None,
+                         sleep=self.ctrl_c_after(5))
+        assert ran == 5
+        assert ran > sim.total_ticks
+
+    def test_a_single_pass_still_stops_when_the_data_does(self, cli, db, make_mine, csv_path):
+        mine = make_mine()
+        sim = SensorSimulator(db, csv_path=csv_path(mine.id))
+        limit = cli.tick_limit(None, loop=False, full_pass=sim.total_ticks)
+
+        assert cli.replay(sim, limit, 0, commit=False, on_tick=lambda _: None,
+                          sleep=lambda _: None) == 2
+
+    def test_explicit_ticks_without_loop_cannot_outrun_the_data(self, cli, db, make_mine,
+                                                                 csv_path):
+        mine = make_mine()
+        sim = SensorSimulator(db, csv_path=csv_path(mine.id))
+
+        assert cli.replay(sim, cli.tick_limit(10, loop=False, full_pass=sim.total_ticks), 0,
+                          commit=False, on_tick=lambda _: None, sleep=lambda _: None) == 2
