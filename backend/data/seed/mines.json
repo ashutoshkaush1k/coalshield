@@ -1,0 +1,742 @@
+[
+  {
+    "id": 1,
+    "code": "JH-DHN-01",
+    "name": "Jharia Coalfield Block A",
+    "district": "Dhanbad",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Dhanbad, Jharkhand"
+  },
+  {
+    "id": 2,
+    "code": "MP-SGR-02",
+    "name": "Singrauli Opencast Mine",
+    "district": "Singrauli",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Singrauli, Madhya Pradesh"
+  },
+  {
+    "id": 3,
+    "code": "CG-KRB-03",
+    "name": "Korba Gevra Expansion",
+    "district": "Korba",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Korba, Chhattisgarh"
+  },
+  {
+    "id": 4,
+    "code": "WB-RNG-04",
+    "name": "Raniganj Deep Shaft",
+    "district": "Raniganj",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Eastern Coalfields Ltd",
+    "location": "Raniganj, West Bengal"
+  },
+  {
+    "id": 5,
+    "code": "OD-TLC-05",
+    "name": "Talcher Underground Unit 2",
+    "district": "Angul",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Angul, Odisha"
+  },
+  {
+    "id": 6,
+    "code": "JH-DHA-06",
+    "name": "Dhanbad Washery Block",
+    "district": "Dhanbad",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Dhanbad, Jharkhand"
+  },
+  {
+    "id": 7,
+    "code": "JH-BOK-07",
+    "name": "Bokaro Opencast Project",
+    "district": "Bokaro",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Coal India Ltd",
+    "location": "Bokaro, Jharkhand"
+  },
+  {
+    "id": 8,
+    "code": "JH-RAM-08",
+    "name": "Ramgarh Opencast Project",
+    "district": "Ramgarh",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Eastern Coalfields Ltd",
+    "location": "Ramgarh, Jharkhand"
+  },
+  {
+    "id": 9,
+    "code": "JH-CHA-09",
+    "name": "Chatra Expansion Block",
+    "district": "Chatra",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Chatra, Jharkhand"
+  },
+  {
+    "id": 10,
+    "code": "JH-LAT-10",
+    "name": "Latehar Underground Mine",
+    "district": "Latehar",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Coal India Ltd",
+    "location": "Latehar, Jharkhand"
+  },
+  {
+    "id": 11,
+    "code": "JH-GOD-11",
+    "name": "Godda Expansion Block",
+    "district": "Godda",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Godda, Jharkhand"
+  },
+  {
+    "id": 12,
+    "code": "JH-HAZ-12",
+    "name": "Hazaribagh Colliery",
+    "district": "Hazaribagh",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Eastern Coalfields Ltd",
+    "location": "Hazaribagh, Jharkhand"
+  },
+  {
+    "id": 13,
+    "code": "JH-DHA-13",
+    "name": "Dhanbad Opencast Project",
+    "district": "Dhanbad",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "NLC India Ltd",
+    "location": "Dhanbad, Jharkhand"
+  },
+  {
+    "id": 14,
+    "code": "JH-BOK-14",
+    "name": "Bokaro Colliery",
+    "district": "Bokaro",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Singareni Collieries Company Ltd",
+    "location": "Bokaro, Jharkhand"
+  },
+  {
+    "id": 15,
+    "code": "JH-RAM-15",
+    "name": "Ramgarh Deep Shaft",
+    "district": "Ramgarh",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Ramgarh, Jharkhand"
+  },
+  {
+    "id": 16,
+    "code": "JH-CHA-16",
+    "name": "Chatra Deep Shaft",
+    "district": "Chatra",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Chatra, Jharkhand"
+  },
+  {
+    "id": 17,
+    "code": "JH-LAT-17",
+    "name": "Latehar Washery Block",
+    "district": "Latehar",
+    "state": "Jharkhand",
+    "region": "East",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Latehar, Jharkhand"
+  },
+  {
+    "id": 18,
+    "code": "OD-ANG-18",
+    "name": "Angul Washery Block",
+    "district": "Angul",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Western Coalfields Ltd",
+    "location": "Angul, Odisha"
+  },
+  {
+    "id": 19,
+    "code": "OD-JHA-19",
+    "name": "Jharsuguda Deep Shaft",
+    "district": "Jharsuguda",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Jharsuguda, Odisha"
+  },
+  {
+    "id": 20,
+    "code": "OD-SUN-20",
+    "name": "Sundargarh Washery Block",
+    "district": "Sundargarh",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Sundargarh, Odisha"
+  },
+  {
+    "id": 21,
+    "code": "OD-SAM-21",
+    "name": "Sambalpur Expansion Block",
+    "district": "Sambalpur",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Sambalpur, Odisha"
+  },
+  {
+    "id": 22,
+    "code": "OD-DHE-22",
+    "name": "Dhenkanal Expansion Block",
+    "district": "Dhenkanal",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Dhenkanal, Odisha"
+  },
+  {
+    "id": 23,
+    "code": "OD-ANG-23",
+    "name": "Angul Underground Mine",
+    "district": "Angul",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "NLC India Ltd",
+    "location": "Angul, Odisha"
+  },
+  {
+    "id": 24,
+    "code": "OD-JHA-24",
+    "name": "Jharsuguda Opencast Project",
+    "district": "Jharsuguda",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Western Coalfields Ltd",
+    "location": "Jharsuguda, Odisha"
+  },
+  {
+    "id": 25,
+    "code": "OD-SUN-25",
+    "name": "Sundargarh Coalfield Block",
+    "district": "Sundargarh",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Sundargarh, Odisha"
+  },
+  {
+    "id": 26,
+    "code": "OD-SAM-26",
+    "name": "Sambalpur Opencast Project",
+    "district": "Sambalpur",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Sambalpur, Odisha"
+  },
+  {
+    "id": 27,
+    "code": "OD-DHE-27",
+    "name": "Dhenkanal Expansion Block",
+    "district": "Dhenkanal",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "Eastern Coalfields Ltd",
+    "location": "Dhenkanal, Odisha"
+  },
+  {
+    "id": 28,
+    "code": "OD-ANG-28",
+    "name": "Angul Deep Shaft",
+    "district": "Angul",
+    "state": "Odisha",
+    "region": "East",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Angul, Odisha"
+  },
+  {
+    "id": 29,
+    "code": "CG-KOR-29",
+    "name": "Korba Expansion Block",
+    "district": "Korba",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Singareni Collieries Company Ltd",
+    "location": "Korba, Chhattisgarh"
+  },
+  {
+    "id": 30,
+    "code": "CG-RAI-30",
+    "name": "Raigarh Deep Shaft",
+    "district": "Raigarh",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Raigarh, Chhattisgarh"
+  },
+  {
+    "id": 31,
+    "code": "CG-SUR-31",
+    "name": "Surguja Washery Block",
+    "district": "Surguja",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Coal India Ltd",
+    "location": "Surguja, Chhattisgarh"
+  },
+  {
+    "id": 32,
+    "code": "CG-KOR-32",
+    "name": "Koriya Washery Block",
+    "district": "Koriya",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "NLC India Ltd",
+    "location": "Koriya, Chhattisgarh"
+  },
+  {
+    "id": 33,
+    "code": "CG-BIL-33",
+    "name": "Bilaspur Washery Block",
+    "district": "Bilaspur",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Central Coalfields Ltd",
+    "location": "Bilaspur, Chhattisgarh"
+  },
+  {
+    "id": 34,
+    "code": "CG-KOR-34",
+    "name": "Korba Deep Shaft",
+    "district": "Korba",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Central Coalfields Ltd",
+    "location": "Korba, Chhattisgarh"
+  },
+  {
+    "id": 35,
+    "code": "CG-RAI-35",
+    "name": "Raigarh Underground Mine",
+    "district": "Raigarh",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Central Coalfields Ltd",
+    "location": "Raigarh, Chhattisgarh"
+  },
+  {
+    "id": 36,
+    "code": "CG-SUR-36",
+    "name": "Surguja Coalfield Block",
+    "district": "Surguja",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Surguja, Chhattisgarh"
+  },
+  {
+    "id": 37,
+    "code": "CG-KOR-37",
+    "name": "Koriya Colliery",
+    "district": "Koriya",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Koriya, Chhattisgarh"
+  },
+  {
+    "id": 38,
+    "code": "CG-BIL-38",
+    "name": "Bilaspur Underground Mine",
+    "district": "Bilaspur",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "Coal India Ltd",
+    "location": "Bilaspur, Chhattisgarh"
+  },
+  {
+    "id": 39,
+    "code": "CG-KOR-39",
+    "name": "Korba Deep Shaft",
+    "district": "Korba",
+    "state": "Chhattisgarh",
+    "region": "Central",
+    "operator": "NLC India Ltd",
+    "location": "Korba, Chhattisgarh"
+  },
+  {
+    "id": 40,
+    "code": "WB-RAN-40",
+    "name": "Raniganj Expansion Block",
+    "district": "Raniganj",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Western Coalfields Ltd",
+    "location": "Raniganj, West Bengal"
+  },
+  {
+    "id": 41,
+    "code": "WB-ASA-41",
+    "name": "Asansol Colliery",
+    "district": "Asansol",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Asansol, West Bengal"
+  },
+  {
+    "id": 42,
+    "code": "WB-PUR-42",
+    "name": "Purulia Washery Block",
+    "district": "Purulia",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Purulia, West Bengal"
+  },
+  {
+    "id": 43,
+    "code": "WB-BAR-43",
+    "name": "Bardhaman Opencast Project",
+    "district": "Bardhaman",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Bardhaman, West Bengal"
+  },
+  {
+    "id": 44,
+    "code": "WB-RAN-44",
+    "name": "Raniganj Deep Shaft",
+    "district": "Raniganj",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Raniganj, West Bengal"
+  },
+  {
+    "id": 45,
+    "code": "WB-ASA-45",
+    "name": "Asansol Deep Shaft",
+    "district": "Asansol",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Central Coalfields Ltd",
+    "location": "Asansol, West Bengal"
+  },
+  {
+    "id": 46,
+    "code": "WB-PUR-46",
+    "name": "Purulia Coalfield Block",
+    "district": "Purulia",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Purulia, West Bengal"
+  },
+  {
+    "id": 47,
+    "code": "WB-BAR-47",
+    "name": "Bardhaman Washery Block",
+    "district": "Bardhaman",
+    "state": "West Bengal",
+    "region": "East",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Bardhaman, West Bengal"
+  },
+  {
+    "id": 48,
+    "code": "MP-SIN-48",
+    "name": "Singrauli Expansion Block",
+    "district": "Singrauli",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Central Coalfields Ltd",
+    "location": "Singrauli, Madhya Pradesh"
+  },
+  {
+    "id": 49,
+    "code": "MP-SHA-49",
+    "name": "Shahdol Colliery",
+    "district": "Shahdol",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Eastern Coalfields Ltd",
+    "location": "Shahdol, Madhya Pradesh"
+  },
+  {
+    "id": 50,
+    "code": "MP-UMA-50",
+    "name": "Umaria Underground Mine",
+    "district": "Umaria",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "NLC India Ltd",
+    "location": "Umaria, Madhya Pradesh"
+  },
+  {
+    "id": 51,
+    "code": "MP-ANU-51",
+    "name": "Anuppur Deep Shaft",
+    "district": "Anuppur",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Singareni Collieries Company Ltd",
+    "location": "Anuppur, Madhya Pradesh"
+  },
+  {
+    "id": 52,
+    "code": "MP-BET-52",
+    "name": "Betul Deep Shaft",
+    "district": "Betul",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Central Coalfields Ltd",
+    "location": "Betul, Madhya Pradesh"
+  },
+  {
+    "id": 53,
+    "code": "MP-SIN-53",
+    "name": "Singrauli Colliery",
+    "district": "Singrauli",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Singrauli, Madhya Pradesh"
+  },
+  {
+    "id": 54,
+    "code": "MP-SHA-54",
+    "name": "Shahdol Deep Shaft",
+    "district": "Shahdol",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Shahdol, Madhya Pradesh"
+  },
+  {
+    "id": 55,
+    "code": "MP-UMA-55",
+    "name": "Umaria Colliery",
+    "district": "Umaria",
+    "state": "Madhya Pradesh",
+    "region": "Central",
+    "operator": "Western Coalfields Ltd",
+    "location": "Umaria, Madhya Pradesh"
+  },
+  {
+    "id": 56,
+    "code": "TS-RAM-56",
+    "name": "Ramagundam Coalfield Block",
+    "district": "Ramagundam",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Ramagundam, Telangana"
+  },
+  {
+    "id": 57,
+    "code": "TS-BHA-57",
+    "name": "Bhadradri Underground Mine",
+    "district": "Bhadradri",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Bhadradri, Telangana"
+  },
+  {
+    "id": 58,
+    "code": "TS-MAN-58",
+    "name": "Mancherial Coalfield Block",
+    "district": "Mancherial",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Western Coalfields Ltd",
+    "location": "Mancherial, Telangana"
+  },
+  {
+    "id": 59,
+    "code": "TS-PED-59",
+    "name": "Peddapalli Washery Block",
+    "district": "Peddapalli",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Peddapalli, Telangana"
+  },
+  {
+    "id": 60,
+    "code": "TS-RAM-60",
+    "name": "Ramagundam Expansion Block",
+    "district": "Ramagundam",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Ramagundam, Telangana"
+  },
+  {
+    "id": 61,
+    "code": "TS-BHA-61",
+    "name": "Bhadradri Expansion Block",
+    "district": "Bhadradri",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Mahanadi Coalfields Ltd",
+    "location": "Bhadradri, Telangana"
+  },
+  {
+    "id": 62,
+    "code": "TS-MAN-62",
+    "name": "Mancherial Opencast Project",
+    "district": "Mancherial",
+    "state": "Telangana",
+    "region": "South",
+    "operator": "Singareni Collieries Company Ltd",
+    "location": "Mancherial, Telangana"
+  },
+  {
+    "id": 63,
+    "code": "MH-CHA-63",
+    "name": "Chandrapur Underground Mine",
+    "district": "Chandrapur",
+    "state": "Maharashtra",
+    "region": "West",
+    "operator": "Western Coalfields Ltd",
+    "location": "Chandrapur, Maharashtra"
+  },
+  {
+    "id": 64,
+    "code": "MH-NAG-64",
+    "name": "Nagpur Washery Block",
+    "district": "Nagpur",
+    "state": "Maharashtra",
+    "region": "West",
+    "operator": "Eastern Coalfields Ltd",
+    "location": "Nagpur, Maharashtra"
+  },
+  {
+    "id": 65,
+    "code": "MH-YAV-65",
+    "name": "Yavatmal Underground Mine",
+    "district": "Yavatmal",
+    "state": "Maharashtra",
+    "region": "West",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Yavatmal, Maharashtra"
+  },
+  {
+    "id": 66,
+    "code": "MH-WAR-66",
+    "name": "Wardha Washery Block",
+    "district": "Wardha",
+    "state": "Maharashtra",
+    "region": "West",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Wardha, Maharashtra"
+  },
+  {
+    "id": 67,
+    "code": "MH-CHA-67",
+    "name": "Chandrapur Washery Block",
+    "district": "Chandrapur",
+    "state": "Maharashtra",
+    "region": "West",
+    "operator": "NLC India Ltd",
+    "location": "Chandrapur, Maharashtra"
+  },
+  {
+    "id": 68,
+    "code": "MH-NAG-68",
+    "name": "Nagpur Expansion Block",
+    "district": "Nagpur",
+    "state": "Maharashtra",
+    "region": "West",
+    "operator": "South Eastern Coalfields Ltd",
+    "location": "Nagpur, Maharashtra"
+  },
+  {
+    "id": 69,
+    "code": "AS-TIN-69",
+    "name": "Tinsukia Deep Shaft",
+    "district": "Tinsukia",
+    "state": "Assam",
+    "region": "North East",
+    "operator": "Northern Coalfields Ltd",
+    "location": "Tinsukia, Assam"
+  },
+  {
+    "id": 70,
+    "code": "AS-DIB-70",
+    "name": "Dibrugarh Deep Shaft",
+    "district": "Dibrugarh",
+    "state": "Assam",
+    "region": "North East",
+    "operator": "Coal India Ltd",
+    "location": "Dibrugarh, Assam"
+  },
+  {
+    "id": 71,
+    "code": "AS-TIN-71",
+    "name": "Tinsukia Coalfield Block",
+    "district": "Tinsukia",
+    "state": "Assam",
+    "region": "North East",
+    "operator": "Singareni Collieries Company Ltd",
+    "location": "Tinsukia, Assam"
+  },
+  {
+    "id": 72,
+    "code": "UP-SON-72",
+    "name": "Sonbhadra Colliery",
+    "district": "Sonbhadra",
+    "state": "Uttar Pradesh",
+    "region": "North",
+    "operator": "Singareni Collieries Company Ltd",
+    "location": "Sonbhadra, Uttar Pradesh"
+  },
+  {
+    "id": 73,
+    "code": "UP-SON-73",
+    "name": "Sonbhadra Coalfield Block",
+    "district": "Sonbhadra",
+    "state": "Uttar Pradesh",
+    "region": "North",
+    "operator": "Western Coalfields Ltd",
+    "location": "Sonbhadra, Uttar Pradesh"
+  },
+  {
+    "id": 74,
+    "code": "JK-UDH-74",
+    "name": "Udhampur Underground Mine",
+    "district": "Udhampur",
+    "state": "Jammu and Kashmir",
+    "region": "North",
+    "operator": "Bharat Coking Coal Ltd",
+    "location": "Udhampur, Jammu and Kashmir"
+  }
+]

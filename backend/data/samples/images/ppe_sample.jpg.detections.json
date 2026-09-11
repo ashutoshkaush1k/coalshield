@@ -1,0 +1,42 @@
+[
+  {
+    "label": "person",
+    "confidence": 0.94,
+    "bbox": [
+      100,
+      60,
+      200,
+      340
+    ]
+  },
+  {
+    "label": "Hardhat",
+    "confidence": 0.91,
+    "bbox": [
+      116,
+      78,
+      184,
+      116
+    ]
+  },
+  {
+    "label": "Safety Vest",
+    "confidence": 0.88,
+    "bbox": [
+      115,
+      150,
+      185,
+      260
+    ]
+  },
+  {
+    "label": "person",
+    "confidence": 0.92,
+    "bbox": [
+      300,
+      70,
+      400,
+      350
+    ]
+  }
+]

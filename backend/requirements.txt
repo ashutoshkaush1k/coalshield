@@ -1,0 +1,29 @@
+# --- API ---
+fastapi
+uvicorn[standard]
+python-multipart
+
+# --- Data ---
+sqlalchemy
+pydantic
+pydantic-settings
+email-validator
+
+# --- Auth (PRD 4.2: enforced server-side) ---
+# PyJWT rather than python-jose, and stdlib PBKDF2 rather than passlib/bcrypt: passlib 1.7.x
+# imports the `crypt` module, removed in Python 3.13, and bcrypt needs a native wheel. See the
+# note in app/core/security.py. Production-grade auth is out of scope per the PRD.
+pyjwt
+
+# --- Computer Vision (PRD 4.1: pretrained model, no training) ---
+ultralytics
+opencv-python
+pillow
+numpy
+
+# --- IoT simulation / data prep ---
+pandas
+
+# --- Tests ---
+pytest
+httpx

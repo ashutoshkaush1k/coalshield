@@ -1,0 +1,89 @@
+/* Design tokens - clean light SaaS dashboard.
+   Rules: .claude/skills/frontend-design/SKILL.md */
+
+:root {
+  /* ---- Ground ------------------------------------------------------------
+     Cards separate from the page by tone and a soft shadow, not by heavy rules. */
+  --page: #f7f7f8;
+  --card: #ffffff;
+  --sunk: #f3f4f6;
+  --hover: #f9fafb;
+
+  /* ---- Ink --------------------------------------------------------------- */
+  --ink: #111114;
+  --ink-2: #374151;
+  --muted: #6b7280;
+  --faint: #9ca3af;
+
+  /* ---- Lines -------------------------------------------------------------- */
+  --line: #e5e7eb;
+  --line-soft: #f0f1f3;
+
+  /* ---- Risk: semantic and reserved ---------------------------------------
+     Bands mirror services/compliance/risk.py. Each has a dot, a text colour and a
+     pale pill tint - never a saturated block fill, and never colour without a label. */
+  --risk-low: #059669;
+  --risk-low-dot: #10b981;
+  --risk-low-bg: #ecfdf5;
+
+  --risk-medium: #b45309;
+  --risk-medium-dot: #f59e0b;
+  --risk-medium-bg: #fffbeb;
+
+  --risk-high: #dc2626;
+  --risk-high-dot: #ef4444;
+  --risk-high-bg: #fef2f2;
+
+  /* ---- Accent ------------------------------------------------------------- */
+  --accent: #111114;
+  --accent-hover: #2a2a30;
+  --accent-soft: #eef2ff;
+  --accent-ink: #4338ca;
+
+  /* ---- Data series --------------------------------------------------------
+     Chart line colours: an identity, not a judgement. Only threshold lines and
+     breach markers carry risk colour, because only they mean something is wrong. */
+  --sensor-gas: #6366f1;
+  --sensor-dust: #0ea5e9;
+  --sensor-temperature: #f97316;
+  --chart-grid: #eef0f3;
+  --chart-axis: #9ca3af;
+
+  /* ---- Type --------------------------------------------------------------- */
+  --font: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+
+  --text-hero: 44px;
+  --text-display: 30px;
+  --text-xl: 20px;
+  --text-lg: 16px;
+  --text-md: 14px;
+  --text-sm: 13px;
+  --text-xs: 12px;
+
+  --tracking-tight: -.022em;
+
+  /* ---- Spacing: 4px base --------------------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* ---- Shape and elevation ------------------------------------------------- */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(17, 17, 20, .04);
+  --shadow: 0 1px 3px rgba(17, 17, 20, .06);
+  --shadow-md: 0 4px 12px rgba(17, 17, 20, .08);
+  --shadow-lg: 0 16px 48px rgba(17, 17, 20, .14);
+
+  --panel-pad: var(--space-5);
+  --z-overlay: 100;
+}

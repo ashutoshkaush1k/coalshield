@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Env + secrets
+.env
+*.env
+!.env.example
+
+# Database
+*.db
+*.sqlite3
+
+# Model weights (fetched, not committed - see backend/ml/README.md)
+backend/ml/weights/*
+!backend/ml/weights/.gitkeep
+
+# Runtime artefacts
+backend/data/uploads/*
+!backend/data/uploads/.gitkeep
+backend/storage/annotated/*
+!backend/storage/annotated/.gitkeep
+
+# Large demo media (keep one small sample if needed)
+backend/data/samples/videos/*.mp4
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

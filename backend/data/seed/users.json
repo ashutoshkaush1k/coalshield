@@ -1,0 +1,527 @@
+[
+  {
+    "email": "gov@dgms.gov.in",
+    "password": "demo123",
+    "full_name": "DGMS Compliance Authority",
+    "role": "GOVERNMENT",
+    "mine_id": null
+  },
+  {
+    "email": "head.jh-dhn-01@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Jharia Coalfield Block A",
+    "role": "MINE_HEAD",
+    "mine_id": 1
+  },
+  {
+    "email": "head.mp-sgr-02@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Singrauli Opencast Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 2
+  },
+  {
+    "email": "head.cg-krb-03@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Korba Gevra Expansion",
+    "role": "MINE_HEAD",
+    "mine_id": 3
+  },
+  {
+    "email": "head.wb-rng-04@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Raniganj Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 4
+  },
+  {
+    "email": "head.od-tlc-05@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Talcher Underground Unit 2",
+    "role": "MINE_HEAD",
+    "mine_id": 5
+  },
+  {
+    "email": "head.jh-dha-06@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Dhanbad Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 6
+  },
+  {
+    "email": "head.jh-bok-07@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bokaro Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 7
+  },
+  {
+    "email": "head.jh-ram-08@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Ramgarh Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 8
+  },
+  {
+    "email": "head.jh-cha-09@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Chatra Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 9
+  },
+  {
+    "email": "head.jh-lat-10@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Latehar Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 10
+  },
+  {
+    "email": "head.jh-god-11@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Godda Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 11
+  },
+  {
+    "email": "head.jh-haz-12@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Hazaribagh Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 12
+  },
+  {
+    "email": "head.jh-dha-13@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Dhanbad Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 13
+  },
+  {
+    "email": "head.jh-bok-14@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bokaro Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 14
+  },
+  {
+    "email": "head.jh-ram-15@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Ramgarh Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 15
+  },
+  {
+    "email": "head.jh-cha-16@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Chatra Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 16
+  },
+  {
+    "email": "head.jh-lat-17@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Latehar Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 17
+  },
+  {
+    "email": "head.od-ang-18@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Angul Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 18
+  },
+  {
+    "email": "head.od-jha-19@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Jharsuguda Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 19
+  },
+  {
+    "email": "head.od-sun-20@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Sundargarh Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 20
+  },
+  {
+    "email": "head.od-sam-21@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Sambalpur Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 21
+  },
+  {
+    "email": "head.od-dhe-22@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Dhenkanal Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 22
+  },
+  {
+    "email": "head.od-ang-23@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Angul Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 23
+  },
+  {
+    "email": "head.od-jha-24@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Jharsuguda Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 24
+  },
+  {
+    "email": "head.od-sun-25@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Sundargarh Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 25
+  },
+  {
+    "email": "head.od-sam-26@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Sambalpur Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 26
+  },
+  {
+    "email": "head.od-dhe-27@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Dhenkanal Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 27
+  },
+  {
+    "email": "head.od-ang-28@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Angul Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 28
+  },
+  {
+    "email": "head.cg-kor-29@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Korba Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 29
+  },
+  {
+    "email": "head.cg-rai-30@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Raigarh Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 30
+  },
+  {
+    "email": "head.cg-sur-31@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Surguja Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 31
+  },
+  {
+    "email": "head.cg-kor-32@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Koriya Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 32
+  },
+  {
+    "email": "head.cg-bil-33@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bilaspur Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 33
+  },
+  {
+    "email": "head.cg-kor-34@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Korba Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 34
+  },
+  {
+    "email": "head.cg-rai-35@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Raigarh Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 35
+  },
+  {
+    "email": "head.cg-sur-36@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Surguja Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 36
+  },
+  {
+    "email": "head.cg-kor-37@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Koriya Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 37
+  },
+  {
+    "email": "head.cg-bil-38@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bilaspur Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 38
+  },
+  {
+    "email": "head.cg-kor-39@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Korba Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 39
+  },
+  {
+    "email": "head.wb-ran-40@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Raniganj Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 40
+  },
+  {
+    "email": "head.wb-asa-41@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Asansol Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 41
+  },
+  {
+    "email": "head.wb-pur-42@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Purulia Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 42
+  },
+  {
+    "email": "head.wb-bar-43@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bardhaman Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 43
+  },
+  {
+    "email": "head.wb-ran-44@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Raniganj Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 44
+  },
+  {
+    "email": "head.wb-asa-45@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Asansol Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 45
+  },
+  {
+    "email": "head.wb-pur-46@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Purulia Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 46
+  },
+  {
+    "email": "head.wb-bar-47@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bardhaman Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 47
+  },
+  {
+    "email": "head.mp-sin-48@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Singrauli Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 48
+  },
+  {
+    "email": "head.mp-sha-49@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Shahdol Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 49
+  },
+  {
+    "email": "head.mp-uma-50@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Umaria Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 50
+  },
+  {
+    "email": "head.mp-anu-51@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Anuppur Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 51
+  },
+  {
+    "email": "head.mp-bet-52@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Betul Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 52
+  },
+  {
+    "email": "head.mp-sin-53@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Singrauli Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 53
+  },
+  {
+    "email": "head.mp-sha-54@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Shahdol Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 54
+  },
+  {
+    "email": "head.mp-uma-55@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Umaria Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 55
+  },
+  {
+    "email": "head.ts-ram-56@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Ramagundam Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 56
+  },
+  {
+    "email": "head.ts-bha-57@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bhadradri Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 57
+  },
+  {
+    "email": "head.ts-man-58@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Mancherial Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 58
+  },
+  {
+    "email": "head.ts-ped-59@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Peddapalli Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 59
+  },
+  {
+    "email": "head.ts-ram-60@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Ramagundam Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 60
+  },
+  {
+    "email": "head.ts-bha-61@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Bhadradri Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 61
+  },
+  {
+    "email": "head.ts-man-62@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Mancherial Opencast Project",
+    "role": "MINE_HEAD",
+    "mine_id": 62
+  },
+  {
+    "email": "head.mh-cha-63@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Chandrapur Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 63
+  },
+  {
+    "email": "head.mh-nag-64@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Nagpur Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 64
+  },
+  {
+    "email": "head.mh-yav-65@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Yavatmal Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 65
+  },
+  {
+    "email": "head.mh-war-66@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Wardha Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 66
+  },
+  {
+    "email": "head.mh-cha-67@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Chandrapur Washery Block",
+    "role": "MINE_HEAD",
+    "mine_id": 67
+  },
+  {
+    "email": "head.mh-nag-68@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Nagpur Expansion Block",
+    "role": "MINE_HEAD",
+    "mine_id": 68
+  },
+  {
+    "email": "head.as-tin-69@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Tinsukia Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 69
+  },
+  {
+    "email": "head.as-dib-70@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Dibrugarh Deep Shaft",
+    "role": "MINE_HEAD",
+    "mine_id": 70
+  },
+  {
+    "email": "head.as-tin-71@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Tinsukia Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 71
+  },
+  {
+    "email": "head.up-son-72@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Sonbhadra Colliery",
+    "role": "MINE_HEAD",
+    "mine_id": 72
+  },
+  {
+    "email": "head.up-son-73@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Sonbhadra Coalfield Block",
+    "role": "MINE_HEAD",
+    "mine_id": 73
+  },
+  {
+    "email": "head.jk-udh-74@coalmine.in",
+    "password": "demo123",
+    "full_name": "Mine Head - Udhampur Underground Mine",
+    "role": "MINE_HEAD",
+    "mine_id": 74
+  }
+]
