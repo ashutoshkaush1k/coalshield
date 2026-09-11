@@ -116,7 +116,16 @@ for a single-mine drill-down.
 
 \- \[ ] Raise Alert backend confirmed — status:
 
-\- \[ ] Chart-ready incremental data shape — status:
+\- \[x] Chart-ready incremental data shape — status: DONE, implemented exactly as the contract above.
+  GET /api/v1/sensors/{mine_id}/live and GET /api/v1/sensors/live are live. Verified on the real
+  seeded DB + simulator process: mine 1 opening window = 14 complete ticks, oldest->newest; idle
+  poll with cursor = `readings: []` (~215 bytes); after one simulator tick the mine poll returns
+  exactly 1 new tick and the fleet poll returns 74 rows (one per mine, same timestamp); re-polling
+  with the new cursor returns nothing (no duplicates); a stale cursor returns reset=true.
+  anomaly_score / is_anomaly / anomaly_threshold are null until the model lands (next item).
+  UTC fix shipped: recorded_at on /sensors, /sensors/{id} and /sensors/{id}/trend now ends in "Z"
+  (e.g. "2026-09-11T15:04:34.475012Z"), so mixing /trend history with /live appends lines up.
+  Tests: backend/tests/test_live_feed.py (21). Full suite 234 passed.
 
 
 
@@ -138,7 +147,6 @@ for a single-mine drill-down.
 
 (post here, tag who it's for)
 
-\- \[Agent 1 -> Agent 2] FYI, not a blocker: the data contract above is final, so you're unblocked.
-  Until the /live endpoints are pushed they will 404/422 - mock the documented shape until the
-  Agent 1 log shows "Chart-ready incremental data shape: DONE".
+\- \[Agent 1 -> Agent 2] RESOLVED: the /live endpoints are implemented (see Agent 1 log). Pull, then
+  restart your backend (uvicorn --reload picks up the changes on its own).
 

@@ -4,14 +4,25 @@ from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import select
 
 from app.api.deps import DbSession, RequireGovernment, Scope
+from app.models.mine import Mine
 from app.models.sensor_reading import SensorReading
 from app.schemas.breach_bucket import BreachBucketOut, BreachBucketsOut
 from app.schemas.fleet_sensor import FleetSensorOut, MineSensorStandingOut, SensorStandingOut
-from app.schemas.sensor import SensorReadingOut, SensorSeries, SensorTrendOut
+from app.schemas.sensor import (
+    FleetLiveFeedOut,
+    FleetLiveReadingOut,
+    LiveReadingOut,
+    MineLiveFeedOut,
+    SensorReadingOut,
+    SensorSeries,
+    SensorTrendOut,
+)
 from app.api.v1.endpoints.mines import visible_mines
 from app.services.iot.fleet_status import BUCKET_HOURS, breach_buckets, fleet_sensor_standing
+from app.services.iot.live_feed import Tick, fetch_ticks
 from app.services.access.scope import MineAccessDenied
 from app.services.iot.thresholds import SensorType
+from app.utils.datetimes import to_epoch_ms
 
 router = APIRouter(prefix="/sensors", tags=["sensors"])
 
@@ -21,6 +32,26 @@ def _require(scope, mine_id: int) -> int:
         return scope.require(mine_id)
     except MineAccessDenied as exc:
         raise HTTPException(status.HTTP_403_FORBIDDEN, str(exc)) from exc
+
+
+def _feed_envelope(page) -> dict:
+    return {
+        "cursor": page.cursor,
+        "reset": page.reset,
+        "thresholds": {s.value: s.limit for s in SensorType},
+        "units": {s.value: s.unit for s in SensorType},
+    }
+
+
+def _tick_fields(tick: Tick) -> dict:
+    return {
+        "timestamp": tick.timestamp,
+        "timestamp_ms": to_epoch_ms(tick.timestamp),
+        **{s.value: tick.value(s.value) for s in SensorType},
+        "breached": tick.breached,
+        "anomaly_score": tick.anomaly_score,
+        "is_anomaly": tick.is_anomaly,
+    }
 
 
 @router.get("", response_model=FleetSensorOut)
@@ -88,6 +119,61 @@ def fleet_breach_buckets(
         bucket_hours=BUCKET_HOURS,
         mine_count=len(ids),
         buckets=[BreachBucketOut(**b) for b in breach_buckets(db, ids)],
+    )
+
+
+# Declared before /{mine_id}: FastAPI matches routes in order, and "live" would otherwise be
+# taken for a mine id and rejected as a 422.
+@router.get("/live", response_model=FleetLiveFeedOut)
+def fleet_live_feed(
+    db: DbSession,
+    scope: Scope,
+    user: RequireGovernment,
+    after: int | None = Query(default=None, ge=0, description="`cursor` from the previous poll"),
+    limit: int = Query(default=10, ge=1, le=100, description="Newest ticks per mine"),
+    state: str | None = Query(default=None, description="Narrow to one state"),
+) -> FleetLiveFeedOut:
+    """New sensor ticks across every mine since the caller's cursor - append, don't redraw.
+
+    Government-only for the same reason as the fleet standing: a cross-mine feed would
+    show a Mine Head other mines' conditions.
+    """
+    mines = {m.id: m for m in visible_mines(db, scope, state)}
+    page = fetch_ticks(db, list(mines), after=after, limit=limit)
+    readings = [
+        FleetLiveReadingOut(
+            mine_id=mine_id, code=mines[mine_id].code, name=mines[mine_id].name,
+            **_tick_fields(tick),
+        )
+        for mine_id, ticks in page.ticks.items()
+        for tick in ticks
+    ]
+    readings.sort(key=lambda r: (r.timestamp_ms, r.mine_id))
+    return FleetLiveFeedOut(**_feed_envelope(page), readings=readings)
+
+
+@router.get("/{mine_id}/live", response_model=MineLiveFeedOut)
+def mine_live_feed(
+    mine_id: int,
+    db: DbSession,
+    scope: Scope,
+    after: int | None = Query(default=None, ge=0, description="`cursor` from the previous poll"),
+    limit: int = Query(default=40, ge=1, le=500, description="Newest ticks to return"),
+) -> MineLiveFeedOut:
+    """New sensor ticks for one mine since the caller's cursor - append, don't redraw.
+
+    Without `after` this is the opening window (the newest `limit` ticks). With it, only
+    ticks written since, usually none or one.
+    """
+    _require(scope, mine_id)
+    if db.get(Mine, mine_id) is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"Mine {mine_id} not found")
+
+    page = fetch_ticks(db, [mine_id], after=after, limit=limit)
+    return MineLiveFeedOut(
+        **_feed_envelope(page),
+        mine_id=mine_id,
+        readings=[LiveReadingOut(**_tick_fields(t)) for t in page.ticks.get(mine_id, [])],
     )
 
 

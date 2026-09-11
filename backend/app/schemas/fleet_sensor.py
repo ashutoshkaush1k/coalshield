@@ -1,8 +1,8 @@
 """Fleet-wide current sensor standing (Government risk view)."""
 
-from datetime import datetime
-
 from pydantic import BaseModel
+
+from app.utils.datetimes import UTCDateTime
 
 
 class SensorStandingOut(BaseModel):
@@ -10,7 +10,7 @@ class SensorStandingOut(BaseModel):
     unit: str
     threshold: float
     value: float | None
-    recorded_at: datetime | None
+    recorded_at: UTCDateTime | None
     breached: bool
     margin: float
     severity: str
