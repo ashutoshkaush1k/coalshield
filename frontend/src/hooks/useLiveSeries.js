@@ -30,14 +30,21 @@ const keyOf = (p) => (p.id != null ? `id:${p.id}` : `t:${p.recorded_at}:${p.valu
  * @param points   `series.points` straight off the API, oldest first.
  * @param resetKey changing this throws the history away - switching mine or sensor must not
  *                 splice one site's readings onto another's.
- * @returns rows of `{ ts, value, breached }`, oldest first, referentially stable between polls
- *          that bring no new readings.
+ * @returns rows of `{ x, ts, value, breached }`, oldest first, referentially stable between
+ *          polls that bring no new readings.
+ *
+ * `x` is a sequence number, not a timestamp, and that is deliberate. Readings do not arrive on
+ * a regular cadence: the seeded history is hours apart while the live simulator ticks every few
+ * seconds, so plotting against real time collapses every live reading into one pixel at the
+ * right edge and hands the width to gaps where nothing happened. Sequence spaces readings
+ * evenly - the axis still carries their real clock times as labels - and, being numeric rather
+ * than categorical, it gives the window a continuous domain to slide along.
  */
 export function useLiveSeries(points, { window: windowSize = DEFAULT_WINDOW, resetKey = null } = {}) {
   const store = useRef(null);
 
   if (store.current === null || store.current.resetKey !== resetKey) {
-    store.current = { resetKey, ledger: new Map(), rows: [] };
+    store.current = { resetKey, ledger: new Map(), rows: [], next: 0 };
   }
   const s = store.current;
 
@@ -50,12 +57,16 @@ export function useLiveSeries(points, { window: windowSize = DEFAULT_WINDOW, res
     if (s.ledger.has(key)) continue;
     const ts = new Date(p.recorded_at).getTime();
     if (Number.isNaN(ts)) continue;
-    s.ledger.set(key, { key, ts, value: p.value, breached: p.breached });
+    // Stamped once, on arrival, and never recomputed - so trimming the window or rebuilding
+    // the ledger cannot renumber points underneath the chart and jolt it sideways.
+    s.ledger.set(key, { key, x: s.next++, ts, value: p.value, breached: p.breached });
     added = true;
   }
 
   if (added) {
-    const all = [...s.ledger.values()].sort((a, b) => a.ts - b.ts);
+    // Sorted by arrival sequence rather than timestamp, so the series is monotonic in x by
+    // construction and the line can never double back on itself.
+    const all = [...s.ledger.values()].sort((a, b) => a.x - b.x);
     s.rows = all.length > windowSize ? all.slice(all.length - windowSize) : all;
 
     if (s.ledger.size > LEDGER_LIMIT) {
