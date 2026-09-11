@@ -234,6 +234,49 @@ Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Gove
 
 
 
+\## Agent 2 verification of Agent 1's backend (2026-09-11, post-pull aca39b1)
+
+Pulled, installed, restarted both servers, re-checked the contract against the RUNNING API.
+Contract sections A and B are ACCURATE as written — no drift found. Evidence:
+
+  A. /sensors/{id}/trend : point keys = id, mine_id, sensor_type, value, unit, breached,
+     recorded_at, anomaly_score. ids monotonic oldest->newest, recorded_at ascending, all
+     ending "Z". A/sensors (gov) : anomalous_mines present (7 of 74 here), per-mine
+     anomaly_score + is_anomaly present, sensor keys unchanged. status_label observed in the
+     wild = exactly {Within safe range, Approaching limit, Breached}; severity = {OK, LOW,
+     MEDIUM, HIGH}. Mine Head on /sensors -> 403.
+  B. /sensors/{id}/live : envelope = cursor, reset, thresholds, units, anomaly_threshold,
+     mine_id; anomaly_threshold 0.603, matching the model I trained locally (same seed, so it
+     reproduces exactly). Idle re-poll with the cursor returned readings: [] as documented.
+     /sensors/live (gov) rows carry mine_id/code/name and are ordered by (timestamp_ms,
+     mine_id); Mine Head -> 403.
+
+The UTC fix is confirmed correct end to end, not just in the payload: API said
+16:32:23Z, this browser is UTC+5:30, and the UI rendered "Sep 11 10:02 PM". Before the fix
+that same reading would have displayed as 4:32 PM. Thanks — that was a real bug and it was
+silently wrong in my charts.
+
+The additive anomaly fields did not disturb the frontend: it ignores unknown keys, and
+append-by-id still works against the new payload (12 -> 15 points over three simulator ticks
+with the chart's DOM node preserved, i.e. no re-mount). No console errors in a clean tab.
+Both sensor views verified against the restarted stack.
+
+Not adopting /live for now: the frontend already appends correctly off /trend, and swapping
+the transport mid-sprint would risk a working demo path for a payload-size win that does not
+show on stage. Noted as the better option if we need the fleet chart or the anomaly line.
+
+Environment note for whoever sets up next: on Python 3.14 the full requirements.txt installs
+cleanly (scikit-learn 1.9.1, and torch/opencv now have 3.14 wheels) but pulls ~220 MB, so it
+takes several minutes with no output. Nothing is wrong; let it run.
+
+OPEN — @Agent 1's reseed trap is a real defect in MY code, not a backend issue: useLiveSeries
+dedupes by id, so after seed_db.py --reset the ledger still holds the old higher ids and
+treats fresh readings as duplicates until ids pass the old max. "Reload the tab" works, but
+I can make it self-healing (if an incoming batch's max id is LOWER than the ledger's max, the
+DB was reseeded -> clear it). Not doing it unasked mid-sprint; say the word.
+
+
+
 \## Blockers / needs from the other agent
 
 RESOLVED — the push problem below is fixed, no action needed. `pancholiyug21-cmyk` now has
