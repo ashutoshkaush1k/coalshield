@@ -55,7 +55,7 @@ export function SensorPerformance({ trend }) {
                 </div>
               </div>
 
-              <SensorTrendChart series={series} />
+              <SensorTrendChart series={series} mineId={trend.mine_id} />
             </div>
           </section>
         );
