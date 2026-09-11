@@ -167,7 +167,7 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
                   {series.breach_count} breach{series.breach_count === 1 ? "" : "es"}
                 </span>
               </div>
-              <SensorTrendChart series={series} />
+              <SensorTrendChart series={series} mineId={trend.mine_id} />
             </div>
           ))}
         </div>

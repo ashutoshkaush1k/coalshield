@@ -18,16 +18,56 @@
 
 \## Agreed data contract (fill in once decided, both agents must follow exactly)
 
-Sensor reading shape: see "Live sensor feed v1" below. Decided by Agent 1, 2026-09-11.
-The SHAPE IS FINAL - build against it now. Backend implementation lands in the next pushes
-(status in the Agent 1 log). Field names below are exact.
+A. EXISTING ENDPOINTS - what the frontend is built on. CONFIRMED by Agent 1 (see notes below).
+
+Sensor reading shape (Agent 2 read this off the live backend schemas -- Agent 1 please
+confirm or correct; frontend is built against exactly this):
+
+GET /sensors/{mine_id}/trend?points=N  -> SensorTrendOut
+  { mine_id, series: [ {
+      sensor_type: "gas"|"dust"|"temperature",
+      unit, threshold, breach_count,
+      points: [ { id, mine_id, sensor_type, value, unit, breached, recorded_at } ]  // oldest -> newest
+  } ] }
+
+GET /sensors  (Government only, 403 for Mine Head)  -> FleetSensorOut
+  { mine_count, breaching_mines, mines: [ {
+      mine_id, code, name, location, worst_severity, breaching_now, total_open_breaches,
+      sensors: [ { sensor_type, unit, threshold, value, recorded_at, breached,
+                   margin, severity, status_label, open_breaches } ]
+  } ] }
+
+Two things the charts depend on, please keep them stable:
+  1. points[].id is stable and monotonic per reading. The trend charts now APPEND by id
+     instead of replacing the dataset each poll, so a changing/absent id would break the
+     smooth scroll and make the chart flash again.
+  2. points[] stays sorted oldest -> newest, and recorded_at is ISO-8601.
+  severity is one of HIGH|MEDIUM|LOW|OK; status_label is one of
+  "Breached" | "Approaching limit" | "Within safe range" (the Mine Head view mirrors these
+  words exactly, so changing the strings changes the operator-facing copy).
+
+Agent 1 confirmation (2026-09-11) - everything above holds, with these notes:
+  - id = sensor_readings primary key. Assigned once at insert, never rewritten, strictly
+    increasing. Only `scripts/seed_db.py --reset` restarts it (see Blockers: reload the tab).
+  - Order oldest -> newest and the severity / status_label strings are unchanged. Backend
+    won't change those strings without posting here first.
+  - ONE FORMAT CHANGE: recorded_at is still ISO-8601 but now ends in "Z" (explicit UTC), e.g.
+    "2026-09-11T15:04:34.475012Z". It was naive UTC before, which `new Date()` read as local
+    time, so every label in IST was 5h30m behind. useLiveSeries' `new Date(p.recorded_at)` is
+    now correct as written. Labels move to true local time, and sequence-based x is unaffected.
+  - ADDITIVE fields (nothing removed or renamed), from the sensor anomaly model:
+      trend points[] and GET /sensors/{id} rows : "anomaly_score": float|null
+      GET /sensors                               : top-level "anomalous_mines": int,
+                                                   per mine "anomaly_score", "is_anomaly"
+
+B. LIVE SENSOR FEED v1 - OPTIONAL, additive (Agent 1). Built before Agent 1 could see section A
+   (Agent 1's pushes were blocked). The frontend as built (trend + dedupe by id) is correct and
+   needs NO change. /live is there if you want smaller polls (idle poll ~215 bytes vs a full
+   40-point window) or one row per tick with the anomaly score for a chart.
 
 ```
-LIVE SENSOR FEED v1 - incremental, append-only
-==============================================
 One "reading" = one tick = gas + dust + temperature for ONE mine at ONE moment.
-Timestamps are UTC. `timestamp` = ISO-8601 ending in "Z". `timestamp_ms` = epoch millis
-(use timestamp_ms for chart x-axes - no parsing, no timezone surprises).
+Timestamps are UTC. `timestamp` = ISO-8601 ending in "Z". `timestamp_ms` = epoch millis.
 
 --- Per-mine feed ---------------------------------------------------------------
 GET /api/v1/sensors/{mine_id}/live?after=<cursor>&limit=<N>
@@ -44,7 +84,7 @@ GET /api/v1/sensors/{mine_id}/live?after=<cursor>&limit=<N>
                                //   (database was reseeded; old points are gone)
   "thresholds": {"gas": 50.0, "dust": 10.0, "temperature": 45.0},
   "units":      {"gas": "ppm", "dust": "mg/m3", "temperature": "C"},
-  "anomaly_threshold": 0.55,   // example value - READ IT from the response, don't hardcode
+  "anomaly_threshold": 0.603,  // READ IT from the response, don't hardcode
   "readings": [                // oldest -> newest. [] when nothing new since `after`
     {
       "timestamp": "2026-09-11T10:15:02.123456Z",
@@ -74,20 +114,10 @@ GET /api/v1/sensors/live?after=<cursor>&limit=<N>&state=<State>
 2. Every poll: ?after=<cursor>. reset=false -> append (often []). reset=true -> replace.
    Store the new `cursor` either way.
 3. Trim the buffer client-side to your window. The server never re-sends old ticks.
-Simulator ticks every 6s by default (every 1-2s in rehearsal), so the existing
-usePolling cadence is fine.
-
---- Additive fields on EXISTING endpoints (nothing removed or renamed) ---------------
-GET /api/v1/sensors                  top-level "anomalous_mines": int
-                                     per mine  "anomaly_score": float|null,
-                                               "is_anomaly": bool|null   (latest tick)
-GET /api/v1/sensors/{mine_id}        every reading gains "anomaly_score": float|null
-GET /api/v1/sensors/{mine_id}/trend  every point gains   "anomaly_score": float|null
 ```
 
-Role framing: Mine Head "performance" = /sensors/{own_id}/live (+ existing /trend).
-Government "risk" = /sensors (table) + /sensors/live (fleet chart) + /sensors/{any_id}/live
-for a single-mine drill-down.
+Role framing: Mine Head "performance" = /sensors/{own_id}/trend (or /live). Government "risk" =
+/sensors (table) + optionally /sensors/live (fleet chart) and /sensors/{any_id}/live (drill-down).
 
 
 
@@ -107,61 +137,123 @@ for a single-mine drill-down.
   GET /sensors/1 and /sensors/1/trend show the new rows; Gov /dashboard total_breaches 322->359
   and Mine Head /dashboard 4->5, both exactly what the CSV predicts; Mine Head still 403 on
   /sensors. No cache anywhere - each poll reads the DB. Regression tests: backend/tests/test_live_feed.py.
-  HEADS-UP for Agent 2: existing endpoints send recorded_at as naive UTC ("2026-09-11T14:58:35.708274",
-  no Z). `new Date()` reads that as LOCAL time, so charts in IST are 5h30m behind today. I'm fixing
-  it server-side for the sensor endpoints in the task-3 push (they'll end in "Z"). Your
-  fmtTime/new Date() code will then be correct with no change. Don't add a +5:30 workaround.
 
 \- \[x] Sensor anomaly model trained — status: DONE. IsolationForest (200 trees, contamination 0.05,
   random_state 26024) trained on the 888 seeded ticks by scripts/train_sensor_model.py, saved to
   backend/ml/weights/sensor_anomaly.joblib (gitignored like ppe.pt; if it's missing the API fits the
   identical model in memory from the seed CSV, so you get the same scores without running anything).
-  Threshold = 0.603. All contract fields now populated: /live readings anomaly_score + is_anomaly,
-  envelope anomaly_threshold; /sensors per-mine anomaly_score + is_anomaly and top-level
-  anomalous_mines (2 of 74 at the seed baseline); /sensors/{id} and /trend rows anomaly_score
-  (all three sensor rows of a tick share one score). Strictly additive: breached flags, alerts,
-  compliance scores and the fleet sort order are untouched (tests prove it). Typical values:
-  ordinary tick ~0.42, every sensor just under its limit ~0.54, 3-sensor breach ~0.72.
+  Threshold = 0.603. Fields populated: /live readings anomaly_score + is_anomaly, envelope
+  anomaly_threshold; /sensors per-mine anomaly_score + is_anomaly and top-level anomalous_mines
+  (2 of 74 at the seed baseline); /sensors/{id} and /trend rows anomaly_score (all three sensor
+  rows of a tick share one score). Strictly additive: breached flags, alerts, compliance scores and
+  the fleet sort order are untouched (tests prove it). Typical values: ordinary tick ~0.42, every
+  sensor just under its limit ~0.54, 3-sensor breach ~0.72.
   Honest limit: on this synthetic data every flagged tick is also a threshold breach. Read it as
   "how extreme is this tick", not "found something the thresholds missed". Plotting the score as a
-  line against anomaly_threshold still gives a graded early signal before limits are hit.
+  line against anomaly_threshold still gives a graded signal before limits are hit.
   ACTION for Agent 2: `pip install -r backend/requirements.txt` (adds scikit-learn). Without it
   the anomaly fields are null and everything else works. Tests: backend/tests/test_sensor_anomaly.py
   (17). Full suite 251 passed.
 
 \- \[ ] Raise Alert backend confirmed — status:
 
-\- \[x] Chart-ready incremental data shape — status: DONE, implemented exactly as the contract above.
-  GET /api/v1/sensors/{mine_id}/live and GET /api/v1/sensors/live are live. Verified on the real
-  seeded DB + simulator process: mine 1 opening window = 14 complete ticks, oldest->newest; idle
-  poll with cursor = `readings: []` (~215 bytes); after one simulator tick the mine poll returns
-  exactly 1 new tick and the fleet poll returns 74 rows (one per mine, same timestamp); re-polling
-  with the new cursor returns nothing (no duplicates); a stale cursor returns reset=true.
-  anomaly_score / is_anomaly / anomaly_threshold are null until the model lands (next item).
-  UTC fix shipped: recorded_at on /sensors, /sensors/{id} and /sensors/{id}/trend now ends in "Z"
-  (e.g. "2026-09-11T15:04:34.475012Z"), so mixing /trend history with /live appends lines up.
-  Tests: backend/tests/test_live_feed.py (21). Full suite 234 passed.
+\- \[x] Chart-ready incremental data shape — status: DONE. Two routes to append-only charts, both
+  supported: (1) Agent 2's existing approach, /trend + dedupe by points[].id, confirmed in contract
+  section A (id is the DB primary key, stable and monotonic); (2) the optional /live feeds in
+  section B. /live verified on the real seeded DB + simulator process: mine 1 opening window = 14
+  complete ticks, oldest->newest; idle poll with cursor = `readings: []` (~215 bytes); after one
+  simulator tick the mine poll returns exactly 1 new tick and the fleet poll returns 74 rows (one
+  per mine, same timestamp); re-polling with the new cursor returns nothing (no duplicates); a
+  stale cursor returns reset=true. UTC fix shipped on every sensor endpoint (see section A).
+  Tests: backend/tests/test_live_feed.py (21).
 
 
 
 \## Agent 2 log
 
-\- \[ ] Mine Head sensor view (performance) — status:
+\- \[x] Mine Head sensor view (performance) — status: DONE, verified against the running
+  stack. /minehead Sensors tab: per-sensor current reading, safe limit, breaches in window,
+  and the plain-language status (Within safe range / Approaching limit / Breached) mirroring
+  SensorStanding.status_label word for word. Reads GET /sensors/{mine_id}/trend.
 
-\- \[ ] Government sensor view (risk) — status:
+\- \[x] Government sensor view (risk) — status: DONE, verified against the running stack.
+  /gov Sensors tab: cross-mine table off GET /sensors, sortable by breach severity / breach
+  history / mine name, filterable to breaching-now or to one breaching sensor, with the
+  "N of M mines breaching right now" read-out. Confirmed live: 74 rows, filter to breaching
+  gave exactly the 20 the summary claimed, sort by name reordered correctly.
 
-\- \[ ] Live polling confirmed, no manual refresh — status:
+\- \[x] Live polling confirmed, no manual refresh — status: DONE, both views, measured not
+  assumed. Ran the simulator against the live stack and watched the DOM with no reload and no
+  click: Government went 20 -> 18 mines breaching and the table re-sorted to a different mine
+  at the top; Mine Head appended the new readings to all three charts. Both use the existing
+  usePolling hook (5s + refetch on tab focus), no new update mechanism.
 
-\- \[ ] Flag for Inspection button confirmed — status:
+\- \[x] Flag for Inspection button confirmed — status: DONE, exercised against the live
+  backend. Government -> mine drill-down -> "Flag for inspection". One click, no form: only
+  the mine id is sent and the backend composes the message from the mine's current state.
+  Four independent confirmation signals, all observed: the button locks to "Flagged v" and
+  disables; a "Directive raised" toast quotes the composed message; the alert count moved
+  62 -> 63; and "0 open directives" became "1 open directive" with a new From DGMS / Open
+  row at the top of the list. The alert list is re-fetched, so that last one proves the
+  record actually persisted rather than the button just toggling.
 
-\- \[ ] Real-time animated charts — status:
+\- \[x] Real-time animated charts — status: DONE, verified against the running stack.
+  Charts now APPEND rather than being replaced wholesale each poll. New hook
+  frontend/src/hooks/useLiveSeries.js accumulates readings keyed by points[].id and returns
+  the SAME array reference when a poll brings nothing new, so React skips the chart
+  re-render entirely. The x axis is numeric rather than categorical, which is what gives
+  the window a continuous domain to slide along: useSlidingDomain eases it toward the
+  newest reading, so the viewport scrolls under a path that is never itself re-animated.
+  The Line keeps isAnimationActive={false} deliberately — Recharts' line animation is an
+  ENTRY transition and re-runs from scratch on every data change, which is precisely the
+  flashing being removed. Y axis is pinned to a rounded ceiling so a steady sensor stops
+  looking volatile.
+
+  Points are positioned by ARRIVAL SEQUENCE, not by timestamp. I tried wall-clock first and
+  it read terribly: the seeded history is hours apart while the simulator ticks every few
+  seconds, so every live reading collapsed into one pixel at the right edge. Sequence
+  spaces readings evenly as the old axis did; the ticks still carry real clock times, and
+  they gain seconds only when the visible window genuinely holds two readings in the same
+  minute. This also fixes a latent bug in the old category axis, which keyed points by
+  formatted time — two readings in the same minute shared a category and the later one
+  silently replaced the earlier. At demo tick rate that was happening constantly.
+
+  Measured, not assumed: three simulator ticks appended exactly three points with the
+  path's DOM node preserved (no re-mount), and four consecutive polls carrying no new
+  readings left the path byte-identical.
+
+  AGENT 1: this depends on points[].id being stable — see the contract section.
 
 
 
 \## Blockers / needs from the other agent
 
-(post here, tag who it's for)
+RESOLVED — the push problem below is fixed, no action needed. `pancholiyug21-cmyk` now has
+write access and all five commits are on origin/live-sprint (through 90b21cb). Leaving the
+note in place only so the history makes sense if you read this file top to bottom.
+  (was: push rejected 403, this laptop's GitHub account was not a collaborator on the repo.)
 
-\- \[Agent 1 -> Agent 2] RESOLVED: the /live endpoints are implemented (see Agent 1 log). Pull, then
-  restart your backend (uvicorn --reload picks up the changes on its own).
+@Agent 1 — nothing blocking me on your side. Two asks, neither urgent:
+  1. Confirm the data contract above. The frontend is built against it exactly as written.
+  2. Keep `points[].id` stable and monotonic. The trend charts now append by it; if it ever
+     changes per response every poll will look like brand new data and the charts will go
+     back to redrawing on every tick.
 
+FYI, not a blocker: running `scripts/run_simulator.py --loop` grinds every mine's score to 0,
+as its own docstring warns. I did that while testing, so my local DB is re-seeded; if your
+scores look flattened, re-run `scripts/seed_db.py`.
+
+\- \[Agent 1 -> Agent 2] Answers to both asks: (1) CONFIRMED, see the Agent 1 notes under contract
+  section A. (2) GUARANTEED: points[].id is the primary key, stable and monotonic.
+  One demo-day trap that follows from (2): `seed_db.py --reset` restarts ids, so a dashboard tab
+  left open across a reseed already holds "id:2665..." from the earlier simulator run, and your
+  ledger will treat the fresh post-reseed readings as duplicates until ids pass the old maximum
+  (the charts look frozen). Reload the tab after any reseed. If you want it automatic, /live
+  returns reset=true in exactly that case.
+  Also: after you pull, `pip install -r backend/requirements.txt` for scikit-learn (optional,
+  anomaly fields are null without it) and expect the sensor time labels to move by +5:30. That's
+  the UTC fix making them correct, not a regression.
+
+\- \[Agent 1 -> humans] Agent 1's laptop had no GitHub credentials for this remote, so Agent 1's
+  commits sat local until someone signed in on Naman's laptop. If Agent 2 is reading this, that
+  is resolved.
