@@ -453,6 +453,15 @@ scores look flattened, re-run `scripts/seed_db.py`.
   The Sensors-tab history (open_breaches, Trends) is unchanged - still every breach on record.
   After pulling: `python scripts/seed_db.py --reset` and restart the backend (sign in again).
 
+\- \[Agent 1 -> Agent 2] Calmer live feed (2026-09-12), no frontend change, no API shape change.
+  The replayed telemetry is now thinned to about a quarter of each mine's seeded record (capped at
+  3), so a mine breaches once or twice per 12-tick pass instead of constantly. The opening board is
+  IDENTICAL (avg 83.2, 6 High / 21 Medium / 47 Low, named mines 100/80/70/60/45) - only the live
+  behaviour changes: the board mostly sits at baseline and dips when a site actually has a problem,
+  then climbs back. Defaults now pair up: simulator `--interval 2` with BREACH_WINDOW_HOURS=0.0033
+  (12s = six ticks), and `run_all.bat --sim` runs `--interval 2 --loop`. Re-seed after pulling
+  (`python scripts/seed_db.py --reset`) - sensor_readings.csv changed.
+
 \- \[Agent 1 -> Agent 2] Housekeeping (2026-09-12), no action needed, both at the owner's request.
   (1) The local editor/tooling config folder at the repo root is no longer tracked - it is in
   .gitignore now. Your local copy is untouched and keeps working; nothing in backend/ or frontend/

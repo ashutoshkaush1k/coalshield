@@ -8,15 +8,15 @@ scenario.
 ## READ THIS FIRST: re-seed before every run
 
 **Scores fall and recover.** A sensor breach counts against its mine only inside a rolling window
-(`BREACH_WINDOW_HOURS`, 36 s by default), so the simulator pulls scores down and they climb back
-on their own as breaches age out. A PPE violation still counts until a clean re-inspection
-resolves it (see `docs/architecture.md`).
+(`BREACH_WINDOW_HOURS`, 12 s by default - six ticks at the simulator's 2 s interval), so the
+simulator pulls scores down and they climb back on their own as breaches age out. A PPE violation
+still counts until a clean re-inspection resolves it (see `docs/architecture.md`).
 
 The consequence you must plan around:
 
 > **PPE violations from a CV demo or a rehearsal persist. A second run starts from a board that
 > already carries them and will not match this script.** Simulator breaches clear themselves
-> within about half a minute; violations do not.
+> within about 12 seconds; violations do not.
 
 ### The rule
 
@@ -121,14 +121,17 @@ continuing.**
    an operator uploads footage, and the authority's board changes on its own within ~5 seconds.
 
    (`python scripts/demo_vision.py` still works and is the fallback if the browser misbehaves.)
-4. **IoT simulator** → `python scripts/run_simulator.py --loop`
-   (keep the default 6 s ticks - the breach window is tuned for them.) Live sensor telemetry.
-   Breaches raise alerts and pull scores down tick by tick, and each one stops counting 36 s
-   later, so mines dip and climb back on their own. Watch **Jharia** on a Mine Head tab: it has no
-   PPE violations, so every move is its air - down on a breach, back up as the breach ages out,
-   with nobody touching anything. The terminal marks those ticks `(older breaches aged out)`.
-   Press Ctrl+C and the whole board is back at baseline within about half a minute. Expect the
-   pre-flight banner here — step 3 already moved Singrauli, which is exactly the drift it reports.
+4. **IoT simulator** → `run_all.bat --sim` starts it for you, or in a terminal:
+   `backend\.venv\Scripts\python.exe scripts\run_simulator.py --interval 2 --loop`
+   Live sensor telemetry, one pass every 24 seconds. Most ticks are clean on purpose: a mine
+   breaches once or twice per pass, so the board sits at its baseline and dips when a site
+   actually has a problem. Each breach stops counting 12 s later, so mines climb back on their
+   own. Watch **Jharia** on a Mine Head tab: it has no PPE violations, so every move is its air -
+   down on a breach, back to 100 as the breach ages out, with nobody touching anything. The
+   terminal marks those ticks `(older breaches aged out)`. Press Ctrl+C and the whole board is
+   back at baseline within about 12 seconds. Expect the pre-flight banner here — step 3 already
+   moved Singrauli, which is exactly the drift it reports.
+   (If you change `--interval`, scale `BREACH_WINDOW_HOURS` with it: 6s -> 0.01, 2s -> 0.0033.)
 5. **Drill down** → click any tile. Score with the formula shown, active alerts, three sensor
    charts with dashed limit lines and red breach markers, PPE violation log, and audit trail.
 6. **Back to inspection priority** → the moved mine has climbed the ranking. Closes the loop from
@@ -180,7 +183,7 @@ Two ways, on purpose:
 > window, and once the air has been clean for the whole window the penalty is gone - you just
 > watched Jharia do that. PPE violations are findings about how people were working, so they
 > stay until a clean re-inspection resolves them. Nothing is ever deleted; every breach and
-> violation is still in the log and the audit trail. The demo window is 36 seconds so you can see
+> violation is still in the log and the audit trail. The demo window is 12 seconds so you can see
 > it happen; a real deployment would set it in hours."
 
 ---

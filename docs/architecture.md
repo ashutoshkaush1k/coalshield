@@ -82,12 +82,13 @@ dashboards recompute on every poll, so they show a recovery even between ticks a
 stops. `--loop` no longer grinds mines to zero: the environmental penalty is capped at one window's
 worth of breaches.
 
-**The default is 0.01 h (36 s), tuned for the demo.** The simulator stamps readings with real time
-and replays one 6-hour seed slot per 6-second tick, so there is no "simulated hour" to measure in:
-two replayed hours would be a third of a tick. 36 s is six ticks at the default interval - half a
-replay pass, which maximises the visible rise-and-fall while looping (a window of a whole pass holds
-an almost constant count). Production would use hours; `BREACH_WINDOW_HOURS=0` restores all-time
-counting. If the simulator's `--interval` changes, scale the window with it.
+**The default is 0.0033 h (12 s), tuned for the demo.** The simulator stamps readings with real time
+and replays one 6-hour seed slot per tick, so there is no "simulated hour" to measure in: two
+replayed hours would be a fraction of a tick. 12 s is six ticks at the default 2-second interval -
+half a replay pass, which maximises the visible rise-and-fall while looping (a window of a whole
+pass holds an almost constant count). Keep it at about six ticks if `--interval` changes:
+6s -> 0.01, 2s -> 0.0033, 1s -> 0.0017. Production would use hours; `BREACH_WINDOW_HOURS=0`
+restores all-time counting.
 
 **The seed was retuned in the same change**, as this note always said it would need to be. Every
 seeded reading is days old, so under any short window the opening board is set by violations alone,
@@ -96,6 +97,14 @@ now re-expresses the historical breach penalty of every mine below the Low band 
 violations, putting each back within 2 points of its old score: 6 High / 21 Medium / 47 Low as
 before, avg 83.2. The five named mines are set by hand; Jharia keeps zero violations as the
 sensor-only mine whose score moves purely with its air.
+
+**The replayed feed is thinner than the record.** A mine's seeded breach count describes its
+three-day record and sets that baseline; the telemetry the simulator replays is thinned to roughly a
+quarter of it, capped at three (`live_breach_count`). A site that breached a dozen times over three
+days is not breaching every few seconds, and a feed where nearly every tick is red both reads as a
+broken sensor and buries the recovery - a mine never gets a clean stretch long enough for its
+breaches to age out. Thinned, a mine dips once or twice per 12-tick pass and sits at baseline in
+between.
 
 `SensorReading.resolved` stays, so an explicit inspector sign-off can be added later without the two
 penalties drifting apart.
