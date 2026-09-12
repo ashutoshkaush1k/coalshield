@@ -98,8 +98,8 @@ echo  Starting frontend - window SIH-Frontend, port 5173...
 start "SIH-Frontend" /d "%ROOT%frontend" cmd /k "npm run dev"
 
 if defined WITH_SIM (
-    echo  Starting simulator - window SIH-Simulator, 2s ticks...
-    start "SIH-Simulator" /d "%ROOT%" cmd /k "backend\.venv\Scripts\python.exe scripts\run_simulator.py --interval 2"
+    echo  Starting simulator - window SIH-Simulator, 2s ticks, looping...
+    start "SIH-Simulator" /d "%ROOT%" cmd /k "backend\.venv\Scripts\python.exe scripts\run_simulator.py --interval 2 --loop"
 )
 
 REM --- wait until both ports are actually listening ----------------------

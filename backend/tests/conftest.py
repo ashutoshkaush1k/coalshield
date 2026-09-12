@@ -52,10 +52,11 @@ def weights() -> ScoringWeights:
 
 @pytest.fixture(autouse=True)
 def shipped_breach_window(monkeypatch):
-    """Pin the rolling breach window to the shipped default, for the same reason as `weights`.
+    """Pin the rolling breach window to 0.01h (36s), for the same reason as `weights`.
 
-    Tests create their breaches "now" and score them within seconds, so the 36s default keeps
-    them in-window; a local BREACH_WINDOW_HOURS of, say, 0.0001 would quietly expire them.
+    Deliberately a fixed value rather than whatever the shipped default happens to be: the
+    suite's expectations are written against a 36s window, and retuning the demo default (or a
+    local BREACH_WINDOW_HOURS of, say, 0.0001) must not quietly expire breaches mid-test.
     """
     from app.core import config
 

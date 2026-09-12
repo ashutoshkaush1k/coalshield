@@ -48,10 +48,11 @@ class Settings(BaseSettings):
     # it is younger than this, so a mine recovers on its own once its sensors run clean. PPE
     # violations are not windowed - they count until a clean re-inspection resolves them.
     # Real wall-clock hours; fractions are fine. 0 counts every breach on record (old behaviour).
-    # Default 0.01h = 36s: six 6s simulator ticks, half a replay pass, so scores visibly dip and
-    # climb back during a looping demo. Production would use hours (e.g. 2). If you change the
-    # simulator's --interval, scale this with it.
-    breach_window_hours: float = 0.01
+    # Default 0.0033h = 12s: six ticks at the simulator's default 2s interval, half a replay pass,
+    # so scores visibly dip and climb back during a looping demo. Keep it at about six ticks if you
+    # change --interval (6s -> 0.01, 2s -> 0.0033, 1s -> 0.0017); a window longer than a full pass
+    # holds an almost constant breach count and the board just sags. Production would use hours.
+    breach_window_hours: float = 0.0033
 
     # Sensor thresholds (PRD 4.2). A reading strictly above the limit is a breach.
     threshold_gas_ppm: float = 50.0

@@ -127,6 +127,28 @@ STATE_WEIGHTS = {
 
 TOTAL_SYNTHETIC = sum(STATE_WEIGHTS.values())
 
+# --- Live feed density -------------------------------------------------------
+#
+# The counts above describe each mine's RECORD over the seeded three days, and that record is what
+# sets the opening board through the violation top-up further down. The replayed telemetry is
+# deliberately much thinner than the record: a site that breached a dozen times over three days is
+# not breaching every few seconds, and a live feed where nearly every tick is red reads as a broken
+# sensor rather than an alarming one - it also buries the recovery, because a mine never gets a
+# clean stretch long enough for its breaches to age out.
+#
+# Roughly a quarter of the record, at least one, capped at three: a mine dips once or twice per
+# 12-tick pass and sits at its baseline in between. This changes which slots breach, not how many
+# random draws are made, so mines, users and violations stay byte-identical.
+LIVE_BREACH_CAP = 3
+
+
+def live_breach_count(record_breaches: int) -> int:
+    """How many of a mine's 36 replayed readings breach. See the note above."""
+    if record_breaches <= 0:
+        return 0
+    return min(LIVE_BREACH_CAP, max(1, round(record_breaches / 4)))
+
+
 # --- Rolling-window retune ---------------------------------------------------
 #
 # Scoring now counts breaches only inside a short rolling window (BREACH_WINDOW_HOURS), and every
@@ -184,6 +206,8 @@ def build_mines(rng: random.Random) -> list[dict]:
     # the structured fields rather than typed separately, so the two can never disagree.
     for mine in mines:
         mine["location"] = f"{mine['district']}, {mine['state']}"
+        # What the live feed replays, as opposed to what the mine's record says.
+        mine["live_breaches"] = live_breach_count(mine["breaches"])
 
     return mines
 
@@ -213,7 +237,7 @@ def generate_sensor_readings(mines: list[dict], rng: random.Random, now: datetim
     for mine in mines:
         slots = [(s, i) for s in SensorType for i in range(READINGS_PER_SENSOR)]
         weights = [_recency_weight(i, READINGS_PER_SENSOR) for _, i in slots]
-        breach_slots = set(_weighted_sample(rng, slots, weights, mine["breaches"]))
+        breach_slots = set(_weighted_sample(rng, slots, weights, mine["live_breaches"]))
 
         for sensor_type, index in slots:
             is_breach = (sensor_type, index) in breach_slots
@@ -377,9 +401,13 @@ def _report(mines: list[dict], readings: list[dict], violations: list[dict]) -> 
         return (f"avg {avg}  High {bands.count('HIGH')} / Medium {bands.count('MEDIUM')} / "
                 f"Low {bands.count('LOW')}")
 
+    live = sum(m["live_breaches"] for m in mines)
     print()
     print(f"Mines   : {len(mines)}   Readings: {len(readings)}   Violations: {len(violations)}")
     print(f"Weights : weight_ppe={weights.weight_ppe}  weight_env={weights.weight_env}")
+    print(f"Feed    : {live} breaching readings across {len(mines)} mines "
+          f"({live / len(mines):.1f} per mine per 12-tick pass), thinned from a record of "
+          f"{sum(m['breaches'] for m in mines)}")
     print(f"Board   : {spread(scores)}   (open violations + breaches inside the scoring window;"
           f" the seeded readings have aged out)")
     print(f"          all-time scoring would give {spread(all_time)}")
@@ -444,7 +472,8 @@ def main() -> int:
 
     _write_csv(readings, SEED_DIR / "sensor_readings.csv")
     _write_json(
-        [{k: v for k, v in m.items() if k not in ("breaches", "violations")} for m in mines],
+        [{k: v for k, v in m.items()
+          if k not in ("breaches", "violations", "live_breaches")} for m in mines],
         SEED_DIR / "mines.json",
     )
     _write_json(generate_users(mines), SEED_DIR / "users.json")

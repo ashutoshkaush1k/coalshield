@@ -4,18 +4,21 @@ One tick = every mine reports gas, dust and temperature. Breaches raise alerts a
 move the mine's compliance score, exactly like a CV detection does.
 
 Usage:
-    python scripts/run_simulator.py                    # 6s ticks, one full pass, then stop
+    python scripts/run_simulator.py                    # 2s ticks, one full pass, then stop
     python scripts/run_simulator.py --loop             # keep cycling until Ctrl+C - the live demo
-    python scripts/run_simulator.py --interval 2       # faster, for rehearsal (see the window note)
+    python scripts/run_simulator.py --interval 6       # slower ticks (see the window note)
     python scripts/run_simulator.py --ticks 5          # stop after 5 ticks
     python scripts/run_simulator.py --dry-run          # roll back; nothing is persisted
     python scripts/run_simulator.py --check-only       # pre-flight the database, run nothing
     python scripts/run_simulator.py --require-clean    # refuse to start unless state is pristine
 
-Scores fall AND recover: a breach counts against its mine only for BREACH_WINDOW_HOURS (36s by
-default - six ticks at the default 6s interval), so --loop settles into a live rise-and-fall rather
+Scores fall AND recover: a breach counts against its mine only for BREACH_WINDOW_HOURS (12s by
+default - six ticks at the default 2s interval), so --loop settles into a live rise-and-fall rather
 than grinding mines to zero, and stopping the feed lets every mine climb back within one window.
-The window is tuned for 6s ticks; at --interval 2 set BREACH_WINDOW_HOURS=0.0033 to keep it at six.
+Keep the window at about six ticks if you change --interval: 6s -> 0.01, 2s -> 0.0033, 1s -> 0.0017.
+
+Most ticks are clean by design - the seeded feed gives a mine one or two breaches per 12-tick pass,
+so the board mostly sits at its baseline and dips when a site actually has a problem.
 """
 
 from __future__ import annotations
@@ -138,7 +141,7 @@ def replay(sim, limit: int | None, interval: float, *, commit: bool = True,
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Replay seeded sensor data as a live feed.")
-    parser.add_argument("--interval", type=float, default=6.0, help="seconds between ticks")
+    parser.add_argument("--interval", type=float, default=2.0, help="seconds between ticks")
     parser.add_argument("--ticks", type=int, default=None, help="stop after N ticks")
     parser.add_argument("--loop", action="store_true", help="restart the dataset when exhausted")
     parser.add_argument("--dry-run", action="store_true", help="roll back instead of committing")
