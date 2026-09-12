@@ -34,8 +34,9 @@ node_modules/
 dist/
 .vite/
 
-# Editors / OS
+# Editors / OS / local tooling config
 .vscode/
 .idea/
+.claude/
 .DS_Store
 Thumbs.db

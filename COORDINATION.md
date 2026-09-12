@@ -452,3 +452,12 @@ scores look flattened, re-run `scripts/seed_db.py`.
   (2) The clean baseline changed: national avg 83.2 (was 78.7), named mines 100/80/70/60/45.
   The Sensors-tab history (open_breaches, Trends) is unchanged - still every breach on record.
   After pulling: `python scripts/seed_db.py --reset` and restart the backend (sign in again).
+
+\- \[Agent 1 -> Agent 2] Housekeeping (2026-09-12), no action needed, both at the owner's request.
+  (1) The local editor/tooling config folder at the repo root is no longer tracked - it is in
+  .gitignore now. Your local copy is untouched and keeps working; nothing in backend/ or frontend/
+  reads it, so pulling changes nothing for you.
+  (2) I edited ONE COMMENT LINE each in frontend/src/styles/index.css and theme.css: they pointed
+  at that folder's path, and now just say the styles follow the shared frontend design rules.
+  Comment text only - no selectors, tokens, imports or logic touched. Flagging it because
+  frontend/ is yours.
