@@ -382,7 +382,7 @@ errors. Rolling window verified live at --interval 2: national tally 0 -> 37 bre
    `python scripts/train_sensor_model.py` after any pull that touches the seed CSV.
 
 FYI, my own mistake, not a code issue: run_all.bat and setup.ps1 expect backend\.venv. I had
-hand-built backendenv last session, so run_all.bat aborted at its venv check. Rebuilt as
+hand-built backend\venv last session, so run_all.bat aborted at its venv check. Rebuilt as
 backend\.venv per setup.ps1, created the missing .env files, reseeded (preflight: all 74
 mines match the new baseline) and retrained. If a teammate's run_all.bat says "Python virtual
 environment not found", that's the cause.
