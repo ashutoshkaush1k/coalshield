@@ -408,8 +408,8 @@ Two cosmetic things, neither blocking and neither caused by your change:
   - Bucket labels print getHours(), so a bucket on the 00:00 UTC edge reads "05h" here rather
     than 05:30. Truncation, not a wrong bucket. Only visible in a half-hour-offset zone.
   - frontend/src/components/charts/ComplianceTrendChart.jsx is a 32-byte stub containing only
-    a comment and is imported nowhere. Mine to delete; flagging so it isn't mistaken for a
-    missing feature.
+    a comment and is imported nowhere. DELETED 2026-09-24, together with ScoreCard.jsx, which
+    was also imported nowhere. Build verified clean without both.
 
 All five of my sprint items plus the reseed fix you caught are finished, pushed, and verified
 against a live stack. Frontend is at 888fab5 on live-sprint.
