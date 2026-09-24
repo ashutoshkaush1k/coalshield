@@ -25,7 +25,7 @@ import { Drawer } from "../../components/overlay/Overlay";
 import { useToast } from "../../components/overlay/ToastHost";
 import { Topbar } from "../../components/layout/Topbar";
 import { usePolling } from "../../hooks/usePolling";
-import { fmtDateTime, fmtPercent, fmtScore, humanise } from "../../utils/format";
+import { breachesLabel, fmtDateTime, fmtPercent, fmtScore, humanise } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
 
 /**
@@ -107,7 +107,7 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
                 <div className="spacer" />
                 <div className="tally-set">
                   <Stat label="Violations" value={c.violation_count} />
-                  <Stat label="Breaches" value={c.breach_count} />
+                  <Stat label={breachesLabel(c.breach_window_hours)} value={c.breach_count} />
                   <Stat label="Alerts" value={mine.open_alerts}
                         tone={mine.open_alerts ? "risk-high" : undefined} />
                 </div>

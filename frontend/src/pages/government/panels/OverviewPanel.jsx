@@ -1,6 +1,7 @@
 // Fleet-wide glance: one hero figure, compact secondary stats, then the core board.
 import { CoreSampleBoard } from "../../../components/compliance/CoreSampleBoard";
 import { StateFilter } from "../../../components/common/StateFilter";
+import { breachesLabel } from "../../../utils/format";
 
 function Tally({ label, value, tone }) {
   return (
@@ -39,7 +40,8 @@ export function OverviewPanel({ data, state, onStateChange }) {
               <Tally label="Medium risk" value={stats?.medium_risk_count ?? 0} tone="medium" />
               <Tally label="Low risk" value={stats?.low_risk_count ?? 0} tone="low" />
               <Tally label="Violations" value={stats?.total_violations ?? 0} />
-              <Tally label="Breaches" value={stats?.total_breaches ?? 0} />
+              <Tally label={breachesLabel(stats?.breach_window_hours)}
+                     value={stats?.total_breaches ?? 0} />
             </div>
           </div>
         </div>

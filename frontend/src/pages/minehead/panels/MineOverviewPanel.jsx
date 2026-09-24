@@ -12,7 +12,7 @@ import { EmptyState } from "../../../components/common/EmptyState";
 import { RiskMark } from "../../../components/compliance/RiskMark";
 import { Drawer } from "../../../components/overlay/Overlay";
 import { UploadPanel } from "../../../components/vision/UploadPanel";
-import { fmtDateTime, fmtPercent, fmtScore, humanise } from "../../../utils/format";
+import { breachesLabel, fmtDateTime, fmtPercent, fmtScore, humanise } from "../../../utils/format";
 import { riskClass } from "../../../utils/risk";
 
 function Stat({ label, value, tone }) {
@@ -54,7 +54,7 @@ export function MineOverviewPanel({ bundle, mineId, onAnalysed, onChanged }) {
               <div className="spacer" />
               <div className="tally-set">
                 <Stat label="Violations" value={c.violation_count} />
-                <Stat label="Breaches" value={c.breach_count} />
+                <Stat label={breachesLabel(c.breach_window_hours)} value={c.breach_count} />
                 <Stat label="Alerts" value={mine.open_alerts}
                       tone={mine.open_alerts ? "risk-high" : undefined} />
               </div>

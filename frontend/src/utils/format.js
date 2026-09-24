@@ -23,3 +23,17 @@ export const humanise = (token) => {
 };
 
 export const fmtPercent = (n) => `${Math.round((n || 0) * 100)}%`;
+
+// Scores count sensor breaches over a rolling window (BREACH_WINDOW_HOURS on the backend), so a
+// bare "Breaches" beside the number reads as all-time - and on a fresh seed, where every breach
+// has aged out, that is a dashboard claiming a fleet with days of recorded breaches has none.
+// The API sends the window with the count; this puts it in the label. null or 0 = all-time.
+export const breachesLabel = (windowHours) => {
+  if (!windowHours) return "Breaches";
+  const seconds = windowHours * 3600;
+  const span =
+    seconds < 90 ? `${Math.round(seconds)}s`
+      : seconds < 5400 ? `${Math.round(seconds / 60)} min`
+        : `${Math.round(windowHours)}h`;
+  return `Breaches, last ${span}`;
+};
