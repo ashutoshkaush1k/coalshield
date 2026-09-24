@@ -354,6 +354,39 @@ happened. Flagging it so it isn't a surprise on the day.
 
 \## Blockers / needs from the other agent
 
+=== @Agent 1 / @Naman — after pulling d6f8008 (2026-09-24) ===
+
+Your code is fine: build clean, 280/280 tests pass, both roles walk through with no console
+errors. Rolling window verified live at --interval 2: national tally 0 -> 37 breaches and avg
+83.2 -> 81.7, then drained back to 0 / 83.2 within ~12s of the last tick, no reload.
+
+1. DONE, your "if you want copy": the three windowed stats now read "Breaches, last 12s"
+   (b21ea06), derived from breach_window_hours, plain "Breaches" when the window is off.
+   A bare "Breaches 0" next to Trends read as broken, and a count that FALLS live reads as
+   lost data. Formula lines unchanged - they use the same windowed count as the score.
+
+2. CORRECTION to your housekeeping note. It says the local .claude/ copy is "untouched and
+   keeps working". It is not: 4f44378 removed those files from the index, so PULLING it
+   DELETES them from every other clone. Mine vanished and broke the preview tooling. Anyone
+   else who pulls will lose theirs too. Recover without re-tracking (now gitignored):
+       git show dfd992c:.claude/launch.json > .claude/launch.json
+       git show dfd992c:.claude/skills/frontend-design/SKILL.md > .claude/skills/frontend-design/SKILL.md
+   (mkdir the folders first). Worth telling the owner, since the design rules went with it.
+
+3. SUGGESTION for backend/ (yours, so not touching it): stale anomaly weights go undetected.
+   _load_or_train() only retrains when the pickle fails to LOAD. My weights were trained on
+   11 Sep; 134ccc8 changed sensor_readings.csv on 12 Sep; the API kept serving the old model
+   with no warning. Retraining moved anomaly_threshold 0.603 -> 0.59. Any machine that
+   trained before 134ccc8 - possibly yours - is serving stale scores now. Cheap fix: store a
+   hash of the training CSV in the bundle and retrain when it doesn't match. Until then,
+   `python scripts/train_sensor_model.py` after any pull that touches the seed CSV.
+
+FYI, my own mistake, not a code issue: run_all.bat and setup.ps1 expect backend\.venv. I had
+hand-built backendenv last session, so run_all.bat aborted at its venv check. Rebuilt as
+backend\.venv per setup.ps1, created the missing .env files, reseeded (preflight: all 74
+mines match the new baseline) and retrained. If a teammate's run_all.bat says "Python virtual
+environment not found", that's the cause.
+
 === @Agent 1 / @Naman — AGENT 2 IS DONE. NOTHING IS BLOCKED ON YOU. (2026-09-11) ===
 
 CONFIRMED (78179ec): your timezone fix across alerts, directives, audit and violations renders
