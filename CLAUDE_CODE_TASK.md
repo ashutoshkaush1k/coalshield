@@ -183,3 +183,26 @@ Phase 8 — Hardening, seed, docs
 
 6. Out of scope (do not build now)
 Real IoT hardware, native mobile app (a PWA offline inspection app is a later phase), OCR, blockchain, SMS/email gateways (log notifications to a `notification` table instead), production-grade secrets management, machine translation of user content.
+
+7. Legal update (verified in D1)
+Added 2026-09-25 by the dataset track (stage D1). Every status below was read from the official notification itself, not from commentary; the evidence, file links and page references are in `data/sources.yaml` (source S10) and `data/SOURCES.md`. This section supersedes any assumption elsewhere in this brief that the Mines Act, 1952 or the Contract Labour Act, 1970 is the governing law.
+
+Status as of 2026-09-25:
+
+* All four labour codes came into force on 21 November 2025 (Gazette of India Extraordinary, 21.11.2025):
+   * Occupational Safety, Health and Working Conditions Code, 2020 — all provisions, S.O. 5321(E).
+   * Industrial Relations Code, 2020 — all provisions, S.O. 5320(E).
+   * Code on Social Security, 2020 — S.O. 5319(E), as corrected by S.O. 5936(E) dated 19.12.2025; some provisions commenced earlier under S.O. 2060(E) dated 03.05.2023.
+   * Code on Wages, 2019 — S.O. 5322(E), with a few sub-provisions left out of the schedule.
+* Mines Act, 1952 and Contract Labour (Regulation and Abolition) Act, 1970 — repealed from 21.11.2025 by section 143(1)(c) and (h) of the OSH Code. Section 143(3) saves rules, regulations and notifications made under them "to the extent they are not contrary to the provisions of this Code till they are repealed by the Central Government".
+* Occupational Safety, Health and Working Conditions (Central) Rules, 2026 — in force from 08.05.2026, G.S.R. 345(E) dated 08.05.2026 (rule 1(3): in force on publication). In the same notification they supersede, among others, the Mines Rules, 1955, the Mines Vocational Training Rules, 1966 and the Contract Labour (Regulation and Abolition) Central Rules, 1971.
+* Coal Mines Regulations, 2017 — still in force under OSH Code section 143(3). A replacement, the OSH&WC (Coal Mines) Regulations, 2026, has been published only as a draft (DGMS, 31.01.2026); no final notification was found.
+* Coal Mines Provident Fund and Miscellaneous Provisions Act, 1948 — in force; it is not among the Acts repealed by the Code on Social Security.
+* Employees' Provident Funds and Miscellaneous Provisions Act, 1952 — TODO-VERIFY. Its status depends on serial (vi) of S.O. 2060(E) dated 03.05.2023, which could not be retrieved from an official source. Do not treat the EPF Act as either repealed or in force until this is confirmed.
+* Environment (Protection) Act, 1986; Air Act, 1981; Water Act, 1974 — in force; not affected by the labour codes.
+
+Rule for every phase from now on:
+
+* Contractor licences, contract labour obligations, worker vocational training, medical examinations, and all other statutory obligations must cite the OSH Code, 2020 and the OSH (Central) Rules, 2026 — plus the Coal Mines Regulations, 2017 where they are still in force — and never the repealed Mines Act, 1952, Contract Labour (Regulation and Abolition) Act, 1970 or Mines Rules, 1955.
+* This applies to seed data, alert codes, reminders, UI help text, obligation records and documentation alike.
+* The specific rule numbers, validity periods and deadlines are not stated here on purpose. They are extracted with clause and page citations into `data/reference/obligations.csv` in dataset stage D3; until a value has a citation there it stays a `TODO-VERIFY` placeholder, as rule 6 of section 0 already requires.
