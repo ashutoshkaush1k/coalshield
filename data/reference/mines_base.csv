@@ -1,0 +1,75 @@
+id,code,name,location,district,state,region,operator,head_email,demo_named,seed_violations,seed_readings,seed_breaches,demo_score,demo_risk_level
+1,JH-DHN-01,Jharia Coalfield Block A,"Dhanbad, Jharkhand",Dhanbad,Jharkhand,East,Bharat Coking Coal Ltd,head.jh-dhn-01@coalmine.in,true,0,36,1,100.0,LOW
+2,MP-SGR-02,Singrauli Opencast Mine,"Singrauli, Madhya Pradesh",Singrauli,Madhya Pradesh,Central,Northern Coalfields Ltd,head.mp-sgr-02@coalmine.in,true,4,36,1,80.0,LOW
+3,CG-KRB-03,Korba Gevra Expansion,"Korba, Chhattisgarh",Korba,Chhattisgarh,Central,South Eastern Coalfields Ltd,head.cg-krb-03@coalmine.in,true,6,36,1,70.0,MEDIUM
+4,WB-RNG-04,Raniganj Deep Shaft,"Raniganj, West Bengal",Raniganj,West Bengal,East,Eastern Coalfields Ltd,head.wb-rng-04@coalmine.in,true,8,36,2,60.0,MEDIUM
+5,OD-TLC-05,Talcher Underground Unit 2,"Angul, Odisha",Angul,Odisha,East,Mahanadi Coalfields Ltd,head.od-tlc-05@coalmine.in,true,11,36,2,45.0,HIGH
+6,JH-DHA-06,Dhanbad Washery Block,"Dhanbad, Jharkhand",Dhanbad,Jharkhand,East,Central Coalfields Ltd,head.jh-dha-06@coalmine.in,false,1,36,1,95.0,LOW
+7,JH-BOK-07,Bokaro Opencast Project,"Bokaro, Jharkhand",Bokaro,Jharkhand,East,Coal India Ltd,head.jh-bok-07@coalmine.in,false,1,36,1,95.0,LOW
+8,JH-RAM-08,Ramgarh Opencast Project,"Ramgarh, Jharkhand",Ramgarh,Jharkhand,East,Eastern Coalfields Ltd,head.jh-ram-08@coalmine.in,false,6,36,2,70.0,MEDIUM
+9,JH-CHA-09,Chatra Expansion Block,"Chatra, Jharkhand",Chatra,Jharkhand,East,Central Coalfields Ltd,head.jh-cha-09@coalmine.in,false,0,36,1,100.0,LOW
+10,JH-LAT-10,Latehar Underground Mine,"Latehar, Jharkhand",Latehar,Jharkhand,East,Coal India Ltd,head.jh-lat-10@coalmine.in,false,17,36,3,15.0,HIGH
+11,JH-GOD-11,Godda Expansion Block,"Godda, Jharkhand",Godda,Jharkhand,East,Central Coalfields Ltd,head.jh-god-11@coalmine.in,false,0,36,1,100.0,LOW
+12,JH-HAZ-12,Hazaribagh Colliery,"Hazaribagh, Jharkhand",Hazaribagh,Jharkhand,East,Eastern Coalfields Ltd,head.jh-haz-12@coalmine.in,false,16,36,3,20.0,HIGH
+13,JH-DHA-13,Dhanbad Opencast Project,"Dhanbad, Jharkhand",Dhanbad,Jharkhand,East,NLC India Ltd,head.jh-dha-13@coalmine.in,false,1,36,1,95.0,LOW
+14,JH-BOK-14,Bokaro Colliery,"Bokaro, Jharkhand",Bokaro,Jharkhand,East,Singareni Collieries Company Ltd,head.jh-bok-14@coalmine.in,false,1,36,1,95.0,LOW
+15,JH-RAM-15,Ramgarh Deep Shaft,"Ramgarh, Jharkhand",Ramgarh,Jharkhand,East,South Eastern Coalfields Ltd,head.jh-ram-15@coalmine.in,false,5,36,1,75.0,MEDIUM
+16,JH-CHA-16,Chatra Deep Shaft,"Chatra, Jharkhand",Chatra,Jharkhand,East,Bharat Coking Coal Ltd,head.jh-cha-16@coalmine.in,false,1,36,1,95.0,LOW
+17,JH-LAT-17,Latehar Washery Block,"Latehar, Jharkhand",Latehar,Jharkhand,East,Bharat Coking Coal Ltd,head.jh-lat-17@coalmine.in,false,8,36,2,60.0,MEDIUM
+18,OD-ANG-18,Angul Washery Block,"Angul, Odisha",Angul,Odisha,East,Western Coalfields Ltd,head.od-ang-18@coalmine.in,false,0,36,1,100.0,LOW
+19,OD-JHA-19,Jharsuguda Deep Shaft,"Jharsuguda, Odisha",Jharsuguda,Odisha,East,Bharat Coking Coal Ltd,head.od-jha-19@coalmine.in,false,1,36,1,95.0,LOW
+20,OD-SUN-20,Sundargarh Washery Block,"Sundargarh, Odisha",Sundargarh,Odisha,East,South Eastern Coalfields Ltd,head.od-sun-20@coalmine.in,false,5,36,1,75.0,MEDIUM
+21,OD-SAM-21,Sambalpur Expansion Block,"Sambalpur, Odisha",Sambalpur,Odisha,East,Northern Coalfields Ltd,head.od-sam-21@coalmine.in,false,1,36,0,95.0,LOW
+22,OD-DHE-22,Dhenkanal Expansion Block,"Dhenkanal, Odisha",Dhenkanal,Odisha,East,Mahanadi Coalfields Ltd,head.od-dhe-22@coalmine.in,false,0,36,1,100.0,LOW
+23,OD-ANG-23,Angul Underground Mine,"Angul, Odisha",Angul,Odisha,East,NLC India Ltd,head.od-ang-23@coalmine.in,false,0,36,1,100.0,LOW
+24,OD-JHA-24,Jharsuguda Opencast Project,"Jharsuguda, Odisha",Jharsuguda,Odisha,East,Western Coalfields Ltd,head.od-jha-24@coalmine.in,false,1,36,1,95.0,LOW
+25,OD-SUN-25,Sundargarh Coalfield Block,"Sundargarh, Odisha",Sundargarh,Odisha,East,Northern Coalfields Ltd,head.od-sun-25@coalmine.in,false,6,36,2,70.0,MEDIUM
+26,OD-SAM-26,Sambalpur Opencast Project,"Sambalpur, Odisha",Sambalpur,Odisha,East,Central Coalfields Ltd,head.od-sam-26@coalmine.in,false,1,36,1,95.0,LOW
+27,OD-DHE-27,Dhenkanal Expansion Block,"Dhenkanal, Odisha",Dhenkanal,Odisha,East,Eastern Coalfields Ltd,head.od-dhe-27@coalmine.in,false,1,36,1,95.0,LOW
+28,OD-ANG-28,Angul Deep Shaft,"Angul, Odisha",Angul,Odisha,East,South Eastern Coalfields Ltd,head.od-ang-28@coalmine.in,false,5,36,2,75.0,MEDIUM
+29,CG-KOR-29,Korba Expansion Block,"Korba, Chhattisgarh",Korba,Chhattisgarh,Central,Singareni Collieries Company Ltd,head.cg-kor-29@coalmine.in,false,0,36,1,100.0,LOW
+30,CG-RAI-30,Raigarh Deep Shaft,"Raigarh, Chhattisgarh",Raigarh,Chhattisgarh,Central,Bharat Coking Coal Ltd,head.cg-rai-30@coalmine.in,false,11,36,2,45.0,HIGH
+31,CG-SUR-31,Surguja Washery Block,"Surguja, Chhattisgarh",Surguja,Chhattisgarh,Central,Coal India Ltd,head.cg-sur-31@coalmine.in,false,1,36,1,95.0,LOW
+32,CG-KOR-32,Koriya Washery Block,"Koriya, Chhattisgarh",Koriya,Chhattisgarh,Central,NLC India Ltd,head.cg-kor-32@coalmine.in,false,6,36,2,70.0,MEDIUM
+33,CG-BIL-33,Bilaspur Washery Block,"Bilaspur, Chhattisgarh",Bilaspur,Chhattisgarh,Central,Central Coalfields Ltd,head.cg-bil-33@coalmine.in,false,5,36,2,75.0,MEDIUM
+34,CG-KOR-34,Korba Deep Shaft,"Korba, Chhattisgarh",Korba,Chhattisgarh,Central,Central Coalfields Ltd,head.cg-kor-34@coalmine.in,false,0,36,1,100.0,LOW
+35,CG-RAI-35,Raigarh Underground Mine,"Raigarh, Chhattisgarh",Raigarh,Chhattisgarh,Central,Central Coalfields Ltd,head.cg-rai-35@coalmine.in,false,1,36,1,95.0,LOW
+36,CG-SUR-36,Surguja Coalfield Block,"Surguja, Chhattisgarh",Surguja,Chhattisgarh,Central,Bharat Coking Coal Ltd,head.cg-sur-36@coalmine.in,false,8,36,2,60.0,MEDIUM
+37,CG-KOR-37,Koriya Colliery,"Koriya, Chhattisgarh",Koriya,Chhattisgarh,Central,South Eastern Coalfields Ltd,head.cg-kor-37@coalmine.in,false,0,36,0,100.0,LOW
+38,CG-BIL-38,Bilaspur Underground Mine,"Bilaspur, Chhattisgarh",Bilaspur,Chhattisgarh,Central,Coal India Ltd,head.cg-bil-38@coalmine.in,false,0,36,0,100.0,LOW
+39,CG-KOR-39,Korba Deep Shaft,"Korba, Chhattisgarh",Korba,Chhattisgarh,Central,NLC India Ltd,head.cg-kor-39@coalmine.in,false,1,36,1,95.0,LOW
+40,WB-RAN-40,Raniganj Expansion Block,"Raniganj, West Bengal",Raniganj,West Bengal,East,Western Coalfields Ltd,head.wb-ran-40@coalmine.in,false,1,36,1,95.0,LOW
+41,WB-ASA-41,Asansol Colliery,"Asansol, West Bengal",Asansol,West Bengal,East,Northern Coalfields Ltd,head.wb-asa-41@coalmine.in,false,6,36,2,70.0,MEDIUM
+42,WB-PUR-42,Purulia Washery Block,"Purulia, West Bengal",Purulia,West Bengal,East,Northern Coalfields Ltd,head.wb-pur-42@coalmine.in,false,7,36,1,65.0,MEDIUM
+43,WB-BAR-43,Bardhaman Opencast Project,"Bardhaman, West Bengal",Bardhaman,West Bengal,East,Central Coalfields Ltd,head.wb-bar-43@coalmine.in,false,0,36,1,100.0,LOW
+44,WB-RAN-44,Raniganj Deep Shaft,"Raniganj, West Bengal",Raniganj,West Bengal,East,Central Coalfields Ltd,head.wb-ran-44@coalmine.in,false,1,36,0,95.0,LOW
+45,WB-ASA-45,Asansol Deep Shaft,"Asansol, West Bengal",Asansol,West Bengal,East,Central Coalfields Ltd,head.wb-asa-45@coalmine.in,false,1,36,0,95.0,LOW
+46,WB-PUR-46,Purulia Coalfield Block,"Purulia, West Bengal",Purulia,West Bengal,East,Mahanadi Coalfields Ltd,head.wb-pur-46@coalmine.in,false,1,36,1,95.0,LOW
+47,WB-BAR-47,Bardhaman Washery Block,"Bardhaman, West Bengal",Bardhaman,West Bengal,East,Mahanadi Coalfields Ltd,head.wb-bar-47@coalmine.in,false,0,36,1,100.0,LOW
+48,MP-SIN-48,Singrauli Expansion Block,"Singrauli, Madhya Pradesh",Singrauli,Madhya Pradesh,Central,Central Coalfields Ltd,head.mp-sin-48@coalmine.in,false,0,36,1,100.0,LOW
+49,MP-SHA-49,Shahdol Colliery,"Shahdol, Madhya Pradesh",Shahdol,Madhya Pradesh,Central,Eastern Coalfields Ltd,head.mp-sha-49@coalmine.in,false,15,36,3,25.0,HIGH
+50,MP-UMA-50,Umaria Underground Mine,"Umaria, Madhya Pradesh",Umaria,Madhya Pradesh,Central,NLC India Ltd,head.mp-uma-50@coalmine.in,false,1,36,1,95.0,LOW
+51,MP-ANU-51,Anuppur Deep Shaft,"Anuppur, Madhya Pradesh",Anuppur,Madhya Pradesh,Central,Singareni Collieries Company Ltd,head.mp-anu-51@coalmine.in,false,17,36,3,15.0,HIGH
+52,MP-BET-52,Betul Deep Shaft,"Betul, Madhya Pradesh",Betul,Madhya Pradesh,Central,Central Coalfields Ltd,head.mp-bet-52@coalmine.in,false,6,36,2,70.0,MEDIUM
+53,MP-SIN-53,Singrauli Colliery,"Singrauli, Madhya Pradesh",Singrauli,Madhya Pradesh,Central,South Eastern Coalfields Ltd,head.mp-sin-53@coalmine.in,false,9,36,2,55.0,MEDIUM
+54,MP-SHA-54,Shahdol Deep Shaft,"Shahdol, Madhya Pradesh",Shahdol,Madhya Pradesh,Central,Northern Coalfields Ltd,head.mp-sha-54@coalmine.in,false,0,36,1,100.0,LOW
+55,MP-UMA-55,Umaria Colliery,"Umaria, Madhya Pradesh",Umaria,Madhya Pradesh,Central,Western Coalfields Ltd,head.mp-uma-55@coalmine.in,false,1,36,1,95.0,LOW
+56,TS-RAM-56,Ramagundam Coalfield Block,"Ramagundam, Telangana",Ramagundam,Telangana,South,Bharat Coking Coal Ltd,head.ts-ram-56@coalmine.in,false,0,36,1,100.0,LOW
+57,TS-BHA-57,Bhadradri Underground Mine,"Bhadradri, Telangana",Bhadradri,Telangana,South,Mahanadi Coalfields Ltd,head.ts-bha-57@coalmine.in,false,1,36,1,95.0,LOW
+58,TS-MAN-58,Mancherial Coalfield Block,"Mancherial, Telangana",Mancherial,Telangana,South,Western Coalfields Ltd,head.ts-man-58@coalmine.in,false,1,36,0,95.0,LOW
+59,TS-PED-59,Peddapalli Washery Block,"Peddapalli, Telangana",Peddapalli,Telangana,South,Bharat Coking Coal Ltd,head.ts-ped-59@coalmine.in,false,0,36,0,100.0,LOW
+60,TS-RAM-60,Ramagundam Expansion Block,"Ramagundam, Telangana",Ramagundam,Telangana,South,Mahanadi Coalfields Ltd,head.ts-ram-60@coalmine.in,false,1,36,1,95.0,LOW
+61,TS-BHA-61,Bhadradri Expansion Block,"Bhadradri, Telangana",Bhadradri,Telangana,South,Mahanadi Coalfields Ltd,head.ts-bha-61@coalmine.in,false,0,36,1,100.0,LOW
+62,TS-MAN-62,Mancherial Opencast Project,"Mancherial, Telangana",Mancherial,Telangana,South,Singareni Collieries Company Ltd,head.ts-man-62@coalmine.in,false,0,36,0,100.0,LOW
+63,MH-CHA-63,Chandrapur Underground Mine,"Chandrapur, Maharashtra",Chandrapur,Maharashtra,West,Western Coalfields Ltd,head.mh-cha-63@coalmine.in,false,6,36,2,70.0,MEDIUM
+64,MH-NAG-64,Nagpur Washery Block,"Nagpur, Maharashtra",Nagpur,Maharashtra,West,Eastern Coalfields Ltd,head.mh-nag-64@coalmine.in,false,6,36,2,70.0,MEDIUM
+65,MH-YAV-65,Yavatmal Underground Mine,"Yavatmal, Maharashtra",Yavatmal,Maharashtra,West,Northern Coalfields Ltd,head.mh-yav-65@coalmine.in,false,0,36,0,100.0,LOW
+66,MH-WAR-66,Wardha Washery Block,"Wardha, Maharashtra",Wardha,Maharashtra,West,South Eastern Coalfields Ltd,head.mh-war-66@coalmine.in,false,0,36,1,100.0,LOW
+67,MH-CHA-67,Chandrapur Washery Block,"Chandrapur, Maharashtra",Chandrapur,Maharashtra,West,NLC India Ltd,head.mh-cha-67@coalmine.in,false,7,36,2,65.0,MEDIUM
+68,MH-NAG-68,Nagpur Expansion Block,"Nagpur, Maharashtra",Nagpur,Maharashtra,West,South Eastern Coalfields Ltd,head.mh-nag-68@coalmine.in,false,7,36,2,65.0,MEDIUM
+69,AS-TIN-69,Tinsukia Deep Shaft,"Tinsukia, Assam",Tinsukia,Assam,North East,Northern Coalfields Ltd,head.as-tin-69@coalmine.in,false,0,36,1,100.0,LOW
+70,AS-DIB-70,Dibrugarh Deep Shaft,"Dibrugarh, Assam",Dibrugarh,Assam,North East,Coal India Ltd,head.as-dib-70@coalmine.in,false,1,36,1,95.0,LOW
+71,AS-TIN-71,Tinsukia Coalfield Block,"Tinsukia, Assam",Tinsukia,Assam,North East,Singareni Collieries Company Ltd,head.as-tin-71@coalmine.in,false,5,36,2,75.0,MEDIUM
+72,UP-SON-72,Sonbhadra Colliery,"Sonbhadra, Uttar Pradesh",Sonbhadra,Uttar Pradesh,North,Singareni Collieries Company Ltd,head.up-son-72@coalmine.in,false,1,36,1,95.0,LOW
+73,UP-SON-73,Sonbhadra Coalfield Block,"Sonbhadra, Uttar Pradesh",Sonbhadra,Uttar Pradesh,North,Western Coalfields Ltd,head.up-son-73@coalmine.in,false,7,36,2,65.0,MEDIUM
+74,JK-UDH-74,Udhampur Underground Mine,"Udhampur, Jammu and Kashmir",Udhampur,Jammu and Kashmir,North,Bharat Coking Coal Ltd,head.jk-udh-74@coalmine.in,false,0,36,1,100.0,LOW

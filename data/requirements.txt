@@ -1,0 +1,39 @@
+# CoalShield dataset track - direct dependencies, pinned exactly.
+# Installed by: data\run_data.bat setup   (Python 3.14, Windows)
+#
+# Exact pins are deliberate, for two reasons:
+#   1. Reproducibility (brief rule 8): Faker's generated names and numpy's random streams can
+#      change between releases, which would break byte-identical data/out/ across machines.
+#   2. A 2026-09-25 unpinned install let pip backtrack through ancient releases after flaky
+#      metadata fetches, until it tried to build the long-dead "pycrypto" and failed. With exact
+#      pins there is nothing to backtrack through.
+# data/constraints.txt pins every transitive dependency too; setup installs with it.
+
+# Downloads (D2): polite HTTP with retries and backoff
+requests==2.34.2
+# Tabular cleaning and generation (D3, D4)
+pandas==3.0.6
+numpy==2.5.3
+# Parquet for the filtered MSHA extracts (D2)
+pyarrow==25.0.1
+# .xlsx sources: Global Coal Mine Tracker, Ministry of Coal tables (D3)
+openpyxl==3.1.5
+# PDF text and tables (Ministry of Coal, DGMS, legal texts) - no Java needed.
+# camelot-py was left out: its lattice mode needs opencv plus a PDF rasteriser, and pdfplumber
+# already extracts tables. tabula-py was left out because it requires Java (brief: avoid Java).
+pdfplumber==0.11.10
+# config.yaml, sources.yaml, schema/*.yaml
+PyYAML==6.0.3
+# Fictitious company and person names (D4), en_IN and regional locales
+Faker==40.39.0
+# Geometry: coordinates, district centroids, simplified boundaries (D3).
+# geopandas installed cleanly on Windows + Python 3.14 (verified 2026-09-25), so it is used;
+# pyogrio is its file I/O engine.
+shapely==2.1.2
+pyproj==3.8.0
+geopandas==1.1.4
+pyogrio==0.13.0
+# Reads optional API keys from the repo-root .env (see .env.example)
+python-dotenv==1.2.3
+# Fuzzy matching of our 74 mines against Global Coal Mine Tracker names (D3)
+rapidfuzz==3.14.6

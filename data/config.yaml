@@ -1,0 +1,64 @@
+# CoalShield dataset track - the one place run settings live.
+# Every script reads this file; nothing else carries a seed, a date or a volume.
+
+# One global random seed for every generator (brief rule 8).
+seed: 2026
+
+# The window generated operational data covers.
+date_range:
+  days: 90
+  # null = today (UTC) at run time, as the brief asks by default.
+  # Byte-identical output needs the SAME end date on both runs: two runs on different days cover
+  # different windows. Pin a date here (e.g. "2026-09-25") for a reproducible demo build.
+  end_date: null
+
+# Which preset generators use when none is passed on the command line.
+scale: demo
+
+# Scale presets. A preset may override date_range.days. Per-generator volumes (contractors,
+# grievances, workers...) are added in stage D4, once the output schemas exist.
+scales:
+  small:            # fast, for tests
+    mines: named    # the five named demo mines only
+    days: 14
+  demo:             # the default
+    mines: all      # all 74 mines
+  full:
+    mines: all
+    days: 365
+
+# ---------------------------------------------------------------------------------------------
+# repo_demo_baseline - NOT LEGAL VALUES.
+#
+# These are the numbers the CURRENT backend uses to draw the demo board, copied from
+# backend/app/core/config.py (Settings defaults) and backend/app/services/iot/thresholds.py at
+# commit 2509d16. They exist for one job only: recomputing each mine's demo score and risk band
+# into reference/mines_base.csv, so that file records the board as it stands today.
+#
+# They are prototype demo settings, not regulatory limits. Generators must NOT use them as
+# thresholds or deadlines: brief rule 7 says legal values come from obligations.csv with a
+# citation, or are marked TODO-VERIFY.
+# ---------------------------------------------------------------------------------------------
+repo_demo_baseline:
+  weight_ppe: 5.0
+  weight_env: 3.0
+  # A reading STRICTLY above its limit is a breach (thresholds.is_breach: value > limit).
+  thresholds:
+    gas: 50.0
+    dust: 10.0
+    temperature: 45.0
+  # Band taken from the score rounded to 1 decimal: >= low_min is LOW, >= medium_min is MEDIUM.
+  risk_bands:
+    low_min: 80
+    medium_min: 50
+  # The rolling breach window is 12 s and every seeded reading is days old, so at seed time no
+  # breach is inside the window: the opening score comes from open PPE violations alone
+  # (docs/architecture.md, "the rolling breach window").
+  in_window_breaches_at_seed: 0
+  named_mines: [JH-DHN-01, MP-SGR-02, CG-KRB-03, WB-RNG-04, OD-TLC-05]
+  # docs/demo-script.md, "Clean baseline". The extraction fails if its result disagrees.
+  expected:
+    mine_count: 74
+    average_score: 83.2
+    band_counts: {HIGH: 6, MEDIUM: 21, LOW: 47}
+    named_scores: {JH-DHN-01: 100, MP-SGR-02: 80, CG-KRB-03: 70, WB-RNG-04: 60, OD-TLC-05: 45}
