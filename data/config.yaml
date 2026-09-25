@@ -7,10 +7,13 @@ seed: 2026
 # The window generated operational data covers.
 date_range:
   days: 90
-  # null = today (UTC) at run time, as the brief asks by default.
-  # Byte-identical output needs the SAME end date on both runs: two runs on different days cover
-  # different windows. Pin a date here (e.g. "2026-09-25") for a reproducible demo build.
-  end_date: null
+  # Fixed so every run covers the same window and data/out/ stays byte-identical (brief rule 8).
+  # null would mean "today (UTC) at run time", which changes the window every day.
+  #
+  # MOVE THIS ONCE BEFORE THE FINAL DEMO BUILD: set it to the demo date (or the day before), so
+  # the generated 90 days end "now" on stage rather than weeks in the past. Then re-run
+  # data\run_data.bat all and commit the new date. Changing it regenerates every dated row.
+  end_date: "2026-09-25"
 
 # Which preset generators use when none is passed on the command line.
 scale: demo

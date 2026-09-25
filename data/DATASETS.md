@@ -9,6 +9,28 @@ Cards are added stage by stage; stage D6 completes the set.
 
 ---
 
+## Rule: mine locations (decided 2026-09-25, applies from stage D3)
+
+The 74 mines come from the prototype's synthetic seed, so a mine name is not evidence that a real
+mine exists. `reference/mines.csv` (stage D3) therefore places mines as follows:
+
+1. **Matched with good confidence to a real mine** — by fuzzy name + state against the Global
+   Coal Mine Tracker, or failing that Wikidata — gets that source's coordinates,
+   `location_quality = exact_gem` or `wikidata`, and `is_demo_mine = false`.
+2. **Anything else** gets `location_quality = district_centroid` and `is_demo_mine = true`.
+3. **A fictitious mine is never given real-looking exact coordinates.** A district-centroid point
+   is the centroid of the mine's district polygon, rounded to 2 decimal places (about 1 km), so it
+   cannot be mistaken for a surveyed mine location.
+
+"Good confidence" is a `match_confidence` threshold chosen and justified in stage D3. Every match
+below it is reviewed and listed at the end of that stage, not silently accepted or dropped.
+
+Not to be confused with `demo_named` in `mines_base.csv`, which marks the five mines the demo
+script is built around. The two are independent: a named demo mine may still turn out to have
+no real counterpart (`is_demo_mine = true`).
+
+---
+
 ## `reference/mines_base.csv`
 
 | | |
