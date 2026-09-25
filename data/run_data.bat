@@ -108,8 +108,13 @@ if errorlevel 1 exit /b 1
 exit /b 0
 
 :download
-call :pending download D2
-exit /b 1
+echo.
+echo  [download] Fetching every automatic source and checking manual folders - data\sources.yaml
+"%PY%" "%DATA%scripts\download_all.py"
+if errorlevel 1 exit /b 1
+"%PY%" "%DATA%scripts\render_sources_md.py"
+if errorlevel 1 exit /b 1
+exit /b 0
 
 :clean
 call :pending clean D3

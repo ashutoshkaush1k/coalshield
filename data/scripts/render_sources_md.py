@@ -43,8 +43,8 @@ def main() -> None:
         "",
         "## Summary",
         "",
-        "| ID | Source | Access | Automatic files | Size known | Licence |",
-        "|---|---|---|---|---|---|",
+        "| ID | Source | Access | Automatic files | Size known | Download (D2) | Licence |",
+        "|---|---|---|---|---|---|---|",
     ]
     total = 0
     for s in m["sources"]:
@@ -58,7 +58,8 @@ def main() -> None:
             access += f" (+{manual} manual)"
         if s.get("optional"):
             access += ", optional"
-        out.append(f"| {s['id']} | {cell(s['name'])} | {access} | {len(auto)} | {mb(size)} | {cell(s['licence'])} |")
+        out.append(f"| {s['id']} | {cell(s['name'])} | {access} | {len(auto)} | {mb(size)} | "
+                   f"{cell(s.get('d2_status', 'not run'))} | {cell(s['licence'])} |")
     out += ["", f"Automatic downloads total about **{mb(total)}** (pages served without a size are not counted).", ""]
 
     legal = next(s for s in m["sources"] if s["id"] == "S10")
@@ -85,8 +86,13 @@ def main() -> None:
         out += ["", s.get("notes", "").strip(), ""]
         files = s.get("files") or []
         if files:
-            out += ["| File | Status | Size | Accessed | URL |", "|---|---|---|---|---|"]
+            out += ["| File | Status | Size | Accessed | SHA-256 | URL |", "|---|---|---|---|---|---|"]
             for f in files:
+                for x in f.get("found_files") or []:      # manual files the user has added
+                    out.append(f"| `{x['path']}` | present (manual) | {mb(x['size_bytes'])} | "
+                               f"{x['recorded_at'][:10]} | `{x['sha256'][:16]}…` | added by hand |")
+                if f.get("found_files"):
+                    continue
                 if f.get("manual") or not f.get("url"):
                     if s["access"] == "repo":
                         status = "repo"
@@ -98,9 +104,14 @@ def main() -> None:
                 elif f.get("kind") == "api":
                     status, url = "needs key", f["url"]
                 else:
-                    status, url = str(f.get("http_status")), f.get("final_url") or f["url"]
+                    status = f.get("download_status") or f"probed {f.get('http_status')}"
+                    url = f.get("final_url") or f["url"]
+                if f.get("download_status") in ("pending-manual", "skipped-manual", "failed"):
+                    status = f["download_status"]
+                sha = f"`{f['sha256'][:16]}…`" if f.get("sha256") else "-"
+                when = (f.get("downloaded_at") or f.get("accessed_at") or "-")[:10]
                 out.append(f"| {cell(f['name'])} | {status} | {mb(f.get('size_bytes'))} | "
-                           f"{f.get('accessed_at') or '-'} | {cell(url)} |")
+                           f"{when} | {sha} | {cell(url)} |")
             out.append("")
     (DATA / "SOURCES.md").write_text("\n".join(out), encoding="utf-8", newline="\n")
     print(f"Wrote data/SOURCES.md ({len(m['sources'])} sources, automatic total {mb(total)})")
