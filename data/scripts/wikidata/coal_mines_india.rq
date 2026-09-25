@@ -1,0 +1,20 @@
+# Source S04 - coal mines in India on Wikidata, with coordinates where recorded.
+#
+# Run by hand at https://query.wikidata.org (data/MANUAL_STEPS.md, step "Wikidata"):
+# query.wikidata.org/robots.txt disallows automated access to /sparql, so the pipeline never
+# calls it. Download the result as CSV to data/raw/wikidata/coal_mines_india.csv.
+#
+# IDs checked against their Wikidata pages on 2026-09-25:
+#   Q959309 coal mine | Q668 India | P31 instance of | P279 subclass of | P17 country
+#   P625 coordinate location | P137 operator | P131 located in the administrative territorial entity
+# Licence of the result: CC0 (Wikidata structured data).
+
+SELECT ?mine ?mineLabel ?coord ?operator ?operatorLabel ?place ?placeLabel WHERE {
+  ?mine wdt:P31/wdt:P279* wd:Q959309 ;
+        wdt:P17 wd:Q668 .
+  OPTIONAL { ?mine wdt:P625 ?coord }
+  OPTIONAL { ?mine wdt:P137 ?operator }
+  OPTIONAL { ?mine wdt:P131 ?place }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY ?mineLabel

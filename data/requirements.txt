@@ -11,6 +11,9 @@
 
 # Downloads (D2): polite HTTP with retries and backoff
 requests==2.34.2
+# Verify TLS with the Windows certificate verifier, which fetches intermediate certificates the
+# way a browser does. Needed for egazette.gov.in and nclcil.in; verification stays on.
+truststore==0.10.4
 # Tabular cleaning and generation (D3, D4)
 pandas==3.0.6
 numpy==2.5.3
