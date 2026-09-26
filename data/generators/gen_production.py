@@ -24,7 +24,8 @@ Other columns:
   ob_*        coal x company stripping ratio 2024-25 (Coal Directory Table 3.22; NLC's printed 0.00
               is replaced by the CIL ratio); opencast 1, mixed 0.5, underground 0. Read as m3 per t.
   manpower    coal / output per manshift (Table 3.24, 2024-25, company x OC/UG; mixed uses ALL).
-  dispatch    actual x lognormal noise, bounded by stock; closing stock is a running balance.
+  dispatch    actual x lognormal noise, bounded by stock; closing stock is an exact running balance
+              (stock_balance, in tenths of a tonne), recomputed after scenario injection.
   status      locked if older than 7 days, submitted after that, the last night shift a draft.
 """
 
@@ -39,6 +40,28 @@ from common import REF, UTC, Ctx
 
 SHIFT_START_IST = {"A": 6, "B": 14, "C": 22}
 IST = pd.Timedelta(hours=5, minutes=30)
+
+
+def stock_balance(df: pd.DataFrame, opening: dict) -> None:
+    """closing = previous closing + actual - dispatch, per mine in (date, shift) order, in exact tenths
+    of a tonne. Dispatch is the existing value, capped at what is available (stock never negative).
+    Called by gen_production and again after scenario injection (stage D5) edits production."""
+    order = df.sort_values(["mine_id", "date", "shift"], kind="mergesort").index
+    act = np.rint(df.loc[order, "coal_actual_t"].to_numpy() * 10).astype(np.int64)
+    want = np.rint(df.loc[order, "dispatch_t"].to_numpy() * 10).astype(np.int64)
+    mids = df.loc[order, "mine_id"].to_numpy()
+    disp = np.empty_like(act)
+    stock = np.empty_like(act)
+    s, cur = 0, None
+    for i in range(len(act)):
+        if mids[i] != cur:
+            cur, s = mids[i], int(round(opening[mids[i]] * 10))
+        d = min(want[i], s + act[i])
+        s = s + act[i] - d
+        disp[i], stock[i] = d, s
+    df.loc[order, "coal_actual_t"] = act / 10
+    df.loc[order, "dispatch_t"] = disp / 10
+    df.loc[order, "closing_stock_t"] = stock / 10
 
 
 def company_months(ctx: Ctx) -> dict:
@@ -131,18 +154,11 @@ def run(ctx: Ctx) -> None:
     df["oms"] = [oms_key.get((c, t), oms_key.get(("CIL_TOTAL", t))) for c, t in zip(df["company_id"], tkey)]
     df["manpower_present"] = np.maximum(1, np.round(df["coal_actual_t"] / df["oms"] * np.exp(rng.normal(0, 0.05, len(df))))).astype(int)
 
-    # dispatch and running stock per mine
-    disp = np.empty(len(df))
-    stock = np.empty(len(df))
-    act = df["coal_actual_t"].to_numpy()
-    noise = np.exp(rng.normal(0, 0.08, len(df)))
-    for _, idx in df.groupby("mine_id").indices.items():
-        s = act[idx].mean() * 3 * 7          # opening stock: about a week of output
-        for i in idx:
-            d = min(act[i] * noise[i], s + act[i])
-            s = s + act[i] - d
-            disp[i], stock[i] = round(d, 1), round(s, 1)
-    df["dispatch_t"], df["closing_stock_t"] = disp, stock
+    # dispatch targets (actual x lognormal noise) and an exact running stock balance per mine
+    df["dispatch_t"] = (df["coal_actual_t"] * np.exp(rng.normal(0, 0.08, len(df)))).round(1)
+    opening = (df.groupby("mine_id")["coal_actual_t"].mean() * 3 * 7).round(1).to_dict()   # about a week of output
+    ctx.notes["opening_stock"] = opening
+    stock_balance(df, opening)
 
     df["remarks"] = np.where(df["breakdown_hours"] > 0,
                              "Equipment breakdown " + df["breakdown_hours"].map(lambda h: f"{h:g}") + " h", None)

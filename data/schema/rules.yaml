@@ -29,6 +29,9 @@ legal:
   dangerous_occurrence_notice_hours:
     value: 12
     obligation: RPT-05        # r.7(3)
+  injury_report_hours_after_48h_disablement:
+    value: 12                 # report within 12 hours after 48 hours of disablement (incident.reported_within_48h flags > 48 h)
+    obligation: RPT-04        # r.7(2)
 
 # Sensor thresholds. A reading is `breached` only where a verified obligation gives the limit.
 sensors:

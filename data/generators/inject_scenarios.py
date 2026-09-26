@@ -184,11 +184,20 @@ class Injector:
             iids.append(iid)
         incident = min(days[-1] + pd.Timedelta(days=5), self.E - pd.Timedelta(days=1))
         kind = "fall_of_sides" if m["type"] == "opencast" else "fall_of_roof"
+        occurred = _ts(incident, 14.3)
+        # the dangerous occurrence is an incident row (C23); DGMS: no one killed or seriously injured
+        inc = self.T("incident")
+        inc_id = _next_id(inc)
+        inc_row = {"id": inc_id, "mine_id": mid, "occurred_at": occurred, "reported_at": occurred + pd.Timedelta(hours=3),
+                   "type": "ground_movement", "severity": "dangerous_occurrence", "persons_affected": 0,
+                   "description_code": "FALL_OF_SIDES" if kind == "fall_of_sides" else "FALL_OF_ROOF",
+                   "related_violation_id": vids[-1], "reported_within_48h": True, "obligation_code": "RPT-05"}
+        self.put("incident", pd.concat([inc, pd.DataFrame([inc_row])], ignore_index=True))
         self.ctx.notes["extra_alerts"].append({
             "key": "S1_incident", "code": "DANGEROUS_OCCURRENCE_REPORTED", "severity": "high", "mine_id": mid,
-            "entity_type": "mine", "entity_id": mid, "created_at": _ts(incident, 14.3), "resolved": True,
-            "params": {"kind": kind, "dgms_cause": "Fall of Sides" if kind == "fall_of_sides" else "Fall of Roof",
-                       "persons_seriously_injured": 1, "obligation": "RPT-05"}})
+            "entity_type": "incident", "entity_id": inc_id, "created_at": occurred + pd.Timedelta(hours=3), "resolved": True,
+            "params": {"incident_id": inc_id, "kind": kind, "dgms_cause": "Fall of Sides" if kind == "fall_of_sides" else "Fall of Roof",
+                       "persons_affected": 0, "obligation": "RPT-05"}})
         # post-incident inspection finds strata still unsafe: one OPEN strata violation, balanced by
         # resolving one existing open violation at this mine (open count unchanged)
         v = self.T("violation")
@@ -222,7 +231,9 @@ class Injector:
         if post_vid:
             self.label("S1_STRATA_REPEAT_INCIDENT", "positive", mid, "violation", [post_vid], d_to, d_to,
                        "strata violation still open after the incident")
-        self.s1 = {"mine_id": mid, "violations": vids, "inspections": iids, "incident": incident, "post": post_vid,
+        self.label("S1_STRATA_REPEAT_INCIDENT", "positive", mid, "incident", [inc_id], incident, incident,
+                   f"dangerous occurrence ({kind}) after the repeat violations; linked to the last one")
+        self.s1 = {"mine_id": mid, "violations": vids, "inspections": iids, "incident": incident, "post": post_vid, "incident_id": inc_id,
                    "first": days[0], "last": days[-1], "d_to": d_to, "n": n, "span": span, "kind": kind}
 
     def s7_late_ca(self):
@@ -526,6 +537,42 @@ class Injector:
                 p.loc[ab, col] = (p.loc[ab, col] + cut / len(ab)).round(1)
             p.loc[c, "remarks"] = p.loc[c, "remarks"].fillna("Planned maintenance in night shift")
             c_ids += p.loc[c, "id"].tolist()
+        # a clear margin on the decoy: re-time resolved night PPE detections to day shifts (the same
+        # re-timing rule S5 uses in the other direction) until at most 35 % are at night
+        v, ca = self.T("violation"), self.T("corrective_action")
+        mv = v.index[(v["mine_id"] == mid) & (v["source"] == "vision")]
+        hour = lambda t: (t + IST).hour  # noqa: E731
+        night = [i for i in mv if hour(v.at[i, "detected_at"]) >= 22 or hour(v.at[i, "detected_at"]) < 6]
+        movable = [i for i in night if bool(v.at[i, "resolved"])]
+        while len(mv) and len(night) / len(mv) > 0.35 and movable:
+            i = movable.pop(0)
+            old, res = v.at[i, "detected_at"], v.at[i, "resolved_at"]
+            day = (old + IST).normalize() - IST + (pd.Timedelta(days=1) if hour(old) >= 22 else pd.Timedelta(0))
+            new = day + pd.Timedelta(hours=float(self.rng.uniform(9.5, 15.5)))
+            if new > self.as_of - pd.Timedelta(hours=2):
+                continue
+            new_res = min(max(res + (new - old), new + pd.Timedelta(hours=1)), self.as_of - pd.Timedelta(minutes=1))
+            v.loc[i, ["detected_at", "resolved_at"]] = [new, new_res]
+            ci = ca.index[ca["violation_id"] == v.at[i, "id"]]
+            ca.loc[ci, "created_at"] = min(new + pd.Timedelta(hours=2), new_res)
+            ca.loc[ci, "resolved_at"] = new_res
+            ca.loc[ci, "due_at"] = ca.loc[ci, "created_at"] + pd.Timedelta(days=10)
+            night.remove(i)
+        # open night detections cannot move (the score counts them), so add resolved day-shift
+        # detections - the rule S5 uses for night ones - until the margin is reached
+        code = self.by_id.loc[mid, "code"].lower()
+        k = 0
+        while len(mv) and len(night) / len(mv) > 0.35:
+            d = self.S + pd.Timedelta(days=int(self.rng.integers(0, max(1, self.ctx.days - 3))))
+            det = _ts(d, float(self.rng.uniform(9.5, 15.5)))
+            vid = self.add_violation(mid, "ppe", ["no_helmet", "no_safety_vest", "no_safety_boots"][k % 3], "vision", det,
+                                     min(det + pd.Timedelta(hours=float(self.rng.uniform(6, 48))), self.as_of - pd.Timedelta(minutes=1)),
+                                     confidence=round(float(self.rng.uniform(0.62, 0.93)), 2),
+                                     frame_ref=f"annotated/{code}_day_{k:03d}.jpg")
+            v = self.T("violation")
+            mv = v.index[(v["mine_id"] == mid) & (v["source"] == "vision")]
+            k += 1
+        self.n3_night_share = round(len(night) / len(mv), 3) if len(mv) else 0.0
         self.label("N3_NIGHT_SHIFT_MAINTENANCE", "negative", mid, "daily_production", c_ids, self.S, self.E,
                    "night-shift output 40 % lower for planned maintenance; compliance unchanged; not a compliance signal")
         self.n3 = {"mine_id": mid, "ids": c_ids}
@@ -555,7 +602,7 @@ def finalize(ctx: Ctx) -> None:
          "detector": "risk_trend / inspection prioritisation", "mine_id": s1["mine_id"], "mine_code": code(s1["mine_id"]),
          "date_from": iso(s1["first"]), "date_to": iso(s1["d_to"]),
          "entities": {"violation": s1["violations"] + ([s1["post"]] if s1["post"] else []), "inspection": s1["inspections"],
-                      "alert": [inc_id]},
+                      "incident": [s1["incident_id"]], "alert": [inc_id]},
          "signal": {"type": "repeat_category_then_incident", "category": "roof_strata", "min_repeats": s1["n"],
                     "within_days": s1["span"], "incident_alert_code": "DANGEROUS_OCCURRENCE_REPORTED",
                     "incident_date": iso(s1["incident"]), "open_after_incident": bool(s1["post"]),
@@ -607,6 +654,7 @@ def finalize(ctx: Ctx) -> None:
         {"scenario_code": "N3_NIGHT_SHIFT_MAINTENANCE", "polarity": "negative", "expected_flag": False,
          "detector": "shift compliance", "mine_id": inj.n3["mine_id"], "mine_code": code(inj.n3["mine_id"]),
          "date_from": iso(inj.S), "date_to": iso(inj.E), "entities": {"daily_production": inj.n3["ids"]},
-         "signal": {"type": "night_production_lower_not_compliance", "c_output_factor": 0.6, "max_night_violation_share": 0.5}},
+         "signal": {"type": "night_production_lower_not_compliance", "c_output_factor": 0.6, "max_night_violation_share": 0.4,
+                    "night_violation_share": inj.n3_night_share}},
     ]
     ctx.notes["scenario_expectations"] = exp

@@ -23,6 +23,10 @@ Checks
   V8 demo scores   current backend formula on the CSVs: every mine = roster demo score, named mines
                    100/80/70/60/45, and with all 74 mines 6/21/47 and average 83.2
   V9 determinism   (with --determinism)
+  V10 stock        opening + production - dispatch = closing stock for every mine-day (opening =
+                   the previous day's closing; each mine's first day has no recorded opening)
+  V11 incidents    reported_within_48h agrees with the timestamps; obligation code matches severity
+                   (fatal RPT-03, injuries RPT-04, dangerous occurrence RPT-05) and is verified
 """
 
 from __future__ import annotations
@@ -247,9 +251,13 @@ def v6_scenarios(folder: Path, end: pd.Timestamp, rep: Report) -> list[dict]:
             inc = a[a["id"].isin(map(str, e["entities"]["alert"])) & (a["code"] == sig["incident_alert_code"]) & (a["mine_id"] == mid)]
             inc_t = ts(inc["created_at"]).min() if len(inc) else None
             open_after = vv[(vv["resolved"] == "false") & (vv["dt"] > inc_t)] if inc_t is not None else vv.iloc[0:0]
+            incs = read(folder, "incident")
+            irow = incs[incs["id"].isin(map(str, e["entities"].get("incident", []))) & (incs["mine_id"] == mid)]
+            inc_ok = len(irow) == 1 and irow["severity"].iloc[0] == "dangerous_occurrence" and                 irow["type"].iloc[0] == "ground_movement" and irow["related_violation_id"].iloc[0] in rep_ids
             ok = (len(first_n) >= sig["min_repeats"] and span <= sig["within_days"] and inc_t is not None
-                  and inc_t > first_n["dt"].max() and (len(open_after) >= 1) == sig["open_after_incident"])
-            measured = {"repeats": len(first_n), "span_days": span, "incident": str(inc_t), "open_after": len(open_after)}
+                  and inc_t > first_n["dt"].max() and (len(open_after) >= 1) == sig["open_after_incident"] and inc_ok)
+            measured = {"repeats": len(first_n), "span_days": span, "incident": str(inc_t), "open_after": len(open_after),
+                        "incident_row_linked": bool(inc_ok)}
         elif t == "production_spike_before_inspection":
             p = read(folder, "daily_production", usecols=["mine_id", "date", "coal_actual_t"])
             p = p[p["mine_id"] == mid].assign(c=lambda d: d["coal_actual_t"].astype(float)).groupby("date")["c"].sum()
@@ -344,6 +352,7 @@ def v7_legal(folder: Path, rep: Report) -> None:
     ob = pd.read_csv(REF / "obligations.csv", dtype=str).set_index("obligation_code")
     a = read(folder, "alert")
     cited = {json.loads(p).get("obligation") for p in a["params"]} - {None}
+    cited |= set(read(folder, "incident", usecols=["obligation_code"])["obligation_code"])
     unverified = [c for c in cited if c not in ob.index or ob.at[c, "verified"] != "yes"]
     lim = rules["sensors"]
     wrong, parts = [], []
@@ -411,6 +420,36 @@ def v8_scores(folder: Path, manifest: dict, config: dict, rep: Report) -> dict:
     return res
 
 
+def v10_stock(folder: Path, rep: Report) -> None:
+    p = read(folder, "daily_production", usecols=["mine_id", "date", "shift", "coal_actual_t", "dispatch_t", "closing_stock_t"])
+    for c in ["coal_actual_t", "dispatch_t", "closing_stock_t"]:
+        p[c] = p[c].astype(float)
+    p = p.sort_values(["mine_id", "date", "shift"])
+    day = p.groupby(["mine_id", "date"]).agg(prod=("coal_actual_t", "sum"), disp=("dispatch_t", "sum"),
+                                             close=("closing_stock_t", "last")).reset_index()
+    day["open"] = day.groupby("mine_id")["close"].shift(1)
+    chk = day.dropna(subset=["open"])
+    gap = (chk["open"] + chk["prod"] - chk["disp"] - chk["close"]).abs()
+    neg = int((p["closing_stock_t"] < 0).sum())
+    rep.add(f"V10 stock: opening + production - dispatch = closing for {len(chk):,} mine-days (worst gap {gap.max():.2f} t)",
+            bool((gap < 0.05).all()) and neg == 0, {"bad_mine_days": int((gap >= 0.05).sum()), "negative_stock_rows": neg})
+
+
+def v11_incidents(folder: Path, rep: Report) -> None:
+    i = read(folder, "incident")
+    delay = ts(i["reported_at"]) - ts(i["occurred_at"])
+    flag_ok = ((delay <= pd.Timedelta(hours=48)) == (i["reported_within_48h"] == "true")).all()
+    order_ok = (delay >= pd.Timedelta(0)).all()
+    want = i["severity"].map({"fatal": "RPT-03", "serious": "RPT-04", "minor": "RPT-04", "dangerous_occurrence": "RPT-05"})
+    code_ok = (want == i["obligation_code"]).all()
+    do_ok = (i.loc[i["severity"] == "dangerous_occurrence", "persons_affected"] == "0").all()
+    rep.add(f"V11 incidents: {len(i)} incidents consistent (48 h flag, obligation by severity, dangerous occurrences without casualties)",
+            bool(flag_ok and order_ok and code_ok and do_ok),
+            {"flag_ok": bool(flag_ok), "reported_after_occurred": bool(order_ok), "obligation_ok": bool(code_ok),
+             "do_no_casualties": bool(do_ok), "late_reports": int((i["reported_within_48h"] == "false").sum()),
+             "by_severity": i["severity"].value_counts().to_dict()})
+
+
 def hashes(folder: Path) -> dict:
     return {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(folder.iterdir()) if p.suffix in (".csv",) or p.name == "scenario_expectations.json"}
@@ -456,6 +495,8 @@ def main() -> int:
     scen = v6_scenarios(folder, end, rep)
     v7_legal(folder, rep)
     scores = v8_scores(folder, manifest, config, rep)
+    v10_stock(folder, rep)
+    v11_incidents(folder, rep)
     if args.determinism:
         with tempfile.TemporaryDirectory() as t1, tempfile.TemporaryDirectory() as t2:
             generate(preset, manifest["roster"], Path(t1))

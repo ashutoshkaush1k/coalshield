@@ -28,6 +28,7 @@ import gen_alerts  # noqa: E402
 import gen_contractors  # noqa: E402
 import gen_environment  # noqa: E402
 import gen_grievances  # noqa: E402
+import gen_incidents  # noqa: E402
 import gen_inspections  # noqa: E402
 import gen_org  # noqa: E402
 import gen_production  # noqa: E402
@@ -38,7 +39,8 @@ import inject_scenarios  # noqa: E402
 from common import NAMED, GenerationError, make_ctx, write_all  # noqa: E402
 
 STEPS = [("org", gen_org), ("users", gen_users), ("contractors", gen_contractors), ("grievances", gen_grievances),
-         ("inspections", gen_inspections), ("production", gen_production), ("requests", gen_requests),
+         ("inspections", gen_inspections), ("production", gen_production), ("incidents", gen_incidents),
+         ("requests", gen_requests),
          ("sensors", gen_sensors), ("environment", gen_environment)]
 # Deadlines and validity dates may lie after the reference time; every other date may not.
 FORWARD_OK = {("corrective_action", "due_at"), ("production_detail_request", "due_at"), ("grievance", "sla_due_at"),
@@ -131,6 +133,16 @@ def calibration(ctx) -> list[dict]:
     exp_v = sum(e["violations"] for e in model["expected"].values())
     out.append(check("violations: inspection violations within 25 % of the MSHA-rate expectation",
                      abs(len(iv) - exp_v) <= 0.25 * exp_v + 5, {"generated": len(iv), "expected": round(exp_v, 1)}))
+    im = ctx.notes["incident_model"]
+    out.append(check("incidents: counts per severity within Poisson bounds of the DGMS-scaled expectation",
+                     im["poisson_ok"], im))
+    p = ctx.tables["daily_production"].sort_values(["mine_id", "date", "shift"])
+    prev = p.groupby("mine_id")["closing_stock_t"].shift(1)
+    first = prev.isna()
+    prev = prev.fillna(p["mine_id"].map(ctx.notes["opening_stock"]))
+    gap = (prev + p["coal_actual_t"] - p["dispatch_t"] - p["closing_stock_t"]).abs()
+    out.append(check("production: opening + production - dispatch = closing stock for every row",
+                     bool((gap < 0.05).all()), {"worst_gap_t": round(float(gap.max()), 3), "rows": len(p)}))
     out.append(check("legal: every legal value used cites a verified obligation (rules.yaml)", True,
                      {k: v["obligation"] for k, v in ctx.rules["legal"].items()}))
     e = ctx.tables["env_reading"]
@@ -181,6 +193,7 @@ def main() -> int:
         pre = demo_scores(ctx)
         t = time.time()
         inject_scenarios.run(ctx)
+        gen_production.stock_balance(ctx.tables["daily_production"], ctx.notes["opening_stock"])   # after production edits
         gen_alerts.run(ctx)
         inject_scenarios.finalize(ctx)
         print(f"  {'scenarios+alerts':12s} {time.time() - t:6.1f} s")

@@ -1,0 +1,19 @@
+table: incident
+description: Accidents and dangerous occurrences at the mines - background incidents calibrated to DGMS rates, plus the S1 scenario's dangerous occurrence. Incidents do not enter the demo score.
+defined_by:
+  - "Owner D6-prep instruction 2026-09-26 (HANDOFF C23): incident(id, mine_id, occurred_at, reported_at, type [DGMS cause category], severity [fatal/serious/minor/dangerous_occurrence], persons_affected, description_code, related_violation_id nullable, reported_within_48h bool, obligation_code)"
+  - "DGMS categories (sanket0404_2024.pdf p.17): fatal accident, serious accident, dangerous occurrence, minor accident"
+generator: gen_incidents.py (background), inject_scenarios.py (S1)
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: occurred_at, type: datetime, nullable: false}
+  - {name: reported_at, type: datetime, nullable: false}
+  - {name: type, type: enum, nullable: false, values: [ground_movement, transportation_winding, transportation_other, machinery_other, explosives, electricity, gas_dust_fire, fall_other_than_ground, other_causes], note: "the nine DGMS cause groups (accident_causes_dgms.csv)"}
+  - {name: severity, type: enum, nullable: false, values: [fatal, serious, minor, dangerous_occurrence]}
+  - {name: persons_affected, type: integer, nullable: false, note: "killed (fatal), injured (serious, minor), 0 for a dangerous occurrence (DGMS: no one killed or seriously injured)"}
+  - {name: description_code, type: string, nullable: false, note: "UPPER_SNAKE code of the DGMS cause, e.g. FALL_OF_SIDES; the UI translates it"}
+  - {name: related_violation_id, type: integer, nullable: true, fk: violation.id}
+  - {name: reported_within_48h, type: boolean, nullable: false, note: "reported_at - occurred_at <= 48 h"}
+  - {name: obligation_code, type: enum, nullable: false, values: [RPT-03, RPT-04, RPT-05], note: "fatal RPT-03 (r.7(1)); serious and minor injuries RPT-04 (r.7(2)); dangerous occurrence RPT-05 (r.7(3))"}

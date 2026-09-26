@@ -29,6 +29,20 @@ SRC = "raw/dgms/sanket0404_2024.pdf"
 TABLES = {"fatal": (33, "Table 2.9"), "serious": (34, "Table 2.10")}
 YEARS = list(range(2013, 2023))
 OUT = DATA / "reference/accident_causes_dgms.csv"
+OUT_DO = DATA / "reference/dangerous_occurrences_dgms.csv"
+DO_PAGE = 30   # Table 2.6 "Cause wise trend in dangerous occurrences in coal mines" (printed page 16)
+# The 18 cause rows of Table 2.6 in printed order, as the table words them (labels wrap over lines in
+# the PDF text, so rows are read by serial number and each label is checked against the page).
+DO_CAUSES = ["Over winding of cages, skip or bucket", "Spontaneous heating of coal in underground",
+             "Spontaneous heating of coal on surface", "Spontaneous heating of coal in opencast",
+             "Outbreak of fire underground from spontaneous heating",
+             "Outbreak of fire underground from causes other than spontaneous heating",
+             "Outbreak of fire in quarry from causes other than spontaneous heating",
+             "Outbreak of fire on surface from causes other than spontaneous heating",
+             "Premature collapse of workings or failure of pillars", "Influx of noxious gases", "Breakage of winding rope",
+             "Breakdown of winding engine, crank shaft, bearing etc.", "Ignition or occurrence of inflammable gas",
+             "Breakage, fracture or failure of essential parts of machinery or apparatus whereby safety of persons was endangered",
+             "Irruption of water", "Subsidences", "Explosives", "Others"]
 GROUPS = {  # DGMS cause group number -> name, as the tables print them
     "1": "Ground movement", "2": "Transportation machinery (winding in shaft)",
     "3": "Transportation machinery (other than winding in shaft)", "4": "Machinery other than transportation machinery",
@@ -80,6 +94,35 @@ def read_table(page_no: int) -> list[tuple[str, str, list[tuple[int, int]]]]:
     return rows
 
 
+def dangerous_occurrences() -> list[dict]:
+    """Table 2.6: dangerous occurrences by cause, 2013-2022. A row is its serial number followed by
+    ten counts (label words may sit on the same line or wrap around it). Checks: every label is on
+    the page, 18 rows, and they sum to the Total row."""
+    text = pdfplumber.open(DATA / SRC).pages[DO_PAGE - 1].extract_text()
+    flat = " ".join(text.split())
+    for c in DO_CAUSES:
+        if " ".join(c.split()) not in flat.replace(" -", "").replace("- ", ""):
+            words = c.split()
+            if not all(w in flat for w in words):
+                raise ValueError(f"Table 2.6 label not on the page: {c}")
+    rows, total = {}, None
+    for line in text.splitlines():
+        m = re.match(r"^(\d{1,2})\s+(?:[^\d]*?\s)?((?:\d+\s+){9}\d+)\s*$", line.strip())
+        t = re.match(r"^Total\s+((?:\d+\s+){9}\d+)\s*$", line.strip())
+        if t:
+            total = [int(x) for x in t.group(1).split()]
+        elif m and 1 <= int(m.group(1)) <= 18 and int(m.group(1)) not in rows:
+            rows[int(m.group(1))] = [int(x) for x in m.group(2).split()]
+    if len(rows) != 18 or total is None:
+        raise ValueError(f"Table 2.6: read {len(rows)} cause rows, total {'found' if total else 'missing'}")
+    for i, y in enumerate(YEARS):
+        if sum(r[i] for r in rows.values()) != total[i]:
+            raise ValueError(f"Table 2.6 {y}: causes do not sum to Total")
+    return [{"year": y, "cause": DO_CAUSES[k - 1], "dangerous_occurrences": rows[k][i], "source_file": SRC,
+             "source_page": f"PDF p.{DO_PAGE} (printed 16)", "source_table": "Table 2.6"}
+            for i, y in enumerate(YEARS) for k in sorted(rows)]
+
+
 def main() -> int:
     if not (DATA / SRC).exists():
         print(f"ERROR: {SRC} missing - run data\\run_data.bat download", file=sys.stderr)
@@ -119,6 +162,12 @@ def main() -> int:
         w = csv.DictWriter(fh, fieldnames=COLUMNS, lineterminator="\n")
         w.writeheader()
         w.writerows(out)
+    do = dangerous_occurrences()
+    with OUT_DO.open("w", encoding="utf-8", newline="") as fh:
+        w2 = csv.DictWriter(fh, fieldnames=list(do[0]), lineterminator="\n")
+        w2.writeheader()
+        w2.writerows(do)
+    print(f"Wrote reference/dangerous_occurrences_dgms.csv: {len(do)} rows (18 causes x 10 years), sums checked")
     print(f"Wrote reference/accident_causes_dgms.csv: {len(out)} rows ({len(keys)} causes/totals x {len(YEARS)} years, "
           f"2013-2022); sums checked; sha256 {sha256_file(OUT)[:16]}")
     for grp, cause in keys:
