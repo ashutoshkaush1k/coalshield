@@ -162,6 +162,37 @@ def gem_licence(xlsx: Path) -> dict:
     return {"checked_file": rel(xlsx), "notices": hits}
 
 
+def ensure_manual_folders(manifest: dict) -> list[str]:
+    """Create every raw/ folder MANUAL_STEPS.md tells a person to save into, each with a .gitkeep,
+    so nobody ever has to create a folder by hand (and the folders exist in a fresh clone).
+
+    Paths are read from MANUAL_STEPS.md itself, then checked against the manifest's manual targets;
+    a folder named in one but not the other is reported, because the two should never drift apart.
+    """
+    import re
+    text = (DATA / "MANUAL_STEPS.md").read_text(encoding="utf-8")
+    from_doc = {m.replace("\\", "/").rstrip("/") for m in re.findall(r"data\\(raw(?:\\[\w.\-]+)+)", text)}
+    from_manifest = set()
+    for src in manifest["sources"]:
+        for f in src.get("files") or []:
+            if f.get("manual") or (src.get("manual") and not f.get("url")):
+                t = f["target"].rstrip("/")
+                from_manifest.add(t if f["target"].endswith("/") else str(Path(t).parent).replace("\\", "/"))
+    for only_doc in sorted(from_doc - from_manifest):
+        print(f"  note: {only_doc} is in MANUAL_STEPS.md but not a manual target in sources.yaml")
+    for only_manifest in sorted(from_manifest - from_doc):
+        print(f"  note: {only_manifest} is a manual target in sources.yaml but not in MANUAL_STEPS.md")
+    created = []
+    for folder in sorted(from_doc | from_manifest):
+        path = DATA / folder
+        path.mkdir(parents=True, exist_ok=True)
+        keep = path / ".gitkeep"
+        if not keep.exists():
+            keep.write_text("", encoding="utf-8")
+            created.append(folder)
+    return created
+
+
 # --- post-processing ----------------------------------------------------------------------
 def extract_ppe(zip_path: Path) -> dict:
     """S13: keep only dataset/ from the repository archive (the video and weights are not needed)."""
@@ -247,6 +278,8 @@ def main() -> int:
 
     manifest, header = load_manifest()
     config = load_config()
+    for folder in ensure_manual_folders(manifest):
+        print(f"  created folder {folder}/ (with .gitkeep) for a manual step")
     session = PoliteSession(timeout=120)
     automatic_paths = set()
     summary = []
@@ -286,22 +319,32 @@ def main() -> int:
                 if not f.get("manual") and not src.get("manual"):
                     f["download_status"] = "not located"
                     continue
+                if f.get("skipped"):
+                    f["download_status"] = "skipped"      # decided by the user; see skip_reason
+                    continue
                 found = check_manual(f, automatic_paths)
                 present += bool(found)
                 pending += not found
                 if src["id"] == "S02":
                     src["licence"] = GEM_LICENCE_UNCONFIRMED
                 if found and src["id"] == "S02":
-                    xlsx = next((p for p in found if p.suffix.lower() == ".xlsx"), None)
-                    if xlsx:
-                        detail["licence_check"] = gem_licence(xlsx)
-                        notices = " ".join(n["text"] for n in detail["licence_check"]["notices"])
-                        if "4.0" in notices and ("creative commons" in notices.lower() or "cc by" in notices.lower()):
-                            src["licence"] = "CC BY 4.0 - confirmed from the licence notice inside the downloaded workbook"
-                        elif notices:
-                            src["licence"] = "Licence notice found in the workbook but it is not CC BY 4.0 - review d2_detail"
-                        else:
-                            src["licence"] = "No licence notice found in the workbook - still unconfirmed (CC BY 4.0 per GEM site)"
+                    books = [p for p in found if p.suffix.lower() == ".xlsx"]
+                    checks = [gem_licence(p) for p in books]
+                    detail["licence_check"] = checks
+                    def cc4(c):
+                        text = " ".join(n["text"] for n in c["notices"]).lower()
+                        return "4.0" in text and ("creative commons" in text or "cc by" in text)
+                    confirmed = [c["checked_file"] for c in checks if cc4(c)]
+                    if confirmed and len(confirmed) == len(checks):
+                        src["licence"] = ("CC BY 4.0 - confirmed from the licence notice inside each downloaded "
+                                          f"workbook ({len(confirmed)} of {len(checks)})")
+                    elif confirmed:
+                        src["licence"] = (f"CC BY 4.0 confirmed in {len(confirmed)} of {len(checks)} workbooks "
+                                          "(see d2_detail.licence_check for the others)")
+                    elif any(c["notices"] for c in checks):
+                        src["licence"] = "Licence notice found in the workbooks but it is not CC BY 4.0 - review d2_detail"
+                    else:
+                        src["licence"] = "No licence notice found in the workbooks - still unconfirmed (CC BY 4.0 per GEM site)"
             elif f.get("kind") == "api" and src["id"] == "S09":
                 try:
                     from download_openaq import run as openaq_run
@@ -331,6 +374,11 @@ def main() -> int:
         n_files = len(auto_ok) + sum(len(f.get("found_files") or []) for f in files)
         size = sum(f.get("size_bytes") or 0 for f in auto_ok) + \
             sum(x["size_bytes"] for f in files for x in f.get("found_files") or [])
+        if src["id"] == "S09" and detail.get("openaq", {}).get("download_status") == "ok":
+            api_files = [p for p in (DATA / src["target_path"]).rglob("*.json")]
+            n_files += len(api_files)
+            size += sum(p.stat().st_size for p in api_files)
+            detail["openaq"]["files_on_disk"] = len(api_files)
         if failures:
             status = "failed"
         elif not auto_ok and pending and not present:

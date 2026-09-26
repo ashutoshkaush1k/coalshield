@@ -44,7 +44,7 @@ sources:
   access: manual_form
   manual: true
   optional: false
-  licence: CC BY 4.0 (to be confirmed against the notice inside the downloaded file)
+  licence: CC BY 4.0 - confirmed from the licence notice inside each downloaded workbook (3 of 3)
   licence_source: https://globalenergymonitor.org/creative-commons-license
   redistribution: allowed with attribution; raw file kept out of git anyway
   notes: 'The download is selected on GEM''s "Download data" page (card "Coal mines", last update shown
@@ -58,8 +58,58 @@ sources:
   - name: Global Coal Mine Tracker workbook (.xlsx, as received)
     url: null
     target: raw/gem_gcmt/
-    download_status: pending-manual
-  d2_status: skipped-manual
+    download_status: present-manual
+    found_files:
+    - path: raw/gem_gcmt/Global Coal Mine Tracker, August 2026.xlsx
+      sha256: 9aa804479c4b76456678fa02f1b5b9af826e12fa57d98cbcade35f4ee0417d43
+      size_bytes: 3085251
+      recorded_at: '2026-09-26T04:33:00+00:00'
+    - path: raw/gem_gcmt/Global-Coal-Mine-Tracker-December-2024-Supplement-Historical-Production-from-2018-to-2023.xlsx
+      sha256: 1ae19635e8972322f82a301ee1a2ddce63d0907a12b21e1eb2b9123ffb1746ca
+      size_bytes: 331709
+      recorded_at: '2026-09-26T04:33:00+00:00'
+    - path: raw/gem_gcmt/Global-Coal-Mine-Tracker-September-2024-Supplement-v2.xlsx
+      sha256: 1c3fc4eb146e32b228c72613b167aa096214cc416496b38b4760f5ba127eb453
+      size_bytes: 387913
+      recorded_at: '2026-09-26T04:33:00+00:00'
+  d2_status: ok
+  d2_detail:
+    licence_check:
+    - checked_file: raw/gem_gcmt/Global Coal Mine Tracker, August 2026.xlsx
+      notices:
+      - sheet: README
+        cell: A2
+        text: Copyright © Global Energy Monitor. Global Coal Mine Tracker, August 2026 release. Distributed
+          under a Creative Commons Attribution 4.0 International License.
+      - sheet: README
+        cell: A3
+        text: 'Recommended Citation: "Global Energy Monitor, Global Coal Mine Tracker, August 2026 release."
+          (See the CC license for attribution requirements if sharing or adapting the data set.)'
+      - sheet: README
+        cell: B32
+        text: A status assigned when permit applications (environmental assessments, land use rights,
+          water licenses, etc.) for a coal mine project have been filed, but not yet obtained.
+    - checked_file: raw/gem_gcmt/Global-Coal-Mine-Tracker-December-2024-Supplement-Historical-Production-from-2018-to-2023.xlsx
+      notices:
+      - sheet: About
+        cell: B3
+        text: Copyright © Global Energy Monitor. Global Coal Mine Tracker, December 2024 Supplement release.
+          Distributed under a Creative Commons Attribution 4.0 International License.
+      - sheet: About
+        cell: B4
+        text: 'Recommended Citation: "Global Energy Monitor, Global Coal Mine Tracker, December 2024 Supplement
+          release." (See the CC license for attribution requirements if sharing or adapting the data set.)'
+    - checked_file: raw/gem_gcmt/Global-Coal-Mine-Tracker-September-2024-Supplement-v2.xlsx
+      notices:
+      - sheet: About
+        cell: B3
+        text: Copyright © Global Energy Monitor. Global Coal Mine Tracker, September 2024 Supplement release.
+          Distributed under a Creative Commons Attribution 4.0 International License.
+      - sheet: About
+        cell: B4
+        text: 'Recommended Citation: "Global Energy Monitor, Global Coal Mine Tracker, September 2024
+          Supplement release." (See the CC license for attribution requirements if sharing or adapting
+          the data set.)'
 - id: S03
   name: DataMeet maps - district and state boundaries
   publisher: DataMeet India community
@@ -247,13 +297,26 @@ sources:
     url: null
     target: raw/wikidata/coal_mines_india.csv
     query: scripts/wikidata/coal_mines_india.rq
-    download_status: pending-manual
+    download_status: present-manual
+    query_note: 'The saved CSV came from a broader all-mines query run by the user (it has a productLabel
+      column and non-coal mines), not from scripts/wikidata/coal_mines_india.rq. That query''s text is
+      not in the repo - TODO: save it as scripts/wikidata/all_mines_india.rq so the file can be reproduced.'
+    found_files:
+    - path: raw/wikidata/coal_mines_india.csv
+      sha256: f445c45085efdc560949e67294ed06a82948ab4776ebc93ae8191a63c8bf5079
+      size_bytes: 14022
+      recorded_at: '2026-09-26T04:33:05+00:00'
   - name: districts_india.csv
     url: null
     target: raw/wikidata/districts_india.csv
     query: scripts/wikidata/districts_india.rq
-    download_status: pending-manual
-  d2_status: skipped-manual
+    download_status: present-manual
+    found_files:
+    - path: raw/wikidata/districts_india.csv
+      sha256: 2f690badd833ba6c2a240b59da688f596508dc9f3622d9930f7f5c6c4f05f21d
+      size_bytes: 140955
+      recorded_at: '2026-09-26T04:33:05+00:00'
+  d2_status: ok
 - id: S05
   name: Company websites - areas of each coal company
   publisher: Coal India Ltd and subsidiaries, SCCL, NLC India
@@ -369,20 +432,32 @@ sources:
     target: raw/company_sites/ecl/
     manual: true
     manual_hint: https://www.easterncoal.nic.in/
-    download_status: pending-manual
+    download_status: skipped
+    skipped: true
+    skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
+      either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
+      chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
   - name: CCL areas page (manual)
     url: null
     target: raw/company_sites/ccl/
     manual: true
     manual_hint: https://www.centralcoalfields.in/cmpny/areas.php
-    download_status: pending-manual
+    download_status: skipped
+    skipped: true
+    skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
+      either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
+      chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
   - name: SECL areas page (manual)
     url: null
     target: raw/company_sites/secl/
     manual: true
     manual_hint: https://www.secl-cil.in/coalfield.php
-    download_status: pending-manual
-  d2_status: ok (+3 pending-manual)
+    download_status: skipped
+    skipped: true
+    skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
+      either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
+      chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
+  d2_status: ok
 - id: S06
   name: Ministry of Coal - monthly statistics and Coal Directory of India
   publisher: Ministry of Coal, Government of India
@@ -883,12 +958,22 @@ sources:
     target: raw/openaq/
     kind: api
     requires: OPENAQ_API_KEY
-    download_status: skipped-manual
-  d2_status: skipped-manual
+    download_status: ok
+  d2_status: ok
   d2_detail:
     openaq:
-      download_status: skipped-manual
-      message: skipped - manual key missing
+      download_status: ok
+      fetched_at: '2026-09-26T04:35:17+00:00'
+      window:
+      - '2026-06-28'
+      - '2026-09-25'
+      locations_in_india: 764
+      matched_locations: 14
+      sensors_fetched: 72
+      requests_made: 0
+      files_reused: 74
+      message: 14 stations matched to clusters; 72 pollutant sensors
+      files_on_disk: 75
 - id: S10
   name: Legal texts and their current status
   publisher: Gazette of India, Ministry of Labour & Employment, DGMS, CPCB
@@ -1252,7 +1337,12 @@ sources:
     manual_hint: https://cpcb.nic.in/7thEditionPollutionControlLawSeries2021.pdf
     notes: 'cpcb.nic.in robots.txt is ''Disallow: /'' except /web/ (checked 2026-09-25), so it is downloaded
       by hand in a browser.'
-    download_status: pending-manual
+    download_status: present-manual
+    found_files:
+    - path: raw/legal/environment/7thEditionPollutionControlLawSeries2021.pdf
+      sha256: f63c3f354267a2f347b82c663c8b5ff57b0e11145555f2c5754702f965d2d64c
+      size_bytes: 13471815
+      recorded_at: '2026-09-26T04:34:33+00:00'
   - name: DGMS (Tech) Circular 04 of 2020 - flammable gas in underground coal mines
     url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_04637184121810426988.pdf
     target: raw/legal/dgms_circulars/
@@ -1343,7 +1433,7 @@ sources:
     manual: true
     notes: eGazette search uses a CAPTCHA; see MANUAL_STEPS.md.
     download_status: pending-manual
-  d2_status: ok (+2 pending-manual)
+  d2_status: ok (+1 pending-manual)
 - id: S11
   name: Environmental clearance letters (OPTIONAL)
   publisher: Ministry of Environment, Forest and Climate Change - PARIVESH portal

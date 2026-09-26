@@ -9,11 +9,11 @@ folder are not committed (gitignored); only this README is. Re-create them with
 - **From:** https://query.wikidata.org/
 - **Licence:** CC0 1.0 (Wikidata structured data) (https://www.wikidata.org/wiki/Wikidata:Licensing)
 - **Redistribution:** True
-- **Status:** skipped-manual
+- **Status:** ok
 
 ## Files
 
 | File | Status | Size (bytes) | Downloaded (UTC) | SHA-256 | Source URL |
 |---|---|---|---|---|---|
-| coal_mines_india.csv | pending-manual | - | - | - | see MANUAL_STEPS.md |
-| districts_india.csv | pending-manual | - | - | - | see MANUAL_STEPS.md |
+| `raw/wikidata/coal_mines_india.csv` | present-manual | 14022 | 2026-09-26T04:33:05+00:00 | `f445c45085efdc560949e67294ed06a82948ab4776ebc93ae8191a63c8bf5079` | added by hand |
+| `raw/wikidata/districts_india.csv` | present-manual | 140955 | 2026-09-26T04:33:05+00:00 | `2f690badd833ba6c2a240b59da688f596508dc9f3622d9930f7f5c6c4f05f21d` | added by hand |

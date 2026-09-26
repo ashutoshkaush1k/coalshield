@@ -9,14 +9,14 @@ folder are not committed (gitignored); only this README is. Re-create them with
 - **From:** https://docs.openaq.org/using-the-api/api-key
 - **Licence:** Per data provider - read from /v3/licenses once a key is available, recorded in D2 (https://docs.openaq.org/about/terms)
 - **Redistribution:** per provider licence; raw responses kept out of git
-- **Status:** skipped-manual
+- **Status:** ok
 
 ## Details
 
-- openaq: {'download_status': 'skipped-manual', 'message': 'skipped - manual key missing'}
+- openaq: {'download_status': 'ok', 'fetched_at': '2026-09-26T04:35:17+00:00', 'window': ['2026-06-28', '2026-09-25'], 'locations_in_india': 764, 'matched_locations': 14, 'sensors_fetched': 72, 'requests_made': 0, 'files_reused': 74, 'message': '14 stations matched to clusters; 72 pollutant sensors', 'files_on_disk': 75}
 
 ## Files
 
 | File | Status | Size (bytes) | Downloaded (UTC) | SHA-256 | Source URL |
 |---|---|---|---|---|---|
-| OpenAQ v3 API base | skipped-manual | - | - | - | https://api.openaq.org/v3/ |
+| OpenAQ v3 API base | ok | - | - | - | https://api.openaq.org/v3/ |

@@ -10,14 +10,15 @@ finds. **You can skip any step** - the pipeline then uses the fallback described
 "If you skip this", and says so in its report.
 
 All folders below are inside the project folder, `D:\SIH_MAIN`. To open one, paste its path into
-the address bar of File Explorer. If a folder does not exist yet, create it with *New folder*.
+the address bar of File Explorer. You never need to create a folder: every folder named below is
+created for you (with an empty `.gitkeep` file inside) each time `data\run_data.bat download` runs.
 
 | # | Step | About | Recommended? | If skipped |
 |---|---|---|---|---|
 | 1 | Coal mine list from Global Energy Monitor | 5 min | **Yes - biggest effect** | Mines get less precise locations |
 | 2 | Two Wikidata downloads | 5 min | **Yes** | 20 mines cannot be placed on the map |
 | 3 | Free air-quality key from OpenAQ | 5 min | Yes | Air-quality data is simulated instead of real |
-| 4 | Save three company web pages | 5 min | Yes | Three companies have no area list |
+| 4 | Save three company web pages | 5 min | Optional - sites often unreachable | Areas come from the Coal Directory, or stay empty |
 | 5 | CPCB pollution-law book (PDF) | 2 min | Yes | Environmental rules are not cited |
 | 6 | One gazette notification (PDF) | 10 min | Optional | One legal question stays open |
 | 7 | Environmental clearance letters | 20 min | Optional | Nothing is lost |
@@ -95,10 +96,12 @@ marks them clearly as simulated.
 
 ---
 
-## 4. Save three company web pages
+## 4. (Optional) Save three company web pages
 
-**Why:** these three coal companies' websites block automatic downloads, so a person has to save
-their list of areas. (We do not try to get around the block.)
+**Why:** these three coal companies' websites block automatic downloads, so a person would have to
+save their list of areas. (We do not try to get around the block.) **The sites are often
+unreachable from a normal browser as well** - this happened during testing on 2026-09-26 - so
+this step is optional, and skipping it is fine.
 
 | Company | Page to open | Save into |
 |---|---|---|
@@ -106,17 +109,18 @@ their list of areas. (We do not try to get around the block.)
 | Central Coalfields (CCL) | <https://www.centralcoalfields.in/cmpny/areas.php> | `D:\SIH_MAIN\data\raw\company_sites\ccl\` |
 | South Eastern Coalfields (SECL) | <https://www.secl-cil.in/coalfield.php> | `D:\SIH_MAIN\data\raw\company_sites\secl\` |
 
-For each one:
+If a page does open:
 
 1. Open the page in Chrome or Edge.
 2. Press **Ctrl + S**.
 3. Under "Save as type", choose **Webpage, HTML only**.
-4. Save it into the folder in the table.
+4. Save it into the folder in the table (the folder already exists).
 
-ECL's website did not answer from our computer during testing. If it does not open for you either,
-skip it.
+If a page does not open, move on - there is nothing else to do.
 
-**If you skip this:** mines of that company have no area assigned (the area is left empty).
+**If you skip this:** the pipeline looks for area-wise tables for these companies in the Coal
+Directory of India 2024-25 (downloaded automatically) and uses them, citing the chapter and sheet,
+if they exist. If they do not, these companies' mines are left without an area.
 
 ---
 

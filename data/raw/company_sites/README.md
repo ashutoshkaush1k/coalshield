@@ -9,7 +9,7 @@ folder are not committed (gitignored); only this README is. Re-create them with
 - **From:** https://www.coalindia.in/
 - **Licence:** Not located on the sites checked; treated as all rights reserved
 - **Redistribution:** no - saved pages stay in raw/ (gitignored); only facts (area names) are used, with the page cited
-- **Status:** ok (+3 pending-manual)
+- **Status:** ok
 
 ## Files
 
@@ -21,6 +21,6 @@ folder are not committed (gitignored); only this README is. Re-create them with
 | `raw/company_sites/sccl/sccl_contact_page_lists_areas.html` | ok | 25850 | 2026-09-25T12:45:38+00:00 | `906467ef7e6543636c14e5ad04755eebf33dd6ea7be41aa6a8ffa73a7e458d68` | https://scclmines.com/scclnew/contact-us.asp |
 | `raw/company_sites/ncl/ncl_overview_projects.html` | ok | 2833 | 2026-09-25T12:45:39+00:00 | `6f52582a0372d4c473369b14cfa0e6d0d8d9497b7319ec9a9a3e564eca0f85a3` | https://www.nclcil.in/detail/647634/ncl-overview |
 | `raw/company_sites/nlc/nlc_india_current_projects_page_lists_its_mines.html` | ok | 25978 | 2026-09-25T12:45:40+00:00 | `f973a8f91a7e967c29563b14602b8666a2959ffd3d37c62cdf29a38c756bb292` | https://www.nlcindia.in/website/en/aboutus/nlcilprojects/currentprojects.html |
-| ECL areas page (manual) | pending-manual | - | - | - | https://www.easterncoal.nic.in/ |
-| CCL areas page (manual) | pending-manual | - | - | - | https://www.centralcoalfields.in/cmpny/areas.php |
-| SECL areas page (manual) | pending-manual | - | - | - | https://www.secl-cil.in/coalfield.php |
+| ECL areas page (manual) | skipped | - | - | - | https://www.easterncoal.nic.in/ |
+| CCL areas page (manual) | skipped | - | - | - | https://www.centralcoalfields.in/cmpny/areas.php |
+| SECL areas page (manual) | skipped | - | - | - | https://www.secl-cil.in/coalfield.php |

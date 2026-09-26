@@ -10,15 +10,15 @@ Discovered 2026-09-25. SHA-256 checksums are recorded when files are downloaded 
 | ID | Source | Access | Automatic files | Size known | Download (D2) | Licence |
 |---|---|---|---|---|---|---|
 | S01 | Existing repo seed (74 mines) | In the repo | 0 | - | ok (in repo) | Repository content (prototype demo data) |
-| S02 | Global Coal Mine Tracker (GCMT) | Manual - web form | 0 | - | skipped-manual | CC BY 4.0 (to be confirmed against the notice inside the downloaded file) |
+| S02 | Global Coal Mine Tracker (GCMT) | Manual - web form | 0 | - | ok | CC BY 4.0 - confirmed from the licence notice inside each downloaded workbook (3 of 3) |
 | S03 | DataMeet maps - district and state boundaries | Automatic | 10 | 26.2 MB | ok | Districts - CC BY 2.5 India; other data in the repo - CC BY 4.0; repo code - MIT |
-| S04 | Wikidata - coal mines and districts of India | Manual - in a browser | 0 | - | skipped-manual | CC0 1.0 (Wikidata structured data) |
-| S05 | Company websites - areas of each coal company | Automatic (+3 manual) | 6 | 278 KB | ok (+3 pending-manual) | Not located on the sites checked; treated as all rights reserved |
+| S04 | Wikidata - coal mines and districts of India | Manual - in a browser | 0 | - | ok | CC0 1.0 (Wikidata structured data) |
+| S05 | Company websites - areas of each coal company | Automatic (+3 manual) | 6 | 278 KB | ok | Not located on the sites checked; treated as all rights reserved |
 | S06 | Ministry of Coal - monthly statistics and Coal Directory of India | Automatic | 15 | 8.9 MB | ok | Not located (no copyright-policy link found on coal.gov.in); treated as all rights reserved |
 | S07 | DGMS - accident statistics and analyses | Automatic | 4 | 13.4 MB | ok | Not located (copyright-policy page content not machine-readable); treated as all rights reserved |
 | S08 | MSHA Open Government Data | Automatic | 8 | 242.1 MB | ok | Not stated on the page. US federal government works are generally not subject to copyright - TODO-VERIFY against a Department of Labor statement. |
-| S09 | OpenAQ API v3 - air quality near coalfields (CPCB stations) | Manual - free API key | 0 | - | skipped-manual | Per data provider - read from /v3/licenses once a key is available, recorded in D2 |
-| S10 | Legal texts and their current status | Automatic (+2 manual) | 25 | 34.1 MB | ok (+2 pending-manual) | Official Government of India legal texts; the texts of Acts and notifications are public documents - reproduction terms TODO-VERIFY |
+| S09 | OpenAQ API v3 - air quality near coalfields (CPCB stations) | Manual - free API key | 0 | - | ok | Per data provider - read from /v3/licenses once a key is available, recorded in D2 |
+| S10 | Legal texts and their current status | Automatic (+2 manual) | 25 | 34.1 MB | ok (+1 pending-manual) | Official Government of India legal texts; the texts of Acts and notifications are public documents - reproduction terms TODO-VERIFY |
 | S11 | Environmental clearance letters (OPTIONAL) | Manual - in a browser, optional | 0 | - | skipped-manual | Not located; treated as all rights reserved |
 | S12 | Tender and award data (OPTIONAL) | Skipped, optional | 0 | - | skipped (see notes for fallback) | n/a (not used) |
 | S13 | PPE detection evaluation set (OPTIONAL) | Automatic (+1 manual), optional | 1 | 208.7 MB | ok (+1 pending-manual) | CC BY 4.0 (stated in the dataset's own README.dataset.txt and data.yaml, Roboflow project ppe-detection-ozhfb v14) |
@@ -69,14 +69,16 @@ Extracted in stage D0 by scripts/extract_mines_base.py; see DATASETS.md.
 - **Saved to:** `data/raw/gem_gcmt/`
 - **Purpose:** Real mine coordinates, owner, capacity, status and type, for matching our 74 mines.
 - **Access:** Manual - web form - see `MANUAL_STEPS.md`
-- **Licence:** CC BY 4.0 (to be confirmed against the notice inside the downloaded file) (https://globalenergymonitor.org/creative-commons-license)
+- **Licence:** CC BY 4.0 - confirmed from the licence notice inside each downloaded workbook (3 of 3) (https://globalenergymonitor.org/creative-commons-license)
 - **Redistribution:** allowed with attribution; raw file kept out of git anyway
 
 The download is selected on GEM's "Download data" page (card "Coal mines", last update shown as May 2026; the project page says the most recent release, August 2026, is the second version of the May 2026 dataset). The download widget is built by JavaScript and may ask for details before releasing the file, so it cannot be fetched automatically. GEM hosts the full CC BY 4.0 text; its statement that this licence covers the tracker data was not found in the static page, so the licence is confirmed from the file's own notice when it arrives. Fallback if skipped: Wikidata (S04), then district centroids (S03). Project page (reference only): https://globalenergymonitor.org/projects/global-coal-mine-tracker
 
 | File | Status | Size | Accessed | SHA-256 | URL |
 |---|---|---|---|---|---|
-| Global Coal Mine Tracker workbook (.xlsx, as received) | pending-manual | - | - | - | raw/gem_gcmt/ |
+| `raw/gem_gcmt/Global Coal Mine Tracker, August 2026.xlsx` | present (manual) | 2.9 MB | 2026-09-26 | `9aa804479c4b7645…` | added by hand |
+| `raw/gem_gcmt/Global-Coal-Mine-Tracker-December-2024-Supplement-Historical-Production-from-2018-to-2023.xlsx` | present (manual) | 324 KB | 2026-09-26 | `1ae19635e8972322…` | added by hand |
+| `raw/gem_gcmt/Global-Coal-Mine-Tracker-September-2024-Supplement-v2.xlsx` | present (manual) | 379 KB | 2026-09-26 | `1c3fc4eb146e32b2…` | added by hand |
 
 ## S03 - DataMeet maps - district and state boundaries
 
@@ -118,8 +120,8 @@ query.wikidata.org/robots.txt disallows /sparql for all user agents, and www.wik
 
 | File | Status | Size | Accessed | SHA-256 | URL |
 |---|---|---|---|---|---|
-| coal_mines_india.csv | pending-manual | - | - | - | scripts/wikidata/coal_mines_india.rq |
-| districts_india.csv | pending-manual | - | - | - | scripts/wikidata/districts_india.rq |
+| `raw/wikidata/coal_mines_india.csv` | present (manual) | 14 KB | 2026-09-26 | `f445c45085efdc56…` | added by hand |
+| `raw/wikidata/districts_india.csv` | present (manual) | 138 KB | 2026-09-26 | `2f690badd833ba6c…` | added by hand |
 
 ## S05 - Company websites - areas of each coal company
 
@@ -141,9 +143,9 @@ Mixed access. Automatic: BCCL, WCL, MCL, SCCL, NCL, NLC. Manual (save the page f
 | SCCL contact page (lists areas) | ok | 25 KB | 2026-09-25 | `906467ef7e654363…` | https://scclmines.com/scclnew/contact-us.asp |
 | NCL overview (projects) | ok | 3 KB | 2026-09-25 | `6f52582a0372d4c4…` | https://www.nclcil.in/detail/647634/ncl-overview |
 | NLC India current projects page (lists its mines) | ok | 25 KB | 2026-09-25 | `f973a8f91a7e967c…` | https://www.nlcindia.in/website/en/aboutus/nlcilprojects/currentprojects.html |
-| ECL areas page (manual) | pending-manual | - | - | - | https://www.easterncoal.nic.in/ |
-| CCL areas page (manual) | pending-manual | - | - | - | https://www.centralcoalfields.in/cmpny/areas.php |
-| SECL areas page (manual) | pending-manual | - | - | - | https://www.secl-cil.in/coalfield.php |
+| ECL areas page (manual) | manual | - | - | - | https://www.easterncoal.nic.in/ |
+| CCL areas page (manual) | manual | - | - | - | https://www.centralcoalfields.in/cmpny/areas.php |
+| SECL areas page (manual) | manual | - | - | - | https://www.secl-cil.in/coalfield.php |
 
 ## S06 - Ministry of Coal - monthly statistics and Coal Directory of India
 
@@ -231,7 +233,7 @@ Every v3 endpoint, including /v3/licenses, returns 401 without a key (X-API-Key 
 
 | File | Status | Size | Accessed | SHA-256 | URL |
 |---|---|---|---|---|---|
-| OpenAQ v3 API base | skipped-manual | - | - | - | https://api.openaq.org/v3/ |
+| OpenAQ v3 API base | needs key | - | - | - | https://api.openaq.org/v3/ |
 
 ## S10 - Legal texts and their current status
 
@@ -267,7 +269,7 @@ Status determined from the notifications themselves, each read on 2026-09-25 - s
 | Additional FAQs on Labour Codes (16.03.2026) | ok | 355 KB | 2026-09-25 | `d55818a3956bebf5…` | https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf |
 | FAQ on OSH&WC Code (13.03.2026) | ok | 234 KB | 2026-09-25 | `aa0357bbe410d753…` | https://www.labour.gov.in/static/uploads/2026/03/d7a1038bf00f763484aa27a79a4c6306.pdf |
 | PIB release - four Labour Codes made effective (transition statement) | ok | 352 KB | 2026-09-25 | `68c2162b5b1bb8bf…` | https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2192463&reg=3&lang=2 |
-| CPCB Pollution Control Law Series, 7th edition (2021) - manual | pending-manual | - | - | - | https://cpcb.nic.in/7thEditionPollutionControlLawSeries2021.pdf |
+| `raw/legal/environment/7thEditionPollutionControlLawSeries2021.pdf` | present (manual) | 12.8 MB | 2026-09-26 | `f63c3f354267a2f3…` | added by hand |
 | DGMS (Tech) Circular 04 of 2020 - flammable gas in underground coal mines | ok | 598 KB | 2026-09-25 | `f182642def7223e4…` | https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_04637184121810426988.pdf |
 | DGMS circular - environment monitoring system in underground coal mines | ok | 460 KB | 2026-09-25 | `cb8a2c9216b6b68f…` | https://www.dgms.gov.in/writereaddata/UploadFile/Cir_04_Tech_MAMID.pdf |
 | DGMS Tech Circular 1 of 2023 - accidents from high-temperature exposure | ok | 4.6 MB | 2026-09-25 | `693add3901f22bee…` | https://www.dgms.gov.in/writereaddata/UploadFile/Circular2023tech.pdf |

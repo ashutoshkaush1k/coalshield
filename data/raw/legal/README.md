@@ -9,7 +9,7 @@ folder are not committed (gitignored); only this README is. Re-create them with
 - **From:** https://www.dgms.gov.in/UserView/index?mid=1653
 - **Licence:** Official Government of India legal texts; the texts of Acts and notifications are public documents - reproduction terms TODO-VERIFY
 - **Redistribution:** raw PDFs stay in raw/ (gitignored); obligations cite clause and page
-- **Status:** ok (+2 pending-manual)
+- **Status:** ok (+1 pending-manual)
 
 ## Files
 
@@ -35,7 +35,7 @@ folder are not committed (gitignored); only this README is. Re-create them with
 | `raw/legal/guidance/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf` | ok | 363855 | 2026-09-25T12:54:18+00:00 | `d55818a3956bebf5445e515e25999d5ee5b94e58e371554b24197470cf4ee2ed` | https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf |
 | `raw/legal/guidance/d7a1038bf00f763484aa27a79a4c6306.pdf` | ok | 239397 | 2026-09-25T12:54:19+00:00 | `aa0357bbe410d7533e7dfaff6d14d935acb6f730b5fbe53750d5012fea92542c` | https://www.labour.gov.in/static/uploads/2026/03/d7a1038bf00f763484aa27a79a4c6306.pdf |
 | `raw/legal/guidance/pib_release_four_labour_codes_made_effective_transition_statement.html` | ok | 360580 | 2026-09-25T12:54:21+00:00 | `68c2162b5b1bb8bf419f55d26dd066f9e0b78c92ec88b95dad71a42715c95798` | https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2192463&reg=3&lang=2 |
-| CPCB Pollution Control Law Series, 7th edition (2021) - manual | pending-manual | - | - | - | https://cpcb.nic.in/7thEditionPollutionControlLawSeries2021.pdf |
+| `raw/legal/environment/7thEditionPollutionControlLawSeries2021.pdf` | present-manual | 13471815 | 2026-09-26T04:34:33+00:00 | `f63c3f354267a2f347b82c663c8b5ff57b0e11145555f2c5754702f965d2d64c` | added by hand |
 | `raw/legal/dgms_circulars/DGMS_04637184121810426988.pdf` | ok | 612619 | 2026-09-25T12:54:22+00:00 | `f182642def7223e45ab0b2f5a4837c8d83bd7e07f3b1d18e7bb513b942b11edd` | https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_04637184121810426988.pdf |
 | `raw/legal/dgms_circulars/Cir_04_Tech_MAMID.pdf` | ok | 471007 | 2026-09-25T12:54:23+00:00 | `cb8a2c9216b6b68f73c24877c0a8917575a4243c8e9749c54d5254bacab30df2` | https://www.dgms.gov.in/writereaddata/UploadFile/Cir_04_Tech_MAMID.pdf |
 | `raw/legal/dgms_circulars/Circular2023tech.pdf` | ok | 4775224 | 2026-09-25T12:54:29+00:00 | `693add3901f22bee2127a3609694af9853c994d5484169bb7721eda6318f8821` | https://www.dgms.gov.in/writereaddata/UploadFile/Circular2023tech.pdf |
