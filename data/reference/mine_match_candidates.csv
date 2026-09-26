@@ -1,0 +1,6 @@
+code,word,source,candidate_id,candidate_name,candidate_state,candidate_district,candidate_owner,name_score,candidates_for_word,owner_factor,district_factor,match_confidence,accepted,note
+JH-DHN-01,jharia,GEM,M1686,Jharia Coal Mine,Jharkhand,,Tata Steel [100.0%],100,2,0.5,0.9,0.225,false,word is a GEM coalfield name in this state - capped at 0.5
+JH-DHN-01,jharia,GEM,M2513,Rajapur-South Jharia Coal Mine,Jharkhand,Dhanbad,Bharat Coking Coal Ltd [100.0%],100,2,1.0,1.0,0.5,false,word is a GEM coalfield name in this state - capped at 0.5
+CG-KRB-03,gevra,GEM,M0527,Gevra Coal Mine,Chhattisgarh,Korba,South Eastern Coalfields Ltd [100.0%],100,1,1.0,1.0,1.0,true,
+OD-TLC-05,talcher,GEM,M1746,Talcher UG Coal Mine,Odisha,Angul,Mahanadi Coalfields Ltd [100.0%],100,2,1.0,1.0,0.5,false,word is a GEM coalfield name in this state - capped at 0.5
+OD-TLC-05,talcher,GEM,M2695,Nandira Coal Mine,Odisha,Angul,Mahanadi Coalfields Ltd [100.0%],100,2,1.0,1.0,0.5,false,word is a GEM coalfield name in this state - capped at 0.5

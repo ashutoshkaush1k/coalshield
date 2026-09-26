@@ -117,8 +117,18 @@ if errorlevel 1 exit /b 1
 exit /b 0
 
 :clean
-call :pending clean D3
-exit /b 1
+echo.
+echo  [clean] Building data\reference from data\raw - stage D3
+for %%S in (clean_companies clean_areas clean_district_boundaries clean_mines) do call :clean_one %%S
+if errorlevel 1 exit /b 1
+exit /b 0
+
+:clean_one
+if errorlevel 1 exit /b 1
+echo  [clean] %~1.py
+"%PY%" -W ignore "%DATA%scripts\%~1.py"
+if errorlevel 1 exit /b 1
+exit /b 0
 
 :generate
 call :pending generate D4
