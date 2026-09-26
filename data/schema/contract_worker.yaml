@@ -1,0 +1,15 @@
+table: contract_worker
+description: Fictitious contract workers with vocational-training and medical dates.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 3: contract_worker (contract_id, name, worker_code, vt_cert_valid_to, medical_exam_date, active)"
+  - "VT refresher every 4 years: obligations.csv SAF-04 (OSH (Central) Rules 2026 r.159); medical examination annually: HLT-01 (r.109(1)) - via schema/rules.yaml"
+generator: gen_contractors.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: contract_id, type: integer, nullable: false, fk: contract.id}
+  - {name: name, type: string, nullable: false, note: "fictitious"}
+  - {name: worker_code, type: string, nullable: false, unique: true}
+  - {name: vt_cert_valid_to, type: date, nullable: false}
+  - {name: medical_exam_date, type: date, nullable: false}
+  - {name: active, type: boolean, nullable: false}

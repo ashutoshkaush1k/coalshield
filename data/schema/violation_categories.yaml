@@ -1,0 +1,57 @@
+# The violation / observation categories used by every table that has a `category` column
+# (observation, violation) and by reference/crosswalk_msha_india.csv.
+# Decided 2026-09-26 by the owner: the dataset brief's ten, plus `machinery` (added in D3 because
+# DGMS "machinery other than transportation machinery" is a leading fatal cause and fits none of
+# the ten). The backend uses this same list.
+#
+# `key` is the value stored in the data; `label` is for documentation only (the UI translates keys).
+# `example_types` are the violation_type values the generator uses for that category - descriptive
+# labels written for the demo, not legal terms.
+categories:
+  - key: roof_strata
+    label: Roof and strata (ground control)
+    example_types: [inadequate_roof_support, unsupported_roof_exposure, highwall_bench_instability]
+  - key: ventilation_gas
+    label: Ventilation and gas
+    example_types: [inflammable_gas_not_tested, inadequate_air_quantity, coal_dust_accumulation]
+  - key: electrical
+    label: Electrical
+    example_types: [damaged_trailing_cable, missing_earthing, unapproved_electrical_apparatus]
+  - key: transport_haulage
+    label: Transport and haulage
+    example_types: [haul_road_unsafe, conveyor_guard_missing, winding_rope_not_examined]
+  - key: explosives
+    label: Explosives and blasting
+    example_types: [explosives_storage_breach, shotfiring_procedure_breach]
+  - key: ppe
+    label: Personal protective equipment
+    example_types: [no_helmet, no_safety_vest, no_safety_boots, no_dust_mask]
+  - key: fire
+    label: Fire and emergency
+    example_types: [firefighting_equipment_not_examined, escapeway_obstructed, self_rescuer_not_available]
+  - key: environment
+    label: Workplace environment (dust, noise, heat)
+    example_types: [respirable_dust_not_sampled, noise_exposure_uncontrolled, heat_stress_controls_missing]
+  - key: welfare
+    label: Welfare and amenities
+    example_types: [drinking_water_not_provided, first_aid_station_incomplete, sanitation_inadequate]
+  - key: documentation
+    label: Documentation, plans and records
+    example_types: [plans_not_updated, register_not_maintained, statutory_notice_not_sent]
+  - key: machinery
+    label: Machinery other than transport
+    example_types: [machine_guard_missing, machinery_not_maintained, unsafe_operation_of_machine]
+
+# How the crosswalk's category labels map to these keys (crosswalk_msha_india.csv uses the labels).
+crosswalk_labels:
+  roof/strata: roof_strata
+  ventilation/gas: ventilation_gas
+  electrical: electrical
+  transport/haulage: transport_haulage
+  explosives: explosives
+  PPE: ppe
+  fire: fire
+  environment: environment
+  welfare: welfare
+  documentation: documentation
+  machinery: machinery

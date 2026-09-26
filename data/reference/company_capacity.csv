@@ -1,0 +1,11 @@
+company_id,gem_operating_mines,gem_mines_capacity_known,gem_capacity_mtpa,roster_mines,roster_capacity_mtpa,roster_share_of_capacity,source
+BCCL,32,29,68.633,3,8.16,0.1189,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+CCL,35,35,132.425,8,75.44,0.5697,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+CIL,2,1,8.0,1,0,0.0,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+ECL,69,67,107.24,5,25.76,0.2402,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+MCL,19,19,235.45,18,195.45,0.8301,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+NCL,9,9,120.58,9,120.58,1.0,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+NLC,1,1,20.0,1,20.0,1.0,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+SCCL,34,34,96.057,6,37.12,0.3864,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+SECL,57,57,248.715,17,206.065,0.8285,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"
+WCL,40,40,72.574,6,20.85,0.2873,"GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner (NLC: coal mines only); unknown capacities filled with the company median"

@@ -1,0 +1,24 @@
+table: daily_production
+description: Mine x day x shift production entries, calibrated to Ministry of Coal company monthly figures.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 4: daily_production (mine_id, date, shift A/B/C, coal_target_t, coal_actual_t, ob_target_m3, ob_actual_m3, dispatch_t, closing_stock_t, breakdown_hours, manpower_present, remarks, status draft/submitted/locked, submitted_by, submitted_at); unique (mine_id, date, shift)"
+generator: gen_production.py
+primary_key: id
+unique: [[mine_id, date, shift]]
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: date, type: date, nullable: false}
+  - {name: shift, type: enum, nullable: false, values: [A, B, C], note: "shift letters as the brief writes them"}
+  - {name: coal_target_t, type: number, nullable: false}
+  - {name: coal_actual_t, type: number, nullable: false}
+  - {name: ob_target_m3, type: number, nullable: false}
+  - {name: ob_actual_m3, type: number, nullable: false}
+  - {name: dispatch_t, type: number, nullable: false}
+  - {name: closing_stock_t, type: number, nullable: false}
+  - {name: breakdown_hours, type: number, nullable: false}
+  - {name: manpower_present, type: integer, nullable: false}
+  - {name: remarks, type: text, nullable: true}
+  - {name: status, type: enum, nullable: false, values: [draft, submitted, locked]}
+  - {name: submitted_by, type: integer, nullable: true, fk: user.id}
+  - {name: submitted_at, type: datetime, nullable: true}

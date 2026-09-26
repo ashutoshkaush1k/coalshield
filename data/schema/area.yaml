@@ -1,0 +1,14 @@
+table: area
+description: Operating areas as each company publishes them (reference/areas.csv).
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 1: table `area` (hierarchy subsidiary -> area -> mine; columns not listed)"
+  - "PLAN.md Q9 proposed placeholder areas; superseded by the real published areas (reference/areas.csv)"
+generator: gen_org.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: subsidiary_id, type: integer, nullable: false, fk: subsidiary.id}
+  - {name: code, type: string, nullable: false, unique: true, note: "area_id in reference/areas.csv, e.g. SCCL-SRIRAMPUR"}
+  - {name: name, type: string, nullable: false}
+  - {name: district, type: string, nullable: true}
+  - {name: state, type: string, nullable: true}

@@ -4,7 +4,7 @@ approval; reference/mines.csv stays as the fallback).
 
 Every mine is a GEM Global Coal Mine Tracker Aug 2026 row (S02, CC BY 4.0). What is real and what
 is demo:
-  real  name, company, state, district, coordinates, type, capacity, production, coalfield
+  real  name, company, state, district, coordinates, type, capacity, production, workforce, coalfield
   demo  demo_score, demo_risk_level, seed_violations - carried over from the seed slot the mine
         replaces, so the demo board keeps its shape. They are NOT assessments of the real mine.
 
@@ -72,6 +72,7 @@ MSG = DATA / "raw/moc/monthly/msg-Aug26.pdf"
 MSG_CITE = "Ministry of Coal, Monthly Coal Statistics Aug'2026 (Provisional), p.1, Production upto Aug FY 27"
 OUT = DATA / "reference/mines_real.csv"
 OUT_MAP = DATA / "reference/mine_code_mapping.csv"
+OUT_CAP = DATA / "reference/company_capacity.csv"
 N = 74
 DEMO = {  # seed code -> GEM coalfield named in the demo script
     "JH-DHN-01": "Jharia", "MP-SGR-02": "Singrauli", "CG-KRB-03": "Korba", "WB-RNG-04": "Raniganj", "OD-TLC-05": "Talcher",
@@ -82,7 +83,7 @@ TYPE = {"Surface": "opencast", "Underground": "underground", "Underground & Surf
 COLUMNS = ["id", "code", "name", "company_id", "area_id", "area_method", "state", "district", "district_basis",
            "district_method",
            "region", "coalfield", "lat", "lon", "location_quality", "gem_id", "gem_owner", "type", "coal_type",
-           "capacity_mtpa", "production_mtpa", "production_year", "status", "head_email", "demo_named",
+           "capacity_mtpa", "production_mtpa", "production_year", "workforce", "workforce_accuracy", "status", "head_email", "demo_named",
            "demo_score", "demo_risk_level", "seed_violations", "score_note", "selection", "replaces_code"]
 MAP_COLUMNS = ["old_code", "new_code", "old_name", "new_name", "reason"]
 
@@ -251,6 +252,21 @@ def main() -> int:
 
     g = pd.concat([pd.read_excel(GEM, sheet_name=s) for s in ("Non-closed mines", "Closed mines")], ignore_index=True)
     g = g[(g["Country / Area"] == "India") & (g["Status"] == "Operating")].dropna(subset=["Latitude", "Longitude"])
+    # Every operating GEM mine per company (first-listed owner), for the D4 production split: a
+    # roster mine's share of its company's output = its capacity / the company's operating capacity.
+    ops = g.drop_duplicates("GEM Mine ID").copy()
+    ops["cid"] = ops["Owners"].astype(str).str.split(";").str[0].map(lambda o: by_key.get(company_key(o)))
+    ops = ops.dropna(subset=["cid"])
+    # NLC's production basis in D4 is its coal (Talabira; Coal Directory Table 3.11), so its lignite
+    # mines are left out. Not applied to other companies: GEM labels many CIL mines "Lignite".
+    ops = ops[~((ops["cid"] == "NLC") & (ops["Coal Type"] == "Lignite"))]
+    cap_rows = {}
+    for cid, grp in ops.groupby("cid"):
+        caps = pd.to_numeric(grp["Capacity (Mtpa)"], errors="coerce")
+        med = float(caps.median()) if caps.notna().any() else float("nan")
+        cap_rows[cid] = {"company_id": cid, "gem_operating_mines": int(len(grp)),
+                         "gem_mines_capacity_known": int(caps.notna().sum()),
+                         "gem_capacity_mtpa": round(float(caps.fillna(med).sum()), 3) if caps.notna().any() else ""}
     cands, dropped = [], []
     for _, r in g.sort_values("GEM Mine ID").iterrows():
         first_owner = str(r["Owners"]).split(";")[0]
@@ -374,6 +390,8 @@ def main() -> int:
             "capacity_mtpa": "" if math.isnan(c["cap"]) else f"{c['cap']:g}",
             "production_mtpa": "" if pd.isna(prod) else f"{float(prod):g}",
             "production_year": "" if pd.isna(r.get("Year of Production")) else str(r["Year of Production"]).split(".")[0],
+            "workforce": "" if pd.isna(r.get("Workforce Size")) else str(int(float(r["Workforce Size"]))),
+            "workforce_accuracy": "" if pd.isna(r.get("Workforce Accuracy")) else str(r["Workforce Accuracy"]),
             "status": "operating", "head_email": f"head.{code.lower()}@coalmine.in",
             "demo_named": m["demo_named"], "demo_score": m["demo_score"], "demo_risk_level": m["demo_risk_level"],
             "seed_violations": m["seed_violations"],
@@ -390,6 +408,18 @@ def main() -> int:
             w = csv.DictWriter(fh, fieldnames=cols, lineterminator="\n")
             w.writeheader()
             w.writerows(rows)
+
+    for cid, row in cap_rows.items():
+        rc = [float(o["capacity_mtpa"]) for o in out if o["company_id"] == cid and o["capacity_mtpa"] != ""]
+        row["roster_mines"] = sum(o["company_id"] == cid for o in out)
+        row["roster_capacity_mtpa"] = round(sum(rc), 3)
+        row["roster_share_of_capacity"] = round(sum(rc) / row["gem_capacity_mtpa"], 4) if row["gem_capacity_mtpa"] not in ("", 0) else ""
+        row["source"] = ("GEM Global Coal Mine Tracker Aug 2026, operating India rows by first-listed owner "
+                         "(NLC: coal mines only); unknown capacities filled with the company median")
+    with OUT_CAP.open("w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(next(iter(cap_rows.values()))), lineterminator="\n")
+        w.writeheader()
+        w.writerows(sorted(cap_rows.values(), key=lambda r: r["company_id"]))
 
     per = Counter(o["company_id"] for o in out)
     bands = Counter(o["demo_risk_level"] for o in out)

@@ -252,7 +252,7 @@ mines of the seed operator in the seed state.
 | **Sources** | S02 GEM Global Coal Mine Tracker Aug 2026 (CC BY 4.0); S06 Ministry of Coal msg-Aug26.pdf p.1; S03/S04 district lists; `companies.csv`, `areas.csv`, `mines_base.csv`, `mines.csv` |
 | **Produced by** | `data/scripts/clean_mines_real.py` |
 | **Rows** | 74 mines; 74 mapping rows |
-| **Checksums** | mines_real `8a4e6dd4c022bed0fa33e33d2ab39b2828e87918347d9d0fe5d7cee5b32c48ca`; mapping `4328244b2eb8a2528a94258980fa60c74dff6bcc46a8caf519324eeadb39771f` |
+| **Checksums** | mines_real `241c905cf1f309b0b17db567e1b584ea162cb03e682d88515535fed0f549446d`; mapping `4328244b2eb8a2528a94258980fa60c74dff6bcc46a8caf519324eeadb39771f` |
 | **Status** | Proposed replacement for the backend seed, **pending team approval** (see `data/HANDOFF.md`). `mines.csv` stays as the fallback. |
 
 **Which mines.** Candidates are GEM India rows that meet all of these:
@@ -566,3 +566,52 @@ loanword is kept, sometimes with a native gloss.
 **Limitations**
 - Every row is `reviewed = false`. A native speaker with mining vocabulary must review each
   language before users see it.
+
+---
+
+## Calibration references added in D4
+
+| File | Source | Used for |
+|---|---|---|
+| `reference/production_profile_2024_25.csv` | Coal Directory 2024-25, Table 3.7 (PT7): month-wise CIL / SCCL / All-India production | Seasonal profile for months with no published monthly figure |
+| `reference/oms_company.csv` | Table 3.24 (PT24): production, manshifts and output per manshift by company × OC/UG, 2024-25 | Manpower per shift |
+| `reference/company_capacity.csv` | GEM operating India mines by first-listed owner (NLC: coal only), capacity filled with the company median where unknown | Each mine's share of its company's output |
+| `reference/mines_real.csv` gains `workforce`, `workforce_accuracy` | GEM "Workforce Size" (15 exact, 59 GEM estimates) | Mine size for inspection rates |
+
+---
+
+## `data/out/<preset>/` - generated operational data (stage D4)
+
+| | |
+|---|---|
+| **Kind** | **Calibrated-synthetic**: generated; volumes and mixes are tuned to the real references above. Environment rows are `calibrated` (real station data plus noise) or `synthetic` |
+| **Produced by** | `data/generators/generate.py` (`run_data.bat generate [small\|demo\|full]`), one module per table group |
+| **Schemas** | `data/schema/*.yaml`, 21 tables; every CSV is checked against its schema as it is written |
+| **Roster** | `config.yaml mine_roster: real` (default) or `seed`; both pass every check |
+| **Determinism** | Seed 2026, one random stream per generator. Two demo runs are byte-identical (checked 2026-09-26) |
+| **Not in git** | `data/out/` is gitignored; `_manifest.json` records rows, bytes and SHA-256 per table |
+
+**Calibration and checks** (`_checks.json`; the stage fails if any check fails):
+
+| Area | Method | Check (demo result) |
+|---|---|---|
+| Production | Company month from the Ministry figure. September 2026 is the labelled stand-in (September 2025). With no monthly figure (NLC coal; months outside the published eight), FY2024-25 × the Table 3.7 month share. Split by mine capacity ÷ the company's operating GEM capacity (`production_split`), then by day and shift. Overburden from company stripping ratios; manpower from output per manshift. | Complete company-months, roster grossed up by capacity coverage: within ±3 %. Pass, 20 of 20; exact by construction. |
+| Sensors | Underground and mixed mines: CH4, CH4 return air, CO, dust, wet bulb, humidity every 15 min. Opencast: dust, wet bulb, humidity hourly. Daily cycle, seasonal factor, drift, rare spikes. | `breached` only from obligation-cited limits (SAF-11, HLT-04, HLT-05). Gas sensors at exactly the 27 underground and mixed mines. Pass. |
+| Inspections | MSHA medians by type (UG 11 inspections a year, 4.25 violations per inspection; surface 3 and 2.45), scaled by (workforce ÷ MSHA p75 headcount)^0.5, clipped 0.5–2. Category mix 0.5 × MSHA + 0.5 × DGMS via the crosswalk. | Mix within 0.15 of target (pass, 0.094). Count within 25 % of expectation (pass, 1,379 vs 1,483). |
+| Contractors | 5-year licence (LAB-02), 4-year VT refresher (SAF-04), annual medical (HLT-01). Fixed shares expired or expiring. | Every legal value cites a verified obligation. Pass. |
+| Environment | Nearest CPCB station within 50 km with a reading that day, × lognormal noise (σ 0.10). Otherwise synthetic from the stations' fitted distribution. | Every row labelled. Pass: 44 % calibrated, 35 mines have a station. |
+| Grievances | Six-language templates using glossary terms; language by the mine's state. SLA from product settings. | 84 % in the region's language. Pass. |
+| People | Faker `en_IN` first names + regional surnames; masked identifiers (`REG-XXXX-0417`, `XXXXXX1234`). | Masking pass. |
+| Dates | Nothing after the window's end except deadlines and validity dates. | Pass. |
+| **Demo scores** | The backend's current formula (100 − 5 × open violations − 3 × breaches in the 12-second window) applied to the generated data. Open violations per mine = the roster's `seed_violations`. | Every mine matches; 100/80/70/60/45; 6/21/47; average 83.2. **Pass.** |
+
+**Limitations**
+- **All operational rows are synthetic.** Only the production totals, the environmental station
+  values and the rates and mixes are tied to real figures.
+- Per-mine production follows GEM capacity shares. It is not each mine's reported output (Ministry
+  top-35 mine pages not parsed yet).
+- **US rates.** Inspection and violation rates come from US MSHA data; the size scaling
+  (square-root, clipped) is a modelling choice.
+- **Sensor shapes are modelling choices,** not measurements.
+- **The CO sensor has no verified limit** (TODO-VERIFY), so CO readings never breach.
+- **Grievance texts and the glossary are unreviewed drafts.**

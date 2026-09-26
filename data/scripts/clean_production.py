@@ -14,6 +14,9 @@ Annual (S06, Coal Directory of India 2024-25, cdchap2.xlsx)
   Table 3.11 (sheet PT11) production, Table 3.20 (PT20) open cast / underground split, Table 3.22
   (PT22) overburden removal and stripping ratio - for 2022-23 to 2024-25 where published. This is
   where company overburden is published.
+  Also, for the D4 generators: Table 3.7 (PT7) month-wise 2024-25 production (the seasonal profile
+  for months with no published monthly figure) -> production_profile_2024_25.csv, and Table 3.24
+  (PT24) output per manshift by company and mine type -> oms_company.csv.
 
 Parsing (page 1 rows have missing cells when a value is zero)
   Every growth figure is printed after an arrow (up or down triangle); those pairs are removed
@@ -41,6 +44,8 @@ MONTHLY = ["raw/moc/monthly/msg-setp25.pdf", "raw/moc/monthly/msg-june26.pdf",
 DIRECTORY = "raw/moc/coal_directory_2024_25/cdchap2.xlsx"
 OUT_M = DATA / "reference/production_company_monthly.csv"
 OUT_A = DATA / "reference/production_company_annual.csv"
+OUT_P = DATA / "reference/production_profile_2024_25.csv"
+OUT_O = DATA / "reference/oms_company.csv"
 MONTHS = {"jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6, "jul": 7, "aug": 8, "sep": 9,
           "oct": 10, "nov": 11, "dec": 12}
 CIL_ROWS = ["ECL", "BCCL", "CCL", "NCL", "WCL", "SECL", "MCL", "NEC"]
@@ -175,18 +180,55 @@ def annual() -> list[dict]:
     return rows
 
 
+def profile() -> list[dict]:
+    """Coal Directory Table 3.7 (PT7): month-wise raw coal production in 2024-25, CIL / SCCL / All India.
+    Used as the seasonal profile for months with no published monthly figure (D4 full preset)."""
+    wb = openpyxl.load_workbook(DATA / DIRECTORY, read_only=True, data_only=True)
+    names = ["April", "May", "June", "July", "August", "September", "October", "November", "December",
+             "January", "February", "March"]
+    rows = []
+    for r in cells(wb["PT7"], 6):
+        if r[0] in names:
+            m = names.index(r[0])
+            rows.append({"fiscal_year": "2024-25", "month": (m + 3) % 12 + 1, "year": 2024 if m < 9 else 2025,
+                         "cil_mt": f"{float(r[1]):.3f}", "sccl_mt": f"{float(r[3]):.3f}",
+                         "all_india_mt": f"{float(r[11]):.3f}", "source_file": DIRECTORY,
+                         "source_table": f"Table 3.7 (PT7), row {r[0]}"})
+    if len(rows) != 12:
+        raise ValueError(f"PT7: expected 12 months, read {len(rows)}")
+    return rows
+
+
+def oms() -> list[dict]:
+    """Coal Directory Table 3.24 (PT24): production, manshifts and output per manshift (OMS) by company
+    and mine type (OC / UG / ALL), 2024-25 columns. Used for manpower in D4."""
+    wb = openpyxl.load_workbook(DATA / DIRECTORY, read_only=True, data_only=True)
+    rows = []
+    for r in cells(wb["PT24"], 6):
+        label = (r[0] or "").strip()
+        if label in {"ECL", "BCCL", "CCL", "NCL", "WCL", "SECL", "MCL", "NEC", "CIL", "SCCL"} and r[1] in {"OC", "UG", "ALL"}:
+            prod, ms, o = r[8], r[9], r[10]
+            cid, scope = LABELS.get(label, (label, "company"))
+            rows.append({"company_id": cid, "row_label": label, "scope": scope, "fiscal_year": "2024-25",
+                         "mine_type": r[1], "production_mt": "" if prod is None else f"{float(prod):.3f}",
+                         "manshifts_million": "" if ms is None else f"{float(ms):.4f}",
+                         "oms_t": "" if o in (None, 0) else f"{float(o):.3f}", "source_file": DIRECTORY,
+                         "source_table": "Table 3.24 (PT24), 2024-25 columns"})
+    return rows
+
+
 def main() -> int:
     for rel in MONTHLY + [DIRECTORY]:
         if not (DATA / rel).exists():
             print(f"ERROR: {rel} missing - run data\\run_data.bat download", file=sys.stderr)
             return 1
     try:
-        m, a = monthly(), annual()
+        m, a, pr, om = monthly(), annual(), profile(), oms()
     except ValueError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1
     m.sort(key=lambda r: (r["mineral"], r["year"], r["month"], r["row_label"]))
-    for path, cols, rows in ((OUT_M, M_COLUMNS, m), (OUT_A, A_COLUMNS, a)):
+    for path, cols, rows in ((OUT_M, M_COLUMNS, m), (OUT_A, A_COLUMNS, a), (OUT_P, list(pr[0]), pr), (OUT_O, list(om[0]), om)):
         with path.open("w", encoding="utf-8", newline="") as fh:
             w = csv.DictWriter(fh, fieldnames=cols, lineterminator="\n")
             w.writeheader()
@@ -196,6 +238,8 @@ def main() -> int:
           f"{', '.join(f'{y}-{mo:02d}' for y, mo in months)}; checks passed (CIL sums, % vs target, YTD differences); "
           f"sha256 {sha256_file(OUT_M)[:16]}")
     print(f"Wrote reference/production_company_annual.csv: {len(a)} rows (2022-23 to 2024-25), sha256 {sha256_file(OUT_A)[:16]}")
+    print(f"Wrote reference/production_profile_2024_25.csv: 12 months (Table 3.7); reference/oms_company.csv: "
+          f"{len(om)} rows (Table 3.24)")
     return 0
 
 

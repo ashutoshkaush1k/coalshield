@@ -1,0 +1,21 @@
+table: corrective_action
+description: Corrective actions for violations; resolved ones close their violation, open ones may be overdue.
+defined_by:
+  - "backend/app/models/corrective_action.py: mine_id, violation_id, alert_id, description, status, created_by, proof_image_path, created_at, resolved_at (kept)"
+  - "CLAUDE_CODE_TASK.md Phase 3: nullable contractor_id on corrective_action"
+  - "CLAUDE_CODE_DATASETS.md D4: realistic closure times, some overdue (needs due_at)"
+generator: gen_inspections.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: violation_id, type: integer, nullable: false, fk: violation.id}
+  - {name: alert_id, type: integer, nullable: true, fk: alert.id}
+  - {name: contractor_id, type: integer, nullable: true, fk: contractor.id}
+  - {name: description, type: text, nullable: false}
+  - {name: status, type: enum, nullable: false, values: [open, resolved]}
+  - {name: due_at, type: datetime, nullable: false}
+  - {name: created_by, type: integer, nullable: false, fk: user.id}
+  - {name: proof_image_path, type: string, nullable: true}
+  - {name: created_at, type: datetime, nullable: false}
+  - {name: resolved_at, type: datetime, nullable: true}

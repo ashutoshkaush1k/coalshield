@@ -1,0 +1,16 @@
+table: file
+description: Metadata of uploaded files (contractor documents, detail-request responses). No file bytes are generated.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 1: file (path, mime, size, sha256, uploaded_by, entity, entity_id)"
+generator: gen_contractors.py, gen_requests.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: path, type: string, nullable: false}
+  - {name: mime, type: string, nullable: false}
+  - {name: size, type: integer, nullable: false}
+  - {name: sha256, type: string, nullable: false, note: "SHA-256 of the path string - a placeholder, no file exists"}
+  - {name: uploaded_by, type: integer, nullable: false, fk: user.id}
+  - {name: entity, type: string, nullable: false}
+  - {name: entity_id, type: integer, nullable: false}
+  - {name: created_at, type: datetime, nullable: false}

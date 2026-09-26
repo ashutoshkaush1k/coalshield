@@ -1,0 +1,15 @@
+table: contractor_compliance_doc
+description: Monthly contractor documents per contract; some months are missing (no row), some unverified.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 3: contractor_compliance_doc (contract_id, doc_type wage_register/epf_challan/esi_challan/insurance/other, period YYYY-MM, file_id, verified, verified_by)"
+generator: gen_contractors.py
+primary_key: id
+unique: [[contract_id, doc_type, period]]
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: contract_id, type: integer, nullable: false, fk: contract.id}
+  - {name: doc_type, type: enum, nullable: false, values: [wage_register, epf_challan, esi_challan, insurance, other], note: "epf_challan: EPF Act status is TODO-VERIFY (legal_instruments.csv)"}
+  - {name: period, type: month, nullable: false}
+  - {name: file_id, type: integer, nullable: false, fk: file.id}
+  - {name: verified, type: boolean, nullable: false}
+  - {name: verified_by, type: integer, nullable: true, fk: user.id}

@@ -1,0 +1,13 @@
+fiscal_year,month,year,cil_mt,sccl_mt,all_india_mt,source_file,source_table
+2024-25,4,2024,61.783,5.476,78.704,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row April"
+2024-25,5,2024,64.406,5.729,83.968,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row May"
+2024-25,6,2024,63.098,5.504,84.802,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row June"
+2024-25,7,2024,55.041,4.231,73.964,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row July"
+2024-25,8,2024,46.067,3.762,62.656,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row August"
+2024-25,9,2024,50.948,3.747,68.859,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row September"
+2024-25,10,2024,62.468,5.394,84.599,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row October"
+2024-25,11,2024,67.180,6.311,90.762,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row November"
+2024-25,12,2024,72.371,6.607,97.952,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row December"
+2024-25,1,2025,77.792,6.972,104.432,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row January"
+2024-25,2,2025,74.121,6.362,98.304,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row February"
+2024-25,3,2025,85.783,8.912,118.520,raw/moc/coal_directory_2024_25/cdchap2.xlsx,"Table 3.7 (PT7), row March"

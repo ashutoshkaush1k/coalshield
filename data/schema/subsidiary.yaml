@@ -1,0 +1,13 @@
+table: subsidiary
+description: Operating companies (CIL as holding, its subsidiaries, SCCL, NLC). One row per company in reference/companies.csv.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 1: table `subsidiary` (columns not listed)"
+  - "PLAN.md Q10: subsidiary = operating company, with a parent company column"
+generator: gen_org.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: code, type: string, nullable: false, unique: true, note: "company_id in reference/companies.csv, e.g. SECL"}
+  - {name: name, type: string, nullable: false}
+  - {name: type, type: enum, nullable: false, values: [holding, subsidiary, psu, state_jv, private]}
+  - {name: parent_id, type: integer, nullable: true, fk: subsidiary.id, note: "PLAN Q10 parent company; CIL for its subsidiaries"}

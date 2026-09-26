@@ -9,7 +9,8 @@ REM    data\run_data.bat setup      create data\.venv, install pinned packages,
 REM                                 extract the repo's 74 mines to data\reference
 REM    data\run_data.bat download   stage D2 - fetch every non-manual source
 REM    data\run_data.bat clean      stage D3 - build data\reference from data\raw
-REM    data\run_data.bat generate   stage D4 - write synthetic data to data\out
+REM    data\run_data.bat generate   stage D4 - write synthetic data to data\out\<preset>
+REM                                 optional preset small, demo or full; default: config.yaml scale
 REM    data\run_data.bat validate   stage D5 - schema, FK, calibration checks
 REM    data\run_data.bat all        every stage above, in order, stopping at a failure
 REM
@@ -24,6 +25,7 @@ REM ===========================================================================
 set "DATA=%~dp0"
 set "PY=%DATA%.venv\Scripts\python.exe"
 set "STAGE=%~1"
+set "PRESET=%~2"
 
 if "%STAGE%"=="" goto :usage
 if /i "%STAGE%"=="--help"   goto :usage
@@ -131,8 +133,13 @@ if errorlevel 1 exit /b 1
 exit /b 0
 
 :generate
-call :pending generate D4
-exit /b 1
+echo.
+if "%PRESET%"=="" echo  [generate] Synthetic data, preset from config.yaml scale - stage D4
+if not "%PRESET%"=="" echo  [generate] Synthetic data, preset %PRESET% - stage D4
+if "%PRESET%"=="" "%PY%" -W ignore "%DATA%generators\generate.py"
+if not "%PRESET%"=="" "%PY%" -W ignore "%DATA%generators\generate.py" --preset %PRESET%
+if errorlevel 1 exit /b 1
+exit /b 0
 
 :validate
 call :pending validate D5
@@ -158,7 +165,7 @@ echo.
 echo  data\run_data.bat setup      create data\.venv, install packages, extract the 74 mines
 echo  data\run_data.bat download   stage D2 - fetch every non-manual source
 echo  data\run_data.bat clean      stage D3 - build data\reference from data\raw
-echo  data\run_data.bat generate   stage D4 - write synthetic data to data\out
+echo  data\run_data.bat generate   stage D4 - synthetic data to data\out\PRESET  - small, demo or full
 echo  data\run_data.bat validate   stage D5 - schema, FK and calibration checks
 echo  data\run_data.bat all        every stage in order, stopping at the first failure
 echo.

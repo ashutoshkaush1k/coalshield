@@ -1,0 +1,16 @@
+table: contract
+description: A contractor's work at one mine.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 3: contract (contractor_id, mine_id, work_type ob_removal/transport/loading/civil/security/other, work_order_no, value, start_date, end_date, max_workers)"
+generator: gen_contractors.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: contractor_id, type: integer, nullable: false, fk: contractor.id}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: work_type, type: enum, nullable: false, values: [ob_removal, transport, loading, civil, security, other]}
+  - {name: work_order_no, type: string, nullable: false}
+  - {name: value, type: number, nullable: false, note: "INR"}
+  - {name: start_date, type: date, nullable: false}
+  - {name: end_date, type: date, nullable: false}
+  - {name: max_workers, type: integer, nullable: false}

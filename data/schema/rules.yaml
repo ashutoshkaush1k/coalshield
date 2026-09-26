@@ -1,0 +1,81 @@
+# Every legal period, deadline and threshold the generators use. Each cites a row of
+# data/reference/obligations.csv; generators/common.py refuses to run if the obligation code is
+# missing or not verified (brief rule 7). Values here are copied from the obligation's quoted
+# text; nothing is from memory. Anything without a verified obligation is TODO-VERIFY and is
+# NOT used to compute a breach.
+
+legal:
+  contractor_licence_validity_years:
+    value: 5
+    obligation: LAB-02        # OSH Code 2020 s.48(3)
+  contractor_licence_renewal_window_days:
+    value: [30, 90]           # apply at least 30 and not more than 90 days before expiry
+    obligation: LAB-03        # OSH (Central) Rules 2026 r.91(2)
+  work_order_intimation_days:
+    value: 15
+    obligation: LAB-04        # r.94(1)
+  contract_wage_payment_day:
+    value: 7                  # before the expiry of the 7th day after the wage period
+    obligation: LAB-05        # r.98(2)
+  vocational_refresher_years:
+    value: 4
+    obligation: SAF-04        # r.159
+  medical_exam_interval_months:
+    value: 12                 # periodical medical examination annually
+    obligation: HLT-01        # r.109(1)
+  fatal_accident_notice:
+    value: forthwith
+    obligation: RPT-03        # r.7(1)
+  dangerous_occurrence_notice_hours:
+    value: 12
+    obligation: RPT-05        # r.7(3)
+
+# Sensor thresholds. A reading is `breached` only where a verified obligation gives the limit.
+sensors:
+  ch4:
+    unit: "%"
+    limit: 1.25               # inflammable gas in any place in the mine
+    compare: instantaneous
+    obligation: SAF-11        # CMR 2017 reg.153(2)(c)
+  ch4_return_air:
+    unit: "%"
+    limit: 0.75               # general body of the return air of a ventilating district
+    compare: instantaneous
+    obligation: SAF-11
+  dust:
+    unit: "mg/m3"
+    limit: 2.0                # respirable dust, 8-hour time-weighted average (coal, free silica < 5 %)
+    compare: rolling_8h_mean  # the limit is an 8-hour average, so readings are compared as one
+    obligation: HLT-04        # CMR 2017 reg.143(2)
+  temperature:
+    unit: "degC (wet bulb)"
+    limit: 33.5               # wet bulb temperature at any working place
+    compare: instantaneous
+    obligation: HLT-05        # CMR 2017 reg.153(2)(d)
+  co:
+    unit: "ppm"
+    limit: TODO-VERIFY        # no verified obligation states a CO limit; breached is left empty
+    obligation: null
+  humidity:
+    unit: "%RH"
+    limit: null               # no legal limit; breached is left empty
+    obligation: null
+
+# Ambient air standards used to label env readings (not a breach column; for alerts and charts).
+environment:
+  naaqs_24h_ugm3:
+    value: {pm10: 100, pm25: 60, so2: 80, no2: 80}   # industrial, residential, rural and other area
+    obligation: ENV-08        # EP Rules 1986 Sch. VII (CPCB 2021 compilation)
+
+# Product settings - NOT legal values. From CLAUDE_CODE_TASK.md, marked there as examples/config.
+product:
+  contractor_licence_expiring_alert_days: 30     # CONTRACTOR_LICENCE_EXPIRING (<= 30 days), brief Phase 3
+  grievance_sla_hours:                            # brief Phase 5: "SLA per category (config): e.g. safety 48h, wages 7d"
+    safety: 48
+    wages: 168
+    harassment: 72
+    working_conditions: 120
+    environment: 120
+    land_compensation: 336
+    other: 168
+  contractor_doc_due_day: 10                      # brief Phase 3: "due day configurable"

@@ -15,20 +15,70 @@ date_range:
   # data\run_data.bat all and commit the new date. Changing it regenerates every dated row.
   end_date: "2026-09-25"
 
+# Which mine list the generators use (decided 2026-09-26: the real roster is adopted).
+#   real - reference/mines_real.csv (74 real operating mines, exact GEM points) - the default
+#   seed - reference/mines.csv (the prototype's fictional seed, district-level points) - fallback
+# Every generator works with either; ids 1-74 are the same seed slots in both.
+mine_roster: real
+
 # Which preset generators use when none is passed on the command line.
 scale: demo
 
-# Scale presets. A preset may override date_range.days. Per-generator volumes (contractors,
-# grievances, workers...) are added in stage D4, once the output schemas exist.
+# Scale presets. A preset may override date_range.days. Output goes to data/out/<preset>/.
+# Volumes are per preset; "per_mine" values are multiplied by the number of mines.
 scales:
   small:            # fast, for tests
     mines: named    # the five named demo mines only
     days: 14
+    contractors: 8
+    contracts_per_mine: 3
+    workers_per_contract: [8, 20]
+    grievances_per_mine: 6
+    detail_requests: 5
+    sensor_interval_minutes: {underground: 15, opencast: 60}
   demo:             # the default
     mines: all      # all 74 mines
+    contractors: 40
+    contracts_per_mine: 2
+    workers_per_contract: [8, 24]
+    grievances_per_mine: 5
+    detail_requests: 12
+    sensor_interval_minutes: {underground: 15, opencast: 60}
   full:
     mines: all
     days: 365
+    contractors: 60
+    contracts_per_mine: 3
+    workers_per_contract: [10, 30]
+    grievances_per_mine: 18
+    detail_requests: 40
+    sensor_interval_minutes: {underground: 15, opencast: 60}
+
+# Generator settings that are modelling choices, not facts. Each is documented in DATASETS.md.
+generation:
+  # How a company's monthly figure is split across mines (gen_production.py docstring):
+  #   company_capacity_share - mine capacity / company's total operating GEM capacity (realistic per mine)
+  #   roster_total           - the whole company figure shared among the roster's mines
+  production_split: company_capacity_share
+  # Production shift split before daily noise (A, B, C). C (night) slightly lower.
+  shift_weights: {A: 0.36, B: 0.34, C: 0.30}
+  # Chance that a shift has a breakdown, and its length range in hours.
+  breakdown_probability: 0.12
+  breakdown_hours: [0.5, 4.0]
+  # MSHA-based inspection model: size factor = (workforce / MSHA p75 headcount)^exponent, clipped.
+  inspection_size_exponent: 0.5
+  inspection_size_clip: [0.5, 2.0]
+  # Mine-level noise added to the nearest station's daily value (lognormal sigma).
+  env_mine_noise_sigma: 0.10
+  # A CPCB station is "applicable" to a mine within this distance.
+  env_station_max_km: 50
+  # Used ONLY if reference/env_daily.csv is absent (OpenAQ skipped). Synthetic ranges, not
+  # measurements: lognormal median and sigma per pollutant, in ug/m3.
+  env_fallback_ranges:
+    pm10: {median: 90, sigma: 0.35}
+    pm25: {median: 45, sigma: 0.40}
+    so2: {median: 15, sigma: 0.50}
+    no2: {median: 25, sigma: 0.45}
 
 # ---------------------------------------------------------------------------------------------
 # repo_demo_baseline - NOT LEGAL VALUES.
@@ -58,6 +108,9 @@ repo_demo_baseline:
   # breach is inside the window: the opening score comes from open PPE violations alone
   # (docs/architecture.md, "the rolling breach window").
   in_window_breaches_at_seed: 0
+  # BREACH_WINDOW_HOURS in backend/app/core/config.py (12 s; PLAN.md 1.5). D4 uses it to score the
+  # generated data exactly as the backend would.
+  breach_window_hours: 0.0033
   named_mines: [JH-DHN-01, MP-SGR-02, CG-KRB-03, WB-RNG-04, OD-TLC-05]
   # docs/demo-script.md, "Clean baseline". The extraction fails if its result disagrees.
   expected:

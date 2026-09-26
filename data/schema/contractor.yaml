@@ -1,0 +1,17 @@
+table: contractor
+description: Fictitious contractor companies (global, not per mine). Identifiers are masked.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 3: contractor (name, registration_no, labour_licence_no, licence_valid_to, epf_code, esi_code, contact, status active/suspended/blacklisted)"
+  - "Licence validity 5 years: obligations.csv LAB-02 (OSH Code 2020 s.48(3)), via schema/rules.yaml"
+generator: gen_contractors.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: name, type: string, nullable: false, note: "fictitious"}
+  - {name: registration_no, type: string, nullable: false, note: "masked, e.g. REG-XXXX-0417"}
+  - {name: labour_licence_no, type: string, nullable: false, note: "masked"}
+  - {name: licence_valid_to, type: date, nullable: false}
+  - {name: epf_code, type: string, nullable: false, note: "masked"}
+  - {name: esi_code, type: string, nullable: false, note: "masked"}
+  - {name: contact, type: string, nullable: false, note: "masked phone, e.g. +91-XXXXX-X4821"}
+  - {name: status, type: enum, nullable: false, values: [active, suspended, blacklisted]}

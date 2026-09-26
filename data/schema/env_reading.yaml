@@ -1,0 +1,17 @@
+table: env_reading
+description: Daily ambient air quality per mine - calibrated from the nearest CPCB station (OpenAQ) plus mine-level noise, or synthetic where no station applies.
+defined_by:
+  - "CLAUDE_CODE_DATASETS.md D4 gen_environment.py (no backend document defines this table)"
+generator: gen_environment.py
+primary_key: id
+unique: [[mine_id, date, parameter]]
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: date, type: date, nullable: false}
+  - {name: parameter, type: enum, nullable: false, values: [pm10, pm25, so2, no2]}
+  - {name: value, type: number, nullable: false}
+  - {name: unit, type: string, nullable: false, note: "ug/m3 for all four (SO2 and NO2 converted from ppb)"}
+  - {name: data_kind, type: enum, nullable: false, values: [calibrated, synthetic]}
+  - {name: station_id, type: integer, nullable: true, note: "OpenAQ location id (reference/env_stations.csv)"}
+  - {name: station_distance_km, type: number, nullable: true}
