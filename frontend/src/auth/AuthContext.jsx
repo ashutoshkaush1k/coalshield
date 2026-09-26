@@ -2,6 +2,7 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import * as authApi from "../api/auth";
 import { getToken } from "../api/client";
+import { normalizeUser } from "./roles";
 
 export const AuthContext = createContext(null);
 
@@ -18,13 +19,13 @@ export function AuthProvider({ children }) {
     }
     authApi
       .me()
-      .then(setUser)
+      .then((account) => setUser(normalizeUser(account)))
       .catch(() => authApi.logout())
       .finally(() => setLoading(false));
   }, []);
 
   const signIn = useCallback(async (email, password) => {
-    const account = await authApi.login(email, password);
+    const account = normalizeUser(await authApi.login(email, password));
     setUser(account);
     return account;
   }, []);

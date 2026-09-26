@@ -2,6 +2,7 @@
 import { getInspectionQueue } from "../../../api/inspections";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { StateFilter } from "../../../components/common/StateFilter";
+import { DemoTag } from "../../../components/common/DemoTag";
 import { Loader } from "../../../components/common/Loader";
 import { PriorityQueue } from "../../../components/inspections/PriorityQueue";
 import { usePolling } from "../../../hooks/usePolling";
@@ -22,7 +23,7 @@ export function PriorityPanel({ state, states, onStateChange }) {
           <div className="panel-head">
             <div>
               <h2>
-                {data.mine_count} mines ranked{state ? ` in ${state}` : " nationally"}
+                {data.mine_count} mines ranked{state ? ` in ${state}` : " nationally"} <DemoTag />
               </h2>
               <span className="hint">
                 Urgency combines current score with the rise in events over the last{" "}

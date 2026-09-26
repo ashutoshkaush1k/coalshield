@@ -27,6 +27,7 @@ import { Topbar } from "../../components/layout/Topbar";
 import { usePolling } from "../../hooks/usePolling";
 import { breachesLabel, fmtDateTime, fmtPercent, fmtScore, humanise } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
+import { DemoTag } from "../../components/common/DemoTag";
 
 /**
  * One mine's full bundle. Exported so the Mine Head view composes exactly the same
@@ -98,7 +99,7 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
             <div className="panel-body">
               <div className="hero-figure">
                 <div>
-                  <span className="label">Compliance score</span>
+                  <span className="label">Compliance score <DemoTag /></span>
                   <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
                   <div style={{ marginTop: "var(--space-3)" }}>
                     <RiskMark level={c.risk_level} />

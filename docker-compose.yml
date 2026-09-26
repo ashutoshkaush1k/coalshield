@@ -1,0 +1,48 @@
+# Portable fallback for the native Windows setup (docs/SETUP_WINDOWS.md).
+# NOT YET VERIFIED: Docker is not installed on the development machine (see PROGRESS.md).
+#
+#   docker compose up -d db api          database + API on http://localhost:8080
+#   docker compose exec api php yii seed demo
+#   docker compose exec api php yii_test seed small && docker compose exec api php vendor/bin/codecept run
+#
+# api/.env is read for secrets (JWT_SECRET, DB_PASSWORD); the values below override its host names.
+# ai-service joins in Phase 7; the frontend keeps using `npm run dev` on the host until Phase 2.
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: coalshield
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-coalshield-dev-only}
+      POSTGRES_DB: coalshield
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coalshield -d coalshield"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_PASSWORD: ${DB_PASSWORD:-coalshield-dev-only}
+      DATA_OUT_DIR: /data/out
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api:/app
+      - api_vendor:/app/vendor
+      - ./data:/data:ro
+
+volumes:
+  pgdata:
+  api_vendor:

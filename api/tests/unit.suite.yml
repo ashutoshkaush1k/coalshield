@@ -1,0 +1,10 @@
+# Component tests with a booted Yii application on the test database.
+actor: UnitTester
+suite_namespace: app\tests\unit
+modules:
+  enabled:
+    - Yii2:
+        configFile: config/test.php
+        transaction: true
+        cleanup: true
+    - Asserts

@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Console entry point against the TEST database (DB_TEST_NAME). Used by run_tests.bat:
+ * php yii_test migrate --interactive=0 && php yii_test seed small
+ */
+
+declare(strict_types=1);
+
+define('COALSHIELD_TEST', true);
+
+require __DIR__ . '/config/bootstrap.php';
+
+$config = require __DIR__ . '/config/console.php';
+$config['id'] = 'coalshield-console-test';
+
+$exitCode = (new yii\console\Application($config))->run();
+exit($exitCode);

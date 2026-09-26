@@ -1,0 +1,35 @@
+{
+  "demo": {
+    "footer": "Demo data: synthetic, calibrated to public statistics — see DATASETS.md",
+    "valueTag": "demo value",
+    "valueTitle": "Demo value computed from synthetic data, not an official compliance rating"
+  },
+  "roles": {
+    "government": "Government",
+    "corporate": "Corporate",
+    "mine_head": "Mine Head",
+    "inspector": "Inspector"
+  },
+  "shell": {
+    "scopeAll": "{{role}} · all mines",
+    "scopeSubsidiary": "{{role}} · subsidiary #{{id}}",
+    "scopeMine": "{{role}} · mine #{{id}}",
+    "signOut": "Sign out",
+    "noScreen": "There is no screen for this role yet."
+  },
+  "errors": {
+    "UNAUTHENTICATED": "Please sign in again.",
+    "INVALID_CREDENTIALS": "Wrong email or password.",
+    "FORBIDDEN": "You do not have permission to do this.",
+    "NOT_FOUND": "Not found.",
+    "VALIDATION_FAILED": "Please check the highlighted fields.",
+    "INVALID_TRANSITION": "This status change is not allowed.",
+    "INTERNAL_ERROR": "Something went wrong. Please try again.",
+    "UNKNOWN": "Something went wrong."
+  },
+  "fields": {
+    "REQUIRED": "Required",
+    "INVALID_VALUE": "Invalid value",
+    "READ_ONLY": "Cannot be changed here"
+  }
+}

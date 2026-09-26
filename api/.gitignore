@@ -1,0 +1,10 @@
+/vendor/
+/runtime/*
+!/runtime/.gitkeep
+/storage/*
+!/storage/.gitkeep
+/web/assets/
+/tests/_output/*
+!/tests/_output/.gitkeep
+/tests/_support/_generated/
+.env

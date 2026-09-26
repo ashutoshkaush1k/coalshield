@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Console entry point (development database). Usage: php yii <route> [options]
+ */
+
+declare(strict_types=1);
+
+require __DIR__ . '/config/bootstrap.php';
+
+$config = require __DIR__ . '/config/console.php';
+
+$exitCode = (new yii\console\Application($config))->run();
+exit($exitCode);

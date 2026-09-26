@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "../components/common/Card";
 import { ErrorNotice } from "../components/common/ErrorNotice";
+import { DemoFooter } from "../components/common/DemoFooter";
 import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
 
@@ -75,6 +76,7 @@ export default function Login() {
             ))}
           </div>
         </Card>
+        <DemoFooter />
       </div>
     </div>
   );

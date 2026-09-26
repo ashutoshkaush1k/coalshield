@@ -520,3 +520,28 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
    pushing the page sideways. */
 body { overflow-x: hidden; }
 .panel-block { max-width: 100%; }
+
+/* Synthetic-data notices (data/DATASETS.md): a tag beside demo scores, a line under every page. */
+.demo-tag {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.demo-footer {
+  margin-top: auto;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--text-xs);
+}
+.login-card .demo-footer { border-top: 0; padding: 0; text-align: center; }

@@ -1,6 +1,7 @@
 // Fleet-wide glance: one hero figure, compact secondary stats, then the core board.
 import { CoreSampleBoard } from "../../../components/compliance/CoreSampleBoard";
 import { StateFilter } from "../../../components/common/StateFilter";
+import { DemoTag } from "../../../components/common/DemoTag";
 import { breachesLabel } from "../../../utils/format";
 
 function Tally({ label, value, tone }) {
@@ -25,7 +26,7 @@ export function OverviewPanel({ data, state, onStateChange }) {
             <div>
               {/* The label names the scope, so a number can never be read as national
                   when it is actually one state's. */}
-              <span className="label">{scope} average compliance</span>
+              <span className="label">{scope} average compliance <DemoTag /></span>
               <div className="hero-number">{stats?.average_score ?? "-"}</div>
               <p className="hero-caption">
                 Mean score across {stats?.mine_count ?? 0} monitored mines
@@ -50,7 +51,7 @@ export function OverviewPanel({ data, state, onStateChange }) {
       <section className="panel-block">
         <div className="panel-head">
           <div>
-            <h2>Core sample board</h2>
+            <h2>Core sample board <DemoTag /></h2>
             <span className="hint">
               Each core is filled to its compliance score, worst on the left
             </span>

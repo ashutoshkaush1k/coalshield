@@ -1,0 +1,53 @@
+{
+    "name": "coalshield/api",
+    "description": "CoalShield governance API - Yii2 REST API on PostgreSQL + PostGIS",
+    "type": "project",
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo_pgsql": "*",
+        "ext-pgsql": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-sodium": "*",
+        "ext-fileinfo": "*",
+        "yiisoft/yii2": "~2.0.51",
+        "yiisoft/yii2-queue": "^2.3",
+        "yiisoft/yii2-httpclient": "^2.0",
+        "bizley/jwt": "^4.0",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.1",
+        "codeception/module-yii2": "^1.1",
+        "codeception/module-rest": "^3.3",
+        "codeception/module-asserts": "^3.0"
+    },
+    "replace": {
+        "bower-asset/jquery": "*",
+        "bower-asset/inputmask": "*",
+        "bower-asset/punycode": "*",
+        "bower-asset/yii2-pjax": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": ""
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "app\\tests\\Support\\": "tests/_support/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "process-timeout": 1800,
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
+        }
+    },
+    "scripts": {
+        "test": "codecept run"
+    }
+}

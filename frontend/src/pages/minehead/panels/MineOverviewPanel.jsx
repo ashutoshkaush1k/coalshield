@@ -14,6 +14,7 @@ import { Drawer } from "../../../components/overlay/Overlay";
 import { UploadPanel } from "../../../components/vision/UploadPanel";
 import { breachesLabel, fmtDateTime, fmtPercent, fmtScore, humanise } from "../../../utils/format";
 import { riskClass } from "../../../utils/risk";
+import { DemoTag } from "../../../components/common/DemoTag";
 
 function Stat({ label, value, tone }) {
   return (
@@ -45,7 +46,7 @@ export function MineOverviewPanel({ bundle, mineId, onAnalysed, onChanged }) {
           <div className="panel-body">
             <div className="hero-figure">
               <div>
-                <span className="label">Compliance score</span>
+                <span className="label">Compliance score <DemoTag /></span>
                 <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
                 <div style={{ marginTop: "var(--space-3)" }}>
                   <RiskMark level={c.risk_level} />

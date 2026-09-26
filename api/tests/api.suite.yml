@@ -1,0 +1,13 @@
+# HTTP-level tests through the Yii2 application (no web server needed).
+actor: ApiTester
+suite_namespace: app\tests\api
+modules:
+  enabled:
+    - Yii2:
+        configFile: config/test.php
+        transaction: true
+        cleanup: true
+    - REST:
+        depends: Yii2
+        part: Json
+    - Asserts
