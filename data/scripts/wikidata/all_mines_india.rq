@@ -1,0 +1,24 @@
+# Source S04 - all mines in India on Wikidata (every mineral), with coordinates where recorded.
+# Saved as data/raw/wikidata/coal_mines_india.csv (the file name predates this broader query;
+# coal rows are picked out downstream by productLabel and by name).
+#
+# Run by hand at https://query.wikidata.org (data/MANUAL_STEPS.md, step 2):
+# query.wikidata.org/robots.txt disallows automated access to /sparql, so the pipeline never
+# calls it. Supplied by the user on 2026-09-26; it replaces the earlier coal-only query.
+#
+# IDs checked against their Wikidata pages on 2026-09-26:
+#   Q820477 mine | Q668 India | P31 instance of | P279 subclass of | P17 country
+#   P625 coordinate location | P137 operator | P131 located in the administrative territorial entity
+#   P1056 product or material produced
+# Licence of the result: CC0 (Wikidata structured data).
+
+SELECT ?mine ?mineLabel ?coord ?operatorLabel ?placeLabel ?productLabel WHERE {
+  ?mine wdt:P17 wd:Q668 ;
+        wdt:P31/wdt:P279* wd:Q820477 .
+  OPTIONAL { ?mine wdt:P625 ?coord }
+  OPTIONAL { ?mine wdt:P137 ?operator }
+  OPTIONAL { ?mine wdt:P131 ?place }
+  OPTIONAL { ?mine wdt:P1056 ?product }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY ?mineLabel

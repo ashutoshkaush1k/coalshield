@@ -296,11 +296,11 @@ sources:
   - name: coal_mines_india.csv
     url: null
     target: raw/wikidata/coal_mines_india.csv
-    query: scripts/wikidata/coal_mines_india.rq
+    query: scripts/wikidata/all_mines_india.rq
     download_status: present-manual
-    query_note: 'The saved CSV came from a broader all-mines query run by the user (it has a productLabel
-      column and non-coal mines), not from scripts/wikidata/coal_mines_india.rq. That query''s text is
-      not in the repo - TODO: save it as scripts/wikidata/all_mines_india.rq so the file can be reproduced.'
+    query_note: The saved CSV comes from the broader all-mines query supplied by the user on 2026-09-26
+      (every mineral, with a productLabel column), saved as scripts/wikidata/all_mines_india.rq. It replaces
+      the earlier coal-only query; the file keeps its name coal_mines_india.csv.
     found_files:
     - path: raw/wikidata/coal_mines_india.csv
       sha256: f445c45085efdc560949e67294ed06a82948ab4776ebc93ae8191a63c8bf5079
@@ -322,7 +322,7 @@ sources:
   publisher: Coal India Ltd and subsidiaries, SCCL, NLC India
   landing_page: https://www.coalindia.in/
   target_path: raw/company_sites/
-  purpose: Company -> area lists (areas.csv).
+  purpose: Company -> area lists (areas.csv) and company ownership (companies.csv).
   access: open
   manual: true
   optional: false
@@ -457,6 +457,25 @@ sources:
     skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
       either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
       chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
+  - name: SCCL about-us page (ownership)
+    url: https://scclmines.com/scclnew/company_about-us.asp
+    target: raw/company_sites/sccl/
+    kind: page
+    local_path: raw/company_sites/sccl/sccl_about_us_page_ownership.html
+    sha256: cf1bd3acf6d4594d6bfc5ee46ba3a38a601fe3fa3c200435f94351964d21e6f5
+    size_bytes: 37974
+    downloaded_at: '2026-09-26T04:57:09+00:00'
+    download_status: ok
+  - name: NLC India corporate profile (ownership)
+    url: https://www.nlcindia.in/website/en/aboutus/corporateprofile.html
+    target: raw/company_sites/nlc/
+    kind: page
+    local_path: raw/company_sites/nlc/nlc_india_corporate_profile_ownership.html
+    sha256: fe6b361b69507a1f881e33797febd86f6db445e5b94b7a14ce124611845ec990
+    size_bytes: 7859
+    downloaded_at: '2026-09-26T04:57:17+00:00'
+    download_status: ok
+    last_modified: Wed, 17 Jun 2026 12:21:08 GMT
   d2_status: ok
 - id: S06
   name: Ministry of Coal - monthly statistics and Coal Directory of India
@@ -474,13 +493,13 @@ sources:
     SECL, MCL, NEC, CIL total, SCCL, captives): monthly target, achievement, same month last year, year-to-date,
     in million tonnes (checked on msg-Aug26.pdf). The generated window is 2026-06-28 to 2026-09-25; September
     2026 is not yet published, so September 2025 is kept as the seasonal stand-in and must be labelled
-    as such. NLC India (lignite) is not in this table. NEC (North Eastern Coalfields) is one of the
-    eight rows summed in the CIL total; its August 2026 production was 0.00 Mt. Of the five seed mines
-    with operator "Coal India Ltd", only AS-DIB-70 is in Assam (the others are JH-BOK-07, JH-LAT-10,
-    CG-SUR-31 and CG-BIL-38), so NEC is not a stand-in for them; D3 keeps them as CIL (corrected in
-    D3 - D1 said all five were in Assam). The Coal Directory 2024-25 chapters were checked in D3 for
-    area-wise tables (the fallback for ECL/CCL/SECL areas): none has one. Older Coal Directory PDFs
-    (48-56 MB) are skipped as redundant with the 2024-25 Excel chapters.'
+    as such. NLC India (lignite) is not in this table. NEC (North Eastern Coalfields) is one of the eight
+    rows summed in the CIL total; its August 2026 production was 0.00 Mt. Of the five seed mines with
+    operator "Coal India Ltd", only AS-DIB-70 is in Assam (the others are JH-BOK-07, JH-LAT-10, CG-SUR-31
+    and CG-BIL-38), so NEC is not a stand-in for them; D3 keeps them as CIL (corrected in D3 - D1 said
+    all five were in Assam). The Coal Directory 2024-25 chapters were checked in D3 for area-wise tables
+    (the fallback for ECL/CCL/SECL areas): none has one. Older Coal Directory PDFs (48-56 MB) are skipped
+    as redundant with the 2024-25 Excel chapters.'
   files:
   - name: Monthly Coal Statistics Jun 2026
     url: https://coal.gov.in/sites/default/files/2026-07/msg-june26.pdf

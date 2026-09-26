@@ -104,7 +104,7 @@ files.
 | **Sources** | S06 Ministry of Coal, Monthly Coal Statistics Aug'2026, page 1; S05 the companies' own pages |
 | **Produced by** | `data/scripts/clean_companies.py` (stage D3; `run_data.bat clean`) |
 | **Rows** | 10: CIL, its 7 subsidiaries in the seed (ECL, BCCL, CCL, NCL, WCL, SECL, MCL), SCCL, NLC |
-| **Checksum** | `c7c3a312861f8ce93d60798cd17ba59460b3271aade1e4bd2c7c4a03093cf8fd` |
+| **Checksum** | `f4ac86e4c123046a611c27d5ae9080de96df58d9722d5f98ea57b2bd7e855d72` |
 
 **Method.** The CIL → subsidiary links come from one table: on page 1 of the monthly statistics
 the "CIL" row equals the sum of the ECL, BCCL, CCL, NCL, WCL, SECL, MCL and NEC rows (52.54 Mt in
@@ -112,10 +112,14 @@ August 2026). The script re-adds the rows and refuses to write if they do not su
 outside that total. Where a company's own page describes it ("A Subsidiary of Coal India
 Limited", "A Government Company"), the quote and the file are in `self_description`.
 
+Types that are not CIL subsidiaries are quoted from the company's own page, and the script checks
+the sentence is still on the saved page:
+- **SCCL `state_jv`**: "jointly owned by the Government of Telangana and Government of India on a
+  51:49 equity basis" (scclmines.com, company_about-us.asp).
+- **NLC `psu`**: "NLCIL is a Navratna Government of India Enterprise, under the administrative
+  control of Ministry of Coal" (nlcindia.in, corporateprofile.html).
+
 **Limitations**
-- **SCCL `type = psu`** reflects only its self-description ("A Government Company"). The brief
-  offers `state_jv`, but no downloaded source gives the shareholding. *TODO-VERIFY.*
-- **NLC `type = TODO-VERIFY`**: no downloaded source describes NLC India's ownership.
 - NEC is in the CIL total but is not a seed operator, so it has no row. The seed operator
   "Coal India Ltd" (5 mines) is kept as CIL itself.
 
@@ -128,14 +132,16 @@ Limited", "A Government Company"), the quote and the file are in `self_descripti
 | **Kind** | **Real** (as each company publishes its areas) |
 | **Sources** | S05 saved pages: BCCL, WCL, MCL, SCCL; district names checked against S03 and S04 |
 | **Produced by** | `data/scripts/clean_areas.py` (uses `district_names.py`) |
-| **Rows** | 43: BCCL 12, WCL 10, MCL 9, SCCL 12; 18 with a district |
-| **Checksum** | `b26642d7612b620a026931724063921143a31095c151abe39bbc74dc0ffd6c00` |
+| **Rows** | 43: BCCL 12, WCL 10, MCL 9, SCCL 12; 19 with a district |
+| **Checksum** | `a4347a575ef433763fbe91ab309dc049d411a58308b14813a9c214bc1430e587` |
 
 **Method.** Area names are read from the saved pages; `source_text` keeps the exact words. A
 district is recorded only when the source names it: SCCL writes "<district> Dist."; for WCL a
 district name of Maharashtra or Madhya Pradesh must appear in the office address. Names are
 matched against DataMeet 2011 and Wikidata's district list, not from memory: exact, then a unique
-prefix ("Jayashankar" → Jayashankar Bhupalpally), then a flagged spelling variant.
+prefix ("Jayashankar" → Jayashankar Bhupalpally), then a flagged spelling variant. When an SCCL
+district name matches no district, the district is taken from GEM rows of an SCCL mine named after
+the area's place, cited by GEM ID.
 
 **Limitations**
 - **No ECL, CCL or SECL areas.** Their sites were unreachable, so manual step 4 was skipped. The
@@ -144,9 +150,11 @@ prefix ("Jayashankar" → Jayashankar Bhupalpally), then a flagged spelling vari
   JavaScript shell; NLC India publishes mines, not areas.
 - **No district for BCCL and MCL areas** (their pages name none), nor for WCL Ballarpur, Majri and
   Wani North (their addresses name towns only).
-- **Two SCCL districts are uncertain.** "Komaram Bheem Dist." is taken as Kumaram Bheem Asifabad
-  (fuzzy 92, *TODO-VERIFY*). "Kothagudem Dist." (Sathupally Area) matches no district and is left
-  empty (*TODO-VERIFY*); it is not assumed to be Bhadradri Kothagudem.
+- **Two SCCL districts rest on secondary evidence.** "Komaram Bheem Dist." is taken as Kumaram
+  Bheem Asifabad (spelling variant, fuzzy 92; accepted by the user 2026-09-26). For Sathupally,
+  the page says "Kothagudem Dist.", which is not a district name. The district, Khammam, comes from
+  GEM M0546 "JVR I Coal Mine" (AKA "Sathupalli", an SCCL mine), whose Prefecture, District is
+  Khammam. It is not assumed to be Bhadradri Kothagudem.
 - The SCCL page numbers its rows 1–10, 12, 13 (there is no row 11), so there are 12 SCCL areas, not 13.
 - Excluded because they are not areas: "Block-E OCP" (a mine) and "CWS IB Valley" (a workshop).
 
@@ -233,3 +241,99 @@ mines of the seed operator in the seed state.
   Dhanbad, 0.5) and OD-TLC-05 ("Talcher": Talcher UG M1746 or Nandira M2695, both MCL, Angul, 0.5).
 - The Gevra match takes GEM's operating capacity (70 Mtpa). The seed's word "Expansion" is not
   matched to any GEM expansion phase.
+
+---
+
+## `reference/mines_real.csv` and `reference/mine_code_mapping.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** mines (names, companies, places, coordinates, type, capacity) with **synthetic** demo scores |
+| **Sources** | S02 GEM Global Coal Mine Tracker Aug 2026 (CC BY 4.0); S06 Ministry of Coal msg-Aug26.pdf p.1; S03/S04 district lists; `companies.csv`, `areas.csv`, `mines_base.csv`, `mines.csv` |
+| **Produced by** | `data/scripts/clean_mines_real.py` |
+| **Rows** | 74 mines; 74 mapping rows |
+| **Checksums** | mines_real `8a4e6dd4c022bed0fa33e33d2ab39b2828e87918347d9d0fe5d7cee5b32c48ca`; mapping `4328244b2eb8a2528a94258980fa60c74dff6bcc46a8caf519324eeadb39771f` |
+| **Status** | Proposed replacement for the backend seed, **pending team approval** (see `data/HANDOFF.md`). `mines.csv` stays as the fallback. |
+
+**Which mines.** Candidates are GEM India rows that meet all of these:
+- status "Operating", with coordinates;
+- the first-listed owner is a company in `companies.csv` (North Eastern Coalfields counts as CIL:
+  NEC has no row there, and the Ministry table sums it inside CIL).
+
+A candidate is dropped when GEM contradicts itself or another source:
+- its production exceeds its company's annualised Ministry figure (Kakri: 2.7 Mt as NEC, whose
+  whole output is about 0.24 Mt a year);
+- its point is over 20 km outside the state GEM names (Barsingsar);
+- the district GEM names does not even touch the 2011 district containing the point (Kondapuram,
+  Vakilpalli).
+
+Candidates rank by exact location first, then capacity.
+
+**How many per company.** Seats follow Apr–Aug 2026 production in the Ministry of Coal
+company-wise table (largest remainder), with at least one per company. A company never gets more
+seats than it has candidates:
+
+| Company | Apr–Aug 2026 (Mt) | Seats | Underground or mixed |
+|---|---|---|---|
+| MCL | 69.89 | 18 | 4 |
+| SECL | 65.46 | 17 | 12 |
+| NCL | 49.47 | 9 (all its candidates) | 0 (GEM lists none) |
+| CCL | 29.78 | 8 | 1 |
+| WCL | 22.92 | 6 | 2 |
+| SCCL | 21.18 | 6 | 3 |
+| ECL | 18.75 | 5 | 4 |
+| BCCL | 11.21 | 3 | 1 |
+| CIL (its own row, NEC) | 0.03 | 1 | 0 |
+| NLC (not in the table) | – | 1 | 0 |
+
+Each company's underground share follows GEM's mix among its candidates. Overall: 47 opencast,
+21 underground, 6 mixed. All 74 have `location_quality = exact_gem`.
+
+**Demo slots.** The five named demo mines keep their code, login, score and band. Each gets a real
+mine of the same operator in the named coalfield: the one D3 already matched (Gevra), else the
+best-ranked in the seed district:
+
+| Code | Coalfield | Real mine | Score | Band |
+|---|---|---|---|---|
+| JH-DHN-01 | Jharia | Moonidih (BCCL, Dhanbad, underground) | 100 | LOW |
+| MP-SGR-02 | Singrauli | Jayant (NCL, Singrauli) | 80 | LOW |
+| CG-KRB-03 | Korba | Gevra (SECL, Korba) | 70 | MEDIUM |
+| WB-RNG-04 | Raniganj | Sonepur Bazari (ECL, Paschim Bardhaman) | 60 | MEDIUM |
+| OD-TLC-05 | Talcher | Bhubaneswari (MCL, Angul) | 45 | HIGH |
+
+**Codes, logins, scores.** Every seed slot (id 1–74) is paired with one real mine, in this order:
+demo slots, then same company and state, same company, same state, then the rest. The real mine
+takes the slot's id, `demo_score`, `demo_risk_level` and `seed_violations`. That keeps the band
+split at **6 High / 21 Medium / 47 Low** and the average at 83.2, and `100 − 5 × seed_violations`
+still gives the score. `score_note` says on every row that the score is a demo value, not an
+assessment. Codes follow the seed format `<state>-<first 3 letters of district>-<id>` with the
+seed's state prefixes. Logins follow `head.<code>@coalmine.in`; 10 codes, including the 5 demo
+codes, are unchanged. `mine_code_mapping.csv` lists every old → new code with the reason.
+
+**District and area.**
+- **District.** It comes from the 2011 polygon that contains the GEM point. GEM's own district
+  text is used when it names that district or one carved out of it. When the 2011 district has
+  since been split and nothing names the current one, `district_basis = 2011` (12 mines, in
+  Barddhaman, Chhindwara, Karimnagar, Khammam, Koriya and Surguja).
+- **Area.** It is set in two ways (`area_method`), 11 mines in total (10 by name, 1 by district):
+  - **name** (an addition to the requested rule): the mine's name contains exactly one area name
+    of its company, e.g. Lingaraj → MCL-LINGARAJ or Ramagundam III → SCCL-RAMAGUNDAM-III, and that
+    area's published district, if any, is consistent with the point;
+  - **district** (the requested rule): the only area of its company whose published district is
+    the mine's current district.
+
+**Limitations**
+- **Scores are not real.** A real mine shown with a HIGH demo band is not a finding about that mine;
+  the UI must label scores as demo values (HANDOFF.md).
+- **GEM is the only source for each mine.** Capacity and production are GEM's figures and years
+  (`production_year`), not the Ministry's. Coordinates are GEM's "Exact" points, not surveyed
+  boundaries.
+- **Excluded by design.**
+  - NLC's Neyveli lignite mines (Tamil Nadu) have no seed state prefix; NLC's seat is its Odisha
+    coal mine, Talabira II & III.
+  - ECL/CCL/SECL mines get no area (no area pages), apart from any that were name-matched.
+- Border cases are noted in `district_method`, and the point's state or district is used. GEM names
+  a neighbouring district for 8 mines, often the one the current district was carved from
+  (Amlohri: "Sidhi", Rajnagar: "Shahdol"). GEM names a state across the border for 3 mines
+  (Dudhichua, Bina, Haldibari).
+- NCL has 9 seats rather than 12 because GEM lists only 9 operating NCL mines with usable rows.

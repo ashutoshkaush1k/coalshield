@@ -40,7 +40,7 @@ from rapidfuzz import fuzz
 from shapely.geometry import Point, mapping
 
 from common import DATA, sha256_file
-from district_names import datameet, norm, norm_state, resolve, wikidata_rows
+from district_names import datameet, norm, norm_state, resolve, wikidata_point
 
 SEED = DATA / "reference/mines_base.csv"
 AREAS = DATA / "reference/areas.csv"
@@ -60,17 +60,6 @@ def gem_india() -> pd.DataFrame:
     frames = [pd.read_excel(GEM, sheet_name=s) for s in ("Non-closed mines", "Closed mines")]
     g = pd.concat(frames, ignore_index=True)
     return g[g["Country / Area"] == "India"]
-
-
-def wikidata_point(label: str, state: str) -> tuple[str, Point | None]:
-    """(qid, point) for a Wikidata district label; several coordinate statements -> lowest (qid, coord)."""
-    rows = sorted((r["qid"], r["coord"]) for r in wikidata_rows()
-                  if r["label"] == label and re.match(r"Point\(", r["coord"] or ""))
-    if not rows:
-        return "", None
-    qid, coord = rows[0]
-    lon, lat = map(float, re.findall(r"[-\d.]+", coord)[:2])
-    return qid, Point(lon, lat)
 
 
 def majority_district(values: list[str]) -> tuple[str, int, int]:

@@ -16,6 +16,8 @@ import csv
 import re
 import sys
 
+import html as h
+
 import pdfplumber
 
 from common import DATA, sha256_file
@@ -38,6 +40,13 @@ SELF_DESCRIPTIONS = {  # company_id -> (quote from its own page, file)
     "NCL": ("A mini ratna company A Government of India Undertaking", "raw/company_sites/ncl/ncl_overview_projects.html"),
     "SCCL": ("The Singareni Collieries Company Limited (A Government Company)", "raw/company_sites/sccl/sccl_contact_page_lists_areas.html"),
 }
+OWNERSHIP = {  # company_id -> (sentence that must appear on the saved page, file, url)
+    "SCCL": ("jointly owned by the Government of Telangana and Government of India on a 51:49 equity basis",
+             "raw/company_sites/sccl/sccl_about_us_page_ownership.html", "https://scclmines.com/scclnew/company_about-us.asp"),
+    "NLC": ("NLCIL is a Navratna Government of India Enterprise, under the administrative control of Ministry of Coal",
+            "raw/company_sites/nlc/nlc_india_corporate_profile_ownership.html",
+            "https://www.nlcindia.in/website/en/aboutus/corporateprofile.html"),
+}
 COLUMNS = ["company_id", "name", "parent_id", "type", "type_source", "self_description", "notes"]
 
 
@@ -50,6 +59,17 @@ def msg_table() -> dict[str, float]:
         if m:
             targets[m.group(1)] = float(m.group(2))
     return targets
+
+
+def ownership(cid: str) -> str:
+    """The ownership sentence, checked against the saved page; "" if the page or sentence is missing."""
+    quote, rel, url = OWNERSHIP[cid]
+    path = DATA / rel
+    if not path.exists():
+        return ""
+    t = re.sub(r"(?is)<(script|style|noscript).*?</>", " ", path.read_text(encoding="utf-8", errors="ignore"))
+    text = " ".join(h.unescape(re.sub(r"<[^>]+>", " ", t)).split())
+    return f"\"{quote}\" ({url}; {rel})" if quote in text else ""
 
 
 def main() -> int:
@@ -81,15 +101,19 @@ def main() -> int:
                      "type_source": grouping + (f"; and its own page: \"{quote}\" ({file})" if "Subsidiary" in quote else ""),
                      "self_description": f"\"{quote}\" ({file})" if quote else "", "notes": ""})
     q, f = SELF_DESCRIPTIONS["SCCL"]
-    rows.append({"company_id": "SCCL", "name": names["SCCL"], "parent_id": "", "type": "psu",
-                 "type_source": f"{MSG_CITE}: listed separately from CIL; own page: \"{q}\" ({f})",
+    own = ownership("SCCL")
+    rows.append({"company_id": "SCCL", "name": names["SCCL"], "parent_id": "", "type": "state_jv" if own else "psu",
+                 "type_source": (f"Own about-us page: {own}; " if own else "") +
+                                f"{MSG_CITE}: listed separately from CIL",
                  "self_description": f"\"{q}\" ({f})",
-                 "notes": "TODO-VERIFY: the brief's type 'state_jv' would need the State/Central shareholding, "
-                          "which no downloaded source states; 'psu' reflects only its self-description."})
-    rows.append({"company_id": "NLC", "name": names["NLC"], "parent_id": "", "type": "TODO-VERIFY",
-                 "type_source": "No downloaded source describes NLC India's ownership (its projects page does not); "
-                                "not a row in the Ministry of Coal coal-production table, which covers coal, not lignite.",
-                 "self_description": "", "notes": ""})
+                 "notes": "" if own else "TODO-VERIFY: ownership page not downloaded; 'psu' reflects only its self-description."})
+    own = ownership("NLC")
+    rows.append({"company_id": "NLC", "name": names["NLC"], "parent_id": "", "type": "psu" if own else "TODO-VERIFY",
+                 "type_source": (f"Own corporate profile: {own}" if own else
+                                 "No downloaded source describes NLC India's ownership (run_data.bat download fetches it)."),
+                 "self_description": own,
+                 "notes": "Not a row in the Ministry of Coal coal-production table, which covers coal, not lignite."}
+                )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", encoding="utf-8", newline="") as fh:

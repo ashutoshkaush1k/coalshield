@@ -1,0 +1,75 @@
+old_code,new_code,old_name,new_name,reason
+JH-DHN-01,JH-DHN-01,Jharia Coalfield Block A,Moonidih Coal Mine,"demo slot kept (code, login and score unchanged); demo slot JH-DHN-01: best-ranked BCCL mine in the Jharia coalfield and the seed district (Dhanbad)"
+MP-SGR-02,MP-SGR-02,Singrauli Opencast Mine,Jayant Coal Mine,"demo slot kept (code, login and score unchanged); demo slot MP-SGR-02: best-ranked NCL mine in the Singrauli coalfield and the seed district (Singrauli)"
+CG-KRB-03,CG-KRB-03,Korba Gevra Expansion,Gevra Coal Mine,"demo slot kept (code, login and score unchanged); demo slot CG-KRB-03: already matched to CG-KRB-03 in reference/mines.csv"
+WB-RNG-04,WB-RNG-04,Raniganj Deep Shaft,Sonepur Bazari Coal Mine,"demo slot kept (code, login and score unchanged); demo slot WB-RNG-04: best-ranked ECL mine in the Raniganj coalfield and the seed district (Paschim Bardhaman)"
+OD-TLC-05,OD-TLC-05,Talcher Underground Unit 2,Bhubaneswari Coal Mine,"demo slot kept (code, login and score unchanged); demo slot OD-TLC-05: best-ranked MCL mine in the Talcher coalfield and the seed district (Angul)"
+JH-DHA-06,JH-RAM-06,Dhanbad Washery Block,Bhurkunda Coal Mine,slot replaced by a real CCL mine (same company and state); score carried over
+JH-BOK-07,OD-SUN-07,Bokaro Opencast Project,Kulda Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+JH-RAM-08,WB-BAR-08,Ramgarh Opencast Project,Jhanjra Coal Mine,slot replaced by a real ECL mine (same company); score carried over
+JH-CHA-09,JH-CHA-09,Chatra Expansion Block,Amrapali Coal Mine,slot replaced by a real CCL mine (same company and state); score carried over
+JH-LAT-10,OD-ANG-10,Latehar Underground Mine,Hingula-II Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+JH-GOD-11,JH-CHA-11,Godda Expansion Block,Magadh Coal Mine,slot replaced by a real CCL mine (same company and state); score carried over
+JH-HAZ-12,WB-BAR-12,Hazaribagh Colliery,Siduli Coal Mine,slot replaced by a real ECL mine (same company); score carried over
+JH-DHA-13,OD-JHA-13,Dhanbad Opencast Project,Samleswari Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+JH-BOK-14,TS-MAN-14,Bokaro Colliery,KK 5 Inc Coal Mine,slot replaced by a real SCCL mine (same company); score carried over
+JH-RAM-15,CG-KOR-15,Ramgarh Deep Shaft,Chirimiri Coal Mine,slot replaced by a real SECL mine (same company); score carried over
+JH-CHA-16,JH-DHA-16,Chatra Deep Shaft,Gondudih Khas Kusunda Coal Mine,slot replaced by a real BCCL mine (same company and state); score carried over
+JH-LAT-17,JH-DHA-17,Latehar Washery Block,Rajapur-South Jharia Coal Mine,slot replaced by a real BCCL mine (same company and state); score carried over
+OD-ANG-18,MH-YAV-18,Angul Washery Block,Mungoli Nirguda Coal Mine,slot replaced by a real WCL mine (same company); score carried over
+OD-JHA-19,OD-ANG-19,Jharsuguda Deep Shaft,Lingaraj Coal Mine,slot replaced by a real MCL mine (same state); score carried over
+OD-SUN-20,CG-SUR-20,Sundargarh Washery Block,Bhatgaon Coal Mine,slot replaced by a real SECL mine (same company); score carried over
+OD-SAM-21,MP-SIN-21,Sambalpur Expansion Block,Amlohri Coal Mine,slot replaced by a real NCL mine (same company); score carried over
+OD-DHE-22,OD-JHA-22,Dhenkanal Expansion Block,Hirakhand Bundia Incline Mine,slot replaced by a real MCL mine (same company and state); score carried over
+OD-ANG-23,OD-SAM-23,Angul Underground Mine,Talabira II & III Coal Mines,slot replaced by a real NLC mine (same company and state); score carried over
+OD-JHA-24,MH-NAG-24,Jharsuguda Opencast Project,Dinesh (Makardhokra-III) Coal Mine,slot replaced by a real WCL mine (same company); score carried over
+OD-SUN-25,MP-SIN-25,Sundargarh Coalfield Block,Nigahi Coal Mine,slot replaced by a real NCL mine (same company); score carried over
+OD-SAM-26,JH-CHA-26,Sambalpur Opencast Project,Ashoka Coal Mine,slot replaced by a real CCL mine (same company); score carried over
+OD-DHE-27,WB-PAS-27,Dhenkanal Expansion Block,Dabor Coal Mine,slot replaced by a real ECL mine (same company); score carried over
+OD-ANG-28,CG-KOR-28,Angul Deep Shaft,Katkona Coal Mine,slot replaced by a real SECL mine (same company); score carried over
+CG-KOR-29,TS-KAR-29,Korba Expansion Block,Ravindrakhani-NT Coal Mine,slot replaced by a real SCCL mine (same company); score carried over
+CG-RAI-30,CG-SUR-30,Raigarh Deep Shaft,Balrampur Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+CG-SUR-31,CG-KOR-31,Surguja Washery Block,Kusmunda Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+CG-KOR-32,CG-KOR-32,Koriya Washery Block,Dipka Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+CG-BIL-33,JH-BOK-33,Bilaspur Washery Block,AKK Coal Mine,slot replaced by a real CCL mine (same company); score carried over
+CG-KOR-34,JH-GIR-34,Korba Deep Shaft,Konar Coal Mine,slot replaced by a real CCL mine (same company); score carried over
+CG-RAI-35,JH-HAZ-35,Raigarh Underground Mine,North Urimari Birsa Coal Mine,slot replaced by a real CCL mine (same company); score carried over
+CG-SUR-36,CG-RAI-36,Surguja Coalfield Block,Chhal Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+CG-KOR-37,CG-KOR-37,Koriya Colliery,Churcha RO Coal Mine,slot replaced by a real SECL mine (same company and state); score carried over
+CG-BIL-38,CG-RAI-38,Bilaspur Underground Mine,Baroud Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+CG-KOR-39,OD-ANG-39,Korba Deep Shaft,Gopalji Kaniha Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+WB-RAN-40,MH-YAV-40,Raniganj Expansion Block,Niljai Coal Mine,slot replaced by a real WCL mine (same company); score carried over
+WB-ASA-41,UP-SON-41,Asansol Colliery,Khadia Coal Mine,slot replaced by a real NCL mine (same company); score carried over
+WB-PUR-42,MP-SIN-42,Purulia Washery Block,Block-B Coal Mine,slot replaced by a real NCL mine (same company); score carried over
+WB-BAR-43,JH-RAN-43,Bardhaman Opencast Project,K. D. H. Coal Mine,slot replaced by a real CCL mine (same company); score carried over
+WB-RAN-44,OD-SUN-44,Raniganj Deep Shaft,Siarmal Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+WB-ASA-45,OD-ANG-45,Asansol Deep Shaft,Jagannath Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+WB-PUR-46,OD-JHA-46,Purulia Coalfield Block,Orient Mine 1 & 2,slot replaced by a real MCL mine (same company); score carried over
+WB-BAR-47,OD-ANG-47,Bardhaman Washery Block,Talcher UG Coal Mine,slot replaced by a real MCL mine (same company); score carried over
+MP-SIN-48,MP-SIN-48,Singrauli Expansion Block,Jhingurda Coal Mine,slot replaced by a real NCL mine (same state); score carried over
+MP-SHA-49,WB-BAR-49,Shahdol Colliery,Tilaboni Coal Mine,slot replaced by a real ECL mine (same company); score carried over
+MP-UMA-50,MP-UMA-50,Umaria Underground Mine,Vindhya Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+MP-ANU-51,TS-KHA-51,Anuppur Deep Shaft,JVR I & II Coal Mine,slot replaced by a real SCCL mine (same company); score carried over
+MP-BET-52,MP-SHA-52,Betul Deep Shaft,Bangwar Coal Mine,slot replaced by a real SECL mine (same state); score carried over
+MP-SIN-53,MP-ANU-53,Singrauli Colliery,Sheetaldhara-Kurja and Kapidhara Coal Mines,slot replaced by a real SECL mine (same company and state); score carried over
+MP-SHA-54,MP-SIN-54,Shahdol Deep Shaft,Dudhichua Coal Mine,slot replaced by a real NCL mine (same company and state); score carried over
+MP-UMA-55,MP-CHH-55,Umaria Colliery,Dhankasa Coal Mine,slot replaced by a real WCL mine (same company and state); score carried over
+TS-RAM-56,OD-ANG-56,Ramagundam Coalfield Block,Balaram Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+TS-BHA-57,OD-ANG-57,Bhadradri Underground Mine,Nandira Coal Mine,slot replaced by a real MCL mine (same company); score carried over
+TS-MAN-58,MH-CHA-58,Mancherial Coalfield Block,Penganga Coal Mine,slot replaced by a real WCL mine (same company); score carried over
+TS-PED-59,OD-ANG-59,Peddapalli Washery Block,Ananta Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+TS-RAM-60,OD-SUN-60,Ramagundam Expansion Block,Garjanbahal Coal Mine,slot replaced by a real MCL mine (same company); score carried over
+TS-BHA-61,OD-ANG-61,Bhadradri Expansion Block,Bharatpur Coal Mine,slot replaced by a real MCL mine (same company); score carried over
+TS-MAN-62,TS-PED-62,Mancherial Opencast Project,Adriyala Coal Mine,slot replaced by a real SCCL mine (same company and state); score carried over
+MH-CHA-63,MH-NAG-63,Chandrapur Underground Mine,Saoner Coal Mine,slot replaced by a real WCL mine (same company and state); score carried over
+MH-NAG-64,OD-SUN-64,Nagpur Washery Block,Basundhara (West) Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+MH-YAV-65,UP-SON-65,Yavatmal Underground Mine,Krishnashila Coal Mine,slot replaced by a real NCL mine (same company); score carried over
+MH-WAR-66,MP-ANU-66,Wardha Washery Block,Rajnagar Coal Mine,slot replaced by a real SECL mine (same company); score carried over
+MH-CHA-67,OD-JHA-67,Chandrapur Washery Block,Lajkura Coal Mine,slot replaced by a real MCL mine (remaining slot); score carried over
+MH-NAG-68,CG-KOR-68,Nagpur Expansion Block,NCPH Coal Mine,slot replaced by a real SECL mine (same company); score carried over
+AS-TIN-69,UP-SON-69,Tinsukia Deep Shaft,Bina Coal Mine,slot replaced by a real NCL mine (same company); score carried over
+AS-DIB-70,AS-TIN-70,Dibrugarh Deep Shaft,Tikak Colliery,slot replaced by a real CIL mine (same company and state); score carried over
+AS-TIN-71,TS-KHA-71,Tinsukia Coalfield Block,Prakasham Khani OC Coal Mine,slot replaced by a real SCCL mine (same company); score carried over
+UP-SON-72,TS-PED-72,Sonbhadra Colliery,Ramagundam III Coal Mine,slot replaced by a real SCCL mine (same company); score carried over
+UP-SON-73,MP-ANU-73,Sonbhadra Coalfield Block,Behraband Coal Mine,slot replaced by a real SECL mine (remaining slot); score carried over
+JK-UDH-74,MP-ANU-74,Udhampur Underground Mine,Haldibari Coal Mine,slot replaced by a real SECL mine (remaining slot); score carried over

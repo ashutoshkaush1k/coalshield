@@ -13,7 +13,7 @@ Discovered 2026-09-25. SHA-256 checksums are recorded when files are downloaded 
 | S02 | Global Coal Mine Tracker (GCMT) | Manual - web form | 0 | - | ok | CC BY 4.0 - confirmed from the licence notice inside each downloaded workbook (3 of 3) |
 | S03 | DataMeet maps - district and state boundaries | Automatic | 10 | 26.2 MB | ok | Districts - CC BY 2.5 India; other data in the repo - CC BY 4.0; repo code - MIT |
 | S04 | Wikidata - coal mines and districts of India | Manual - in a browser | 0 | - | ok | CC0 1.0 (Wikidata structured data) |
-| S05 | Company websites - areas of each coal company | Automatic (+3 manual) | 6 | 278 KB | ok | Not located on the sites checked; treated as all rights reserved |
+| S05 | Company websites - areas of each coal company | Automatic (+3 manual) | 8 | 323 KB | ok | Not located on the sites checked; treated as all rights reserved |
 | S06 | Ministry of Coal - monthly statistics and Coal Directory of India | Automatic | 15 | 8.9 MB | ok | Not located (no copyright-policy link found on coal.gov.in); treated as all rights reserved |
 | S07 | DGMS - accident statistics and analyses | Automatic | 4 | 13.4 MB | ok | Not located (copyright-policy page content not machine-readable); treated as all rights reserved |
 | S08 | MSHA Open Government Data | Automatic | 8 | 242.1 MB | ok | Not stated on the page. US federal government works are generally not subject to copyright - TODO-VERIFY against a Department of Labor statement. |
@@ -128,7 +128,7 @@ query.wikidata.org/robots.txt disallows /sparql for all user agents, and www.wik
 - **Publisher:** Coal India Ltd and subsidiaries, SCCL, NLC India
 - **Landing page:** https://www.coalindia.in/
 - **Saved to:** `data/raw/company_sites/`
-- **Purpose:** Company -> area lists (areas.csv).
+- **Purpose:** Company -> area lists (areas.csv) and company ownership (companies.csv).
 - **Access:** Automatic - see `MANUAL_STEPS.md`
 - **Licence:** Not located on the sites checked; treated as all rights reserved
 - **Redistribution:** no - saved pages stay in raw/ (gitignored); only facts (area names) are used, with the page cited
@@ -146,6 +146,8 @@ Mixed access. Automatic: BCCL, WCL, MCL, SCCL, NCL, NLC. Manual (save the page f
 | ECL areas page (manual) | manual | - | - | - | https://www.easterncoal.nic.in/ |
 | CCL areas page (manual) | manual | - | - | - | https://www.centralcoalfields.in/cmpny/areas.php |
 | SECL areas page (manual) | manual | - | - | - | https://www.secl-cil.in/coalfield.php |
+| SCCL about-us page (ownership) | ok | 37 KB | 2026-09-26 | `cf1bd3acf6d4594d…` | https://scclmines.com/scclnew/company_about-us.asp |
+| NLC India corporate profile (ownership) | ok | 8 KB | 2026-09-26 | `fe6b361b69507a1f…` | https://www.nlcindia.in/website/en/aboutus/corporateprofile.html |
 
 ## S06 - Ministry of Coal - monthly statistics and Coal Directory of India
 
