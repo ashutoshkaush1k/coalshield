@@ -1,0 +1,15 @@
+table: scenario_label
+description: Ground truth for injected scenarios (positive) and decoys (negative), one row per affected entity. Details and measurable signals are in scenario_expectations.json.
+defined_by:
+  - "CLAUDE_CODE_DATASETS.md D5: out/scenario_label.csv (scenario_code, mine_id, entity, entity_id, date_from, date_to, notes)"
+  - "Owner D5 instruction: decoys labelled as negative examples -> `polarity` column added (HANDOFF C22)"
+generator: inject_scenarios.py
+columns:
+  - {name: scenario_code, type: string, nullable: false}
+  - {name: polarity, type: enum, nullable: false, values: [positive, negative]}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: entity, type: string, nullable: false, note: "table name, or contractor_compliance_doc_missing (entity_id = contract id)"}
+  - {name: entity_id, type: integer, nullable: false}
+  - {name: date_from, type: date, nullable: false}
+  - {name: date_to, type: date, nullable: false}
+  - {name: notes, type: text, nullable: false}

@@ -1,0 +1,18 @@
+table: observation
+description: Candidate findings from an inspection or a safety grievance; promoted ones become violations.
+defined_by:
+  - "PLAN.md Q11: observation (candidate finding, can be promoted to a violation)"
+  - "CLAUDE_CODE_TASK.md Phase 5: safety grievance -> linked observation/violation candidate"
+generator: gen_inspections.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: inspection_id, type: integer, nullable: true, fk: inspection.id, note: "empty for grievance-originated observations"}
+  - {name: grievance_id, type: integer, nullable: true, fk: grievance.id}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: category, type: enum, nullable: false, values_from: violation_categories.yaml}
+  - {name: severity, type: enum, nullable: false, values: [low, medium, high]}
+  - {name: status, type: enum, nullable: false, values: [open, promoted, dismissed]}
+  - {name: violation_id, type: integer, nullable: true, fk: violation.id}
+  - {name: contractor_id, type: integer, nullable: true, fk: contractor.id}
+  - {name: observed_at, type: datetime, nullable: false}

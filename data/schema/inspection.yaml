@@ -1,0 +1,18 @@
+table: inspection
+description: Inspection visits. Closed inspections are locked (brief rule 9).
+defined_by:
+  - "PLAN.md Q11: minimal inspection (mine, inspector, scheduled / visited / closed, findings) with StatusTransition and locking"
+  - "CLAUDE_CODE_TASK.md rule 9: closed inspections are locked"
+generator: gen_inspections.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: inspector_id, type: integer, nullable: false, fk: user.id}
+  - {name: inspection_type, type: enum, nullable: false, values: [regular, spot, complaint]}
+  - {name: status, type: enum, nullable: false, values: [scheduled, visited, closed]}
+  - {name: scheduled_for, type: date, nullable: false}
+  - {name: visited_at, type: datetime, nullable: true}
+  - {name: closed_at, type: datetime, nullable: true}
+  - {name: findings_count, type: integer, nullable: false, note: "observations recorded; findings are rows in observation, not text"}
+  - {name: is_locked, type: boolean, nullable: false}

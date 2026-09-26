@@ -1,0 +1,22 @@
+table: user
+description: Demo accounts - government, one corporate user per company, one mine head per mine, inspectors.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 1: user (email, password_hash, role, subsidiary_id, area_id, mine_id, preferred_language default en, status, timestamps); roles government, corporate, mine_head (+ inspector)"
+  - "CLAUDE_CODE_TASK.md Phase 1 seed: keep existing demo accounts and add corporate.secl@coalmine.in / demo123"
+  - "backend/app/models/user.py: full_name (kept)"
+  - "backend/data/seed/users.json: seed files carry the demo password in plain text; the loader hashes it"
+generator: gen_users.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: email, type: string, nullable: false, unique: true}
+  - {name: password, type: string, nullable: false, note: "DEMO ONLY plain text (demo123), hashed into password_hash by the loader - see HANDOFF conflict C11"}
+  - {name: full_name, type: string, nullable: false}
+  - {name: role, type: enum, nullable: false, values: [government, corporate, mine_head, inspector]}
+  - {name: subsidiary_id, type: integer, nullable: true, fk: subsidiary.id}
+  - {name: area_id, type: integer, nullable: true, fk: area.id}
+  - {name: mine_id, type: integer, nullable: true, fk: mine.id}
+  - {name: preferred_language, type: enum, nullable: false, values: [en, hi, bn, or, te, mr]}
+  - {name: status, type: enum, nullable: false, values: [active, inactive]}
+  - {name: created_at, type: datetime, nullable: false}
+  - {name: updated_at, type: datetime, nullable: false}

@@ -1,0 +1,15 @@
+table: grievance_action
+description: Grievance timeline (status transitions).
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 5: grievance_action (grievance_id, action, from_status, to_status, note, actor_id, created_at)"
+generator: gen_grievances.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: grievance_id, type: integer, nullable: false, fk: grievance.id}
+  - {name: action, type: enum, nullable: false, values: [submit, acknowledge, investigate, resolve, close, reopen, escalate]}
+  - {name: from_status, type: string, nullable: true}
+  - {name: to_status, type: string, nullable: false}
+  - {name: note, type: text, nullable: true}
+  - {name: actor_id, type: integer, nullable: true, fk: user.id, note: "empty for the public submission"}
+  - {name: created_at, type: datetime, nullable: false}

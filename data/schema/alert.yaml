@@ -1,0 +1,20 @@
+table: alert
+description: Historical alerts only (live alerts come from backend jobs). {code, params} - never display text.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 2: alerts table code, params JSONB, severity, mine_id, entity ref, status open/acknowledged/resolved, ack_by, escalation_level"
+  - "CLAUDE_CODE_TASK.md rule 7: no display text"
+  - "CLAUDE_CODE_TASK.md Phase 3/5 alert codes"
+generator: gen_alerts.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: code, type: enum, nullable: false, values: [SENSOR_THRESHOLD_BREACHED, VIOLATION_RECORDED, CORRECTIVE_ACTION_OVERDUE, CONTRACTOR_LICENCE_EXPIRING, WORKER_VT_EXPIRED, WORKER_MEDICAL_EXPIRED, CONTRACTOR_DOC_MISSING, GRIEVANCE_SLA_BREACHED, DETAIL_REQUEST_OVERDUE, DANGEROUS_OCCURRENCE_REPORTED], note: "codes are UPPER_SNAKE as the brief writes them"}
+  - {name: params, type: json, nullable: false}
+  - {name: severity, type: enum, nullable: false, values: [low, medium, high]}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: entity_type, type: string, nullable: false}
+  - {name: entity_id, type: integer, nullable: false}
+  - {name: status, type: enum, nullable: false, values: [open, acknowledged, resolved]}
+  - {name: ack_by, type: integer, nullable: true, fk: user.id}
+  - {name: escalation_level, type: integer, nullable: false}
+  - {name: created_at, type: datetime, nullable: false}

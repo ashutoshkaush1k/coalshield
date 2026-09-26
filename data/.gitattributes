@@ -1,0 +1,14 @@
+# Applies to everything under data/.
+#
+# Generated and reference data must round-trip through git byte-for-byte: the pipeline records
+# SHA-256 checksums and promises byte-identical output across runs (brief rule 8). This repo
+# checks out with core.autocrlf=true, which would rewrite LF to CRLF in a fresh clone and change
+# every checksum. "-text" tells git never to convert these files.
+*.csv       -text
+*.geojson   -text
+*.json      -text
+*.parquet   binary
+
+# cmd.exe can fail to find goto/call labels in a batch file with LF line endings, so batch
+# files are always checked out with CRLF whatever the local git settings are.
+*.bat       text eol=crlf

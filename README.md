@@ -129,6 +129,30 @@ The seed spreads five mines across all three risk bands so the cross-mine compar
 something to compare. Regenerate with `python scripts/generate_sensor_data.py` — it is seeded
 with a fixed RNG value, so the numbers are identical on every machine and every re-run.
 
+## Data
+
+`data/` builds the project's datasets: real reference data (74 real coal mines, company
+production, DGMS accident statistics, CPCB air quality, cited legal duties) and calibrated demo
+operations data. Windows, from the repo root:
+
+```bat
+data\run_data.bat all
+```
+
+That runs `setup`, `download`, `clean`, `generate` and `validate` in order; each can also run on
+its own, e.g. `data\run_data.bat generate demo`. Some sources need a browser or a free key first;
+see `data\MANUAL_STEPS.md`.
+
+- **Reference data:** `data/reference/`, committed. Where it comes from: `data/SOURCES.md`.
+- **Generated data:** `data/out/<preset>/*.csv`, gitignored. Presets: `small` (5 mines, 14 days),
+  `demo` (74 mines, 90 days, the default) and `full` (74 mines, 365 days). Each folder also has
+  `_manifest.json`, `_checks.json`, `_validation.json` and the scenario ground truth.
+- **Loading into the backend:** `yii seed` loads `data/out/<preset>/*.csv` with PostgreSQL `COPY`
+  in foreign-key order. The order and the columns are in `data/HANDOFF.md`; the loader belongs to
+  the backend (`api/`).
+- **What is real and what is synthetic:** `data/DATASETS.md`, starting with "Data provenance for
+  judges".
+
 ## Notes
 
 - Copy `backend/.env.example` → `backend/.env` and `frontend/.env.example` → `frontend/.env`.

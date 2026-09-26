@@ -40,3 +40,18 @@ dist/
 .claude/
 .DS_Store
 Thumbs.db
+
+# Dataset track (data/). Downloads and generated output are rebuilt by data\run_data.bat and
+# never committed; folder READMEs and .gitkeep files stay tracked so the layout survives a clone.
+# The "!.../" lines re-include directories - git cannot un-ignore a file inside an ignored folder.
+data/.venv/
+data/raw/**
+!data/raw/**/
+!data/raw/**/.gitkeep
+!data/raw/**/README.md
+data/out/**
+!data/out/**/
+!data/out/.gitkeep
+# Daily CPCB readings via OpenAQ: the stations carry no licence in OpenAQ (licenses = null), so the
+# values stay local until redistribution is confirmed. Rebuilt by: data\run_data.bat clean
+data/reference/env_daily.csv

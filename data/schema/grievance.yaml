@@ -1,0 +1,28 @@
+table: grievance
+description: Grievances from workers and communities; texts in six languages from templates using glossary terms; no real people.
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 5: grievance (ticket_no GRV-YYYY-NNNNNN, mine_id, submitter_type, name/contact nullable, is_anonymous, category, severity, language, description, file_id nullable, location geometry nullable, status, assigned_to, sla_due_at, escalation_level, against_mine_head bool, resolution_note, satisfaction_rating)"
+generator: gen_grievances.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: ticket_no, type: string, nullable: false, unique: true}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: submitter_type, type: enum, nullable: false, values: [employee, contract_worker, community, anonymous]}
+  - {name: name, type: string, nullable: true, note: "fictitious; empty when anonymous"}
+  - {name: contact, type: string, nullable: true, note: "masked"}
+  - {name: is_anonymous, type: boolean, nullable: false}
+  - {name: category, type: enum, nullable: false, values: [wages, safety, working_conditions, harassment, environment, land_compensation, other]}
+  - {name: severity, type: enum, nullable: false, values: [low, medium, high]}
+  - {name: language, type: enum, nullable: false, values: [en, hi, bn, or, te, mr]}
+  - {name: description, type: text, nullable: false}
+  - {name: file_id, type: integer, nullable: true, fk: file.id}
+  - {name: location, type: wkt_point, nullable: true}
+  - {name: status, type: enum, nullable: false, values: [received, acknowledged, under_investigation, resolved, closed, reopened]}
+  - {name: assigned_to, type: integer, nullable: true, fk: user.id}
+  - {name: sla_due_at, type: datetime, nullable: false}
+  - {name: escalation_level, type: integer, nullable: false}
+  - {name: against_mine_head, type: boolean, nullable: false}
+  - {name: resolution_note, type: text, nullable: true}
+  - {name: satisfaction_rating, type: integer, nullable: true}
+  - {name: created_at, type: datetime, nullable: false}

@@ -1,0 +1,1546 @@
+# CoalShield dataset track - source manifest (stage D1, discovered 2026-09-25).
+#
+# Every URL below was found on the source's own landing page (or via a search result that was
+# then fetched), never typed from memory (brief rule 6). The per-file fields http_status,
+# final_url, size_bytes, content_type, last_modified, probe_method and accessed_at are written by
+# data/scripts/probe_sources.py, which checks each URL politely (robots.txt, 1 request/s per host);
+# do not edit them by hand. sha256 stays null until the file is downloaded in stage D2.
+#
+# access:  repo | open | manual_form | manual_key | manual_browser | skipped
+#   open            fetched automatically by run_data.bat download
+#   manual_*        a person must do something first - see data/MANUAL_STEPS.md
+#   skipped         not used; the fallback named in the entry applies instead
+# SOURCES.md is generated from this file by data/scripts/render_sources_md.py.
+
+manifest_version: 1
+discovered_on: '2026-09-25'
+sources:
+- id: S01
+  name: Existing repo seed (74 mines)
+  publisher: this repository
+  landing_page: backend/data/seed/
+  target_path: reference/
+  purpose: The 74 mines, their mine-head logins and current demo standing.
+  access: repo
+  manual: false
+  optional: false
+  licence: Repository content (prototype demo data)
+  licence_source: this repository
+  redistribution: yes (committed)
+  notes: Extracted in stage D0 by scripts/extract_mines_base.py; see DATASETS.md.
+  files:
+  - name: mines_base.csv
+    url: null
+    target: reference/mines_base.csv
+    sha256: 9ac697e189e00847d267be3401801b0cac48b6a7293ad2261bbd06c7cae3de51
+    accessed_at: '2026-09-25'
+  d2_status: ok (in repo)
+- id: S02
+  name: Global Coal Mine Tracker (GCMT)
+  publisher: Global Energy Monitor
+  landing_page: https://globalenergymonitor.org/download-data
+  target_path: raw/gem_gcmt/
+  purpose: Real mine coordinates, owner, capacity, status and type, for matching our 74 mines.
+  access: manual_form
+  manual: true
+  optional: false
+  licence: CC BY 4.0 - confirmed from the licence notice inside each downloaded workbook (3 of 3)
+  licence_source: https://globalenergymonitor.org/creative-commons-license
+  redistribution: allowed with attribution; raw file kept out of git anyway
+  notes: 'The download is selected on GEM''s "Download data" page (card "Coal mines", last update shown
+    as May 2026; the project page says the most recent release, August 2026, is the second version of
+    the May 2026 dataset). The download widget is built by JavaScript and may ask for details before releasing
+    the file, so it cannot be fetched automatically. GEM hosts the full CC BY 4.0 text; its statement
+    that this licence covers the tracker data was not found in the static page, so the licence is confirmed
+    from the file''s own notice when it arrives. Fallback if skipped: Wikidata (S04), then district centroids
+    (S03). Project page (reference only): https://globalenergymonitor.org/projects/global-coal-mine-tracker'
+  files:
+  - name: Global Coal Mine Tracker workbook (.xlsx, as received)
+    url: null
+    target: raw/gem_gcmt/
+    download_status: present-manual
+    found_files:
+    - path: raw/gem_gcmt/Global Coal Mine Tracker, August 2026.xlsx
+      sha256: 9aa804479c4b76456678fa02f1b5b9af826e12fa57d98cbcade35f4ee0417d43
+      size_bytes: 3085251
+      recorded_at: '2026-09-26T04:33:00+00:00'
+    - path: raw/gem_gcmt/Global-Coal-Mine-Tracker-December-2024-Supplement-Historical-Production-from-2018-to-2023.xlsx
+      sha256: 1ae19635e8972322f82a301ee1a2ddce63d0907a12b21e1eb2b9123ffb1746ca
+      size_bytes: 331709
+      recorded_at: '2026-09-26T04:33:00+00:00'
+    - path: raw/gem_gcmt/Global-Coal-Mine-Tracker-September-2024-Supplement-v2.xlsx
+      sha256: 1c3fc4eb146e32b228c72613b167aa096214cc416496b38b4760f5ba127eb453
+      size_bytes: 387913
+      recorded_at: '2026-09-26T04:33:00+00:00'
+  d2_status: ok
+  d2_detail:
+    licence_check:
+    - checked_file: raw/gem_gcmt/Global Coal Mine Tracker, August 2026.xlsx
+      notices:
+      - sheet: README
+        cell: A2
+        text: Copyright © Global Energy Monitor. Global Coal Mine Tracker, August 2026 release. Distributed
+          under a Creative Commons Attribution 4.0 International License.
+      - sheet: README
+        cell: A3
+        text: 'Recommended Citation: "Global Energy Monitor, Global Coal Mine Tracker, August 2026 release."
+          (See the CC license for attribution requirements if sharing or adapting the data set.)'
+      - sheet: README
+        cell: B32
+        text: A status assigned when permit applications (environmental assessments, land use rights,
+          water licenses, etc.) for a coal mine project have been filed, but not yet obtained.
+    - checked_file: raw/gem_gcmt/Global-Coal-Mine-Tracker-December-2024-Supplement-Historical-Production-from-2018-to-2023.xlsx
+      notices:
+      - sheet: About
+        cell: B3
+        text: Copyright © Global Energy Monitor. Global Coal Mine Tracker, December 2024 Supplement release.
+          Distributed under a Creative Commons Attribution 4.0 International License.
+      - sheet: About
+        cell: B4
+        text: 'Recommended Citation: "Global Energy Monitor, Global Coal Mine Tracker, December 2024 Supplement
+          release." (See the CC license for attribution requirements if sharing or adapting the data set.)'
+    - checked_file: raw/gem_gcmt/Global-Coal-Mine-Tracker-September-2024-Supplement-v2.xlsx
+      notices:
+      - sheet: About
+        cell: B3
+        text: Copyright © Global Energy Monitor. Global Coal Mine Tracker, September 2024 Supplement release.
+          Distributed under a Creative Commons Attribution 4.0 International License.
+      - sheet: About
+        cell: B4
+        text: 'Recommended Citation: "Global Energy Monitor, Global Coal Mine Tracker, September 2024
+          Supplement release." (See the CC license for attribution requirements if sharing or adapting
+          the data set.)'
+- id: S03
+  name: DataMeet maps - district and state boundaries
+  publisher: DataMeet India community
+  landing_page: https://github.com/datameet/maps
+  target_path: raw/datameet/
+  purpose: District polygons for centroid fallback locations and the GIS layer.
+  access: open
+  manual: false
+  optional: false
+  licence: Districts - CC BY 2.5 India; other data in the repo - CC BY 4.0; repo code - MIT
+  licence_source: https://github.com/datameet/maps/blob/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/README.md
+  redistribution: allowed with attribution
+  pinned_commit: b3fbbde595310b397a55d718e0958ce249a4fa1f
+  notes: 'URLs are pinned to commit b3fbbde (2022-05-11) so checksums stay stable. These are Census 2011
+    districts: 9 of the 38 (state, district) pairs in mines_base.csv (20 mines) are not found by name
+    - spelling variants (Angul/Anugul, Purulia/Puruliya, Bardhaman/Barddhaman), districts created after
+    2011 (Bhadradri, Mancherial, Peddapalli), and cities recorded as districts in the seed (Asansol, Raniganj,
+    Ramagundam). Stage D3 needs a cited crosswalk (Wikidata "separated from", S04) before centroids can
+    be taken.'
+  files:
+  - name: 2011_Dist.shp
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.shp
+    target: raw/datameet/Districts/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.shp
+    size_bytes: 10220732
+    content_type: application/octet-stream
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 3636e627a519f67b4615b6a97df48c2b279e8c7b2566d3bfbc3eda1d06e33206
+    local_path: raw/datameet/Districts/2011_Dist.shp
+    downloaded_at: '2026-09-25T12:43:52+00:00'
+    download_status: ok
+  - name: 2011_Dist.shx
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.shx
+    target: raw/datameet/Districts/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.shx
+    size_bytes: 5228
+    content_type: application/octet-stream
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 12b6028dfac9e3f20686b3d0a44f9d3989acfdb3f3cda853881d1cf2d8579eab
+    local_path: raw/datameet/Districts/2011_Dist.shx
+    downloaded_at: '2026-09-25T12:43:52+00:00'
+    download_status: ok
+  - name: 2011_Dist.dbf
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.dbf
+    target: raw/datameet/Districts/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.dbf
+    size_bytes: 54678
+    content_type: application/octet-stream
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 2c7b03578fdf41a4c4e29941a564fa90bf0b0e4f865f5e54481ef7ac8494eb7d
+    local_path: raw/datameet/Districts/2011_Dist.dbf
+    downloaded_at: '2026-09-25T12:43:53+00:00'
+    download_status: ok
+  - name: 2011_Dist.prj
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.prj
+    target: raw/datameet/Districts/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/Census_2011/2011_Dist.prj
+    size_bytes: 145
+    content_type: text/plain; charset=utf-8
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4
+    local_path: raw/datameet/Districts/2011_Dist.prj
+    downloaded_at: '2026-09-25T12:43:54+00:00'
+    download_status: ok
+    size_note: server announced 139 bytes at probe time; downloaded 145
+  - name: Admin2.shp
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.shp
+    target: raw/datameet/States/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.shp
+    size_bytes: 17142832
+    content_type: application/octet-stream
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: b61ebc11a7487ce1c340d55fc9d0c1a2b63af1f73191fef691c11693c726130d
+    local_path: raw/datameet/States/Admin2.shp
+    downloaded_at: '2026-09-25T12:44:52+00:00'
+    download_status: ok
+  - name: Admin2.shx
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.shx
+    target: raw/datameet/States/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.shx
+    size_bytes: 388
+    content_type: application/octet-stream
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: dc428a44ed20384b02c3c5971f2b200b15d429923b6cc770cae940d0af21016a
+    local_path: raw/datameet/States/Admin2.shx
+    downloaded_at: '2026-09-25T12:44:52+00:00'
+    download_status: ok
+  - name: Admin2.dbf
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.dbf
+    target: raw/datameet/States/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.dbf
+    size_bytes: 1902
+    content_type: application/octet-stream
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 4ec2f9b83263c85781bc9abf0d281d441b5e02377be124bda6b5d87bd9dc4ccd
+    local_path: raw/datameet/States/Admin2.dbf
+    downloaded_at: '2026-09-25T12:44:53+00:00'
+    download_status: ok
+  - name: Admin2.prj
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.prj
+    target: raw/datameet/States/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.prj
+    size_bytes: 145
+    content_type: text/plain; charset=utf-8
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4
+    local_path: raw/datameet/States/Admin2.prj
+    downloaded_at: '2026-09-25T12:44:54+00:00'
+    download_status: ok
+    size_note: server announced 139 bytes at probe time; downloaded 145
+  - name: Admin2.cpg
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.cpg
+    target: raw/datameet/States/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/States/Admin2.cpg
+    size_bytes: 5
+    content_type: text/plain; charset=utf-8
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824
+    local_path: raw/datameet/States/Admin2.cpg
+    downloaded_at: '2026-09-25T12:44:55+00:00'
+    download_status: ok
+    size_note: server announced 25 bytes at probe time; downloaded 5
+  - name: Districts README (licence)
+    url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/README.md
+    target: raw/datameet/Districts/
+    http_status: 200
+    final_url: https://raw.githubusercontent.com/datameet/maps/b3fbbde595310b397a55d718e0958ce249a4fa1f/Districts/README.md
+    size_bytes: 659
+    content_type: text/plain; charset=utf-8
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 179605e797b5cfd063bfd03817e11df7465db5a8ad18b2f9e660efe848a7afe7
+    local_path: raw/datameet/Districts/Districts_README_upstream.md
+    downloaded_at: '2026-09-25T12:44:56+00:00'
+    download_status: ok
+    size_note: server announced 418 bytes at probe time; downloaded 659
+    filename: Districts_README_upstream.md
+  d2_status: ok
+- id: S04
+  name: Wikidata - coal mines and districts of India
+  publisher: Wikimedia Foundation / Wikidata contributors
+  landing_page: https://query.wikidata.org/
+  target_path: raw/wikidata/
+  purpose: Second location fallback for mines; "separated from" links for the post-2011 district crosswalk.
+  access: manual_browser
+  manual: true
+  optional: false
+  licence: CC0 1.0 (Wikidata structured data)
+  licence_source: https://www.wikidata.org/wiki/Wikidata:Licensing
+  redistribution: true
+  notes: query.wikidata.org/robots.txt disallows /sparql for all user agents, and www.wikidata.org robots.txt
+    disallows /w/api.php, /w/rest.php and Special:EntityData, so no automated access is used. The two
+    queries are saved in data/scripts/wikidata/ and run by hand in the browser (a person using the site
+    is not a crawler). Every item and property ID in them was checked against its Wikidata page on 2026-09-25.
+  files:
+  - name: coal_mines_india.csv
+    url: null
+    target: raw/wikidata/coal_mines_india.csv
+    query: scripts/wikidata/all_mines_india.rq
+    download_status: present-manual
+    query_note: The saved CSV comes from the broader all-mines query supplied by the user on 2026-09-26
+      (every mineral, with a productLabel column), saved as scripts/wikidata/all_mines_india.rq. It replaces
+      the earlier coal-only query; the file keeps its name coal_mines_india.csv.
+    found_files:
+    - path: raw/wikidata/coal_mines_india.csv
+      sha256: f445c45085efdc560949e67294ed06a82948ab4776ebc93ae8191a63c8bf5079
+      size_bytes: 14022
+      recorded_at: '2026-09-26T04:33:05+00:00'
+  - name: districts_india.csv
+    url: null
+    target: raw/wikidata/districts_india.csv
+    query: scripts/wikidata/districts_india.rq
+    download_status: present-manual
+    found_files:
+    - path: raw/wikidata/districts_india.csv
+      sha256: 2f690badd833ba6c2a240b59da688f596508dc9f3622d9930f7f5c6c4f05f21d
+      size_bytes: 140955
+      recorded_at: '2026-09-26T04:33:05+00:00'
+  d2_status: ok
+- id: S05
+  name: Company websites - areas of each coal company
+  publisher: Coal India Ltd and subsidiaries, SCCL, NLC India
+  landing_page: https://www.coalindia.in/
+  target_path: raw/company_sites/
+  purpose: Company -> area lists (areas.csv) and company ownership (companies.csv).
+  access: open
+  manual: true
+  optional: false
+  licence: Not located on the sites checked; treated as all rights reserved
+  licence_source: null
+  redistribution: no - saved pages stay in raw/ (gitignored); only facts (area names) are used, with the
+    page cited
+  notes: 'Mixed access. Automatic: BCCL, WCL, MCL, SCCL, NCL, NLC. Manual (save the page from a browser):
+    ECL - both easterncoal.nic.in and easterncoal.gov.in timed out from this network; CCL - the server
+    answers automated clients with an empty HTTP 202 (a bot challenge); SECL - HTTP 403 to automated clients.
+    None of these blocks is bypassed. NCL at first failed TLS verification; verifying with the operating
+    system''s certificate store (truststore) fixed it, and its robots.txt allows all. CIL (holding company)
+    and CMPDI (planning institute) have no operating areas. NCL is organised by projects rather than areas.'
+  files:
+  - name: BCCL areas page
+    url: https://bcclweb.in/?page_id=6102
+    target: raw/company_sites/bccl/
+    kind: page
+    http_status: 200
+    final_url: https://bcclweb.in/?page_id=6102
+    size_bytes: 64359
+    content_type: text/html; charset=UTF-8
+    last_modified: null
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 29fcb924b63b0eb197ea6c59756a4e9f973a038a9876999677e5fbf28cb21321
+    local_path: raw/company_sites/bccl/bccl_areas_page.html
+    downloaded_at: '2026-09-25T12:45:34+00:00'
+    download_status: ok
+  - name: WCL areas page
+    url: https://www.westerncoal.in/en/areas
+    target: raw/company_sites/wcl/
+    kind: page
+    http_status: 200
+    final_url: https://www.westerncoal.in/en/areas
+    size_bytes: 123846
+    content_type: text/html; charset=utf-8
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 9e556819a675f7d62f7a38c0238969ec94f2873d2bc4a13cc2694f879a6c24dc
+    local_path: raw/company_sites/wcl/wcl_areas_page.html
+    downloaded_at: '2026-09-25T12:45:35+00:00'
+    download_status: ok
+  - name: MCL coalfields/areas page
+    url: https://www.mahanadicoal.in/About/eareas.php
+    target: raw/company_sites/mcl/
+    kind: page
+    http_status: 200
+    final_url: https://www.mahanadicoal.in/About/eareas.php
+    size_bytes: 42087
+    content_type: text/html; charset=UTF-8
+    last_modified: null
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 5794b52284d489b26232aec9c3598db184b241ba52fff09017fad41eff5cb8ca
+    local_path: raw/company_sites/mcl/mcl_coalfields_areas_page.html
+    downloaded_at: '2026-09-25T12:45:36+00:00'
+    download_status: ok
+  - name: SCCL contact page (lists areas)
+    url: https://scclmines.com/scclnew/contact-us.asp
+    target: raw/company_sites/sccl/
+    kind: page
+    http_status: 200
+    final_url: https://scclmines.com/scclnew/contact-us.asp
+    size_bytes: 25850
+    content_type: text/html
+    last_modified: null
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 906467ef7e6543636c14e5ad04755eebf33dd6ea7be41aa6a8ffa73a7e458d68
+    local_path: raw/company_sites/sccl/sccl_contact_page_lists_areas.html
+    downloaded_at: '2026-09-25T12:45:38+00:00'
+    download_status: ok
+  - name: NCL overview (projects)
+    url: https://www.nclcil.in/detail/647634/ncl-overview
+    target: raw/company_sites/ncl/
+    kind: page
+    http_status: 200
+    final_url: https://www.nclcil.in/detail/647634/ncl-overview
+    size_bytes: 2833
+    content_type: text/html
+    last_modified: Mon, 14 Sep 2026 06:19:42 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 6f52582a0372d4c473369b14cfa0e6d0d8d9497b7319ec9a9a3e564eca0f85a3
+    local_path: raw/company_sites/ncl/ncl_overview_projects.html
+    downloaded_at: '2026-09-25T12:45:39+00:00'
+    download_status: ok
+  - name: NLC India current projects page (lists its mines)
+    url: https://www.nlcindia.in/website/en/aboutus/nlcilprojects/currentprojects.html
+    target: raw/company_sites/nlc/
+    kind: page
+    http_status: 200
+    final_url: https://www.nlcindia.in/website/en/aboutus/nlcilprojects/currentprojects.html
+    size_bytes: 25978
+    content_type: text/html
+    last_modified: Wed, 17 Jun 2026 12:21:08 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: f973a8f91a7e967c29563b14602b8666a2959ffd3d37c62cdf29a38c756bb292
+    local_path: raw/company_sites/nlc/nlc_india_current_projects_page_lists_its_mines.html
+    downloaded_at: '2026-09-25T12:45:40+00:00'
+    download_status: ok
+  - name: ECL areas page (manual)
+    url: null
+    target: raw/company_sites/ecl/
+    manual: true
+    manual_hint: https://www.easterncoal.nic.in/
+    download_status: skipped
+    skipped: true
+    skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
+      either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
+      chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
+  - name: CCL areas page (manual)
+    url: null
+    target: raw/company_sites/ccl/
+    manual: true
+    manual_hint: https://www.centralcoalfields.in/cmpny/areas.php
+    download_status: skipped
+    skipped: true
+    skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
+      either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
+      chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
+  - name: SECL areas page (manual)
+    url: null
+    target: raw/company_sites/secl/
+    manual: true
+    manual_hint: https://www.secl-cil.in/coalfield.php
+    download_status: skipped
+    skipped: true
+    skip_reason: 'Skipped by user decision 2026-09-26: the site was not reachable from the user''s browser
+      either. Fallback in D3: area-wise tables in the Coal Directory 2024-25 chapters (S06), cited by
+      chapter and sheet, if they exist; otherwise area_id stays empty for this company''s mines.'
+  - name: SCCL about-us page (ownership)
+    url: https://scclmines.com/scclnew/company_about-us.asp
+    target: raw/company_sites/sccl/
+    kind: page
+    local_path: raw/company_sites/sccl/sccl_about_us_page_ownership.html
+    sha256: cf1bd3acf6d4594d6bfc5ee46ba3a38a601fe3fa3c200435f94351964d21e6f5
+    size_bytes: 37974
+    downloaded_at: '2026-09-26T04:57:09+00:00'
+    download_status: ok
+  - name: NLC India corporate profile (ownership)
+    url: https://www.nlcindia.in/website/en/aboutus/corporateprofile.html
+    target: raw/company_sites/nlc/
+    kind: page
+    local_path: raw/company_sites/nlc/nlc_india_corporate_profile_ownership.html
+    sha256: fe6b361b69507a1f881e33797febd86f6db445e5b94b7a14ce124611845ec990
+    size_bytes: 7859
+    downloaded_at: '2026-09-26T04:57:17+00:00'
+    download_status: ok
+    last_modified: Wed, 17 Jun 2026 12:21:08 GMT
+  d2_status: ok
+- id: S06
+  name: Ministry of Coal - monthly statistics and Coal Directory of India
+  publisher: Ministry of Coal, Government of India
+  landing_page: https://coal.gov.in/public-information/monthly-statistics-at-glance
+  target_path: raw/moc/
+  purpose: Company-wise monthly coal production (calibration base) and the Coal Directory 2024-25.
+  access: open
+  manual: false
+  optional: false
+  licence: Not located (no copyright-policy link found on coal.gov.in); treated as all rights reserved
+  licence_source: null
+  redistribution: no - raw files stay in raw/ (gitignored); figures are used with page citations
+  notes: 'Page 1 of each "Monthly Coal Statistics" PDF is a company-wise table (ECL, BCCL, CCL, NCL, WCL,
+    SECL, MCL, NEC, CIL total, SCCL, captives): monthly target, achievement, same month last year, year-to-date,
+    in million tonnes (checked on msg-Aug26.pdf). The generated window is 2026-06-28 to 2026-09-25; September
+    2026 is not yet published, so September 2025 is kept as the seasonal stand-in and must be labelled
+    as such. NLC India (lignite) is not in this table. NEC (North Eastern Coalfields) is one of the eight
+    rows summed in the CIL total; its August 2026 production was 0.00 Mt. Of the five seed mines with
+    operator "Coal India Ltd", only AS-DIB-70 is in Assam (the others are JH-BOK-07, JH-LAT-10, CG-SUR-31
+    and CG-BIL-38), so NEC is not a stand-in for them; D3 keeps them as CIL (corrected in D3 - D1 said
+    all five were in Assam). The Coal Directory 2024-25 chapters were checked in D3 for area-wise tables
+    (the fallback for ECL/CCL/SECL areas): none has one. Older Coal Directory PDFs (48-56 MB) are skipped
+    as redundant with the 2024-25 Excel chapters.'
+  files:
+  - name: Monthly Coal Statistics Jun 2026
+    url: https://coal.gov.in/sites/default/files/2026-07/msg-june26.pdf
+    target: raw/moc/monthly/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2026-07/msg-june26.pdf
+    size_bytes: 1418701
+    content_type: application/pdf
+    last_modified: Fri, 10 Jul 2026 11:16:37 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 1b8345c4ea04f79cfebfbdce5801b6619ec5fd15b49601f9d2071758eb3462ac
+    local_path: raw/moc/monthly/msg-june26.pdf
+    downloaded_at: '2026-09-25T12:45:43+00:00'
+    download_status: ok
+  - name: Monthly Coal Statistics Jul 2026
+    url: https://coal.gov.in/sites/default/files/2026-08/msg-july26.pdf
+    target: raw/moc/monthly/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2026-08/msg-july26.pdf
+    size_bytes: 1812833
+    content_type: application/pdf
+    last_modified: Tue, 25 Aug 2026 07:13:11 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 24e74afb921389af08c860fc1ae17df64687225ca2da901073d353635e9cc3cb
+    local_path: raw/moc/monthly/msg-july26.pdf
+    downloaded_at: '2026-09-25T12:45:46+00:00'
+    download_status: ok
+  - name: Monthly Coal Statistics Aug 2026
+    url: https://coal.gov.in/sites/default/files/2026-09/msg-Aug26.pdf
+    target: raw/moc/monthly/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2026-09/msg-Aug26.pdf
+    size_bytes: 1756218
+    content_type: application/pdf
+    last_modified: Wed, 16 Sep 2026 10:03:46 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 5e4dc88bea916e9961d3aa79c02969e1b86cd6505882f4993ed6452ddd5634f1
+    local_path: raw/moc/monthly/msg-Aug26.pdf
+    downloaded_at: '2026-09-25T12:45:48+00:00'
+    download_status: ok
+  - name: Monthly Coal Statistics Sep 2025 (stand-in for Sep 2026)
+    url: https://coal.gov.in/sites/default/files/2025-10/msg-setp25.pdf
+    target: raw/moc/monthly/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2025-10/msg-setp25.pdf
+    size_bytes: 2163780
+    content_type: application/pdf
+    last_modified: Fri, 10 Oct 2025 10:05:06 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: a519edfdace54a49379efe125dd2c347d325cd7727c242a70eb25b06bffcb224
+    local_path: raw/moc/monthly/msg-setp25.pdf
+    downloaded_at: '2026-09-25T12:45:51+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 1
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap1.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap1.xlsx
+    size_bytes: 181259
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:24 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 7359051e9136fdac942ed21696c3ad8e29b8f143d534aed807bfd48715d99c50
+    local_path: raw/moc/coal_directory_2024_25/cdchap1.xlsx
+    downloaded_at: '2026-09-25T12:45:52+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 2
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap2.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap2.xlsx
+    size_bytes: 582074
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:27 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: bf21651c4818bc2c5bdfb5cabb55a83f25db93c6d45bc2affe7bff6a0332c7ea
+    local_path: raw/moc/coal_directory_2024_25/cdchap2.xlsx
+    downloaded_at: '2026-09-25T12:45:53+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 3
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap3.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap3.xlsx
+    size_bytes: 332618
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:30 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: cfa952ffd113c8c234e3f699105263c1f1d80040fe489a2786f0211b7b5dc113
+    local_path: raw/moc/coal_directory_2024_25/cdchap3.xlsx
+    downloaded_at: '2026-09-25T12:45:54+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 4
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap4.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap4.xlsx
+    size_bytes: 126401
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:33 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: fcef372206eb500eb709c883dba2f0fa7b7e3656f49e868cf0c03c08ef6507d8
+    local_path: raw/moc/coal_directory_2024_25/cdchap4.xlsx
+    downloaded_at: '2026-09-25T12:45:54+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 5
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap5.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap5.xlsx
+    size_bytes: 104195
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:36 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: e30eb985582419a88a9cee057bc528be42c9e6023821f49e7a5b5f45b8bc91cb
+    local_path: raw/moc/coal_directory_2024_25/cdchap5.xlsx
+    downloaded_at: '2026-09-25T12:45:56+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 6
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap6.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap6.xlsx
+    size_bytes: 241664
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:39 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 93c2dd3c9fbf2c3bdf133de55a0097d7efa9aa284a38feb04a86440208c0a2e4
+    local_path: raw/moc/coal_directory_2024_25/cdchap6.xlsx
+    downloaded_at: '2026-09-25T12:45:57+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 7
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap7.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap7.xlsx
+    size_bytes: 154522
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:42 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 4171a1329d5ffd5b4cf933e8c24f1d4684ad4d600e21af89faccff47b16bbd55
+    local_path: raw/moc/coal_directory_2024_25/cdchap7.xlsx
+    downloaded_at: '2026-09-25T12:45:57+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 8
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap8.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap8.xlsx
+    size_bytes: 140466
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:46 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: c56cccd1308c3d883876636a188423cf93547ba41d1b008e72e0bcbb839b26c4
+    local_path: raw/moc/coal_directory_2024_25/cdchap8.xlsx
+    downloaded_at: '2026-09-25T12:45:58+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 9
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap9.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap9.xlsx
+    size_bytes: 81727
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:55 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: f93cc0387da1dd5ad98a5c482754c93a7d9b5fc4f0a910755b6559ac660d7b07
+    local_path: raw/moc/coal_directory_2024_25/cdchap9.xlsx
+    downloaded_at: '2026-09-25T12:45:59+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 10
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap10.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap10.xlsx
+    size_bytes: 165742
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:19:59 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: ea815c4ff683b553d38cacb1eddee51a59caff9094e139f1da8bb395e466bd1e
+    local_path: raw/moc/coal_directory_2024_25/cdchap10.xlsx
+    downloaded_at: '2026-09-25T12:46:01+00:00'
+    download_status: ok
+  - name: Coal Directory 2024-25 Chapter 11
+    url: https://coal.gov.in/sites/default/files/2024-03/cdchap11.xlsx
+    target: raw/moc/coal_directory_2024_25/
+    http_status: 206
+    final_url: https://coal.gov.in/sites/default/files/2024-03/cdchap11.xlsx
+    size_bytes: 70034
+    content_type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    last_modified: Thu, 14 May 2026 09:20:03 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: d3b03a9cfacfc76d8c3e37b89d4b99c74b390024181b255622b4298689497fc5
+    local_path: raw/moc/coal_directory_2024_25/cdchap11.xlsx
+    downloaded_at: '2026-09-25T12:46:01+00:00'
+    download_status: ok
+  d2_status: ok
+- id: S07
+  name: DGMS - accident statistics and analyses
+  publisher: Directorate General of Mines Safety, Ministry of Labour & Employment
+  landing_page: https://www.dgms.gov.in/
+  target_path: raw/dgms/
+  purpose: Accident counts by cause, fatalities and serious injuries in coal mines.
+  access: open
+  manual: false
+  optional: false
+  licence: Not located (copyright-policy page content not machine-readable); treated as all rights reserved
+  licence_source: https://www.dgms.gov.in/UserView/index?mid=1272
+  redistribution: no - raw files stay in raw/; figures used with page citations
+  notes: 'DGMS''s accident and statistics portal (accident-statistics.dgms.gov.in) is login-only and is
+    not used. Public material found: annual reports up to 2014 (the most recent annual report located
+    as a public PDF), a 2024 "Key Evaluation of Trends in Coal Mine Accidents", and a 2025 bulletin. Whether
+    the 2024/2025 documents carry cause-wise tables is checked in D3. dgms.gov.in answers HEAD requests
+    with a 404 page for files it serves normally, so it is probed with GET.'
+  files:
+  - name: Key Evaluation of Trends in Coal Mine Accidents (2024)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/sanket0404_2024.pdf
+    target: raw/dgms/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/sanket0404_2024.pdf
+    size_bytes: 2345453
+    content_type: application/pdf
+    last_modified: Thu, 04 Apr 2024 11:25:56 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 9fb5c1a4139daa3cfe6e745b9c5c78c880443740fbbe5521e41a5738630313b1
+    local_path: raw/dgms/sanket0404_2024.pdf
+    downloaded_at: '2026-09-25T12:46:06+00:00'
+    download_status: ok
+  - name: DGMS Bulletin 2025
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/BulletinNew2025AJ_04092025.pdf
+    target: raw/dgms/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/BulletinNew2025AJ_04092025.pdf
+    size_bytes: 6842320
+    content_type: application/pdf
+    last_modified: Thu, 04 Sep 2025 12:03:33 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: ac3c65ef72faad04588e220727324dbc329afecb7c85d5e34f64c7e7cc79f35a
+    local_path: raw/dgms/BulletinNew2025AJ_04092025.pdf
+    downloaded_at: '2026-09-25T12:46:15+00:00'
+    download_status: ok
+  - name: DGMS Annual Report 2014 (English)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_Annual_Report_2014_Eng-14.pdf
+    target: raw/dgms/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_Annual_Report_2014_Eng-14.pdf
+    size_bytes: 4707505
+    content_type: application/pdf
+    last_modified: Thu, 25 Jun 2020 09:29:10 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: d6f5c211b90d393f6d1e8d986896096568b0f3f2d0cc29c586c103aac144edb5
+    local_path: raw/dgms/DGMS_Annual_Report_2014_Eng-14.pdf
+    downloaded_at: '2026-09-25T12:46:22+00:00'
+    download_status: ok
+  - name: DGMS Statutory Framework note
+    url: https://www.dgms.gov.in/writereaddata/Content/STATUTORYFRAMEWORK.pdf
+    target: raw/dgms/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/Content/STATUTORYFRAMEWORK.pdf
+    size_bytes: 204155
+    content_type: application/pdf
+    last_modified: Tue, 25 Jul 2023 05:37:13 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 930fdb054d7a784a818f8fffe8157f1cd9b1aaad4f99134c1cb7a9c935a18188
+    local_path: raw/dgms/STATUTORYFRAMEWORK.pdf
+    downloaded_at: '2026-09-25T12:46:22+00:00'
+    download_status: ok
+  d2_status: ok
+- id: S08
+  name: MSHA Open Government Data
+  publisher: US Mine Safety and Health Administration
+  landing_page: https://arlweb.msha.gov/OpenGovernmentData/OGIMSHA.asp
+  target_path: raw/msha/
+  purpose: Inspection, violation and accident rates for coal mines - the calibration base.
+  access: open
+  manual: false
+  optional: false
+  licence: Not stated on the page. US federal government works are generally not subject to copyright
+    - TODO-VERIFY against a Department of Labor statement.
+  licence_source: null
+  redistribution: raw zips kept out of git regardless
+  notes: 'Pipe-delimited text inside each zip, header row first (stated on the page). The files are re-published
+    every Friday afternoon, so checksums change weekly: D2 must record the snapshot date, and D3 results
+    are reproducible only against that snapshot. Only the four datasets the brief names are taken (about
+    254 MB zipped), plus their definition files; D2 filters them to coal mines and the last 10 years as
+    parquet.'
+  files:
+  - name: Mines.zip
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Mines.zip
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Mines.zip
+    size_bytes: 7304825
+    content_type: application/x-zip-compressed
+    last_modified: Fri, 25 Sep 2026 11:24:06 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 3ddec0aebbc3fd4d70feeae0e507fd0ccee4e45516768b1a932e6e185f43fcd7
+    local_path: raw/msha/Mines.zip
+    downloaded_at: '2026-09-25T12:46:35+00:00'
+    download_status: ok
+  - name: Mines definition
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Mines_Definition_File.txt
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Mines_Definition_File.txt
+    size_bytes: 10285
+    content_type: text/plain
+    last_modified: Tue, 16 May 2023 13:47:39 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: efd2bc2c493207a464be7c4e4795ffd08a221588b76b716ee334a75dfc14f1f9
+    local_path: raw/msha/Mines_Definition_File.txt
+    downloaded_at: '2026-09-25T12:46:35+00:00'
+    download_status: ok
+  - name: Inspections.zip
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Inspections.zip
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Inspections.zip
+    size_bytes: 73553612
+    content_type: application/x-zip-compressed
+    last_modified: Fri, 25 Sep 2026 11:24:06 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 1ed173526f643ae02832c6553e7dc69b3a65b5e28010e2eed19c5b6e370bf718
+    local_path: raw/msha/Inspections.zip
+    downloaded_at: '2026-09-25T12:48:44+00:00'
+    download_status: ok
+  - name: Inspections definition
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Inspections_Definition_File.txt
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Inspections_Definition_File.txt
+    size_bytes: 6062
+    content_type: text/plain
+    last_modified: Mon, 27 Oct 2014 22:11:50 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: f78e21f57e6449dad9040673376b3e169178760852fa1b73868dab62f65e0856
+    local_path: raw/msha/Inspections_Definition_File.txt
+    downloaded_at: '2026-09-25T12:48:44+00:00'
+    download_status: ok
+  - name: Violations.zip
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Violations.zip
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Violations.zip
+    size_bytes: 120736998
+    content_type: application/x-zip-compressed
+    last_modified: Fri, 25 Sep 2026 11:24:08 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 5bc4aa7ce494729bde3d11fd16bea008e5491ab778720578746ff72092d47caf
+    local_path: raw/msha/Violations.zip
+    downloaded_at: '2026-09-25T12:52:20+00:00'
+    download_status: ok
+  - name: Violations definition
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/violations_Definition_File.txt
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/violations_Definition_File.txt
+    size_bytes: 10733
+    content_type: text/plain
+    last_modified: Mon, 27 Oct 2014 22:46:38 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: e815bbd8f76a6a01c201c036ec0bd9dccd4f4de14fd9ac3f4e19e019d1bf1a40
+    local_path: raw/msha/violations_Definition_File.txt
+    downloaded_at: '2026-09-25T12:52:20+00:00'
+    download_status: ok
+  - name: Accidents.zip
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Accidents.zip
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Accidents.zip
+    size_bytes: 52240903
+    content_type: application/x-zip-compressed
+    last_modified: Fri, 25 Sep 2026 11:24:03 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: db5ac677f235e90f6214e6f26ee2b2994e32f01e18124f5165f05b5f741420b6
+    local_path: raw/msha/Accidents.zip
+    downloaded_at: '2026-09-25T12:53:32+00:00'
+    download_status: ok
+  - name: Accidents definition
+    url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Accidents_Definition_File.txt
+    target: raw/msha/
+    http_status: 200
+    final_url: https://arlweb.msha.gov/OpenGovernmentData/DataSets/Accidents_Definition_File.txt
+    size_bytes: 10214
+    content_type: text/plain
+    last_modified: Mon, 27 Oct 2014 21:51:09 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: c7681808dd372b6c5bd95fdf70b01e856e0d2501b7e5d7cc9185f4c4e1f876e5
+    local_path: raw/msha/Accidents_Definition_File.txt
+    downloaded_at: '2026-09-25T12:53:33+00:00'
+    download_status: ok
+  snapshot:
+    Mines.zip: published 2026-09-25T11:24:06+00:00 (server Last-Modified, ISO week 2026-W39), downloaded
+      2026-09-25T12:46:35+00:00
+    Inspections.zip: published 2026-09-25T11:24:06+00:00 (server Last-Modified, ISO week 2026-W39), downloaded
+      2026-09-25T12:48:44+00:00
+    Violations.zip: published 2026-09-25T11:24:08+00:00 (server Last-Modified, ISO week 2026-W39), downloaded
+      2026-09-25T12:52:20+00:00
+    Accidents.zip: published 2026-09-25T11:24:03+00:00 (server Last-Modified, ISO week 2026-W39), downloaded
+      2026-09-25T12:53:32+00:00
+    release_week: 2026-W39
+    refresh_rule: MSHA updates every Friday afternoon; re-run with --force S08 to take a newer release
+  d2_status: ok
+  d2_detail:
+    filtered:
+      rule: 'COAL_METAL_IND == ''C''; event date from 2016-09-25 to 2026-09-25 inclusive (mines: all coal
+        mines)'
+      mines:
+        output: raw/msha/filtered/mines.parquet
+        rows_kept: 35732
+        rows_read: 92028
+        source_member: Mines.txt
+        status: unchanged
+      inspections:
+        output: raw/msha/filtered/inspections.parquet
+        rows_kept: 106129
+        rows_read: 1160531
+        source_member: Inspections.txt
+        status: unchanged
+      violations:
+        output: raw/msha/filtered/violations.parquet
+        rows_kept: 416889
+        rows_read: 3103397
+        source_member: Violations.txt
+        status: unchanged
+      accidents:
+        output: raw/msha/filtered/accidents.parquet
+        rows_kept: 23247
+        rows_read: 275067
+        source_member: Accidents.txt
+        status: unchanged
+- id: S09
+  name: OpenAQ API v3 - air quality near coalfields (CPCB stations)
+  publisher: OpenAQ (aggregating CPCB and other providers)
+  landing_page: https://docs.openaq.org/using-the-api/api-key
+  target_path: raw/openaq/
+  purpose: Daily PM10, PM2.5, SO2, NO2 at stations nearest each mine cluster.
+  access: manual_key
+  manual: true
+  optional: false
+  licence: Not stated - OpenAQ returns licenses = null for all 14 matched CPCB stations (checked in D3);
+    the daily values stay out of git until redistribution is confirmed (TODO-VERIFY)
+  licence_source: https://docs.openaq.org/about/terms
+  redistribution: per provider licence; raw responses kept out of git
+  notes: 'Every v3 endpoint, including /v3/licenses, returns 401 without a key (X-API-Key header). Key
+    sign-up is free at explore.openaq.org/register. Clusters from the brief: Dhanbad, Asansol, Korba,
+    Singrauli, Angul/Talcher, Chandrapur, Ramagundam, Neyveli. Fallback if no key: skip, and synthesise
+    environment readings from documented ranges (D4).'
+  files:
+  - name: OpenAQ v3 API base
+    url: https://api.openaq.org/v3/
+    target: raw/openaq/
+    kind: api
+    requires: OPENAQ_API_KEY
+    download_status: ok
+  d2_status: ok
+  d2_detail:
+    openaq:
+      download_status: ok
+      fetched_at: '2026-09-26T04:35:17+00:00'
+      window:
+      - '2026-06-28'
+      - '2026-09-25'
+      locations_in_india: 764
+      matched_locations: 14
+      sensors_fetched: 72
+      requests_made: 0
+      files_reused: 74
+      message: 14 stations matched to clusters; 72 pollutant sensors
+      files_on_disk: 75
+- id: S10
+  name: Legal texts and their current status
+  publisher: Gazette of India, Ministry of Labour & Employment, DGMS, CPCB
+  landing_page: https://www.dgms.gov.in/UserView/index?mid=1653
+  target_path: raw/legal/
+  purpose: Citable status of each instrument; clauses for obligations.csv (D3).
+  access: open
+  manual: false
+  optional: false
+  licence: Official Government of India legal texts; the texts of Acts and notifications are public documents
+    - reproduction terms TODO-VERIFY
+  licence_source: null
+  redistribution: raw PDFs stay in raw/ (gitignored); obligations cite clause and page
+  notes: 'Status determined from the notifications themselves, each read on 2026-09-25 - see the instruments
+    list below. India Code (indiacode.nic.in) does not answer automated clients (its robots.txt times
+    out), and the eGazette search page uses a CAPTCHA, so only direct PDF links are used. Status wording
+    follows the brief: in force / repealed / subsumed / partly in force. CPCB''s robots.txt disallows
+    automated access to its PDFs, so the environmental law text is a manual browser download.'
+  instruments:
+  - instrument: Occupational Safety, Health and Working Conditions Code, 2020 (37 of 2020)
+    status: in force - all provisions, from 2025-11-21
+    basis: S.O. 5321(E) dated 21.11.2025, Gazette of India Extraordinary Pt II Sec 3(ii), No. 5145 ("appoints
+      the 21st day of November, 2025 as the date on which the provisions of the said Code, shall come
+      into force" - no exceptions)
+  - instrument: Occupational Safety, Health and Working Conditions (Central) Rules, 2026
+    status: in force from 2026-05-08
+    basis: G.S.R. 345(E) dated 08.05.2026, Gazette of India Extraordinary Pt II Sec 3(i), No. 311; rule
+      1(3) - in force on publication. Draft was G.S.R. 934(E) dated 30.12.2025.
+  - instrument: Code on Wages, 2019 (29 of 2019)
+    status: partly in force - from 2025-11-21, except the sub-provisions left out of the schedule
+    basis: S.O. 5322(E) dated 21.11.2025, Gazette No. 5146 - brings in ss.1-41, 42(4)-(9), 43-66, 67 (listed
+      parts), 68, and 69 except serial 3 of S.O. 4604(E) dated 18.12.2020 (S.O. 4604(E) not read - TODO-VERIFY)
+  - instrument: Code on Social Security, 2020 (36 of 2020)
+    status: partly in force - most provisions from 2025-11-21; some earlier under S.O. 2060(E) of 03.05.2023
+    basis: S.O. 5319(E) dated 21.11.2025, Gazette No. 5143, as corrected by S.O. 5936(E) dated 19.12.2025
+      (Gazette 20.12.2025, 8589 GI/2025)
+  - instrument: Industrial Relations Code, 2020 (35 of 2020)
+    status: in force - all provisions, from 2025-11-21
+    basis: S.O. 5320(E) dated 21.11.2025, Gazette No. 5144 (no exceptions)
+  - instrument: Mines Act, 1952 (35 of 1952)
+    status: repealed from 2025-11-21 (subsumed into the OSH Code)
+    basis: OSH Code s.143(1)(c), commenced by S.O. 5321(E). Savings, s.143(3) - rules, regulations, notifications
+      etc. made under it are deemed made under the Code and "remain in force to the extent they are not
+      contrary to the provisions of this Code till they are repealed by the Central Government"; s.143(4)
+      applies s.6 of the General Clauses Act, 1897.
+  - instrument: Mines Rules, 1955
+    status: repealed (superseded) from 2026-05-08; between 2025-11-21 and 2026-05-08 it continued under
+      OSH Code s.143(3)
+    basis: G.S.R. 345(E) dated 08.05.2026, preamble "in supersession of" item 3, "except as respects things
+      done or omitted to be done before such supersession"
+  - instrument: Coal Mines Regulations, 2017
+    status: in force under the savings clause (deemed made under the OSH Code)
+    basis: OSH Code s.143(3); not in the supersession list of G.S.R. 345(E). A replacement, the Draft
+      OSH&WC (Coal Mines) Regulations, 2026, was published by DGMS on 31.01.2026 as a draft; no final
+      notification was found on DGMS's gazette-notification page on 2026-09-25.
+  - instrument: Mines Vocational Training Rules, 1966
+    status: repealed (superseded) from 2026-05-08
+    basis: G.S.R. 345(E) dated 08.05.2026, preamble "in supersession of" item 5
+  - instrument: Contract Labour (Regulation and Abolition) Act, 1970 (37 of 1970)
+    status: repealed from 2025-11-21 (subsumed into the OSH Code)
+    basis: OSH Code s.143(1)(h), commenced by S.O. 5321(E); savings as for the Mines Act (s.143(3))
+  - instrument: Contract Labour (Regulation and Abolition) Central Rules, 1971
+    status: repealed (superseded) from 2026-05-08
+    basis: G.S.R. 345(E) dated 08.05.2026, preamble "in supersession of" item 8
+  - instrument: Employees' Provident Funds and Miscellaneous Provisions Act, 1952 (19 of 1952)
+    status: TODO-VERIFY
+    basis: Code on Social Security s.164(1) item 3. S.O. 5319(E) as issued commenced items 1-2 and 4-9
+      only (item 3 left out); the corrigendum S.O. 5936(E) re-worded that entry to "sub-section (1) of
+      section 164 except the provisions of the Code specified at serial number (vi) of S.O.2060(E), dated
+      the 3rd May, 2023". S.O. 2060(E) itself was not retrieved from an official source (the EPFO circular
+      reproducing it now returns 404), so the effect on the EPF Act is not concluded here. Not in the
+      brief's list; included because contractor EPF challans depend on it.
+  - instrument: Coal Mines Provident Fund and Miscellaneous Provisions Act, 1948
+    status: in force (not repealed by any of the four Codes)
+    basis: Not among the enactments repealed by Code on Social Security s.164(1) (read in full - the Act
+      is not named anywhere in the Code). Official consolidated text not yet retrieved (India Code unreachable
+      to automated clients) - amendments TODO-VERIFY.
+  - instrument: Environment (Protection) Act, 1986; Air (Prevention and Control of Pollution) Act, 1981;
+      Water (Prevention and Control of Pollution) Act, 1974
+    status: in force (outside the labour codes)
+    basis: Not among the enactments repealed by OSH Code s.143(1) or Code on Social Security s.164(1)
+      (both read). Latest official consolidated text located - CPCB Pollution Control Law Series, 7th
+      edition (2021). Amendments after 2021 not verified from an official source - TODO-VERIFY.
+  files:
+  - name: Gazette S.O. 5319(E) - Code on Social Security commencement
+    url: https://egazette.gov.in/WriteReadData/2025/267882.pdf
+    target: raw/legal/notifications/
+    http_status: 206
+    final_url: https://egazette.gov.in/WriteReadData/2025/267882.pdf
+    size_bytes: 2337551
+    content_type: application/pdf
+    last_modified: Fri, 21 Nov 2025 09:50:47 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 4f0bf613ac77aef8d238c2c28d6865e36057fcb1cb8dd28cbd90ff5f054ee508
+    local_path: raw/legal/notifications/267882.pdf
+    downloaded_at: '2026-09-25T12:53:39+00:00'
+    download_status: ok
+  - name: Gazette S.O. 5320(E) - Industrial Relations Code commencement
+    url: https://egazette.gov.in/WriteReadData/2025/267883.pdf
+    target: raw/legal/notifications/
+    http_status: 206
+    final_url: https://egazette.gov.in/WriteReadData/2025/267883.pdf
+    size_bytes: 1855872
+    content_type: application/pdf
+    last_modified: Fri, 21 Nov 2025 09:55:39 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 6695757a97e26c4d306fdb82205942c6f726ff6565eb8af0a0e7207d4fe37edd
+    local_path: raw/legal/notifications/267883.pdf
+    downloaded_at: '2026-09-25T12:53:43+00:00'
+    download_status: ok
+  - name: Gazette S.O. 5321(E) - OSH Code commencement
+    url: https://egazette.gov.in/WriteReadData/2025/267884.pdf
+    target: raw/legal/notifications/
+    http_status: 206
+    final_url: https://egazette.gov.in/WriteReadData/2025/267884.pdf
+    size_bytes: 1678039
+    content_type: application/pdf
+    last_modified: Fri, 21 Nov 2025 10:07:28 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 22212bc1f9e601ad242c9c595fd5ae91382b6c8ed8085c921f384343e1a8d642
+    local_path: raw/legal/notifications/267884.pdf
+    downloaded_at: '2026-09-25T12:53:46+00:00'
+    download_status: ok
+  - name: Gazette S.O. 5322(E) - Code on Wages commencement
+    url: https://egazette.gov.in/WriteReadData/2025/267885.pdf
+    target: raw/legal/notifications/
+    http_status: 206
+    final_url: https://egazette.gov.in/WriteReadData/2025/267885.pdf
+    size_bytes: 2053160
+    content_type: application/pdf
+    last_modified: Fri, 21 Nov 2025 10:09:31 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 45105d4da240440cf43b3d0565c8f615d5ac705be807a87212ada95df92d58cc
+    local_path: raw/legal/notifications/267885.pdf
+    downloaded_at: '2026-09-25T12:53:50+00:00'
+    download_status: ok
+  - name: Gazette S.O. 5936(E) - corrigendum to S.O. 5319(E) (Ministry copy)
+    url: https://www.labour.gov.in/static/uploads/2026/01/639a9f531898f5a767b1e45e762c2d87.pdf
+    target: raw/legal/notifications/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2026/01/639a9f531898f5a767b1e45e762c2d87.pdf
+    size_bytes: 560515
+    content_type: application/pdf
+    last_modified: Fri, 02 Jan 2026 08:55:16 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: d14b088ef05a8f34c37d823b3b6fc6bd78a101e37882edc256d931e01e063a03
+    local_path: raw/legal/notifications/639a9f531898f5a767b1e45e762c2d87.pdf
+    downloaded_at: '2026-09-25T12:53:52+00:00'
+    download_status: ok
+  - name: OSH (Central) Rules, 2026 - G.S.R. 345(E), final (DGMS copy)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/CentralRule_12052026.pdf
+    target: raw/legal/rules/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/CentralRule_12052026.pdf
+    size_bytes: 2008390
+    content_type: application/pdf
+    last_modified: Tue, 12 May 2026 06:41:05 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 4a18cf54880519e51a1b602de58c8cb7bcd82d81873ae7fa799d08b64f0ae97a
+    local_path: raw/legal/rules/CentralRule_12052026.pdf
+    downloaded_at: '2026-09-25T12:53:56+00:00'
+    download_status: ok
+  - name: OSH (Central) Rules - draft, Gazette 8842 GI/2025 (Ministry copy)
+    url: https://www.labour.gov.in/static/uploads/2026/01/bc7d6ec2898ac322644f2887ee4f5869.pdf
+    target: raw/legal/rules/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2026/01/bc7d6ec2898ac322644f2887ee4f5869.pdf
+    size_bytes: 3896705
+    content_type: application/pdf
+    last_modified: Thu, 01 Jan 2026 06:20:43 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 30fd3fe095ba719ab7d80606df981f505eade669474e02a87fbbefea72878907
+    local_path: raw/legal/rules/bc7d6ec2898ac322644f2887ee4f5869.pdf
+    downloaded_at: '2026-09-25T12:54:02+00:00'
+    download_status: ok
+  - name: OSH Code, 2020 - text (Ministry copy)
+    url: https://www.labour.gov.in/static/uploads/2025/07/36fcfa5d8e6b9145e282bf7b950d6c47.pdf
+    target: raw/legal/codes/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2025/07/36fcfa5d8e6b9145e282bf7b950d6c47.pdf
+    size_bytes: 531293
+    content_type: application/pdf
+    last_modified: Fri, 04 Jul 2025 07:20:27 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 9ce8f68b88f725fbce4fadfb45d9ddc3ed7a5f59d92a2ebd3d5bd7ebb1c83891
+    local_path: raw/legal/codes/36fcfa5d8e6b9145e282bf7b950d6c47.pdf
+    downloaded_at: '2026-09-25T12:54:02+00:00'
+    download_status: ok
+  - name: Code on Social Security, 2020 - text (Ministry copy)
+    url: https://www.labour.gov.in/static/uploads/2025/07/b0620548445580767b5c0d18c95c26f7.pdf
+    target: raw/legal/codes/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2025/07/b0620548445580767b5c0d18c95c26f7.pdf
+    size_bytes: 616749
+    content_type: application/pdf
+    last_modified: Fri, 04 Jul 2025 07:23:22 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 975235e57b8b8c3f4a09f6c9f0dbb2bfc663c15faf3715108ea33113ef565be7
+    local_path: raw/legal/codes/b0620548445580767b5c0d18c95c26f7.pdf
+    downloaded_at: '2026-09-25T12:54:04+00:00'
+    download_status: ok
+  - name: Industrial Relations Code, 2020 - text (Ministry copy)
+    url: https://www.labour.gov.in/static/uploads/2025/07/682a44b5426bff2c1f4943ee1b2fd566.pdf
+    target: raw/legal/codes/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2025/07/682a44b5426bff2c1f4943ee1b2fd566.pdf
+    size_bytes: 454780
+    content_type: application/pdf
+    last_modified: Fri, 04 Jul 2025 07:26:19 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: 43cadbd9ed08dd00dfba43571253eaf63d655f9fc411df5b9a1059de8d40ce09
+    local_path: raw/legal/codes/682a44b5426bff2c1f4943ee1b2fd566.pdf
+    downloaded_at: '2026-09-25T12:54:04+00:00'
+    download_status: ok
+  - name: Code on Wages, 2019 - text
+    url: null
+    target: raw/legal/codes/
+    notes: Not located on 2026-09-25; status rests on S.O. 5322(E).
+    download_status: not located
+  - name: Mines Act, 1952 (DGMS copy)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/MinesAct1952.pdf
+    target: raw/legal/repealed_or_saved/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/MinesAct1952.pdf
+    size_bytes: 153299
+    content_type: application/pdf
+    last_modified: Fri, 19 Feb 2016 07:19:34 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: af34ab016112fa7a89e80533c29dc08219a24efc685cc40abeabbabc544a16fb
+    local_path: raw/legal/repealed_or_saved/MinesAct1952.pdf
+    downloaded_at: '2026-09-25T12:54:05+00:00'
+    download_status: ok
+  - name: Mines Rules, 1955 (DGMS copy)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/Mines_Rules_1955.pdf
+    target: raw/legal/repealed_or_saved/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/Mines_Rules_1955.pdf
+    size_bytes: 154356
+    content_type: application/pdf
+    last_modified: Wed, 16 Nov 2016 07:17:49 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 5c5692bb4285b2cf98678175427307e2b5f9723eb5a253f8885948e6d8a48d02
+    local_path: raw/legal/repealed_or_saved/Mines_Rules_1955.pdf
+    downloaded_at: '2026-09-25T12:54:06+00:00'
+    download_status: ok
+  - name: Coal Mines Regulations, 2017 (DGMS copy)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/Coal_Mines_Regulation_2017_Noti.pdf
+    target: raw/legal/repealed_or_saved/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/Coal_Mines_Regulation_2017_Noti.pdf
+    size_bytes: 4360642
+    content_type: application/pdf
+    last_modified: Fri, 16 Mar 2018 11:42:38 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: e7702993d2d00db549e95058fa67e5dfd7c0540783f89c4b8038ccbeb9c902d5
+    local_path: raw/legal/repealed_or_saved/Coal_Mines_Regulation_2017_Noti.pdf
+    downloaded_at: '2026-09-25T12:54:12+00:00'
+    download_status: ok
+  - name: Mines Vocational Training Rules, 1966 (DGMS copy)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/MineVocational966.pdf
+    target: raw/legal/repealed_or_saved/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/MineVocational966.pdf
+    size_bytes: 204060
+    content_type: application/pdf
+    last_modified: Fri, 19 Feb 2016 11:33:36 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 82ddf3f8511e8a751669ee4309cc78e8e9d6eb62b83d97707a007f199a67f0a2
+    local_path: raw/legal/repealed_or_saved/MineVocational966.pdf
+    downloaded_at: '2026-09-25T12:54:13+00:00'
+    download_status: ok
+  - name: Draft OSH&WC (Coal Mines) Regulations, 2026 (DGMS)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/CMR_GN_31012026.pdf
+    target: raw/legal/drafts/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/CMR_GN_31012026.pdf
+    size_bytes: 2172174
+    content_type: application/pdf
+    last_modified: Sat, 31 Jan 2026 09:49:06 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 79ed7e7ba71077b767ee8facf4c607a1c613ffc2da6c069ed39b29016d4ef18a
+    local_path: raw/legal/drafts/CMR_GN_31012026.pdf
+    downloaded_at: '2026-09-25T12:54:16+00:00'
+    download_status: ok
+  - name: Labour Codes FAQ - which rules apply (Jan 2026)
+    url: https://www.labour.gov.in/static/uploads/2026/01/de4758d5bfeffc456d7de97a801891b0.pdf
+    target: raw/legal/guidance/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2026/01/de4758d5bfeffc456d7de97a801891b0.pdf
+    size_bytes: 351453
+    content_type: application/pdf
+    last_modified: Thu, 01 Jan 2026 06:07:08 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: cadd78f9b48ebc268c2d46420a9eca69f1e4b0f188654a9e82ef248013cdec5c
+    local_path: raw/legal/guidance/de4758d5bfeffc456d7de97a801891b0.pdf
+    downloaded_at: '2026-09-25T12:54:17+00:00'
+    download_status: ok
+  - name: Additional FAQs on Labour Codes (16.03.2026)
+    url: https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf
+    target: raw/legal/guidance/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2026/03/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf
+    size_bytes: 363855
+    content_type: application/pdf
+    last_modified: Mon, 16 Mar 2026 15:13:00 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: d55818a3956bebf5445e515e25999d5ee5b94e58e371554b24197470cf4ee2ed
+    local_path: raw/legal/guidance/a4ccf4c6d97c4f1f36a6d83f8c64213d.pdf
+    downloaded_at: '2026-09-25T12:54:18+00:00'
+    download_status: ok
+  - name: FAQ on OSH&WC Code (13.03.2026)
+    url: https://www.labour.gov.in/static/uploads/2026/03/d7a1038bf00f763484aa27a79a4c6306.pdf
+    target: raw/legal/guidance/
+    http_status: 200
+    final_url: https://www.labour.gov.in/static/uploads/2026/03/d7a1038bf00f763484aa27a79a4c6306.pdf
+    size_bytes: 239397
+    content_type: application/pdf
+    last_modified: Fri, 13 Mar 2026 12:05:30 GMT
+    probe_method: HEAD
+    accessed_at: '2026-09-25'
+    sha256: aa0357bbe410d7533e7dfaff6d14d935acb6f730b5fbe53750d5012fea92542c
+    local_path: raw/legal/guidance/d7a1038bf00f763484aa27a79a4c6306.pdf
+    downloaded_at: '2026-09-25T12:54:19+00:00'
+    download_status: ok
+  - name: PIB release - four Labour Codes made effective (transition statement)
+    url: https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2192463&reg=3&lang=2
+    target: raw/legal/guidance/
+    kind: page
+    http_status: 200
+    final_url: https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2192463&reg=3&lang=2
+    size_bytes: 360580
+    content_type: text/html; charset=utf-8
+    last_modified: null
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 68c2162b5b1bb8bf419f55d26dd066f9e0b78c92ec88b95dad71a42715c95798
+    local_path: raw/legal/guidance/pib_release_four_labour_codes_made_effective_transition_statement.html
+    downloaded_at: '2026-09-25T12:54:21+00:00'
+    download_status: ok
+  - name: CPCB Pollution Control Law Series, 7th edition (2021) - manual
+    url: null
+    target: raw/legal/environment/
+    manual: true
+    manual_hint: https://cpcb.nic.in/7thEditionPollutionControlLawSeries2021.pdf
+    notes: 'cpcb.nic.in robots.txt is ''Disallow: /'' except /web/ (checked 2026-09-25), so it is downloaded
+      by hand in a browser.'
+    download_status: present-manual
+    found_files:
+    - path: raw/legal/environment/7thEditionPollutionControlLawSeries2021.pdf
+      sha256: f63c3f354267a2f347b82c663c8b5ff57b0e11145555f2c5754702f965d2d64c
+      size_bytes: 13471815
+      recorded_at: '2026-09-26T04:34:33+00:00'
+  - name: DGMS (Tech) Circular 04 of 2020 - flammable gas in underground coal mines
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_04637184121810426988.pdf
+    target: raw/legal/dgms_circulars/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_04637184121810426988.pdf
+    size_bytes: 612619
+    content_type: application/pdf
+    last_modified: Thu, 27 Feb 2020 09:26:21 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: f182642def7223e45ab0b2f5a4837c8d83bd7e07f3b1d18e7bb513b942b11edd
+    local_path: raw/legal/dgms_circulars/DGMS_04637184121810426988.pdf
+    downloaded_at: '2026-09-25T12:54:22+00:00'
+    download_status: ok
+  - name: DGMS circular - environment monitoring system in underground coal mines
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/Cir_04_Tech_MAMID.pdf
+    target: raw/legal/dgms_circulars/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/Cir_04_Tech_MAMID.pdf
+    size_bytes: 471007
+    content_type: application/pdf
+    last_modified: Wed, 28 Jun 2017 12:56:49 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: cb8a2c9216b6b68f73c24877c0a8917575a4243c8e9749c54d5254bacab30df2
+    local_path: raw/legal/dgms_circulars/Cir_04_Tech_MAMID.pdf
+    downloaded_at: '2026-09-25T12:54:23+00:00'
+    download_status: ok
+  - name: DGMS Tech Circular 1 of 2023 - accidents from high-temperature exposure
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/Circular2023tech.pdf
+    target: raw/legal/dgms_circulars/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/Circular2023tech.pdf
+    size_bytes: 4775224
+    content_type: application/pdf
+    last_modified: Mon, 24 Apr 2023 10:54:37 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 693add3901f22bee2127a3609694af9853c994d5484169bb7721eda6318f8821
+    local_path: raw/legal/dgms_circulars/Circular2023tech.pdf
+    downloaded_at: '2026-09-25T12:54:29+00:00'
+    download_status: ok
+  - name: DGMS Tech Circular 1 of 2022 - high atmospheric temperature
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_TECH_CIRCULAR_OH.pdf
+    target: raw/legal/dgms_circulars/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_TECH_CIRCULAR_OH.pdf
+    size_bytes: 663802
+    content_type: application/pdf
+    last_modified: Fri, 29 Apr 2022 07:30:32 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: dd4076e2c141659ea157ffdddad6300dfab585b07f8326a3973625cb25ad2d65
+    local_path: raw/legal/dgms_circulars/DGMS_TECH_CIRCULAR_OH.pdf
+    downloaded_at: '2026-09-25T12:54:30+00:00'
+    download_status: ok
+  - name: DGMS (Tech)(OH) Circular 01 of 2021 - first-aid training
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_tech.pdf
+    target: raw/legal/dgms_circulars/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/DGMS_tech.pdf
+    size_bytes: 210272
+    content_type: application/pdf
+    last_modified: Fri, 06 Aug 2021 12:13:33 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: 185e362907f8cea5548b2123dc143a278317899df726b6e63e0d303fe28e4790
+    local_path: raw/legal/dgms_circulars/DGMS_tech.pdf
+    downloaded_at: '2026-09-25T12:54:31+00:00'
+    download_status: ok
+  - name: DGMS circular - dust suppression approvals (coal mines)
+    url: https://www.dgms.gov.in/writereaddata/UploadFile/Dus_tsuppresson.pdf
+    target: raw/legal/dgms_circulars/
+    http_status: 206
+    final_url: https://www.dgms.gov.in/writereaddata/UploadFile/Dus_tsuppresson.pdf
+    size_bytes: 4709218
+    content_type: application/pdf
+    last_modified: Fri, 03 Mar 2023 09:50:29 GMT
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: ed0f06824d136e956eceff8d964c6a6c403167ae215a467017f9ed57eba0b916
+    local_path: raw/legal/dgms_circulars/Dus_tsuppresson.pdf
+    downloaded_at: '2026-09-25T12:54:38+00:00'
+    download_status: ok
+  - name: EPF Act status - S.O. 2060(E) of 03.05.2023 (manual, optional)
+    url: null
+    target: raw/legal/notifications/
+    manual: true
+    notes: eGazette search uses a CAPTCHA; see MANUAL_STEPS.md.
+    download_status: pending-manual
+  d2_status: ok (+1 pending-manual)
+- id: S11
+  name: Environmental clearance letters (OPTIONAL)
+  publisher: Ministry of Environment, Forest and Climate Change - PARIVESH portal
+  landing_page: https://parivesh.nic.in/newupgrade/
+  target_path: raw/parivesh/
+  purpose: 5-10 EC letters for mines in our list - clearance conditions and an OCR test set.
+  access: manual_browser
+  manual: true
+  optional: true
+  licence: Not located; treated as all rights reserved
+  licence_source: null
+  redistribution: no - raw/ only
+  notes: 'robots.txt is absent (404, so allowed), but PARIVESH is a single-page JavaScript app: letters
+    are found through an interactive search backed by the app''s private API, which the pipeline does
+    not reverse-engineer. Manual and optional. Fallback: skip.'
+  files:
+  - name: EC letters (PDF
+    as saved): null
+    url: null
+    target: raw/parivesh/
+    manual: true
+    download_status: pending-manual
+  d2_status: skipped-manual
+- id: S12
+  name: Tender and award data (OPTIONAL)
+  publisher: Coal India eProcurement; Central Public Procurement Portal
+  landing_page: https://coalindiatenders.nic.in/nicgep/app
+  target_path: raw/tenders/
+  purpose: Typical contract values and durations by work type.
+  access: skipped
+  manual: false
+  optional: true
+  licence: n/a (not used)
+  licence_source: null
+  redistribution: n/a
+  notes: 'Skipped as the brief directs: on both coalindiatenders.nic.in and eprocure.gov.in the "Results
+    of Tenders"/"Bid Awards" and "Tenders Status" pages require a CAPTCHA (checked 2026-09-25). Fallback:
+    contract value ranges from published company annual reports, cited in D3/D4.'
+  files: []
+  d2_status: skipped (see notes for fallback)
+- id: S13
+  name: PPE detection evaluation set (OPTIONAL)
+  publisher: Roboflow Universe user "sdp-lfigk", mirrored in GitHub repo vyasdeepti/PPE-Object-Detection-using-YOLO11
+  landing_page: https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11
+  target_path: raw/ppe/
+  purpose: Evaluation images for the existing YOLO PPE model.
+  access: open
+  manual: false
+  optional: true
+  licence: CC BY 4.0 (stated in the dataset's own README.dataset.txt and data.yaml, Roboflow project ppe-detection-ozhfb
+    v14)
+  licence_source: https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11/blob/98085c8a901121d5ec0bf1194f7319a9b792b9cb/dataset/README.dataset.txt
+  redistribution: allowed with attribution; kept out of git (size)
+  pinned_commit: 98085c8a901121d5ec0bf1194f7319a9b792b9cb
+  notes: '6 classes: Gloves, Hard_hat, Mask, Person, Safety_boots, Vest (read from data.yaml; the repo
+    README''s summary omits vests). The dataset/ folder holds 1,619 images with 1,619 matching label files
+    (counted after extraction in D2; the 2,294 images / 1,832 labels reported in D1 counted the whole
+    repository, including training-run output outside dataset/). The archive also contains a video and
+    model weights; D2 keeps only dataset/. The repository itself has no licence file - the CC BY 4.0 grant
+    comes from the dataset export. Alternative, manual and optional: SH17 (8,099 images) - its GitHub
+    release holds only model weights; the images are on Kaggle, which needs an account key.'
+  files:
+  - name: Repository archive at pinned commit (dataset/ kept)
+    url: https://codeload.github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11/zip/98085c8a901121d5ec0bf1194f7319a9b792b9cb
+    target: raw/ppe/
+    http_status: 200
+    final_url: https://codeload.github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11/zip/98085c8a901121d5ec0bf1194f7319a9b792b9cb
+    size_bytes: 218816760
+    content_type: application/zip
+    last_modified: null
+    probe_method: GET(range)
+    accessed_at: '2026-09-25'
+    sha256: e491c4fe51cb7b09fe8e45d2250c273414e6b15556773ebc68eef06f45fda9aa
+    local_path: raw/ppe/repository_archive_at_pinned_commit_dataset_kept.zip
+    downloaded_at: '2026-09-25T13:01:38+00:00'
+    download_status: ok
+  - name: SH17 dataset via Kaggle (optional, manual)
+    url: null
+    target: raw/ppe/sh17/
+    manual: true
+    manual_hint: https://www.kaggle.com/datasets/mugheesahmad/sh17-dataset-for-ppe-detection
+    download_status: pending-manual
+  d2_status: ok (+1 pending-manual)
+  d2_detail:
+    extraction:
+      extracted_to: raw/ppe/dataset
+      status: already extracted

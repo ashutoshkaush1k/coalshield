@@ -1,0 +1,95 @@
+company_id,row_label,scope,mineral,year,month,production_mt,target_mt,status,source_file,source_page,source_table,source_column
+BCCL,BCCL,company,coal,2024,9,2.61,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+CCL,CCL,company,coal,2024,9,5.08,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+CIL,CIL,group_total (sum of the eight rows above),coal,2024,9,50.95,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+,Captives/Others,captives and others (not our companies),coal,2024,9,14.21,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+ECL,ECL,company,coal,2024,9,2.95,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+MCL,MCL,company,coal,2024,9,16.55,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+NCL,NCL,company,coal,2024,9,10.36,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2024,9,0.02,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+SCCL,SCCL,company,coal,2024,9,3.75,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+SECL,SECL,company,coal,2024,9,10.09,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+WCL,WCL,company,coal,2024,9,3.29,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 25
+BCCL,BCCL,company,coal,2025,6,2.60,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+CCL,CCL,company,coal,2025,6,4.50,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+CIL,CIL,group_total (sum of the eight rows above),coal,2025,6,57.77,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+,Captives/Others,captives and others (not our companies),coal,2025,6,16.06,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+ECL,ECL,company,coal,2025,6,3.51,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+MCL,MCL,company,coal,2025,6,17.73,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+NCL,NCL,company,coal,2025,6,11.26,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2025,6,0.00,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+SCCL,SCCL,company,coal,2025,6,5.17,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+SECL,SECL,company,coal,2025,6,13.33,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+WCL,WCL,company,coal,2025,6,4.85,,as reported a year later,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 26
+BCCL,BCCL,company,coal,2025,7,2.37,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+CCL,CCL,company,coal,2025,7,3.76,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+CIL,CIL,group_total (sum of the eight rows above),coal,2025,7,46.44,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+ECL,ECL,company,coal,2025,7,2.70,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+MCL,MCL,company,coal,2025,7,14.72,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+NCL,NCL,company,coal,2025,7,10.62,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2025,7,0.00,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+SCCL,SCCL,company,coal,2025,7,4.20,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+SECL,SECL,company,coal,2025,7,9.75,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+WCL,WCL,company,coal,2025,7,2.52,,as reported a year later,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 26
+BCCL,BCCL,company,coal,2025,8,2.21,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+CCL,CCL,company,coal,2025,8,4.66,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+CIL,CIL,group_total (sum of the eight rows above),coal,2025,8,50.40,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+,Captives/Others,captives and others (not our companies),coal,2025,8,15.07,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+ECL,ECL,company,coal,2025,8,2.66,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+MCL,MCL,company,coal,2025,8,15.79,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+NCL,NCL,company,coal,2025,8,11.34,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2025,8,0.00,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+SCCL,SCCL,company,coal,2025,8,4.00,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+SECL,SECL,company,coal,2025,8,11.02,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+WCL,WCL,company,coal,2025,8,2.71,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 26
+BCCL,BCCL,company,coal,2025,9,2.13,3.08,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+CCL,CCL,company,coal,2025,9,4.47,6.88,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+CIL,CIL,group_total (sum of the eight rows above),coal,2025,9,48.97,54.55,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+,Captives/Others,captives and others (not our companies),coal,2025,9,15.50,14.59,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+ECL,ECL,company,coal,2025,9,3.44,3.22,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+MCL,MCL,company,coal,2025,9,14.43,16.71,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+NCL,NCL,company,coal,2025,9,11.53,10.10,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2025,9,0.01,0.02,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+SCCL,SCCL,company,coal,2025,9,3.70,5.28,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+SECL,SECL,company,coal,2025,9,10.75,11.65,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+WCL,WCL,company,coal,2025,9,2.22,2.89,provisional,raw/moc/monthly/msg-setp25.pdf,1,Coal Production,Production during Sep FY 26
+BCCL,BCCL,company,coal,2026,6,2.29,3.30,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+CCL,CCL,company,coal,2026,6,6.09,7.12,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+CIL,CIL,group_total (sum of the eight rows above),coal,2026,6,57.43,62.73,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+,Captives/Others,captives and others (not our companies),coal,2026,6,18.37,19.35,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+ECL,ECL,company,coal,2026,6,3.93,4.21,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+MCL,MCL,company,coal,2026,6,14.49,15.00,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+NCL,NCL,company,coal,2026,6,11.25,11.46,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2026,6,0.00,0.03,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+SCCL,SCCL,company,coal,2026,6,4.29,5.20,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+SECL,SECL,company,coal,2026,6,14.36,15.78,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+WCL,WCL,company,coal,2026,6,5.02,5.82,provisional,raw/moc/monthly/msg-june26.pdf,1,Coal Production,Production during Jun FY 27
+BCCL,BCCL,company,coal,2026,7,2.45,2.69,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+CCL,CCL,company,coal,2026,7,5.90,6.07,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+CIL,CIL,group_total (sum of the eight rows above),coal,2026,7,50.34,53.73,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+ECL,ECL,company,coal,2026,7,3.62,3.40,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+MCL,MCL,company,coal,2026,7,13.14,15.57,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+NCL,NCL,company,coal,2026,7,10.87,11.22,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2026,7,0.00,0.02,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+SCCL,SCCL,company,coal,2026,7,4.17,3.66,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+SECL,SECL,company,coal,2026,7,11.46,12.12,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+WCL,WCL,company,coal,2026,7,2.90,2.62,provisional,raw/moc/monthly/msg-july26.pdf,1,Coal Production,Production during Jul FY 27
+BCCL,BCCL,company,coal,2026,8,2.21,2.48,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+CCL,CCL,company,coal,2026,8,5.57,6.07,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+CIL,CIL,group_total (sum of the eight rows above),coal,2026,8,47.52,52.54,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+,Captives/Others,captives and others (not our companies),coal,2026,8,15.07,,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+ECL,ECL,company,coal,2026,8,3.71,3.20,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+MCL,MCL,company,coal,2026,8,14.21,15.57,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+NCL,NCL,company,coal,2026,8,8.53,11.09,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+CIL,NEC,"company (NEC row: CIL's own coalfield, no subsidiary)",coal,2026,8,0.00,0.01,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+SCCL,SCCL,company,coal,2026,8,4.28,3.66,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+SECL,SECL,company,coal,2026,8,9.90,11.26,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+WCL,WCL,company,coal,2026,8,3.38,2.86,provisional,raw/moc/monthly/msg-Aug26.pdf,1,Coal Production,Production during Aug FY 27
+NLC,NLCIL,company,lignite,2024,9,1.96,,as reported a year later,raw/moc/monthly/msg-setp25.pdf,5,Lignite Production,Production during Sep FY 25
+NLC,NLCIL,company,lignite,2025,6,1.45,,as reported a year later,raw/moc/monthly/msg-june26.pdf,5,Lignite Production,Production during Jun FY 26
+NLC,NLCIL,company,lignite,2025,7,1.89,,as reported a year later,raw/moc/monthly/msg-july26.pdf,6,Lignite Production,Production during Jul FY 26
+NLC,NLCIL,company,lignite,2025,8,1.93,,as reported a year later,raw/moc/monthly/msg-Aug26.pdf,5,Lignite Production,Production during Aug FY 26
+NLC,NLCIL,company,lignite,2025,9,1.77,,provisional,raw/moc/monthly/msg-setp25.pdf,5,Lignite Production,Production during Sep FY 26
+NLC,NLCIL,company,lignite,2026,6,1.73,,provisional,raw/moc/monthly/msg-june26.pdf,5,Lignite Production,Production during Jun FY 27
+NLC,NLCIL,company,lignite,2026,7,1.86,,provisional,raw/moc/monthly/msg-july26.pdf,6,Lignite Production,Production during Jul FY 27
+NLC,NLCIL,company,lignite,2026,8,1.81,,provisional,raw/moc/monthly/msg-Aug26.pdf,5,Lignite Production,Production during Aug FY 27

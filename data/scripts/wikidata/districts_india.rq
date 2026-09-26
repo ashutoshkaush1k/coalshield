@@ -1,0 +1,23 @@
+# Source S04 - districts of India on Wikidata: coordinates, parent entity, and the district each
+# was separated from. Stage D3 uses "separated from" to map districts created after the 2011
+# census (e.g. in Telangana) to the 2011 district whose boundary DataMeet (S03) has, so every
+# such mapping carries a citation instead of being asserted from memory.
+#
+# Run by hand at https://query.wikidata.org (data/MANUAL_STEPS.md, step "Wikidata"); automated
+# access to /sparql is disallowed by robots.txt. Download the result as CSV to
+# data/raw/wikidata/districts_india.csv.
+#
+# IDs checked against their Wikidata pages on 2026-09-25:
+#   Q1149652 district of India | P31 instance of | P625 coordinate location
+#   P131 located in the administrative territorial entity | P571 inception | P807 separated from
+# Licence of the result: CC0 (Wikidata structured data).
+
+SELECT ?district ?districtLabel ?coord ?parent ?parentLabel ?inception ?separatedFrom ?separatedFromLabel WHERE {
+  ?district wdt:P31 wd:Q1149652 .
+  OPTIONAL { ?district wdt:P625 ?coord }
+  OPTIONAL { ?district wdt:P131 ?parent }
+  OPTIONAL { ?district wdt:P571 ?inception }
+  OPTIONAL { ?district wdt:P807 ?separatedFrom }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}
+ORDER BY ?districtLabel

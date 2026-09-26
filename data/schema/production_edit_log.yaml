@@ -1,0 +1,15 @@
+table: production_edit_log
+description: Edits to locked production entries, each with a reason (brief rule 9).
+defined_by:
+  - "CLAUDE_CODE_TASK.md Phase 4: production_edit_log (production_id, field, old_value, new_value, reason, edited_by, edited_at)"
+generator: gen_production.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: production_id, type: integer, nullable: false, fk: daily_production.id}
+  - {name: field, type: string, nullable: false}
+  - {name: old_value, type: string, nullable: false}
+  - {name: new_value, type: string, nullable: false, note: "equals the current value in daily_production"}
+  - {name: reason, type: text, nullable: false}
+  - {name: edited_by, type: integer, nullable: false, fk: user.id}
+  - {name: edited_at, type: datetime, nullable: false}
