@@ -2,7 +2,21 @@
 
 
 
-\## Ground rules
+\## Ownership (from 2026-09-26) - supersedes the ground rules below
+
+\- Single owner: Yug Pancholi, the only person on the project. All implementation is done by Claude Code.
+
+\- Claude Code owns and may change backend/, api/, ai-service/, frontend/ and data/. There is no other team member; the "Agent 1", "Agent 2" and "Naman" entries below are history from the September sprint, and any note waiting on them is resolved.
+
+\- The real mine roster data/reference/mines_real.csv is ADOPTED as the project's mine list (decision 2026-09-26). data/reference/mines.csv (the fictional seed with locations) stays as the fallback.
+
+\- Commits stay local on the feature branch; push only when the owner asks.
+
+\- Open items and decisions for the data track are kept in data/HANDOFF.md.
+
+
+
+\## Ground rules (September sprint - historical)
 
 \- Agent 1 owns: backend/ (endpoints, models, sensor pipeline, ML training script)
 
