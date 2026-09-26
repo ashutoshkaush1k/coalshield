@@ -5,7 +5,66 @@ One card per dataset in `data/reference/` and `data/out/`. Each states whether t
 statistics) or **synthetic** (generated from documented assumptions), plus where it came from, how
 it was made, and what it cannot be trusted for.
 
-Cards are added stage by stage; stage D6 completes the set.
+The set is complete as of stage D6 (2026-09-26). The first section is a one-page summary; the
+cards below give the detail.
+
+---
+
+## Data provenance for judges (one page)
+
+**In one sentence:** the mines, companies, production totals, air quality, laws and accident
+statistics are real and cited. The day-to-day operations (sensor readings, inspections,
+contractors, grievances) are generated to look like them, and every generated row is labelled
+as demo data.
+
+**Real - taken from published sources, each cited to file and page**
+
+| What | Source |
+|---|---|
+| The 74 mines: names, companies, locations, type, capacity, workforce | Global Energy Monitor, Global Coal Mine Tracker (Aug 2026, CC BY 4.0) |
+| Coal companies and how they are grouped; published operating areas | Ministry of Coal monthly statistics; the companies' own web pages |
+| Monthly coal production per company; overburden; output per person | Ministry of Coal (Monthly Coal Statistics Jun–Aug 2026, Sep 2025; Coal Directory of India 2024-25) |
+| Accidents in Indian coal mines by cause, 2013–2022 | DGMS, Key Evaluation of Trends in Coal Mine Accidents (2024) |
+| Air quality near coalfields (PM10, PM2.5, SO2, NO2), Jun–Sep 2026 | CPCB stations, via OpenAQ |
+| District boundaries and names | DataMeet (Census 2011), Wikidata |
+| Which laws apply, and 40 legal duties with clause and page | Gazette notifications; OSH Code 2020; OSH (Central) Rules 2026; Coal Mines Regulations 2017; CPCB law compilation (2021) |
+| US mine inspection statistics (used only as a benchmark) | US MSHA open data |
+
+**Calibrated - generated, but the totals and mixes follow the real figures**
+- **Daily production per mine and shift.** Each company's month adds up to the Ministry figure
+  (within ±3 %, checked). Seasonality comes from the published monthly profile.
+- **Inspections and violations.** Rates come from US MSHA data scaled to mine size; the category
+  mix blends MSHA with Indian DGMS accident causes.
+- **Incidents.** Counts follow DGMS fatal, serious and dangerous-occurrence rates, scaled to our
+  mines' share of national output.
+- **Air-quality readings per mine.** The nearest CPCB station's daily values plus small noise,
+  labelled `calibrated`; `synthetic` where no station is within 50 km.
+- **Sensor alarms.** Only the legal limits count: methane 0.75 % / 1.25 %, dust 2 mg/m³ (8 hours),
+  wet bulb 33.5 °C.
+
+**Synthetic - generated for the demo from documented assumptions**
+- **Minute-level signals:** sensor readings (shapes are modelling choices).
+- **People and firms:** contractor companies, workers and their names (fictitious; IDs masked).
+- **Grievances:** texts drafted in six languages, unreviewed.
+- **Compliance scores and risk bands:** chosen to keep the demo script's story (100 / 80 / 70 /
+  60 / 45); they are not assessments of the real mines.
+- **Injected scenarios and decoys:** labelled test patterns for the AI features.
+
+**Known limitations, in plain words**
+- **Scores are not real.** A real mine shown as "HIGH risk" is a demo value, not a finding about
+  that mine.
+- **Per-mine production is estimated.** It follows each mine's share of its company's capacity,
+  not its own reported output.
+- **Inspection rates are American.** No Indian dataset of inspection outcomes was available.
+- **Minor accidents are assumed.** They are 3 × serious ones: DGMS publishes no count we could
+  download.
+- **Some laws are still open.** The EPF Act's status, a coal production reporting duty and a
+  carbon monoxide limit are marked TODO-VERIFY.
+- **Translations are unreviewed.** The glossary and grievance texts need a native speaker's review.
+- **Air-quality redistribution is unconfirmed.** OpenAQ gives no licence for these stations, so
+  the daily values are kept out of the repository.
+
+**Suggested dashboard footer:** "Demo data: synthetic, calibrated to public statistics — see DATASETS.md".
 
 ---
 
@@ -383,6 +442,7 @@ file, with opencast/underground splits (Table 3.20) and totals (Table 3.11).
 | **Source** | S07: DGMS, "Key Evaluation of Trends in Coal Mine Accidents" (sanket0404_2024.pdf), Table 2.9 (PDF p.33) and Table 2.10 (PDF p.34) |
 | **Produced by** | `data/scripts/clean_accidents.py` |
 | **Rows** | 210: 21 rows (17 causes, total, 3 places) × 10 years (2013–2022) |
+| **Also** | `reference/dangerous_occurrences_dgms.csv`: Table 2.6 (PDF p.30), dangerous occurrences by 18 causes × 10 years; causes checked to sum to the Total row (added for the incident table) |
 | **Checksum** | `1f94fab6a24664e4be247e6d368a238d773794a49538736f217da212b50b0997` |
 
 **Method.** Each cell is "accidents(persons)". The PDF text breaks numbers with stray spaces
@@ -653,20 +713,63 @@ back to the nearest eligible mine.
 - `generate.py` scores every mine before and after injection and fails if any score moves.
 - Production changes keep company-month totals exact.
 
-**Validation results (2026-09-26)**
+**Validation results (final, 2026-09-26)** - `validate.py` checks V1–V11
 
 | Run | Checks passed | Determinism (three runs) |
 |---|---|---|
-| small, real roster | 10 of 10 (band and average checks need all 74 mines) | Byte-identical |
-| demo, real roster | 12 of 12 | Byte-identical |
-| full, real roster | 12 of 12 | Byte-identical |
-| demo, seed roster | 12 of 12 | Byte-identical |
+| small, real roster | 12 of 12 (band and average checks need all 74 mines) | Byte-identical |
+| demo, real roster | 14 of 14 | Byte-identical |
+| full, real roster | 14 of 14 | Byte-identical |
+| demo, seed roster | 14 of 14 | Byte-identical |
+
+**Changes after the D5 review (2026-09-26)**
+- **Stock.** Closing stock is an exact running balance in tenths of a tonne. It is recomputed after
+  injection, and V10 checks opening + production − dispatch = closing for every mine-day (worst
+  gap 0.00 t).
+- **N3.** Resolved night detections at the decoy mine are re-timed to day shifts, and resolved
+  day-shift detections are added, until the night share is 0.33 (limit 0.40). Its open violations
+  are untouched, so the score is unchanged.
+- **S1.** The dangerous occurrence is now a row in `incident`: ground movement, no casualties (the
+  DGMS definition), RPT-05, linked to the last strata violation. Its alert points at the incident.
 
 **Limitations**
 - **Scenario strength is deliberate.** The positives are clear signals for testing detectors, not
   subtle real-world cases.
 - **S7 is mine-level.** The brief says "at one area", but OD-TLC-05 has no published area.
-- **Stock goes stale after a spike.** Dispatch and stock are not recomputed after production
-  changes, so closing stock on spike or decoy days no longer follows the daily balance.
-- **N3's night-violation share (0.50) sits at the decoy's limit.** It comes from a small sample at
-  that mine, not from injection.
+
+---
+
+## `data/out/<preset>/incident.csv` (stage D5 follow-up, C23)
+
+| | |
+|---|---|
+| **Kind** | **Calibrated-synthetic.** Counts follow DGMS rates; each event is generated |
+| **Sources** | DGMS Sanket 2024: Table 2.9 (fatal), Table 2.10 (serious), Table 2.6 (dangerous occurrences, parsed into `reference/dangerous_occurrences_dgms.csv`, totals checked); Ministry of Coal national output; obligations RPT-03 / RPT-04 / RPT-05 |
+| **Produced by** | `data/generators/gen_incidents.py`; the S1 scenario's dangerous occurrence comes from `inject_scenarios.py` |
+| **Rows (demo)** | 83: 58 minor, 18 serious, 6 fatal, 1 dangerous occurrence (S1). 8 reported after 48 h |
+
+**Method.**
+- **Rates:** the latest three published years (2020–2022) for all Indian coal mines: 38.3 fatal,
+  161.3 serious and 22.7 dangerous occurrences a year.
+- **Scaling:** × days/365 × our roster's share of national coal output in the window (0.55 in the
+  demo). Counts are Poisson draws.
+- **Minor accidents:** 3 × serious, an assumption; DGMS names the category but no downloaded
+  source counts it.
+- **Placement:** mines weighted by workforce. Fatal and serious incidents are kept off the five
+  demo mines, so the demo story stays coherent. Causes follow the DGMS mix for each severity.
+- **Links:** `related_violation_id` is the most recent violation at the mine in a matching category
+  within 60 days (60 % of the time).
+- **Reporting:** 10 % of injury reports arrive after 48 h. Obligations: fatal RPT-03, injuries
+  RPT-04 (OSH (Central) Rules r.7(2)), dangerous occurrence RPT-05.
+
+**Checks.**
+- Counts within Poisson bounds of the expectation (generate.py).
+- The 48-hour flag, the obligation for each severity, and no casualties in a dangerous occurrence
+  (validate V11).
+- Incidents are not part of the backend score, so demo scores cannot move.
+
+**Limitations**
+- **Minor accidents rest on an assumed ratio.**
+- **Fatal and serious incidents never land on the demo mines** (a presentation choice).
+- **DGMS figures are national.** Per-mine incidence is not published, so the split by workforce is
+  a model.

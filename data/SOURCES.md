@@ -17,7 +17,7 @@ Discovered 2026-09-25. SHA-256 checksums are recorded when files are downloaded 
 | S06 | Ministry of Coal - monthly statistics and Coal Directory of India | Automatic | 15 | 8.9 MB | ok | Not located (no copyright-policy link found on coal.gov.in); treated as all rights reserved |
 | S07 | DGMS - accident statistics and analyses | Automatic | 4 | 13.4 MB | ok | Not located (copyright-policy page content not machine-readable); treated as all rights reserved |
 | S08 | MSHA Open Government Data | Automatic | 8 | 242.1 MB | ok | Not stated on the page. US federal government works are generally not subject to copyright - TODO-VERIFY against a Department of Labor statement. |
-| S09 | OpenAQ API v3 - air quality near coalfields (CPCB stations) | Manual - free API key | 0 | - | ok | Per data provider - read from /v3/licenses once a key is available, recorded in D2 |
+| S09 | OpenAQ API v3 - air quality near coalfields (CPCB stations) | Manual - free API key | 0 | - | ok | Not stated - OpenAQ returns licenses = null for all 14 matched CPCB stations (checked in D3); the daily values stay out of git until redistribution is confirmed (TODO-VERIFY) |
 | S10 | Legal texts and their current status | Automatic (+2 manual) | 25 | 34.1 MB | ok (+1 pending-manual) | Official Government of India legal texts; the texts of Acts and notifications are public documents - reproduction terms TODO-VERIFY |
 | S11 | Environmental clearance letters (OPTIONAL) | Manual - in a browser, optional | 0 | - | skipped-manual | Not located; treated as all rights reserved |
 | S12 | Tender and award data (OPTIONAL) | Skipped, optional | 0 | - | skipped (see notes for fallback) | n/a (not used) |
@@ -228,7 +228,7 @@ Pipe-delimited text inside each zip, header row first (stated on the page). The 
 - **Saved to:** `data/raw/openaq/`
 - **Purpose:** Daily PM10, PM2.5, SO2, NO2 at stations nearest each mine cluster.
 - **Access:** Manual - free API key - see `MANUAL_STEPS.md`
-- **Licence:** Per data provider - read from /v3/licenses once a key is available, recorded in D2 (https://docs.openaq.org/about/terms)
+- **Licence:** Not stated - OpenAQ returns licenses = null for all 14 matched CPCB stations (checked in D3); the daily values stay out of git until redistribution is confirmed (TODO-VERIFY) (https://docs.openaq.org/about/terms)
 - **Redistribution:** per provider licence; raw responses kept out of git
 
 Every v3 endpoint, including /v3/licenses, returns 401 without a key (X-API-Key header). Key sign-up is free at explore.openaq.org/register. Clusters from the brief: Dhanbad, Asansol, Korba, Singrauli, Angul/Talcher, Chandrapur, Ramagundam, Neyveli. Fallback if no key: skip, and synthesise environment readings from documented ranges (D4).

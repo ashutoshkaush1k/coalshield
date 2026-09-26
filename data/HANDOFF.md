@@ -94,6 +94,7 @@ Legal update), `PLAN.md` and the current FastAPI models. **Rule (owner):** where
 | C20 | **`contractor_compliance_doc.file_id`.** Nullability not stated. | Required. A missing document is a missing row, not a row without a file. |
 | C21 | **Incidents (D5).** No schema has an incident or accident table. | New alert code `DANGEROUS_OCCURRENCE_REPORTED`, params citing RPT-05 (OSH (Central) Rules r.7(3)). |
 | C22 | **`scenario_label` (D5).** The dataset brief lists 7 columns; the owner asked for decoys labelled as negatives. | Extra column `polarity` (`positive` / `negative`). |
+| C23 | **Incident table (owner, 2026-09-26).** Incidents were previously only an alert. | New table `incident` (`schema/incident.yaml`): `id, mine_id, occurred_at, reported_at, type` (9 DGMS cause groups), `severity` (fatal / serious / minor / dangerous_occurrence), `persons_affected, description_code, related_violation_id` (nullable), `reported_within_48h, obligation_code` (RPT-03 / RPT-04 / RPT-05). S1's dangerous occurrence is an incident row; its alert (C21) now points at it (`entity_type = incident`). |
 
 ---
 
@@ -111,6 +112,125 @@ scenario) are the ground truth for scoring the anomaly and risk features (precis
   *not* flag.
 
 Demo scores are unchanged by injection; this is checked on every run.
+
+---
+
+## Backend work the data now requires
+
+Implemented by Claude Code in the backend phases (`CLAUDE_CODE_TASK.md`, `PLAN.md`); the data is
+ready for it.
+
+1. **Adopt the real roster.** Seed `mine` from `data/out/<preset>/mine.csv` (built from
+   `reference/mines_real.csv`); use `mine_code_mapping.csv` for anything keyed by old codes.
+2. **Incident table** (C23): migration from `schema/incident.yaml`, a model, and scoped read
+   endpoints. The compliance feature flags `reported_within_48h = false` (RPT-04). Incidents do
+   not enter today's score.
+3. **Lower-case roles** (C1): `government`, `corporate`, `mine_head`, `inspector`. The frontend's
+   `src/auth/roles.js` still compares `GOVERNMENT` / `MINE_HEAD` and must switch, as must every
+   role check in `api/`.
+4. **Alert codes** (C4, C21): alerts carry `{code, params}` only. The codes in use are
+   `SENSOR_THRESHOLD_BREACHED`, `VIOLATION_RECORDED`, `CORRECTIVE_ACTION_OVERDUE`,
+   `CONTRACTOR_LICENCE_EXPIRING`, `WORKER_VT_EXPIRED`, `WORKER_MEDICAL_EXPIRED`,
+   `CONTRACTOR_DOC_MISSING`, `GRIEVANCE_SLA_BREACHED`, `DETAIL_REQUEST_OVERDUE` and
+   `DANGEROUS_OCCURRENCE_REPORTED`. Each needs a translation key in all six locales.
+5. **The 11 violation categories** (`schema/violation_categories.yaml`): `roof_strata`,
+   `ventilation_gas`, `electrical`, `transport_haulage`, `explosives`, `ppe`, `fire`,
+   `environment`, `welfare`, `documentation`, `machinery`. Use them as an enum or lookup table, with
+   UI labels via translation keys.
+6. **Sensor thresholds** from `schema/rules.yaml` (SAF-11, HLT-04, HLT-05), not the prototype's
+   50 / 10 / 45:
+   - dust is judged as an 8-hour rolling mean;
+   - CO has no limit (TODO-VERIFY) and humidity none, so `breached` is empty for both;
+   - the simulator's thresholds must follow.
+7. **Demo-score label.** Show "Demo score - not a real safety assessment" next to real mine names,
+   and credit GEM (CC BY 4.0) where mine data is shown.
+8. **Load `data/out/<preset>/*.csv` with `yii seed`** via PostgreSQL `COPY`, in the order below.
+
+### `yii seed` load order (foreign keys)
+
+Computed from `data/schema/*.yaml`. Load each file with `COPY ... FROM ... WITH (FORMAT csv,
+HEADER true, NULL '')`, then reset each table's id sequence to `max(id)`.
+
+| # | Table | Depends on | Note |
+|---|---|---|---|
+| 1 | `subsidiary` | itself (`parent_id`) | CIL (id 1) is the first row, so the self-reference resolves in file order |
+| 2 | `area` | subsidiary | |
+| 3 | `mine` | subsidiary, area | `location` is WKT: load via `ST_GeomFromText(location, 4326)` |
+| 4 | `user` | subsidiary, area, mine | `password` is the plain demo password; hash on load (C11) |
+| 5 | `file` | user | |
+| 6 | `contractor` | - | |
+| 7 | `contract` | contractor, mine | |
+| 8 | `contract_worker` | contract | |
+| 9 | `contractor_compliance_doc` | contract, file, user | |
+| 10 | `daily_production` | mine, user | |
+| 11 | `production_edit_log` | daily_production, user | |
+| 12 | `production_detail_request` | mine, user, file | |
+| 13 | `grievance` | mine, user, file | `location` WKT, as for mine |
+| 14 | `grievance_action` | grievance, user | |
+| 15 | `inspection` | mine, user | |
+| 16 | `observation` | inspection, grievance, contractor, mine, **violation** | **Cycle** with `violation.observation_id`: create the FK `DEFERRABLE` and load 16–17 in one transaction, or load `observation.violation_id` as NULL and `UPDATE` it after 17 |
+| 17 | `violation` | mine, inspection, observation, contractor | |
+| 18 | `alert` | mine, user | `entity_type` / `entity_id` are loose references (no FK), as today |
+| 19 | `corrective_action` | violation, alert, contractor, mine, user | |
+| 20 | `incident` | mine, violation | |
+| 21 | `sensor_reading` | mine | Largest table; partition by month on `recorded_at` (brief rule 10) before `COPY` |
+| 22 | `env_reading` | mine | |
+| - | `scenario_label` | mine | **Do not load into the app database.** Ground truth for scoring detectors; keep it in a separate evaluation schema or read it from the CSV |
+
+### Row counts per preset
+
+| Table | small | demo | full |
+|---|---|---|---|
+| `alert` | 100 | 2,759 | 11,036 |
+| `area` | 43 | 43 | 43 |
+| `contract` | 15 | 148 | 222 |
+| `contract_worker` | 214 | 2,421 | 4,445 |
+| `contractor` | 8 | 40 | 60 |
+| `contractor_compliance_doc` | 28 | 1,243 | 6,341 |
+| `corrective_action` | 51 | 2,121 | 8,125 |
+| `daily_production` | 210 | 19,980 | 81,030 |
+| `env_reading` | 280 | 26,640 | 108,040 |
+| `file` | 30 | 1,252 | 6,369 |
+| `grievance` | 48 | 374 | 1,407 |
+| `grievance_action` | 194 | 1,748 | 6,705 |
+| `incident` | 3 | 83 | 393 |
+| `inspection` | 7 | 217 | 844 |
+| `mine` | 5 | 74 | 74 |
+| `observation` | 22 | 2,173 | 8,785 |
+| `production_detail_request` | 5 | 12 | 40 |
+| `production_edit_log` | 2 | 92 | 397 |
+| `scenario_label` | 388 | 579 | 926 |
+| `sensor_reading` | 12,096 | 1,704,240 | 6,911,640 |
+| `subsidiary` | 10 | 10 | 10 |
+| `user` | 18 | 93 | 93 |
+| `violation` | 51 | 2,121 | 8,125 |
+| **Total size** | 0.9 MB | 111.9 MB | 456.6 MB |
+| **Generation time** | 1.4 s | 35.8 s | 145.2 s |
+
+Presets: `small` is the 5 named mines over 14 days (for tests); `demo` (the default) is all 74 mines
+over 90 days; `full` is all 74 mines over 365 days. Build one with:
+
+```bat
+data\run_data.bat generate demo
+```
+
+### Schema assumptions that differ from PLAN.md
+
+`PLAN.md` was written before the data track, and these points differ from it (details in C1–C23
+above):
+- **Q6 (roles):** agreed, lower case.
+- **Q8 (location):** real points instead of NULL (C7).
+- **Q9 (areas):** real published areas instead of placeholder areas (C6).
+- **Q10 (company structure):** `subsidiary.parent_id` rather than a parent-company string (C6).
+- **Q11 (inspections):** kept as proposed, with the concrete columns in C9.
+- **Q7 (alerts):** PLAN's transitional "code + legacy text" for alerts is not in the seed data,
+  which carries `{code, params}` only (C4).
+- **Not in PLAN at all:** the `incident` table (C23), `mine.type = mixed` (C8), `env_reading`
+  (C19) and the new sensor types (C13).
+
+### Suggested UI text
+
+Dashboard footer: **"Demo data: synthetic, calibrated to public statistics — see DATASETS.md"**.
 
 ---
 

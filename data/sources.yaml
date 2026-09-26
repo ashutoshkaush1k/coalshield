@@ -967,7 +967,8 @@ sources:
   access: manual_key
   manual: true
   optional: false
-  licence: Per data provider - read from /v3/licenses once a key is available, recorded in D2
+  licence: Not stated - OpenAQ returns licenses = null for all 14 matched CPCB stations (checked in D3);
+    the daily values stay out of git until redistribution is confirmed (TODO-VERIFY)
   licence_source: https://docs.openaq.org/about/terms
   redistribution: per provider licence; raw responses kept out of git
   notes: 'Every v3 endpoint, including /v3/licenses, returns 401 without a key (X-API-Key header). Key
