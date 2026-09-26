@@ -8,7 +8,7 @@ generator: gen_alerts.py
 primary_key: id
 columns:
   - {name: id, type: integer, nullable: false}
-  - {name: code, type: enum, nullable: false, values: [SENSOR_THRESHOLD_BREACHED, VIOLATION_RECORDED, CORRECTIVE_ACTION_OVERDUE, CONTRACTOR_LICENCE_EXPIRING, WORKER_VT_EXPIRED, WORKER_MEDICAL_EXPIRED, CONTRACTOR_DOC_MISSING, GRIEVANCE_SLA_BREACHED, DETAIL_REQUEST_OVERDUE], note: "codes are UPPER_SNAKE as the brief writes them"}
+  - {name: code, type: enum, nullable: false, values: [SENSOR_THRESHOLD_BREACHED, VIOLATION_RECORDED, CORRECTIVE_ACTION_OVERDUE, CONTRACTOR_LICENCE_EXPIRING, WORKER_VT_EXPIRED, WORKER_MEDICAL_EXPIRED, CONTRACTOR_DOC_MISSING, GRIEVANCE_SLA_BREACHED, DETAIL_REQUEST_OVERDUE, DANGEROUS_OCCURRENCE_REPORTED], note: "codes are UPPER_SNAKE as the brief writes them"}
   - {name: params, type: json, nullable: false}
   - {name: severity, type: enum, nullable: false, values: [low, medium, high]}
   - {name: mine_id, type: integer, nullable: false, fk: mine.id}

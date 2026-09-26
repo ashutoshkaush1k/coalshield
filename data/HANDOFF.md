@@ -92,6 +92,25 @@ Legal update), `PLAN.md` and the current FastAPI models. **Rule (owner):** where
 | C18 | **Inspector role.** The brief: "inspector defined, unused"; inspections need an inspector (PLAN Q11). | 8 inspector accounts with fictitious names on the reserved `.example` domain. |
 | C19 | **`env_reading`.** Defined only by the dataset brief. | Columns as in `schema/env_reading.yaml`. |
 | C20 | **`contractor_compliance_doc.file_id`.** Nullability not stated. | Required. A missing document is a missing row, not a row without a file. |
+| C21 | **Incidents (D5).** No schema has an incident or accident table. | New alert code `DANGEROUS_OCCURRENCE_REPORTED`, params citing RPT-05 (OSH (Central) Rules r.7(3)). |
+| C22 | **`scenario_label` (D5).** The dataset brief lists 7 columns; the owner asked for decoys labelled as negatives. | Extra column `polarity` (`positive` / `negative`). |
+
+---
+
+## Scenarios for the AI features (stage D5)
+
+`data/out/<preset>/scenario_label.csv` (one row per affected entity) and
+`scenario_expectations.json` (the detector, entity ids, dates and a measurable signal per
+scenario) are the ground truth for scoring the anomaly and risk features (precision and recall).
+
+**Demo placement** (real roster, demo preset):
+- On the HIGH demo mine OD-TLC-05: repeated strata violations, then an incident (S1), and late
+  corrective actions (S7).
+- On the MEDIUM demo mine CG-KRB-03: a production spike the day before an inspection (S2).
+- On non-demo mines: everything else, including the three decoys (N1–N3), which detectors must
+  *not* flag.
+
+Demo scores are unchanged by injection; this is checked on every run.
 
 ---
 

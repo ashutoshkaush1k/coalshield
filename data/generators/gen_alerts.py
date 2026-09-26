@@ -28,7 +28,7 @@ def run(ctx: Ctx) -> None:
     sens = ctx.rules["sensors"]
     rows = []
 
-    def add(code, params, severity, mine_id, etype, eid, created, resolved=False, esc=0):
+    def add(code, params, severity, mine_id, etype, eid, created, resolved=False, esc=0, key=None):
         created = min(pd.Timestamp(created), as_of)
         if resolved:
             status = "resolved"
@@ -36,10 +36,12 @@ def run(ctx: Ctx) -> None:
             status = "open" if (as_of - created) < pd.Timedelta(days=3) else "acknowledged"
         rows.append({"code": code, "params": params, "severity": severity, "mine_id": int(mine_id), "entity_type": etype,
                      "entity_id": int(eid), "status": status, "ack_by": None if status == "open" else head_of[int(mine_id)],
-                     "escalation_level": esc, "created_at": created})
+                     "escalation_level": esc, "created_at": created, "_key": key})
 
     # sensor breach episodes
-    b = ctx.notes["sensor_breaches"].sort_values(["mine_id", "sensor_type", "recorded_at"])
+    s_all = ctx.tables["sensor_reading"]   # read from the final table, after any scenario injection
+    b = s_all[s_all["breached"].fillna(False).astype(bool)][["id", "mine_id", "sensor_type", "value", "recorded_at"]]
+    b = b.sort_values(["mine_id", "sensor_type", "recorded_at"])
     for (mid, st), g in b.groupby(["mine_id", "sensor_type"]):
         gap = g["recorded_at"].diff() > pd.Timedelta(hours=2)
         for _, ep in g.groupby(gap.cumsum()):
@@ -119,6 +121,12 @@ def run(ctx: Ctx) -> None:
             add("DETAIL_REQUEST_OVERDUE", {"request_id": int(r.id), "due_at": r.due_at.strftime("%Y-%m-%dT%H:%M:%SZ")},
                 "high", r.mine_id, "production_detail_request", r.id, r.due_at, esc=2 if r.status == "escalated" else 1)
 
+    # alerts supplied by scenario injection (stage D5), e.g. a dangerous occurrence
+    for x in ctx.notes.get("extra_alerts", []):
+        add(x["code"], x["params"], x["severity"], x["mine_id"], x["entity_type"], x["entity_id"], x["created_at"],
+            resolved=x.get("resolved", True), esc=x.get("escalation_level", 0), key=x["key"])
+
     a = pd.DataFrame(rows).sort_values(["created_at", "mine_id", "code"], kind="mergesort").reset_index(drop=True)
     a.insert(0, "id", range(1, len(a) + 1))
-    ctx.emit("alert", a)
+    ctx.notes["alert_ids_by_key"] = {k: int(i) for k, i in zip(a["_key"], a["id"]) if isinstance(k, str)}
+    ctx.emit("alert", a.drop(columns="_key"))

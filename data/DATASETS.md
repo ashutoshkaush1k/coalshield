@@ -615,3 +615,58 @@ loanword is kept, sometimes with a native gloss.
 - **Sensor shapes are modelling choices,** not measurements.
 - **The CO sensor has no verified limit** (TODO-VERIFY), so CO readings never breach.
 - **Grievance texts and the glossary are unreviewed drafts.**
+
+---
+
+## Injected scenarios and validation (stage D5)
+
+| | |
+|---|---|
+| **Kind** | **Synthetic, labelled.** Patterns injected into the generated data, with ground truth |
+| **Produced by** | `data/generators/inject_scenarios.py`, run inside `generate.py` before alerts are derived |
+| **Outputs** | `out/<preset>/scenario_label.csv` (schema `scenario_label.yaml`), `out/<preset>/scenario_expectations.json` |
+| **Validated by** | `data/generators/validate.py` (`run_data.bat validate [preset]`) → `out/<preset>/_validation.json` |
+
+**Scenarios** (demo preset, real roster; dates move with the window):
+
+| Code | Polarity | Mine | Dates | What is injected | Measured |
+|---|---|---|---|---|---|
+| S1 strata repeat + incident | positive | OD-TLC-05 Bhubaneswari (HIGH demo) | 06 Aug – 19 Sep | 5 roof/strata violations over 38 days (resolved), then a dangerous occurrence (fall of sides) on 18 Sep, then 1 strata violation still open | 5 repeats in 38 days; incident after the last; 1 open after it |
+| S7 late corrective actions | positive | OD-TLC-05 | 06 Aug – 25 Sep | Every resolved corrective action at the mine closed 4–18 days after its due date | 10 of 10 late |
+| S2 spike before inspection | positive | CG-KRB-03 Gevra (MEDIUM demo) | 04–05 Sep | Coal on 4 Sep = 2 × the trailing 30-day mean, manpower unchanged; regular inspection on 5 Sep | Ratio 2.0 |
+| S3 gas flatline | positive | JH-RAM-06 Bhurkunda (mixed) | 26–28 Aug | CH4 constant at 0.22 % for 72 h (possible tampering) | 288 identical readings |
+| S4 contractor missing wage/EPF | positive | MP-SIN-42 Block-B (most contract workers) | whole window | Contractor 32: wage register and EPF challan missing for every due month (38 documents); the most violations per active worker | 1.03 per worker vs next 0.68 |
+| S5 night-shift compliance | positive | UP-SON-69 Bina | whole window | PPE detections concentrated in shift C (22:00–06:00 IST) | 87 % at night (fleet ≈ 33 %) |
+| S6 grievance SLA cluster | positive | OD-SUN-07 Kulda | 31 Aug – 10 Sep | 7 wage and working-condition grievances in 10 days, all past SLA and escalated | 7 of 7 breached |
+| N1 legitimate increase | **negative** | JH-CHA-09 Amrapali | 16–27 Aug | +25 % output with an approved crew addition: target revised, edit-log reason, no inspection within 5 days | Achievement vs revised target 0.93 |
+| N2 grievance burst within SLA | **negative** | WB-BAR-08 Jhanjra | 21–26 Aug | 6 grievances in 5 days, all resolved inside SLA | 0 breached |
+| N3 night maintenance | **negative** | OD-ANG-10 Hingula-II | whole window | Shift C output −40 % (planned maintenance, moved to A/B); compliance unchanged | C share 0.18; night violation share 0.50 |
+
+**Placement.** The owner's rules: S1 and S7 on the HIGH demo mine, S2 on a MEDIUM demo mine,
+S3 on an underground or mixed mine, S4 at the mine with the most contract workers, everything
+else and all decoys on non-demo mines. A preset without those mines (small: 5 named mines) falls
+back to the nearest eligible mine.
+
+**Demo scores survive injection.**
+- Scenarios work through historical rows. S1's open strata violation is balanced by resolving one
+  existing open violation at the same mine, so the open count is unchanged.
+- `generate.py` scores every mine before and after injection and fails if any score moves.
+- Production changes keep company-month totals exact.
+
+**Validation results (2026-09-26)**
+
+| Run | Checks passed | Determinism (three runs) |
+|---|---|---|
+| small, real roster | 10 of 10 (band and average checks need all 74 mines) | Byte-identical |
+| demo, real roster | 12 of 12 | Byte-identical |
+| full, real roster | 12 of 12 | Byte-identical |
+| demo, seed roster | 12 of 12 | Byte-identical |
+
+**Limitations**
+- **Scenario strength is deliberate.** The positives are clear signals for testing detectors, not
+  subtle real-world cases.
+- **S7 is mine-level.** The brief says "at one area", but OD-TLC-05 has no published area.
+- **Stock goes stale after a spike.** Dispatch and stock are not recomputed after production
+  changes, so closing stock on spike or decoy days no longer follows the daily balance.
+- **N3's night-violation share (0.50) sits at the decoy's limit.** It comes from a small sample at
+  that mine, not from injection.

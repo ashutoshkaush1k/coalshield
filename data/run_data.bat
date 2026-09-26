@@ -11,7 +11,8 @@ REM    data\run_data.bat download   stage D2 - fetch every non-manual source
 REM    data\run_data.bat clean      stage D3 - build data\reference from data\raw
 REM    data\run_data.bat generate   stage D4 - write synthetic data to data\out\<preset>
 REM                                 optional preset small, demo or full; default: config.yaml scale
-REM    data\run_data.bat validate   stage D5 - schema, FK, calibration checks
+REM    data\run_data.bat validate   stage D5 - schema, FK, scenario, score and determinism checks
+REM                                 optional preset small, demo or full; default: config.yaml scale
 REM    data\run_data.bat all        every stage above, in order, stopping at a failure
 REM
 REM  Runs from any directory: every path is resolved from this file's location.
@@ -142,8 +143,13 @@ if errorlevel 1 exit /b 1
 exit /b 0
 
 :validate
-call :pending validate D5
-exit /b 1
+echo.
+if "%PRESET%"=="" echo  [validate] Checking data\out for the config.yaml scale preset - stage D5
+if not "%PRESET%"=="" echo  [validate] Checking data\out\%PRESET% - stage D5
+if "%PRESET%"=="" "%PY%" -W ignore "%DATA%generators\validate.py" --determinism
+if not "%PRESET%"=="" "%PY%" -W ignore "%DATA%generators\validate.py" --preset %PRESET% --determinism
+if errorlevel 1 exit /b 1
+exit /b 0
 
 REM --- helpers ---------------------------------------------------------------
 :pending
@@ -166,7 +172,7 @@ echo  data\run_data.bat setup      create data\.venv, install packages, extract 
 echo  data\run_data.bat download   stage D2 - fetch every non-manual source
 echo  data\run_data.bat clean      stage D3 - build data\reference from data\raw
 echo  data\run_data.bat generate   stage D4 - synthetic data to data\out\PRESET  - small, demo or full
-echo  data\run_data.bat validate   stage D5 - schema, FK and calibration checks
+echo  data\run_data.bat validate   stage D5 - validate data\out\PRESET - small, demo or full
 echo  data\run_data.bat all        every stage in order, stopping at the first failure
 echo.
 exit /b 0

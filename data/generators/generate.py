@@ -6,7 +6,9 @@ Writes <table>.csv for every schema, _manifest.json (rows, bytes, sha256 per tab
 _checks.json (calibration checks, pass/fail). Exits 1 if any check fails - including the demo-score
 check, which scores the generated data with the CURRENT backend formula and must reproduce the
 roster's demo scores (and, with all 74 mines, 100/80/70/60/45, 6/21/47 and average 83.2).
-No scenario injection here (stage D5).
+Stage D5: after the generators, inject_scenarios adds labelled scenarios and decoys (before alerts
+are derived, so injected events get alerts), then writes scenario_label.csv and
+scenario_expectations.json. Demo scores are measured before and after injection and must be equal.
 """
 
 from __future__ import annotations
@@ -32,11 +34,12 @@ import gen_production  # noqa: E402
 import gen_requests  # noqa: E402
 import gen_sensors  # noqa: E402
 import gen_users  # noqa: E402
+import inject_scenarios  # noqa: E402
 from common import NAMED, GenerationError, make_ctx, write_all  # noqa: E402
 
 STEPS = [("org", gen_org), ("users", gen_users), ("contractors", gen_contractors), ("grievances", gen_grievances),
          ("inspections", gen_inspections), ("production", gen_production), ("requests", gen_requests),
-         ("sensors", gen_sensors), ("environment", gen_environment), ("alerts", gen_alerts)]
+         ("sensors", gen_sensors), ("environment", gen_environment)]
 # Deadlines and validity dates may lie after the reference time; every other date may not.
 FORWARD_OK = {("corrective_action", "due_at"), ("production_detail_request", "due_at"), ("grievance", "sla_due_at"),
               ("contractor", "licence_valid_to"), ("contract", "end_date"), ("contract_worker", "vt_cert_valid_to")}
@@ -44,6 +47,18 @@ FORWARD_OK = {("corrective_action", "due_at"), ("production_detail_request", "du
 
 def check(name: str, ok: bool, detail) -> dict:
     return {"check": name, "pass": bool(ok), "detail": detail}
+
+
+def mine_scores(ctx) -> dict[str, float]:
+    """Each mine's score under the current backend formula, from the current tables."""
+    base = ctx.config["repo_demo_baseline"]
+    v = ctx.tables["violation"]
+    open_n = v[~v["resolved"].astype(bool)].groupby("mine_id").size()
+    s = ctx.tables["sensor_reading"]
+    since = ctx.as_of - pd.Timedelta(hours=float(base["breach_window_hours"]))
+    br_n = s[s["breached"].fillna(False).astype(bool) & ~s["resolved"].astype(bool) & (s["recorded_at"] >= since)].groupby("mine_id").size()
+    raw = 100 - (ctx.mines["id"].map(open_n).fillna(0) * base["weight_ppe"] + ctx.mines["id"].map(br_n).fillna(0) * base["weight_env"])
+    return dict(zip(ctx.mines["code"], raw.clip(0, 100).round(1)))
 
 
 def demo_scores(ctx) -> list[dict]:
@@ -162,8 +177,22 @@ def main() -> int:
             t = time.time()
             mod.run(ctx)
             print(f"  {name:12s} {time.time() - t:6.1f} s")
+        before = mine_scores(ctx)
+        pre = demo_scores(ctx)
+        t = time.time()
+        inject_scenarios.run(ctx)
+        gen_alerts.run(ctx)
+        inject_scenarios.finalize(ctx)
+        print(f"  {'scenarios+alerts':12s} {time.time() - t:6.1f} s")
+        after = mine_scores(ctx)
+        moved = {c: (before[c], after[c]) for c in before if before[c] != after[c]}
         checks = calibration(ctx) + demo_scores(ctx)
+        checks.append(check("scenarios: demo checks passed before injection too", all(c["pass"] for c in pre),
+                            [c["check"] for c in pre if not c["pass"]]))
+        checks.append(check("scenarios: no mine's score moved during injection", not moved, moved))
         info = write_all(ctx)
+        (ctx.out_dir / "scenario_expectations.json").write_text(
+            json.dumps(ctx.notes["scenario_expectations"], indent=1, ensure_ascii=False, default=str) + "\n", encoding="utf-8")
     except GenerationError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1
