@@ -25,6 +25,9 @@ openpyxl==3.1.5
 # camelot-py was left out: its lattice mode needs opencv plus a PDF rasteriser, and pdfplumber
 # already extracts tables. tabula-py was left out because it requires Java (brief: avoid Java).
 pdfplumber==0.11.10
+# Fast plain-text extraction for checking cited clauses in long legal PDFs (D3); already a
+# pdfplumber dependency, listed here because the D3 scripts import it directly.
+pypdfium2==5.13.0
 # config.yaml, sources.yaml, schema/*.yaml
 PyYAML==6.0.3
 # Fictitious company and person names (D4), en_IN and regional locales

@@ -337,3 +337,232 @@ codes, are unchanged. `mine_code_mapping.csv` lists every old → new code with 
   (Amlohri: "Sidhi", Rajnagar: "Shahdol"). GEM names a state across the border for 3 mines
   (Dudhichua, Bina, Haldibari).
 - NCL has 9 seats rather than 12 because GEM lists only 9 operating NCL mines with usable rows.
+
+---
+
+## `reference/production_company_monthly.csv` and `reference/production_company_annual.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** (Ministry of Coal published figures) |
+| **Sources** | S06: Monthly Coal Statistics (Jun, Jul, Aug 2026; Sep 2025), page 1 "Coal Production" and the "Lignite Production" page; Coal Directory of India 2024-25, cdchap2.xlsx Tables 3.11, 3.20, 3.22 |
+| **Produced by** | `data/scripts/clean_production.py` |
+| **Rows** | Monthly: 94 rows. Annual: 33 rows (FY 2022-23 to 2024-25) |
+| **Checksums** | monthly `0ab7bda6a903ea14d7481336c11ce34ad09d03137ed9deca6daf09c47a19d416`; annual `a86ec6fd510e38da8ab5ac870ed9b2b90f51a2f1a6969a1b185bb1d59662776a` |
+
+**Method.** Each monthly PDF gives the report month and the same month a year earlier. So the
+four PDFs give eight months: Sep 2024; Jun, Jul, Aug and Sep 2025; Jun, Jul and Aug 2026. Coverage
+is every CIL company, NEC (kept as CIL's own row), the CIL total, SCCL, captives/others and NLC
+lignite. Every row carries its file, page, table and column. The parser removes the printed
+growth figures (each follows an arrow), then reads the remaining cells by count. It refuses to
+write unless all three checks pass:
+- achievement % matches month ÷ target;
+- the eight CIL rows sum to the CIL total, in both months of every report;
+- July and August 2026 equal the difference between consecutive year-to-date figures.
+
+Company overburden is published only yearly (Coal Directory Table 3.22), so it is in the annual
+file, with opencast/underground splits (Table 3.20) and totals (Table 3.11).
+
+**Limitations**
+- **September 2026 is not published yet.** September 2025 is the seasonal stand-in for the end of
+  the D4 window (2026-06-28 to 2026-09-25) and must be labelled as such.
+- Monthly figures for the current year are provisional; the year-earlier figures are as reported a
+  year later.
+- Overburden in Table 3.22 is labelled "Qty. in MT" as published (often reported elsewhere in
+  million cubic metres). NLC's 2024-25 value, 0.020 with a stripping ratio of 0.00, is almost
+  certainly a unit slip in the source and is kept as published.
+- The top-35 mine pages (production and OB per mine) are not parsed yet.
+
+---
+
+## `reference/accident_causes_dgms.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** (DGMS statistics) |
+| **Source** | S07: DGMS, "Key Evaluation of Trends in Coal Mine Accidents" (sanket0404_2024.pdf), Table 2.9 (PDF p.33) and Table 2.10 (PDF p.34) |
+| **Produced by** | `data/scripts/clean_accidents.py` |
+| **Rows** | 210: 21 rows (17 causes, total, 3 places) × 10 years (2013–2022) |
+| **Checksum** | `1f94fab6a24664e4be247e6d368a238d773794a49538736f217da212b50b0997` |
+
+**Method.** Each cell is "accidents(persons)". The PDF text breaks numbers with stray spaces
+("8(1 3)"), so spaces are removed before the ten year cells are read. The script checks, for
+every year and both tables, that the causes sum to TOTAL and that below ground + opencast + above
+ground = TOTAL.
+
+**Limitations**
+- Coal mines only, 2013–2022. The 2025 Bulletin covers part-years only, and the 2014 Annual Report
+  adds 2010–2012; neither is used.
+- `persons_seriously_injured` also counts serious injuries in fatal accidents (the table's note).
+
+---
+
+## `reference/crosswalk_msha_india.csv`
+
+| | |
+|---|---|
+| **Kind** | **Hand-built** by the dataset track, with a rationale per row |
+| **Sources** | 30 CFR subpart ranges, checked against the Cornell LII copy of parts 56, 57, 71, 75 and 77 (2026-09-26); DGMS causes from `accident_causes_dgms.csv` |
+| **Produced by** | `data/scripts/clean_crosswalk_msha.py` |
+| **Rows** | 130: 113 MSHA section ranges and parts, 17 DGMS causes |
+| **Checksum** | `3429cd0998f609cba7b8ae63c74a7fd3cd096de43e2b333dc7f7ed6c9e258466` |
+
+**Method.** MSHA rows map a range of 30 CFR sections (a subpart, a whole part, or single
+sections in the "Miscellaneous" subparts) to one Indian category. DGMS rows map each DGMS cause.
+`fit` grades the match: strong, partial or weak. Narrower ranges come first; the first match wins.
+
+**Categories.** The brief's ten, plus **machinery**, added in D3. Machinery other than transport is
+a leading DGMS fatal cause and a large MSHA group, and none of the ten fits it.
+
+**Limitations**
+- Several US standards have no close Indian heading:
+  - travelways and surface installations → welfare (weak);
+  - mine emergencies, escapeways and communications → fire (partial);
+  - training → documentation (partial).
+- DGMS "Miscellaneous" is left unmapped.
+- Part titles outside 56/57/71/75/77 and single-section titles were written by hand, not checked
+  against the CFR.
+
+---
+
+## `reference/msha_rates.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** (US MSHA enforcement data) - a calibration base, not Indian data |
+| **Source** | S08: MSHA Open Government Data (Mines, Inspections, Violations, Accidents), filtered in D2 to coal |
+| **Produced by** | `data/scripts/clean_msha_rates.py` (uses `crosswalk_msha_india.csv`) |
+| **Rows** | 13,310 mine-years from 2,380 coal mines, 2017–2025 |
+| **Checksum** | `ee4cad25adb417d3bd2f8ea77c36ef5056a9a2f8834cbf83384fb79f135f838a` |
+
+**Method.** One row per mine and calendar year with at least one inspection. It holds:
+- inspections (all, and regular), inspection hours;
+- violations: total, by Indian category via the crosswalk, and significant-and-substantial (S&S)
+  count and share;
+- accidents excluding no-injury reports and injuries to non-employees, with fatal and lost-time
+  counts.
+
+Over the file, violations split: ventilation/gas 23.3%, electrical 18.4%, machinery 12.8%,
+transport/haulage 12.3%, fire 11.0%, roof/strata 6.9%, welfare 5.9%, documentation 4.6%,
+environment 2.1%, PPE 1.7%, explosives 0.2%, unmapped 0.8%. The unmapped rows have no section
+recorded. The S&S share is 19.0%.
+
+**Limitations**
+- US mines under US law; the generator must scale rates, not copy counts.
+- `mine_type`, `state` and `employees_now` are the mine's current values, not per year.
+- 2016 and 2026 are left out as partial years.
+
+---
+
+## `reference/env_stations.csv` and `reference/env_daily.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** (CPCB continuous monitoring stations, via OpenAQ) |
+| **Source** | S09: OpenAQ v3 (locations and daily aggregates), 2026-06-28 to 2026-09-25 |
+| **Produced by** | `data/scripts/clean_env.py` |
+| **Rows** | 14 stations (12 with data); 4,080 station-day-pollutant rows (PM10, PM2.5, SO2, NO2) |
+| **Checksum** | stations `a731852b4c73bce456a79edae9ae46f8ff5050f1e06c333bf9e1bec8c2e5c8cc`. **`env_daily.csv` is not committed** (see below) |
+
+**Method.** These are the 14 stations matched to the coalfield clusters in D2. Daily values are
+OpenAQ's daily means, with min, max and percent coverage. Where a station has two sensors for a
+pollutant, the more complete one is kept. Units are as OpenAQ returns them: µg/m³ for PM; SO2 and
+NO2 mostly in ppb. Each station lists its three nearest mines in both rosters, with distances.
+
+**Limitations**
+- **Licence not stated.** OpenAQ returns `licenses = null` for all 14 stations, so
+  `env_daily.csv` is kept out of git (`.gitignore`) until redistribution is confirmed; the clean
+  stage rebuilds it locally. *TODO-VERIFY.*
+- **Two stations have no data in the window:**
+  - 854 "Chandrapur": last reading 2018;
+  - 5611 "Chandrapur - MPCB": coordinates about 156 km from any mine, last reading 2022.
+- Rows are not dropped for low coverage (`coverage_pct` is kept).
+
+---
+
+## `reference/legal_instruments.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** (status of laws, from official texts) |
+| **Sources** | S10: the four labour-code commencement notifications and the SS Code corrigendum; the OSH and SS Code texts; OSH (Central) Rules 2026; CMR 2017; draft CMR 2026; CPCB Pollution Control Law Series (2021) |
+| **Produced by** | `data/scripts/clean_legal.py` (uses `legal_text.py`) |
+| **Rows** | 17 instruments |
+| **Checksum** | `7ef153680307d6b3e56eabbc211875682f8ed6aac3e7e7e4baa811c9e5f875fd` |
+
+**Method.** Each row's status rests on one or more passages that the script finds verbatim in the
+downloaded official text, after whitespace and dash normalisation. The row records the passage,
+file and page. A row whose passage is not found is written as TODO-VERIFY instead; all 17 were
+found.
+
+**Status as recorded:**
+- **In force:** the four labour codes (21.11.2025) and OSH (Central) Rules 2026 (08.05.2026).
+- **Repealed:** the Mines Act 1952 and CLRA 1970 (OSH Code s.143(1)(c), (h)).
+- **Superseded:** the Mines Rules 1955, MVT Rules 1966 and CLRA Central Rules 1971 (G.S.R. 345(E)).
+- **Saved:** CMR 2017 (s.143(3)).
+- **Draft:** CMR 2026, G.S.R. 67(E) of 28.01.2026. This refines D1's "31.01.2026", which is the
+  date of the DGMS copy.
+- **In force by absence of repeal:** the CMPF Act 1948 and the Water, Air and EP Acts.
+- **TODO-VERIFY:** the EPF Act 1952.
+
+**Limitations**
+- **EPF Act.** It depends on serial (vi) of S.O. 2060(E) of 03.05.2023, which was not downloaded
+  (manual step 6).
+- **Absence-of-repeal statuses.** For the CMPF Act and the environmental Acts, the status rests on
+  their absence from the two codes' repeal lists. Amendments after the CPCB 2021 compilation are
+  not reflected.
+
+---
+
+## `reference/obligations.csv`
+
+| | |
+|---|---|
+| **Kind** | **Real** (statutory duties quoted from official texts) |
+| **Sources** | S10: OSH Code 2020; OSH (Central) Rules 2026 (G.S.R. 345(E)); Coal Mines Regulations 2017; Water Act 1974, Air Act 1981 and EP Rules 1986 as printed in the CPCB Pollution Control Law Series (2021) |
+| **Produced by** | `data/scripts/clean_obligations.py` (uses `legal_text.py`) |
+| **Rows** | 40: safety 13, environment 9, reporting 8, labour 5, health 5. 39 verified, 1 TODO-VERIFY |
+| **Checksum** | `a0b909b5add7853715fccef243f041788f6578b068afc83dccaff964c3c04095` |
+
+**Method.** The candidate passages were found by searching the downloaded texts, not from memory.
+Every row carries its clause, PDF page and a verbatim passage, and the script checks each passage
+is in the stated file before marking the row `verified = yes`. The repealed Mines Act, CLRA and
+Mines Rules are never cited; CMR 2017 is cited because OSH Code s.143(3) saves it. The rows
+include:
+- **Contractor duties:** 5-year licence, renewal 30–90 days before expiry, work-order notice within
+  15 days, wages by the 7th day, half-yearly return.
+- **Worker duties:** refresher training every 4 years, reporting unsafe conditions.
+- **Numeric limits** that D4 uses as sensor thresholds: inflammable gas 0.75% in return air and
+  1.25% anywhere; respirable dust 2 mg/m³ (8-hour average); wet bulb 33.5 °C; plus coal-mine and
+  national ambient air limits.
+
+**Left out on purpose.** The CMR items that overlap the 2026 Rules or state no interval: reg.5
+closure notice, reg.8 accident notice (the 2026 Rules r.7 timelines are used), reg.252 drills,
+reg.179 safety lamps, reg.46 ventilator check.
+
+**Limitations**
+- **RPT-08 "Monthly coal production return" is TODO-VERIFY.** No downloaded source states a
+  production-reporting duty; it is listed so the gap is visible.
+- Where the rules name a Form but put its due date elsewhere, `note` says so.
+- The environmental texts are the CPCB 2021 compilation; later amendments are not reflected.
+- **A saved regulation can conflict with the Code.** CMR 2017 applies only "to the extent not
+  contrary" to the OSH Code (s.143(3)); a conflict needs a legal reading, not a data rule.
+
+---
+
+## `reference/glossary.csv`
+
+| | |
+|---|---|
+| **Kind** | **Drafted** by Claude for UI consistency - **not reviewed** |
+| **Produced by** | `data/scripts/clean_glossary.py` |
+| **Rows** | 54 terms × English, Hindi, Bengali, Odia, Telugu, Marathi |
+| **Checksum** | `55a2ef7b36087d66d961c4ac7d8f29eb7e779bce071f4a98d8755ae174c844a6` |
+
+**Method.** The terms cover the app's domains: mining, safety, health, roles, labour, governance,
+production and environment. Where miners use the English word (dumper, overman, shotfirer), the
+loanword is kept, sometimes with a native gloss.
+
+**Limitations**
+- Every row is `reviewed = false`. A native speaker with mining vocabulary must review each
+  language before users see it.

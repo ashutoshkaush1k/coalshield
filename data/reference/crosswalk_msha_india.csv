@@ -1,0 +1,131 @@
+source_system,cfr_part,section_from,section_to,source_code,source_label,indian_category,fit,rationale
+MSHA,75,1700,1700,30 CFR 75.1700,Oil and gas wells,ventilation/gas,strong,Gas inflow from wells; Indian gas-hazard provisions
+MSHA,75,1702,1703,30 CFR 75.1702-75.1703,Smoking prohibition; portable lamps,fire,strong,Ignition sources underground
+MSHA,75,1704,1708,30 CFR 75.1704-75.1708,Escapeways,fire,partial,Emergency egress; nearest Indian heading is fire and emergency
+MSHA,75,1709,1709,30 CFR 75.1709,Methane accumulation; firedamp detectors,ventilation/gas,strong,Gas detection
+MSHA,75,1710,1710,30 CFR 75.1710,Canopies or cabs,machinery,partial,Operator protection on mobile machinery
+MSHA,75,1711,1711,30 CFR 75.1711,Sealing of mines,ventilation/gas,strong,Seals isolate gas and fire areas
+MSHA,75,1712,1713,30 CFR 75.1712-75.1713,"Bath houses, toilets; first aid, emergency medical",welfare,strong,Amenities and first aid are welfare duties in Indian law
+MSHA,75,1714,1714,30 CFR 75.1714,Self-rescue devices,PPE,strong,Personal escape apparatus carried by each miner
+MSHA,75,1715,1716,30 CFR 75.1715-75.1716,Identification check; operations under water,documentation,partial,Check-in records and notifications
+MSHA,75,1718,1719,30 CFR 75.1718-75.1719,Drinking water; illumination,welfare,strong,Amenities
+MSHA,75,1720,1720,30 CFR 75.1720,Protective clothing,PPE,strong,"Goggles, footwear, helmets, gloves"
+MSHA,75,1721,1721,30 CFR 75.1721,Opening new mines; notifications,documentation,strong,Notices to the regulator
+MSHA,75,1722,1728,30 CFR 75.1722-75.1728,"Guards, machinery operation and maintenance, raised work",machinery,strong,Machinery safety
+MSHA,75,1729,1729,30 CFR 75.1729,Welding operations,fire,strong,Hot work ignition risk
+MSHA,75,1730,1730,30 CFR 75.1730,Compressed air systems,machinery,strong,Pressure equipment
+MSHA,75,1731,1731,30 CFR 75.1731,Belt conveyor maintenance,transport/haulage,strong,Conveyors are haulage
+MSHA,75,1732,1732,30 CFR 75.1732,Proximity detection systems,machinery,strong,Collision protection on mobile machinery
+MSHA,75,1,2,30 CFR 75.1-75.2,Subpart A - General,documentation,weak,Scope provisions
+MSHA,75,100,161,30 CFR 75.100-75.161,Subpart B - Qualified and Certified Persons,documentation,strong,Competency certificates and records
+MSHA,75,200,223,30 CFR 75.200-75.223,Subpart C - Roof Support,roof/strata,strong,Roof and side support
+MSHA,75,300,389,30 CFR 75.300-75.389,Subpart D - Ventilation,ventilation/gas,strong,"Ventilation, examinations, gas"
+MSHA,75,400,404,30 CFR 75.400-75.404,Subpart E - Combustible Materials and Rock Dusting,ventilation/gas,strong,Coal dust explosion prevention (DGMS groups dust with gas)
+MSHA,75,500,1003,30 CFR 75.500-75.1003,"Subparts F-K - Electrical equipment, cables, grounding, HV/LV circuits, trolley wires",electrical,strong,Electrical safety
+MSHA,75,1100,1108,30 CFR 75.1100-75.1108,Subpart L - Fire Protection,fire,strong,Fire protection
+MSHA,75,1200,1204,30 CFR 75.1200-75.1204,Subpart M - Maps,documentation,strong,Mine plans and maps
+MSHA,75,1300,1328,30 CFR 75.1300-75.1328,Subpart N - Explosives and Blasting,explosives,strong,Explosives
+MSHA,75,1400,1438,30 CFR 75.1400-75.1438,Subpart O - Hoisting and Mantrips,transport/haulage,strong,Winding and man-riding
+MSHA,75,1500,1508,30 CFR 75.1500-75.1508,Subpart P - Mine Emergencies,fire,partial,Emergency response and refuge; nearest heading fire and emergency
+MSHA,75,1600,1600,30 CFR 75.1600,Subpart Q - Communications,fire,partial,Emergency communication and tracking
+MSHA,75,1700,1732,30 CFR 75.1700-75.1732,Subpart R - Miscellaneous (other sections),documentation,weak,Remaining miscellaneous duties
+MSHA,75,1900,1916,30 CFR 75.1900-75.1916,Subpart T - Diesel-Powered Equipment,machinery,partial,Diesel machines; exhaust aspects are ventilation
+MSHA,77,1700,1709,30 CFR 77.1700-77.1709,"Communications, emergency medical, first aid",welfare,partial,First aid and emergency medical arrangements
+MSHA,77,1710,1710,30 CFR 77.1710,Protective clothing,PPE,strong,Personal protective equipment
+MSHA,77,1711,1711,30 CFR 77.1711,Smoking prohibition,fire,strong,Ignition sources
+MSHA,77,1712,1713,30 CFR 77.1712-77.1713,Reopening mines; daily inspection,documentation,partial,Notifications and inspection records
+MSHA,77,1,2,30 CFR 77.1-77.2,Subpart A - General,documentation,weak,Scope provisions
+MSHA,77,100,107,30 CFR 77.100-77.107,Subpart B - Qualified and Certified Persons,documentation,strong,Competency certificates
+MSHA,77,200,217,30 CFR 77.200-77.217,Subpart C - Surface Installations,welfare,weak,"Safe access, walkways, structures; no close Indian heading"
+MSHA,77,300,315,30 CFR 77.300-77.315,Subpart D - Thermal Dryers,fire,partial,Dryer fires and explosions
+MSHA,77,400,413,30 CFR 77.400-77.413,Subpart E - Safeguards for Mechanical Equipment,machinery,strong,Machinery guarding
+MSHA,77,500,906,30 CFR 77.500-77.906,"Subparts F-J - Electrical equipment, cables, grounding, HV/LV circuits",electrical,strong,Electrical safety
+MSHA,77,1000,1013,30 CFR 77.1000-77.1013,Subpart K - Ground Control,roof/strata,strong,Highwall and bench stability (strata control at surface)
+MSHA,77,1100,1112,30 CFR 77.1100-77.1112,Subpart L - Fire Protection,fire,strong,Fire protection
+MSHA,77,1200,1202,30 CFR 77.1200-77.1202,Subpart M - Maps,documentation,strong,Plans and maps
+MSHA,77,1300,1304,30 CFR 77.1300-77.1304,Subpart N - Explosives and Blasting,explosives,strong,Explosives
+MSHA,77,1400,1438,30 CFR 77.1400-77.1438,Subpart O - Personnel Hoisting,transport/haulage,strong,Hoisting
+MSHA,77,1500,1505,30 CFR 77.1500-77.1505,Subpart P - Auger Mining,machinery,partial,Mining machinery
+MSHA,77,1600,1608,30 CFR 77.1600-77.1608,Subpart Q - Loading and Haulage,transport/haulage,strong,"Dumpers, haul roads, loading"
+MSHA,77,1800,1802,30 CFR 77.1800-77.1802,Subpart S - Trolley Wires,electrical,strong,Electrical
+MSHA,77,1900,1916,30 CFR 77.1900-77.1916,Subpart T - Slope and Shaft Sinking,roof/strata,partial,Shaft and slope ground control
+MSHA,77,2100,2104,30 CFR 77.2100-77.2104,Subpart V - Safety Program for Surface Mobile Equipment,transport/haulage,partial,Mobile equipment programme
+MSHA,56,1,1000,30 CFR 56.1-56.1000,Part 56 Subpart A - General,documentation,weak,Scope provisions
+MSHA,56,3000,3461,30 CFR 56.3000-56.3461,Part 56 Subpart B - Ground Control,roof/strata,strong,Ground control
+MSHA,56,4000,4761,30 CFR 56.4000-56.4761,Part 56 Subpart C - Fire Prevention and Control,fire,strong,Fire
+MSHA,56,5001,5075,30 CFR 56.5001-56.5075,Part 56 Subpart D - Air Quality and Physical Agents,environment,strong,"Workplace dust, noise, radiation"
+MSHA,56,6000,6960,30 CFR 56.6000-56.6960,Part 56 Subpart E - Explosives,explosives,strong,Explosives
+MSHA,56,7002,7807,30 CFR 56.7002-56.7807,Part 56 Subpart F - Drilling,machinery,strong,Drilling machinery
+MSHA,56,8518,8535,30 CFR 56.8518-56.8535,Part 56 Subpart G - Ventilation (Part 57),ventilation/gas,strong,Ventilation
+MSHA,56,9100,9362,30 CFR 56.9100-56.9362,"Part 56 Subpart H - Loading, Hauling, and Dumping",transport/haulage,strong,Haulage
+MSHA,56,10001,10010,30 CFR 56.10001-56.10010,Part 56 Subpart I - Aerial Tramways,transport/haulage,strong,Ropeways
+MSHA,56,11001,11059,30 CFR 56.11001-56.11059,"Part 56 Subpart J - Travelways (and Escapeways, Part 57)",welfare,weak,Safe access; no close Indian heading
+MSHA,56,12001,12088,30 CFR 56.12001-56.12088,Part 56 Subpart K - Electricity,electrical,strong,Electrical
+MSHA,56,13001,13030,30 CFR 56.13001-56.13030,Part 56 Subpart L - Compressed Air and Boilers,machinery,strong,Pressure equipment
+MSHA,56,14000,14219,30 CFR 56.14000-56.14219,Part 56 Subpart M - Machinery and Equipment,machinery,strong,Machinery
+MSHA,56,15001,15031,30 CFR 56.15001-56.15031,Part 56 Subpart N - Personal Protection,PPE,strong,PPE
+MSHA,56,16001,16017,30 CFR 56.16001-56.16017,Part 56 Subpart O - Materials Storage and Handling,machinery,partial,Material handling
+MSHA,56,17001,17010,30 CFR 56.17001-56.17010,Part 56 Subpart P - Illumination,welfare,strong,Amenities
+MSHA,56,18002,18028,30 CFR 56.18002-56.18028,Part 56 Subpart Q - Safety Programs,documentation,partial,"Examinations, training, first aid records"
+MSHA,56,19000,19135,30 CFR 56.19000-56.19135,Part 56 Subpart R - Personnel Hoisting,transport/haulage,strong,Winding
+MSHA,56,20001,20032,30 CFR 56.20001-56.20032,Part 56 Subpart S - Miscellaneous,welfare,weak,"Housekeeping, sanitation and other items"
+MSHA,56,22001,22608,30 CFR 56.22001-56.22608,Part 56 Subpart T - Methane (Part 57),ventilation/gas,strong,Gas
+MSHA,56,23000,23004,30 CFR 56.23000-56.23004,Part 56 Subpart T/U - Surface Mobile Equipment programme,transport/haulage,partial,Mobile equipment
+MSHA,57,1,1000,30 CFR 57.1-57.1000,Part 57 Subpart A - General,documentation,weak,Scope provisions
+MSHA,57,3000,3461,30 CFR 57.3000-57.3461,Part 57 Subpart B - Ground Control,roof/strata,strong,Ground control
+MSHA,57,4000,4761,30 CFR 57.4000-57.4761,Part 57 Subpart C - Fire Prevention and Control,fire,strong,Fire
+MSHA,57,5001,5075,30 CFR 57.5001-57.5075,Part 57 Subpart D - Air Quality and Physical Agents,environment,strong,"Workplace dust, noise, radiation"
+MSHA,57,6000,6960,30 CFR 57.6000-57.6960,Part 57 Subpart E - Explosives,explosives,strong,Explosives
+MSHA,57,7002,7807,30 CFR 57.7002-57.7807,Part 57 Subpart F - Drilling,machinery,strong,Drilling machinery
+MSHA,57,8518,8535,30 CFR 57.8518-57.8535,Part 57 Subpart G - Ventilation (Part 57),ventilation/gas,strong,Ventilation
+MSHA,57,9100,9362,30 CFR 57.9100-57.9362,"Part 57 Subpart H - Loading, Hauling, and Dumping",transport/haulage,strong,Haulage
+MSHA,57,10001,10010,30 CFR 57.10001-57.10010,Part 57 Subpart I - Aerial Tramways,transport/haulage,strong,Ropeways
+MSHA,57,11001,11059,30 CFR 57.11001-57.11059,"Part 57 Subpart J - Travelways (and Escapeways, Part 57)",welfare,weak,Safe access; no close Indian heading
+MSHA,57,12001,12088,30 CFR 57.12001-57.12088,Part 57 Subpart K - Electricity,electrical,strong,Electrical
+MSHA,57,13001,13030,30 CFR 57.13001-57.13030,Part 57 Subpart L - Compressed Air and Boilers,machinery,strong,Pressure equipment
+MSHA,57,14000,14219,30 CFR 57.14000-57.14219,Part 57 Subpart M - Machinery and Equipment,machinery,strong,Machinery
+MSHA,57,15001,15031,30 CFR 57.15001-57.15031,Part 57 Subpart N - Personal Protection,PPE,strong,PPE
+MSHA,57,16001,16017,30 CFR 57.16001-57.16017,Part 57 Subpart O - Materials Storage and Handling,machinery,partial,Material handling
+MSHA,57,17001,17010,30 CFR 57.17001-57.17010,Part 57 Subpart P - Illumination,welfare,strong,Amenities
+MSHA,57,18002,18028,30 CFR 57.18002-57.18028,Part 57 Subpart Q - Safety Programs,documentation,partial,"Examinations, training, first aid records"
+MSHA,57,19000,19135,30 CFR 57.19000-57.19135,Part 57 Subpart R - Personnel Hoisting,transport/haulage,strong,Winding
+MSHA,57,20001,20032,30 CFR 57.20001-57.20032,Part 57 Subpart S - Miscellaneous,welfare,weak,"Housekeeping, sanitation and other items"
+MSHA,57,22001,22608,30 CFR 57.22001-57.22608,Part 57 Subpart T - Methane (Part 57),ventilation/gas,strong,Gas
+MSHA,57,23000,23004,30 CFR 57.23000-57.23004,Part 57 Subpart T/U - Surface Mobile Equipment programme,transport/haulage,partial,Mobile equipment
+MSHA,71,100,301,30 CFR 71.100-71.301,"Part 71 Subparts B-D - Dust standards, sampling, dust control plans",environment,strong,Workplace respirable dust
+MSHA,71,400,603,30 CFR 71.400-71.603,"Part 71 Subparts E-G - Bathing, toilets, drinking water",welfare,strong,Amenities
+MSHA,71,700,702,30 CFR 71.700-71.702,Part 71 Subpart H - Airborne Contaminants,environment,strong,Workplace air quality
+MSHA,40,0,99999,30 CFR Part 40,Part 40 - Representative of miners,documentation,partial,Designation notices
+MSHA,41,0,99999,30 CFR Part 41,Part 41 - Notification of legal identity,documentation,strong,Owner and operator notices
+MSHA,45,0,99999,30 CFR Part 45,Part 45 - Independent contractors,documentation,strong,Contractor identification and registers (Indian contractor-register duties)
+MSHA,58,0,99999,30 CFR Part 58,"Part 58 - Health standards, metal and nonmetal mines",environment,strong,Workplace health exposure
+MSHA,46,0,99999,30 CFR Part 46,Part 46 - Training (surface operations),documentation,partial,Training records (Indian vocational training duties)
+MSHA,47,0,99999,30 CFR Part 47,Part 47 - Hazard communication,documentation,partial,"Labels, data sheets, hazard information"
+MSHA,48,0,99999,30 CFR Part 48,Part 48 - Training and retraining of miners,documentation,partial,Training records (Indian vocational training duties)
+MSHA,49,0,99999,30 CFR Part 49,Part 49 - Mine rescue teams,fire,partial,Rescue readiness; nearest heading fire and emergency
+MSHA,50,0,99999,30 CFR Part 50,"Part 50 - Accident, injury, illness, employment reports",documentation,strong,Statutory returns and notices
+MSHA,62,0,99999,30 CFR Part 62,Part 62 - Occupational noise exposure,environment,strong,Workplace noise
+MSHA,70,0,99999,30 CFR Part 70,"Part 70 - Health standards, underground coal (respirable dust)",environment,strong,Workplace respirable dust
+MSHA,71,0,99999,30 CFR Part 71,"Part 71 - Health standards, surface coal (other sections)",environment,partial,Workplace health
+MSHA,72,0,99999,30 CFR Part 72,"Part 72 - Health standards for coal mines (dust, diesel particulate)",environment,strong,Workplace air quality
+MSHA,75,0,99999,30 CFR Part 75,Part 75 - other sections,documentation,weak,Not in a listed subpart
+MSHA,77,0,99999,30 CFR Part 77,Part 77 - other sections,documentation,weak,Not in a listed subpart
+MSHA,90,0,99999,30 CFR Part 90,Part 90 - Miners with evidence of pneumoconiosis,environment,partial,Dust exposure limits for affected miners
+MSHA,,,,Mine Act section,"Mine Act section only (e.g. 316(b) emergency response plan, 103, 104, 109)",documentation,partial,"Violations of the Mine Act itself are mostly plans, notices and records; 316(b) plans are emergency plans"
+DGMS,,,,DGMS cause: Fall of Roof,Fall of Roof,roof/strata,strong,Ground movement
+DGMS,,,,DGMS cause: Fall of Sides,Fall of Sides,roof/strata,strong,Ground movement
+DGMS,,,,DGMS cause: Other Ground Movement,Other Ground Movement,roof/strata,strong,Ground movement
+DGMS,,,,DGMS cause: Transportation machinery (winding in shaft),Transportation machinery (winding in shaft),transport/haulage,strong,Winding
+DGMS,,,,DGMS cause: Rope Haulage,Rope Haulage,transport/haulage,strong,Haulage
+DGMS,,,,DGMS cause: Wheeled Trackless Transp,Wheeled Trackless Transp,transport/haulage,strong,"Dumpers, trucks, other trackless transport"
+DGMS,,,,DGMS cause: Other Transp. Machinery,Other Transp. Machinery,transport/haulage,strong,Conveyors and other transport
+DGMS,,,,DGMS cause: Machinery other than transportation machinery,Machinery other than transportation machinery,machinery,strong,Machinery
+DGMS,,,,DGMS cause: Explosives,Explosives,explosives,strong,Explosives
+DGMS,,,,DGMS cause: Electricity,Electricity,electrical,strong,Electrical
+DGMS,,,,"DGMS cause: Gas, dust and other combustible material","Gas, dust and other combustible material",ventilation/gas,strong,"Gas, dust and fire"
+DGMS,,,,DGMS cause: Fall of person,Fall of person,PPE,partial,Fall protection (safety belts) and footwear; also housekeeping
+DGMS,,,,DGMS cause: Fall of Object,Fall of Object,PPE,partial,Helmets; also secure stacking
+DGMS,,,,DGMS cause: Other falls,Other falls,PPE,weak,Falls not otherwise classified
+DGMS,,,,DGMS cause: Irruption of Water,Irruption of Water,documentation,partial,"Prevented through plans, surveys and danger-zone notices"
+DGMS,,,,DGMS cause: Flying Pieces,Flying Pieces,PPE,partial,Eye and face protection
+DGMS,,,,DGMS cause: Miscellaneous,Miscellaneous,,none,No single category; left unmapped

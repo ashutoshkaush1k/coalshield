@@ -52,3 +52,6 @@ data/raw/**
 data/out/**
 !data/out/**/
 !data/out/.gitkeep
+# Daily CPCB readings via OpenAQ: the stations carry no licence in OpenAQ (licenses = null), so the
+# values stay local until redistribution is confirmed. Rebuilt by: data\run_data.bat clean
+data/reference/env_daily.csv

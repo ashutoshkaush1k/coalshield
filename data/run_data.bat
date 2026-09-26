@@ -119,7 +119,7 @@ exit /b 0
 :clean
 echo.
 echo  [clean] Building data\reference from data\raw - stage D3
-for %%S in (clean_companies clean_areas clean_district_boundaries clean_mines clean_mines_real) do call :clean_one %%S
+for %%S in (clean_companies clean_areas clean_district_boundaries clean_mines clean_mines_real clean_production clean_accidents clean_crosswalk_msha clean_msha_rates clean_env clean_legal clean_obligations clean_glossary) do call :clean_one %%S
 if errorlevel 1 exit /b 1
 exit /b 0
 
