@@ -6,8 +6,11 @@ import { DemoTag } from "../../../components/common/DemoTag";
 import { Loader } from "../../../components/common/Loader";
 import { PriorityQueue } from "../../../components/inspections/PriorityQueue";
 import { usePolling } from "../../../hooks/usePolling";
+import { useAuth } from "../../../hooks/useAuth";
+import { scopeWhere } from "../../../i18n/labels";
 
 export function PriorityPanel({ state, states, onStateChange }) {
+  const { user } = useAuth();
   const { data, error, loading } = usePolling(() => getInspectionQueue({ state }), {
     deps: [state],
   });
@@ -16,14 +19,14 @@ export function PriorityPanel({ state, states, onStateChange }) {
 
   return (
     <div className="stack">
-      <ErrorNotice error={error} context="The inspection queue is available to Government accounts only." />
+      <ErrorNotice error={error} context="The inspection queue compares mines, so it is not available to a single-mine account." />
 
       {data && (
         <section className="panel-block">
           <div className="panel-head">
             <div>
               <h2>
-                {data.mine_count} mines ranked{state ? ` in ${state}` : " nationally"} <DemoTag />
+                {data.mine_count} mines ranked{state ? ` in ${state}` : ` ${scopeWhere(user)}`} <DemoTag />
               </h2>
               <span className="hint">
                 Urgency combines current score with the rise in events over the last{" "}

@@ -1,8 +1,9 @@
 {
   "demo": {
     "footer": "Demo data: synthetic, calibrated to public statistics — see DATASETS.md",
+    "attribution": "Mine names, locations and capacities: Global Energy Monitor, Global Coal Mine Tracker, August 2026 (CC BY 4.0).",
     "valueTag": "demo value",
-    "valueTitle": "Demo value computed from synthetic data, not an official compliance rating"
+    "valueTitle": "Demo score - not a real safety assessment. Computed from synthetic data."
   },
   "roles": {
     "government": "Government",
@@ -12,24 +13,333 @@
   },
   "shell": {
     "scopeAll": "{{role}} · all mines",
-    "scopeSubsidiary": "{{role}} · subsidiary #{{id}}",
-    "scopeMine": "{{role}} · mine #{{id}}",
+    "scopeSubsidiary": "{{role}} · {{code}} mines",
+    "scopeMine": "{{role}} · {{name}}",
     "signOut": "Sign out",
     "noScreen": "There is no screen for this role yet."
+  },
+  "scope": {
+    "NATIONAL": "National",
+    "SUBSIDIARY": "Company",
+    "STATE": "State",
+    "THIS_MINE": "This mine"
+  },
+  "risk": {
+    "low": "Low risk",
+    "medium": "Medium risk",
+    "high": "High risk"
+  },
+  "severity": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "ok": "OK"
+  },
+  "status": {
+    "open": "Open",
+    "acknowledged": "Acknowledged",
+    "resolved": "Resolved",
+    "scheduled": "Scheduled",
+    "visited": "Visited",
+    "closed": "Closed",
+    "promoted": "Promoted",
+    "dismissed": "Dismissed"
   },
   "errors": {
     "UNAUTHENTICATED": "Please sign in again.",
     "INVALID_CREDENTIALS": "Wrong email or password.",
-    "FORBIDDEN": "You do not have permission to do this.",
-    "NOT_FOUND": "Not found.",
-    "VALIDATION_FAILED": "Please check the highlighted fields.",
-    "INVALID_TRANSITION": "This status change is not allowed.",
-    "INTERNAL_ERROR": "Something went wrong. Please try again.",
+    "FORBIDDEN": "Your account does not have permission for this.",
+    "NOT_FOUND": "Not found, or not within your account's mines.",
+    "VALIDATION_FAILED": "Some fields need attention.",
+    "INVALID_TRANSITION": "That status change is not allowed from {{from}} to {{to}}.",
+    "RECORD_LOCKED": "This record is locked. Give a reason for the change.",
+    "AI_SERVICE_UNAVAILABLE": "PPE detection is unavailable right now. The image was not analysed and nothing changed.",
+    "VIOLATION_ALREADY_RESOLVED": "This violation is already resolved.",
+    "NOT_A_DIRECTIVE": "Only directives can be reopened.",
+    "INTERNAL_ERROR": "Something went wrong on the server. Please try again.",
+    "NETWORK": "Cannot reach the API. Is it running on port 8080?",
     "UNKNOWN": "Something went wrong."
   },
   "fields": {
-    "REQUIRED": "Required",
-    "INVALID_VALUE": "Invalid value",
-    "READ_ONLY": "Cannot be changed here"
+    "REQUIRED": "required",
+    "INVALID_VALUE": "invalid value",
+    "INVALID_DATETIME": "invalid date and time",
+    "READ_ONLY": "cannot be changed here",
+    "TOO_LONG": "too long",
+    "TOO_SHORT": "too short",
+    "NOT_FOUND": "not found",
+    "FILE_TYPE_NOT_ALLOWED": "file type not allowed",
+    "FILE_TOO_LARGE": "file too large",
+    "NOT_IN_SAME_MINE": "must belong to the same mine"
+  },
+  "sensor": {
+    "ch4": "Methane",
+    "ch4_return_air": "Methane (return air)",
+    "co": "Carbon monoxide",
+    "dust": "Respirable dust",
+    "temperature": "Wet-bulb temperature",
+    "humidity": "Humidity",
+    "gas": "Gas",
+    "category": {
+      "gas": "Gas",
+      "dust": "Dust",
+      "temperature": "Temperature"
+    },
+    "compare": {
+      "instantaneous": "instantaneous reading",
+      "rolling_8h_mean": "8-hour average"
+    },
+    "status": {
+      "NO_READINGS": "No readings yet",
+      "NO_LEGAL_LIMIT": "No verified limit",
+      "BREACHED": "Breached",
+      "APPROACHING_LIMIT": "Approaching limit",
+      "WITHIN_RANGE": "Within safe range",
+      "NOT_FITTED": "Not fitted"
+    },
+    "limit": "limit {{limit}} {{unit}} ({{obligation}})",
+    "noLimit": "no verified legal limit"
+  },
+  "alert": {
+    "SENSOR_THRESHOLD_BREACHED": "{{sensor}} {{value}} {{unit}} is over the limit of {{limit}} {{unit}} ({{obligation}}).",
+    "VIOLATION_RECORDED": "Violation recorded: {{type}} ({{category}}, from {{source}}).",
+    "CORRECTIVE_ACTION_OVERDUE": "Corrective action for violation #{{violation_id}} is {{days_overdue}} days overdue.",
+    "CONTRACTOR_LICENCE_EXPIRING": "Contractor #{{contractor_id}}'s labour licence expires in {{days_left}} days ({{licence_valid_to}}, {{obligation}}).",
+    "WORKER_VT_EXPIRED": "{{workers}} worker(s) on contract #{{contract_id}} have an expired vocational training certificate ({{obligation}}).",
+    "WORKER_MEDICAL_EXPIRED": "{{workers}} worker(s) on contract #{{contract_id}} are past their periodic medical examination ({{obligation}}).",
+    "CONTRACTOR_DOC_MISSING": "Contract #{{contract_id}}: {{doc_types}} for {{period}} not uploaded.",
+    "GRIEVANCE_SLA_BREACHED": "Grievance #{{grievance_id}} ({{category}}) is past its response time.",
+    "DETAIL_REQUEST_OVERDUE": "Detailed report request #{{request_id}} was due {{due_at}}.",
+    "DANGEROUS_OCCURRENCE_REPORTED": "Dangerous occurrence reported (incident #{{incident_id}}, {{obligation}}).",
+    "INSPECTION_DIRECTIVE": "Flagged for inspection by {{raised_by_name}}: score {{score}}, {{risk}}, {{violation_count}} open violation(s).",
+    "AI_SERVICE_UNAVAILABLE": "PPE detection was unavailable; an uploaded image was not analysed.",
+    "UNKNOWN": "Alert {{code}}.",
+    "source": {
+      "sensor": "Sensor",
+      "vision": "Vision",
+      "inspection": "Inspection",
+      "grievance": "Grievance",
+      "contractor": "Contractor",
+      "incident": "Incident",
+      "system": "System",
+      "directive": "From DGMS",
+      "action": "Corrective action",
+      "production": "Production"
+    },
+    "directiveNote": "Note: {{note}}",
+    "raisedBy": "Raised by",
+    "history": "History",
+    "proof": "Proof submitted",
+    "reopenedBecause": "Reopened: {{reason}}"
+  },
+  "category": {
+    "roof_strata": "Roof and strata",
+    "ventilation_gas": "Ventilation and gas",
+    "electrical": "Electrical",
+    "transport_haulage": "Transport and haulage",
+    "explosives": "Explosives and blasting",
+    "ppe": "PPE",
+    "fire": "Fire and emergency",
+    "environment": "Workplace environment",
+    "welfare": "Welfare and amenities",
+    "documentation": "Documentation and records",
+    "machinery": "Machinery"
+  },
+  "violationSource": {
+    "vision": "PPE vision",
+    "inspection": "Inspection",
+    "grievance": "Grievance"
+  },
+  "priority": {
+    "PRIORITY_RISK_BAND": "{{risk}} - compliance score {{score}}",
+    "PRIORITY_TREND_RISING": "Deteriorating: {{recent}} events in the last {{hours}} h vs {{previous}} before",
+    "PRIORITY_TREND_FALLING": "Improving: {{recent}} events in the last {{hours}} h vs {{previous}} before",
+    "PRIORITY_RECENT_VIOLATIONS": "{{count}} violation(s) in the last {{hours}} h",
+    "PRIORITY_RECENT_BREACHES": "{{count}} threshold breach(es) in the last {{hours}} h",
+    "PRIORITY_NO_RECENT_EVENTS": "No new events in the last {{hours}} h"
+  },
+  "incident": {
+    "title": "Incidents",
+    "type": {
+      "ground_movement": "Ground movement",
+      "transportation_winding": "Winding",
+      "transportation_other": "Transportation (other)",
+      "machinery_other": "Machinery (non-transport)",
+      "explosives": "Explosives",
+      "electricity": "Electricity",
+      "gas_dust_fire": "Gas, dust or fire",
+      "fall_other_than_ground": "Fall (not ground movement)",
+      "other_causes": "Other causes"
+    },
+    "severity": {
+      "fatal": "Fatal",
+      "serious": "Serious injury",
+      "minor": "Minor injury",
+      "dangerous_occurrence": "Dangerous occurrence"
+    },
+    "check": {
+      "REPORTED_WITHIN_48H": "Reported after {{hours}} h - within {{limit_hours}} h ({{obligation_code}})",
+      "REPORTED_AFTER_48H": "Reported after {{hours}} h - later than {{limit_hours}} h ({{obligation_code}})"
+    },
+    "obligation": {
+      "RPT-03": "RPT-03 · fatal accident notice",
+      "RPT-04": "RPT-04 · serious or minor injury report",
+      "RPT-05": "RPT-05 · dangerous occurrence notice"
+    },
+    "occurred": "Occurred",
+    "reported": "Reported",
+    "persons": "Persons affected",
+    "cause": "Cause",
+    "linkedViolation": "Linked violation",
+    "none": "None",
+    "empty": "No incidents recorded.",
+    "late": "late"
+  },
+  "correctiveAction": {
+    "title": "Corrective actions",
+    "empty": "No corrective actions recorded.",
+    "due": "Due",
+    "overdue": "overdue",
+    "description": "Action",
+    "record": "Record corrective action",
+    "recordTitle": "Record a corrective action",
+    "descriptionLabel": "What will be done",
+    "dueLabel": "Due by",
+    "save": "Save action",
+    "resolve": "Resolve with proof",
+    "resolveTitle": "Close corrective action",
+    "proofLabel": "What was done",
+    "photoLabel": "Evidence photo (optional)",
+    "submit": "Submit",
+    "saved": "Corrective action recorded",
+    "resolved": "Corrective action closed - the violation no longer counts against the score.",
+    "system": {
+      "VISION_CLEAN_FRAME": "Resolved by a clean PPE re-inspection frame."
+    }
+  },
+  "violation": {
+    "title": "Violations",
+    "empty": "No violations recorded.",
+    "type": "Violation",
+    "category": "Category",
+    "source": "Source",
+    "confidence": "Confidence",
+    "detected": "Detected",
+    "status": "Status",
+    "frame": "Evidence",
+    "resolvedAt": "Resolved {{when}}"
+  },
+  "audit": {
+    "title": "Audit trail",
+    "subtitle": "Every recorded change, hash-chained",
+    "empty": "No audit entries yet.",
+    "action": {
+      "insert": "created",
+      "update": "changed",
+      "delete": "deleted",
+      "seed": "demo data loaded",
+      "ingest": "sensor readings received",
+      "analyze": "PPE image analysed"
+    },
+    "entity": {
+      "alert": "Alert",
+      "violation": "Violation",
+      "corrective_action": "Corrective action",
+      "inspection": "Inspection",
+      "observation": "Observation",
+      "incident": "Incident",
+      "status_history": "Status change",
+      "record_edit_log": "Locked-record edit",
+      "file": "File",
+      "user": "User",
+      "mine": "Mine",
+      "sensor_reading": "Sensor readings",
+      "vision_run": "PPE vision",
+      "seed": "Demo data"
+    },
+    "system": "System",
+    "changes": "Changes",
+    "hash": "Row hash"
+  },
+  "vision": {
+    "resolution": {
+      "CLEAN_FRAME": "Clean frame showing {{labels}} - accepted as evidence of compliance.",
+      "VIOLATIONS_DETECTED": "{{count}} violation(s) detected, so the frame is not evidence of compliance.",
+      "NO_WORKERS_SEEN": "No workers or PPE detected in the frame, so it proves nothing either way."
+    }
+  },
+  "login": {
+    "demo": {
+      "government": "Government (DGMS) - all 74 mines",
+      "corporate": "Corporate - SECL mines",
+      "headHigh": "Mine Head - Bhubaneswari, MCL (high risk)",
+      "headLow": "Mine Head - Moonidih, BCCL (low risk)"
+    }
+  },
+  "mine": {
+    "score": "Compliance score",
+    "openViolations": "Open violations",
+    "openAlerts": "Open alerts",
+    "violationsShort": "violations",
+    "breachesShort": "breaches",
+    "loading": "Loading mine...",
+    "detail": "Mine detail",
+    "back": "Back",
+    "backToOverview": "Back to overview",
+    "sensorTrends": "Sensor trends",
+    "sensorTrendsHint": "Markers show readings past the legal limit",
+    "alerts": "Alerts",
+    "alertsAndDirectives": "Alerts and directives",
+    "openDirectives_one": "{{count}} open directive",
+    "openDirectives_other": "{{count}} open directives",
+    "openDirectivesFromDgms_one": "{{count}} open directive from DGMS",
+    "openDirectivesFromDgms_other": "{{count}} open directives from DGMS",
+    "breaches_one": "{{count}} breach",
+    "breaches_other": "{{count}} breaches",
+    "reopen": "Reopen",
+    "reopening": "Reopening...",
+    "reopenReason": "Proof not sufficient",
+    "reopened": "Directive reopened",
+    "reopenedBody": "The mine head has been asked to resubmit.",
+    "reopenFailed": "Could not reopen"
+  },
+  "records": {
+    "latest_one": "{{count}} most recent",
+    "latest_other": "{{count}} most recent",
+    "forViolation": "for violation #{{id}}",
+    "incidentsHint": "Accidents and dangerous occurrences, with the 48-hour reporting check",
+    "event": "Event",
+    "when": "When",
+    "violationDetail": "Violation detail",
+    "inspection": "Inspection",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "created": "Recorded",
+    "obligation": "Reporting obligation",
+    "actor": "By"
+  },
+  "errorNotice": {
+    "forbidden": "Not permitted.",
+    "notFound": "Not available.",
+    "serverEnforced": "Access is enforced by the server, not hidden in this page.",
+    "network": "Cannot reach the API.",
+    "failed": "Request failed."
+  },
+  "alertList": {
+    "empty": "No alerts."
+  },
+  "alertDrawer": {
+    "directive": "Directive",
+    "alert": "Alert",
+    "message": "Message",
+    "record": "Related record"
+  },
+  "scopeWhere": {
+    "national": "nationwide",
+    "company": "across {{code}}"
+  },
+  "stateFilter": {
+    "label": "State",
+    "all": "All states"
   }
 }

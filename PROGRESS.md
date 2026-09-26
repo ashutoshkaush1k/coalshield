@@ -2,104 +2,151 @@
 
 Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF.md`.
 
-## Phase 1: Foundation (done, 2026-09-27)
+## Phase 2: Port existing modules to Yii2 (done, 2026-09-27)
 
 ### Done
 
-- **Toolchain on Windows, no admin rights needed:** PostgreSQL 16.15 and PostGIS 3.6.2 as portable
-  binaries, Composer 2.10.3, and XAMPP `php.ini` with pdo_pgsql, pgsql, intl and sodium (backup
-  taken). Recorded in `docs/SETUP_WINDOWS.md`. Start and stop the database with `scripts\db.bat`.
-- **`api/` scaffold:** Yii2 2.0.55 as a pure JSON API with module `v1`.
-  - `ApiController`: CORS for the Vite origin, JWT bearer auth, verb filter.
-  - `ApiErrorHandler`: `{"error": {"code", "params"?, "fields"?}}` on every error, with a debug block only when `YII_DEBUG` is on.
-  - `ListingQuery`: `page`/`per_page`/`limit`, `filter[]` and `sort` with whitelists; `X-Total-Count`.
-  - Secrets live only in `api/.env` (`.env.example` committed). The log never dumps `$_SERVER`, and 4xx responses are not logged.
-- **Migrations**, all reversible, tested down and up:
-  - extensions;
-  - `subsidiary`, `area`, `mine` (PostGIS Point/Polygon with SRID 4326, GIST and trigram indexes);
-  - `user` (lower-case roles; a CHECK keeps each role's scope columns consistent);
-  - `audit_log` (hash chain in SQL, append-only trigger);
-  - `file`;
-  - RBAC (`yii\rbac` migrations) and queue (`yii2-queue` db migrations);
-  - every FK indexed.
-- **Components:**
-  - `ScopedActiveQuery` / `ScopedActiveRecord::findScoped()`: the only place mine scoping happens. Out of scope gives 404.
-  - `AuditBehavior` + `AuditChain`: insert, update and delete are logged with changed values only, and `password_hash` is redacted. `yii audit/verify` recomputes the chain.
-  - `StatusTransition` + `HasStatusTransitions`: 422 `INVALID_TRANSITION` with `{from, to}`.
-  - `FileStorage`: outside `web/`, sha256, size limit, MIME checked with finfo.
-- **RBAC:** `DbManager` roles `government`, `corporate`, `mine_head` and `inspector` (defined, reads like government), with per-action permissions in `config/rbac.php`. `yii rbac/init` is idempotent and assignments are synced from `user.role`.
-- **Endpoints:** `POST /v1/auth/login`, `GET /v1/users/me` (+ `/v1/auth/me` alias), `PATCH /v1/users/me` (language only), `GET /v1/mines`, `GET /v1/mines/{id}`, `GET /v1/health`.
-- **`yii seed [preset]`:** loads `data/out/<preset>/*.csv` in HANDOFF order with PostgreSQL COPY.
-  - Runs in one transaction.
-  - Fails on any column mismatch.
-  - Refuses a preset whose `_validation.json` failed.
-  - Checks row counts against `_manifest.json`.
-  - Hashes the demo password.
-  - Resets sequences and assigns roles.
-  - Writes one `seed` audit entry as the chain's genesis.
-  - Tables from later phases are skipped with a note. No data is generated in PHP.
-- **Tests (Codeception, 57 tests, 216 assertions), all passing:**
-  - login;
-  - `/users/me`;
-  - scoping per role, including that out-of-scope is identical to missing;
-  - listing conventions;
-  - audit chain insert/update/delete, redaction, the append-only trigger, and tamper detection (edited row; edited row with recomputed hash);
-  - StatusTransition;
-  - FileStorage;
-  - seeder (counts, hashing, SRID, roles, sequences, column mismatch rolls back, refuses an invalid preset).
-- **Frontend:**
-  - i18next + react-i18next with `src/i18n/` (`en.json`), `t()` / `useT()` / `errorMessage()`.
-  - `roles.js` is lower case and normalises the old upper-case roles.
-  - Footer "Demo data: synthetic, calibrated to public statistics — see DATASETS.md" on every page and the login page.
-  - A "demo value" tag on every compliance score (board, national average, priority queue, mine detail, mine head overview).
-- **Docker fallback:** `docker-compose.yml`, `api/Dockerfile` and `docker/postgres/init/`, written but not run (see Known issues).
+- **Migrations** (reversible, tested down and up; 10 new):
+  - `audit_log.mine_id`: part of the hash, so the trail can be scoped. There is no FK, because
+    history outlives the records it describes.
+  - `inspection`, `violation` + `observation`, `alert`, `corrective_action`, `incident`,
+    `env_reading`, with columns exactly as in `data/schema/`. The `observation ↔ violation` FKs are
+    `DEFERRABLE`.
+  - `sensor_reading`, partitioned by month (2026-01 … 2027-12 plus a default partition;
+    `yii partition/ensure` adds months).
+  - `status_history` (every workflow transition) and `record_edit_log` (edits of locked records).
+  - `compliance_score` (trend line) and `api_key` (SHA-256 only).
+  - CHECK constraints for every enum, the 11 categories, and the consistency rules (resolved ⇔
+    `resolved_at`, promoted ⇔ `violation_id`, closed ⇒ locked). An index on every FK plus
+    `(mine_id, date)` and `(mine_id, status)`.
+- **New dependency:** `symfony/yaml`, to read `data/schema/rules.yaml` and
+  `violation_categories.yaml` rather than copying legal limits into PHP. It was already installed
+  through Codeception and is now a direct requirement (brief: "justify any other dependency").
+- **`yii seed demo`** loads all 13 Phase 1-2 tables (1.7 M sensor readings) in about 25 s. It
+  also records the per-mine open-violation baseline for the simulator pre-flight.
+- **Services:**
+  - `ComplianceScoreService`: the prototype's formula, window and bands, with identical numbers.
+  - `InspectionPriorityService`: urgency and trend; reasons as `{code, params}`.
+  - `SensorService`: ingest, fleet standing, breach buckets and trend. **Legal limits are read
+    from `rules.yaml`:** SAF-11, HLT-04 (as an 8-hour mean) and HLT-05. CO and humidity have no
+    limit, so `breached` is null for them.
+  - `AlertService`: `{code, params}`, directives, acknowledge/resolve/reopen.
+  - `CorrectiveActionService`: resolving an action closes its violation.
+  - `InspectionService`: schedule → visit → observe → promote → close (locks); a locked edit
+    needs a reason.
+  - `VisionService` (via `AiClient`) and `BaselineService`.
+- **Incident module:**
+  - List (scoped, `?late=1`) and detail with the linked violation.
+  - Report an incident: the obligation follows the severity (RPT-03 / RPT-04 / RPT-05), and a
+    dangerous occurrence raises an alert.
+  - Link or unlink a violation of the same mine.
+  - The **48-hour reporting check**: `reporting_check: {code: REPORTED_WITHIN_48H |
+    REPORTED_AFTER_48H, params: {hours, limit_hours, obligation_code}}`.
+- **Endpoints:** all of `docs/api-contract.md`.
+  - Out of scope is always **404**, and a missing permission is 403.
+  - `GET /v1/users/me` carries `permissions`, so the UI can hide what the API would refuse.
+  - Contract changes are listed in `docs/API_CHANGES.md`.
+- **ai-service** (`ai-service/`, PLAN Q13): `POST /vision/ppe` imports the existing vision code
+  and returns detections, candidates, evidence and the annotated frame. If it is down, the API
+  answers 503 `AI_SERVICE_UNAVAILABLE` and records a low alert.
+- **Simulator** (`scripts/run_simulator.py`, stdlib only):
+  - Replays the last 14 days of `data/out/demo` through `POST /v1/sensor-readings/ingest` using
+    an API key, one data-hour per tick.
+  - Pre-flight via `GET /v1/sensor-readings/baseline`, with `--check-only` and `--require-clean`.
+- **`run_all.bat`:**
+  - Starts PostgreSQL through `scripts\db.bat` if it is not running, waits for `pg_isready`, and
+    fails clearly with the log tail if it never comes up.
+  - Migrates and seeds on the first run, then opens API, AI, frontend (and the simulator with
+    `--sim`).
+  - `--stop` closes the windows and does a clean `fast` shutdown. PostgreSQL runs in its own
+    hidden console, so closing windows never touches it.
+- **Frontend on the new API** (`VITE_API_URL`):
+  - Error envelope and 404 handling.
+  - Lower-case roles; the corporate and inspector roles use the overview screens.
+  - Alerts, priority reasons, sensor status, incident checks and audit entries all translated
+    from codes (`src/i18n/labels.js`, `locales/en.json`).
+  - New records row on both dashboards: violations (all categories), corrective actions (record,
+    close with proof), incidents (48-hour check), audit trail.
+  - Login quick-fill and every mine name come from the real roster.
+  - GEM attribution sits in the footer, and the "demo value" tag's tooltip reads "Demo score -
+    not a real safety assessment".
+- **Docs:**
+  - `docs/demo-script.md` rewritten: new mine names, the 404 rule, the new commands, and the
+    Odisha region for the live-sensor step.
+  - `docs/access-control.md`, `docs/api-contract.md`, `docs/API_CHANGES.md`, `README.md` and the
+    `docs/architecture.md` header updated.
+  - `docs/SETUP_WINDOWS.md` sections 7-9 added: `run_all.bat` and the database, where secrets live
+    and how to regenerate them (with the git check), and the FastAPI fallback.
+- **Tests: 106 Codeception tests, 666 assertions, all passing (none skipped).** They include the
+  **demo-score test** (`tests/api/DemoScoreCest.php`): after `yii seed demo`, 100 / 80 / 70 / 60 / 45
+  for the five demo mines, 6 / 21 / 47 bands, average 83.2. `run_tests.bat` now seeds `demo` into
+  the test database.
+- **Browser check:** `scripts/browser_check.mjs` drives Edge headless through both dashboards and
+  corporate. It saves 21 screenshots to `docs/screenshots/phase2/` (with `results.json`) and
+  asserts the key numbers.
 
 ### Pending (next phases)
 
-- Phase 2:
-  - port mines/sensors/violations/corrective actions/inspections/alerts/audit/compliance;
-  - the incident module (48-hour reporting check with its obligation code);
-  - the demo-score test (100/80/70/60/45, 6/21/47, average 83.2) after `yii seed demo`;
-  - switch the frontend to `VITE_API_URL`;
-  - update the demo script, login quick-fill labels, tests and docs to the new mine names and to 404 for out-of-scope records (`docs/API_CHANGES.md` G4, G7).
-- Phases 3–8 as in `PLAN.md`. The old `backend/` stays until Phase 8 confirms parity.
+- Phase 3 contractors, Phase 4 production, Phase 5 grievances (their tables are skipped by the
+  seeder until then; FKs from `violation` / `observation` / `corrective_action` to `contractor`
+  and `grievance` arrive with those tables).
+- Phase 6: the other five languages. The keys are all in `en.json`; the violation types and DGMS
+  cause codes still render humanised English.
+- Phase 7:
+  - `CORRECTIVE_ACTION_OVERDUE` and escalation jobs;
+  - anomaly scores (the fleet and trend no longer carry `anomaly_score`);
+  - the rest of ai-service, with its own venv (it uses `backend\.venv` for now).
+- Phase 8: parity sign-off, then remove `backend/`.
 
 ### Known issues
 
 - **Docker path not verified:** Docker Desktop is not installed on the development machine.
-- **PostgreSQL is not a service:** it runs as a user process, so start it after each reboot with `scripts\db.bat start`.
-- **Mine names:** the login quick-fill labels still use the old mine names ("Talcher", "Jharia"), because the frontend still talks to the old backend, whose seed uses them. They change with the Phase 2 switch.
-- **`inspector` reads like government:** it has no screen of its own yet; the route guard shows "no screen for this role" instead of redirecting in a loop.
+- **Audit trail empty after a seed:** seeded history is loaded by COPY, not through the audit
+  log, so a mine's trail starts with the first change made in the app (the seed itself is the
+  chain's genesis entry).
+- **Dust rarely breaches in the live replay:** its limit is an 8-hour average, and the replay
+  compresses data-hours into seconds. Methane and wet-bulb breaches (instantaneous) do fire,
+  about one every 20 s somewhere in the fleet (most at Nandira, OD-ANG-57).
+- **PPE vision in this environment uses the fixture backend:** there are no YOLO weights on the
+  machine. The browser check cannot drive a file picker, so vision is covered by `VisionCest`
+  (against the running ai-service) rather than by a screenshot.
+- **Violation types and DGMS cause codes** are shown humanised from their tokens; translation
+  keys for them come in Phase 6.
 
 ### How to verify
 
 ```bat
-scripts\db.bat start
-cd api
-yii.bat migrate --interactive=0
-yii.bat rbac/init
-yii.bat seed demo
-yii.bat audit/verify
-run_tests.bat
-serve.bat
+run_all.bat
+cd api && run_tests.bat
+node scripts\browser_check.mjs
 ```
 
-Then, in another terminal: `curl http://127.0.0.1:8080/v1/health`. To log in, send
-`POST /v1/auth/login` with `{"email":"corporate.secl@coalmine.in","password":"demo123"}`. Call
-`GET /v1/mines` with the returned token: `X-Total-Count` is SECL's mine count, and any other
-company's mine id gives 404. The frontend (`run_all.bat`, still on the old backend) shows the footer
-and the demo-value tags.
+`run_all.bat` starts the database if needed and opens the dashboard; sign in with a quick-fill
+account. The demo-score numbers are in `api/tests/api/DemoScoreCest.php`. The browser check
+changes data like a user would, so re-seed afterwards with `api\yii.bat seed demo`.
+
+## Phase 1: Foundation (done, 2026-09-27)
+
+Toolchain without admin rights (PostgreSQL 16.15 + PostGIS 3.6.2 portable, Composer, XAMPP PHP
+extensions), `api/` scaffold (Yii2 JSON API, error envelope, listing conventions, JWT), reversible
+migrations for subsidiary / area / mine / user / audit_log / file / RBAC / queue,
+`ScopedActiveQuery`, `AuditBehavior` + SQL hash chain + `yii audit/verify`, `StatusTransition`,
+`FileStorage`, RBAC roles, `yii seed` (COPY loader), i18next scaffold, demo-data footer and tags.
+Commit `b026164`.
 
 ## TODO-VERIFY register
 
-No new regulatory facts were introduced in Phase 1. The items left open by the data track are listed in
-`data/HANDOFF.md` ("Open TODO-VERIFY items"):
+No new regulatory facts were introduced in Phases 1-2. Every limit, period and obligation code the
+API uses is read from `data/schema/rules.yaml` or the incident data, each tied to a verified row
+of `data/reference/obligations.csv`. The 48-hour reporting check is the rule the data's
+`reported_within_48h` column encodes.
+
+Items still open from the data track (`data/HANDOFF.md`, "Open TODO-VERIFY items"):
 
 - EPF Act status;
 - the RPT-08 production return;
 - the OpenAQ licence;
 - glossary and grievance translations;
-- the CO sensor limit.
+- **the CO sensor limit** (CO readings stay unjudged until a verified obligation gives one).
 
-`PLAN.md` §8 lists the items for later phases (grievance SLAs, document due day, and others). Each
-will be carried here when its phase starts.
+`PLAN.md` §8 lists the items for later phases (grievance SLAs, document due day, and others).

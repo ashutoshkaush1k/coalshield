@@ -3,6 +3,9 @@ import { CoreSampleBoard } from "../../../components/compliance/CoreSampleBoard"
 import { StateFilter } from "../../../components/common/StateFilter";
 import { DemoTag } from "../../../components/common/DemoTag";
 import { breachesLabel } from "../../../utils/format";
+import { t } from "../../../i18n/t";
+import { scopeWhere } from "../../../i18n/labels";
+import { useAuth } from "../../../hooks/useAuth";
 
 function Tally({ label, value, tone }) {
   return (
@@ -15,7 +18,8 @@ function Tally({ label, value, tone }) {
 
 export function OverviewPanel({ data, state, onStateChange }) {
   const stats = data?.stats;
-  const scope = data?.scope_label ?? "National";
+  const { user } = useAuth();
+  const scope = state ?? t(`scope.${data?.scope_label_code ?? "NATIONAL"}`);
   const truncated = data?.is_truncated;
 
   return (
@@ -29,8 +33,8 @@ export function OverviewPanel({ data, state, onStateChange }) {
               <span className="label">{scope} average compliance <DemoTag /></span>
               <div className="hero-number">{stats?.average_score ?? "-"}</div>
               <p className="hero-caption">
-                Mean score across {stats?.mine_count ?? 0} monitored mines
-                {state ? ` in ${state}` : " nationwide"}.
+                Mean score of {stats?.mine_count ?? 0} monitored mines
+                {state ? ` in ${state}` : ` ${scopeWhere(user)}`}.
               </p>
             </div>
 
@@ -65,8 +69,8 @@ export function OverviewPanel({ data, state, onStateChange }) {
           <p className="board-scope">
             {truncated ? (
               <>
-                <strong>Top {data.showing} highest-risk mines nationally</strong> of{" "}
-                {stats?.mine_count ?? 0} monitored. Select a region to see every mine there.
+                <strong>Top {data.showing} highest-risk mines {scopeWhere(user)}</strong> of{" "}
+                {stats?.mine_count ?? 0} monitored. Select a state to see every mine there.
               </>
             ) : state ? (
               <>

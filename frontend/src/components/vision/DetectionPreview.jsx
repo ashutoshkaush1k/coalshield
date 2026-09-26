@@ -3,7 +3,8 @@ import { assetUrl } from "../../api/client";
 import { RiskMark } from "../compliance/RiskMark";
 import { EmptyState } from "../common/EmptyState";
 import { fmtPercent, humanise } from "../../utils/format";
-import { riskClass } from "../../utils/risk";
+import { riskClass, riskLabel } from "../../utils/risk";
+import { t } from "../../i18n/t";
 
 /**
  * What this run changed, stated explicitly.
@@ -59,7 +60,7 @@ function ScoreMove({ before, after, delta, riskChanged, resolvedCount }) {
 
       {riskChanged && (
         <div className="notice error" style={{ marginTop: "var(--space-3)" }}>
-          Risk band changed from {before.risk_level} to {after.risk_level}. This mine has moved
+          Risk band changed from {riskLabel(before.risk_level)} to {riskLabel(after.risk_level)}. This mine has moved
           band on the authority dashboard.
         </div>
       )}
@@ -90,6 +91,13 @@ export function DetectionPreview({ result }) {
         riskChanged={risk_changed}
         resolvedCount={result.resolved_count}
       />
+
+      {result.resolution && (
+        <p className="note">{t(`vision.resolution.${result.resolution.code}`, {
+          ...result.resolution.params,
+          labels: (result.resolution.params?.labels ?? []).join(", "),
+        })}</p>
+      )}
 
       {image ? (
         // Boxes are drawn server-side by the CV module, so what is shown here is exactly the

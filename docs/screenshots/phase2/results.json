@@ -1,0 +1,122 @@
+[
+  {
+    "name": "01-login",
+    "note": "login page with the new quick-fill accounts, demo footer and GEM credit",
+    "errors": []
+  },
+  {
+    "name": "02-gov-overview",
+    "note": "national overview: average 83.2, 6 / 21 / 47, the five worst mines",
+    "errors": []
+  },
+  {
+    "name": "03-gov-priority",
+    "note": "inspection priority queue with translated reasons",
+    "errors": []
+  },
+  {
+    "name": "04-gov-sensors",
+    "note": "fleet sensor standing against the rules.yaml limits",
+    "errors": []
+  },
+  {
+    "name": "05-gov-trends",
+    "note": "national breach frequency, 6-hour buckets",
+    "errors": []
+  },
+  {
+    "name": "06-gov-mine-detail",
+    "note": "Bhubaneswari (OD-TLC-05): score 45, arithmetic, alerts",
+    "errors": []
+  },
+  {
+    "name": "07-gov-directive-raised",
+    "note": "directive raised: toast and the directive on top of the alerts",
+    "errors": []
+  },
+  {
+    "name": "08-gov-violations",
+    "note": "violations drawer: all categories, open and resolved",
+    "errors": []
+  },
+  {
+    "name": "09-gov-corrective-actions",
+    "note": "corrective actions with overdue flags",
+    "errors": []
+  },
+  {
+    "name": "10-gov-incident-detail",
+    "note": "incident detail: 48-hour check citing RPT-05, linked strata violation",
+    "errors": []
+  },
+  {
+    "name": "11-gov-audit-trail",
+    "note": "audit trail of the mine (hash-chained)",
+    "errors": []
+  },
+  {
+    "name": "12-gov-sensor-trends",
+    "note": "sensor trend drawer with legal limit lines",
+    "errors": []
+  },
+  {
+    "name": "13-head-overview",
+    "note": "mine head overview: own mine only, open directive from DGMS",
+    "errors": []
+  },
+  {
+    "name": "14-head-resolve-directive",
+    "note": "resolving the directive with proof",
+    "errors": []
+  },
+  {
+    "name": "15-head-directive-resolved",
+    "note": "directive resolved; visible to DGMS with the proof",
+    "errors": []
+  },
+  {
+    "name": "16-head-record-action",
+    "note": "recording a corrective action for a PPE violation",
+    "errors": []
+  },
+  {
+    "name": "17-head-score-recovered",
+    "note": "action closed with proof: violation resolved, 45 -> 50, High -> Medium",
+    "errors": []
+  },
+  {
+    "name": "18-head-sensors",
+    "note": "own-mine sensors: dust as an 8-hour average (HLT-04), wet bulb (HLT-05)",
+    "errors": []
+  },
+  {
+    "name": "19-head-trends",
+    "note": "own-mine breach frequency",
+    "errors": []
+  },
+  {
+    "name": "20-corporate-overview",
+    "note": "corporate: only SECL's 17 mines, same screens",
+    "errors": []
+  },
+  {
+    "name": "21-corporate-out-of-scope",
+    "note": "another company's mine answers 404, shown as not available",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  }
+]

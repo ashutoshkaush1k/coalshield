@@ -1,12 +1,13 @@
 // Ranked inspection list, worst first.
 //
-// The ranking itself comes from GET /api/v1/inspections and is not recomputed here -
+// The ranking itself comes from GET /v1/inspections/priority and is not recomputed here -
 // this is presentation only.
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "../common/EmptyState";
 import { RiskMark } from "../compliance/RiskMark";
 import { fmtScore } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
+import { reasonText } from "../../i18n/labels";
 
 export function PriorityQueue({ candidates }) {
   const navigate = useNavigate();
@@ -26,9 +27,9 @@ export function PriorityQueue({ candidates }) {
 
           <span>
             <span className="queue-name">{c.name}</span>
-            <span className="queue-place"> {c.location}</span>
+            <span className="queue-place"> {c.district}, {c.state}</span>
             {/* The single most useful line from the ranking's own reasoning. */}
-            <span className="queue-reason">{c.reasons?.[0]}</span>
+            <span className="queue-reason">{reasonText(c.reasons?.[0])}</span>
           </span>
 
           <span className="queue-right">

@@ -68,6 +68,38 @@ abstract class ApiController extends Controller
         return $user;
     }
 
+    /** The mine named by a query parameter, scope-checked (404 when out of scope); null if absent. */
+    protected function mineParam(string $name = 'mine_id'): ?\app\models\Mine
+    {
+        $value = Yii::$app->request->get($name);
+        if ($value === null || $value === '') {
+            return null;
+        }
+        if (!ctype_digit((string) $value)) {
+            throw ApiException::fields([$name => ['INVALID_VALUE']]);
+        }
+        return \app\models\Mine::findScoped((int) $value);
+    }
+
+    /** Every mine the caller may see, optionally narrowed to one state; ordered by id. */
+    protected function visibleMines(?string $state = null): array
+    {
+        return \app\models\Mine::find()->forCurrentUser()
+            ->andFilterWhere(['mine.state' => $state ?: null])
+            ->orderBy(['mine.id' => SORT_ASC])->all();
+    }
+
+    /** Scope a listing to one mine when ?mine_id= is given (validated), else to the caller. */
+    protected function scopedList(\app\components\ScopedActiveQuery $query, string $column = 'mine_id'): \app\components\ScopedActiveQuery
+    {
+        $query->forCurrentUser();
+        $mine = $this->mineParam();
+        if ($mine !== null) {
+            $query->andWhere([$query->modelClass::tableName() . '.' . $column => $mine->id]);
+        }
+        return $query;
+    }
+
     /** @return array<string, mixed> JSON request body (empty array when none). */
     protected function body(): array
     {

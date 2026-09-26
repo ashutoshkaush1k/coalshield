@@ -55,3 +55,7 @@ data/out/**
 # Daily CPCB readings via OpenAQ: the stations carry no licence in OpenAQ (licenses = null), so the
 # values stay local until redistribution is confirmed. Rebuilt by: data\run_data.bat clean
 data/reference/env_daily.csv
+
+# Simulator API key (issued by `yii api-key/issue`) and its replay cache
+scripts/.simulator.key
+scripts/.cache/

@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { raiseDirective } from "../../api/alerts";
 import { useToast } from "../overlay/ToastHost";
+import { alertText } from "../../i18n/labels";
 
 export function FlagMineButton({ mineId, referenceId = null, onFlagged }) {
   const [busy, setBusy] = useState(false);
@@ -21,7 +22,7 @@ export function FlagMineButton({ mineId, referenceId = null, onFlagged }) {
       setFlagged(true);
       // Acknowledged in a toast rather than only a button state, so the action reads as
       // having produced a record somewhere rather than just toggling a control.
-      notify({ title: "Directive raised", body: alert.message });
+      notify({ title: "Directive raised", body: alertText(alert) });
       onFlagged?.(alert);
     } catch (err) {
       notify({ title: "Could not raise directive", body: err.message, tone: "error" });

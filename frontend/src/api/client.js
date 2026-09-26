@@ -1,25 +1,26 @@
-// Axios instance with base URL and a token interceptor; a 401/403 clears the session.
+// Axios instance for the Yii2 API: base URL, bearer token, and one error shape for every caller.
 import axios from "axios";
+import { errorMessage } from "../i18n/t";
 
 const TOKEN_KEY = "smg.token";
 
-// sessionStorage, not localStorage, and the difference matters for the demo: localStorage is
-// shared across every tab on the origin, so signing in as a Mine Head in one tab would silently
-// end the Government session in another. Per-tab storage lets both dashboards be open side by
-// side, which is exactly how the cross-mine story is presented (docs/demo-script.md).
-// Trade-off: closing the tab ends the session. A refresh keeps it.
+// sessionStorage, not localStorage: per-tab sessions let the Government and Mine Head dashboards
+// sit side by side in two tabs, which is how the cross-mine story is presented
+// (docs/demo-script.md). Closing the tab ends the session; a refresh keeps it.
 const store = window.sessionStorage;
 
-export const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1",
-});
+// VITE_API_URL (frontend/.env) wins; VITE_API_BASE_URL is read for one release (PLAN Q5).
+export const API_URL =
+  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/v1";
 
-// Annotated frames are served by the API host at /static/..., not by the Vite dev server, so
-// a relative src would 404 against localhost:5173. This rebuilds them against the API origin.
+export const client = axios.create({ baseURL: API_URL });
+
+// Stored files (annotated frames, proof photos) come as signed "/v1/files/..." links on the API
+// host, not the Vite dev server, so they are rebuilt against the API origin.
 export const assetUrl = (path) => {
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;
-  const origin = client.defaults.baseURL.replace(/\/api\/v\d+\/?$/, "");
+  const origin = new URL(API_URL, window.location.href).origin;
   return `${origin}${path.startsWith("/") ? "" : "/"}${path}`;
 };
 
@@ -33,31 +34,35 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-// Normalise every failure into { status, message } so components never render a raw axios error.
-// 403 is deliberately NOT treated as a logout: a Mine Head hitting a Government-only route is
-// correctly authenticated, just not permitted, and signing them out would be wrong and confusing.
+// Every failure becomes {status, code, params, fields, message}. The API sends codes only
+// ({"error": {"code", "params"?, "fields"?}}); the message is the translated text.
+// 403 is not a logout (the account is valid, just not permitted); out-of-scope records are 404.
 client.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-    const detail = error.response?.data?.detail;
+    const envelope = error.response?.data?.error ?? {};
+    const normalised = {
+      status,
+      code: envelope.code ?? (error.response ? `HTTP_${status}` : "NETWORK"),
+      params: envelope.params ?? {},
+      fields: envelope.fields ?? null,
+      isForbidden: status === 403,
+      isNotFound: status === 404,
+      isNetwork: !error.response,
+    };
+    normalised.message = errorMessage(normalised);
 
-    if (status === 401) {
+    if (status === 401 && normalised.code !== "INVALID_CREDENTIALS") {
       clearToken();
       if (!window.location.pathname.startsWith("/login")) window.location.href = "/login";
     }
-
-    return Promise.reject({
-      status,
-      message:
-        detail ||
-        (status === 403
-          ? "You do not have access to this data."
-          : error.message === "Network Error"
-            ? "Cannot reach the API. Is the backend running on port 8000?"
-            : "Something went wrong."),
-      isForbidden: status === 403,
-      isNetwork: !error.response,
-    });
+    return Promise.reject(normalised);
   },
 );
+
+/** GET a paged list and keep the paging headers. */
+export async function getPage(url, params = {}) {
+  const response = await client.get(url, { params });
+  return { items: response.data, total: Number(response.headers["x-total-count"] ?? response.data.length) };
+}

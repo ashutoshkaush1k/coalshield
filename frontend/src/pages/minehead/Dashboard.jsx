@@ -1,7 +1,7 @@
 // Mine Head dashboard: own mine only, two tabs.
 //
-// There is deliberately no Priority Queue tab. Cross-mine ranking is authority-only
-// (PRD 4.1), and it is refused server-side as well - GET /api/v1/inspections returns
+// There is deliberately no Priority Queue tab. Cross-mine ranking is for multi-mine roles
+// (PRD 4.1), and it is refused server-side as well - GET /v1/inspections/priority returns
 // 403 for this role. Hiding the tab removes the entry point; the API is the boundary.
 import { useState } from "react";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
@@ -10,7 +10,7 @@ import { TabPanel } from "../../components/common/Tabs";
 import { Masthead } from "../../components/layout/Masthead";
 import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
-import { loadMineBundle } from "../government/MineDetail";
+import { loadMineBundle, mineSubtitle } from "../government/MineDetail";
 import { TrendsPanel } from "../government/panels/TrendsPanel";
 import { MineOverviewPanel } from "./panels/MineOverviewPanel";
 import { SensorPerformancePanel } from "./panels/SensorPerformancePanel";
@@ -58,7 +58,7 @@ export default function MineHeadDashboard() {
     <>
       <Masthead
         title={data.mine.name}
-        subtitle={`${data.mine.location}, operated by ${data.mine.operator}`}
+        subtitle={mineSubtitle(data.mine)}
         tabs={TABS}
         active={tab}
         onTabChange={setTab}

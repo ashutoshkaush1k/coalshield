@@ -10,6 +10,7 @@ import {
 import { EmptyState } from "../common/EmptyState";
 import { useLiveSeries, useSlidingDomain } from "../../hooks/useLiveSeries";
 import { chartTokens, sensorColour } from "../../utils/tokens";
+import { sensorLabel } from "../../i18n/labels";
 
 // Headroom above whatever is being plotted, so a reading sitting exactly on the limit still has
 // the line drawn clear of the top edge.
@@ -118,14 +119,14 @@ export function SensorTrendChart({ series, mineId = null }) {
             labelFormatter={tickLabel}
             formatter={(v, _n, item) => [
               `${v} ${series.unit}${item?.payload?.breached ? "  (breach)" : ""}`,
-              series.sensor_type,
+              sensorLabel(series.sensor_type),
             ]}
           />
 
           {/* The threshold is the point of the chart: a reading means nothing to a viewer
               without the limit it is being measured against. Risk colour is used here, and
               only here, because crossing this line is what "bad" means. */}
-          <ReferenceLine
+          {series.threshold != null && <ReferenceLine
             y={series.threshold}
             stroke={t.riskHigh}
             strokeDasharray="4 4"
@@ -133,7 +134,7 @@ export function SensorTrendChart({ series, mineId = null }) {
               value: `limit ${series.threshold}${series.unit}`,
               position: "insideTopRight", fontSize: 10, fill: t.riskHigh,
             }}
-          />
+          />}
 
           <Line
             type="monotone"

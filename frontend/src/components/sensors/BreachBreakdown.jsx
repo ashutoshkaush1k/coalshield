@@ -2,6 +2,16 @@
 // dust" is readable at a glance rather than inferred from three separate charts.
 import { EmptyState } from "../common/EmptyState";
 import { sensorColour } from "../../utils/tokens";
+import { t } from "../../i18n/t";
+
+// Breach counts per sensor type -> per chart category (the two methane readings are "gas").
+const CATEGORY_OF = { ch4: "gas", ch4_return_air: "gas", co: "gas", dust: "dust", temperature: "temperature" };
+export const countsByCategory = (bySensorType) =>
+  Object.entries(bySensorType ?? {}).reduce((acc, [type, n]) => {
+    const c = CATEGORY_OF[type] ?? type;
+    acc[c] = (acc[c] ?? 0) + (n ?? 0);
+    return acc;
+  }, {});
 
 const ORDER = ["gas", "dust", "temperature"];
 
@@ -31,7 +41,7 @@ export function BreachBreakdown({ counts, total, compact = false }) {
           <span key={e.sensor} className={`breakdown-item${e.count === 0 ? " is-zero" : ""}`}>
             <span className="breakdown-swatch" style={{ background: sensorColour(e.sensor) }} />
             <span className="breakdown-count">{e.count}</span>
-            <span>{e.sensor}</span>
+            <span>{t(`sensor.category.${e.sensor}`)}</span>
           </span>
         ))}
       </div>

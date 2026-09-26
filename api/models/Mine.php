@@ -79,6 +79,7 @@ class Mine extends ScopedActiveRecord
             'status',
             'subsidiary_id',
             'operator' => fn() => $this->subsidiary?->code,
+            'operator_name' => fn() => $this->subsidiary?->name,
             'area_id',
             'district',
             'state',

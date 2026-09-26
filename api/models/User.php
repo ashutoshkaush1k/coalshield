@@ -99,6 +99,11 @@ class User extends ActiveRecord implements IdentityInterface
             'mine_id',
             'preferred_language',
             'status',
+            'mine_name' => fn() => $this->mine?->name,
+            'subsidiary_code' => fn() => $this->subsidiary?->code,
+            // What the account may do, so the frontend can hide actions the API would refuse.
+            'permissions' => fn() => $this->id === null ? [] : array_values(array_map('strval',
+                array_keys(Yii::$app->authManager->getPermissionsByUser($this->id)))),
             'created_at' => fn() => self::isoUtc($this->created_at),
             'updated_at' => fn() => self::isoUtc($this->updated_at),
         ];

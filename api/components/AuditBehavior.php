@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace app\components;
 
-use Yii;
+use app\models\Mine;
 use yii\base\Behavior;
 use yii\db\AfterSaveEvent;
 use yii\db\BaseActiveRecord;
@@ -28,7 +28,7 @@ class AuditBehavior extends Behavior
     public function afterInsert(AfterSaveEvent $event): void
     {
         $owner = $this->record();
-        AuditChain::append($owner::tableName(), $this->entityId(), 'insert', null, $this->redact($owner->getAttributes()));
+        AuditChain::append($owner::tableName(), $this->entityId(), 'insert', null, $this->redact($owner->getAttributes()), null, $this->mineId());
     }
 
     public function afterUpdate(AfterSaveEvent $event): void
@@ -47,13 +47,13 @@ class AuditBehavior extends Behavior
         if ($new === []) {
             return;
         }
-        AuditChain::append($owner::tableName(), $this->entityId(), 'update', $this->redact($old), $this->redact($new));
+        AuditChain::append($owner::tableName(), $this->entityId(), 'update', $this->redact($old), $this->redact($new), null, $this->mineId());
     }
 
     public function afterDelete(): void
     {
         $owner = $this->record();
-        AuditChain::append($owner::tableName(), $this->entityId(), 'delete', $this->redact($owner->getOldAttributes() ?: $owner->getAttributes()), null);
+        AuditChain::append($owner::tableName(), $this->entityId(), 'delete', $this->redact($owner->getOldAttributes() ?: $owner->getAttributes()), null, null, $this->mineId());
     }
 
     private function record(): ActiveRecord
@@ -61,6 +61,17 @@ class AuditBehavior extends Behavior
         /** @var ActiveRecord $owner */
         $owner = $this->owner;
         return $owner;
+    }
+
+    /** The mine the record belongs to (its mine_id, or its own id for a mine), for scoped reading. */
+    private function mineId(): ?int
+    {
+        $owner = $this->record();
+        if ($owner instanceof Mine) {
+            return $owner->id === null ? null : (int) $owner->id;
+        }
+        $value = $owner->hasAttribute('mine_id') ? ($owner->getAttribute('mine_id') ?? $owner->getOldAttribute('mine_id')) : null;
+        return $value === null ? null : (int) $value;
     }
 
     private function entityId(): ?int

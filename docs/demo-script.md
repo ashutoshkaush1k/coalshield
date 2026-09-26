@@ -1,7 +1,10 @@
 # Demo script (PRD Section 6)
 
 Target: the multi-mine comparison story, since PRD Section 8 names it the primary judge-facing
-scenario.
+scenario. Stack: Yii2 API (port 8080) + PostgreSQL, ai-service (8001) for PPE vision, React (5173).
+Every score on screen is a **demo value** computed from synthetic data (`data/DATASETS.md`) - the
+UI says so next to each one. Mine names and locations are real (Global Energy Monitor, Global
+Coal Mine Tracker, August 2026, CC BY 4.0); the numbers attached to them are not.
 
 ---
 
@@ -9,87 +12,80 @@ scenario.
 
 **Scores fall and recover.** A sensor breach counts against its mine only inside a rolling window
 (`BREACH_WINDOW_HOURS`, 12 s by default - six ticks at the simulator's 2 s interval), so the
-simulator pulls scores down and they climb back on their own as breaches age out. A PPE violation
-still counts until a clean re-inspection resolves it (see `docs/architecture.md`).
+simulator pulls scores down and they climb back on their own as breaches age out. A violation
+counts until it is resolved: by a corrective action closed with proof, or - for PPE findings - by
+a clean re-inspection frame.
 
-The consequence you must plan around:
-
-> **PPE violations from a CV demo or a rehearsal persist. A second run starts from a board that
-> already carries them and will not match this script.** Simulator breaches clear themselves
-> within about 12 seconds; violations do not.
+> **Violations, directives and resolutions from a rehearsal persist. A second run starts from a
+> board that already carries them and will not match this script.** Breaches clear themselves
+> within about 12 seconds; the rest does not.
 
 ### The rule
 
-```bash
-python scripts/seed_db.py --reset
+```bat
+api\yii.bat seed demo
 ```
 
-Run it **immediately before every demo, every rehearsal, and every practice run.** It takes about
-a second. Treat it as part of powering on the laptop.
+Run it **immediately before every demo, every rehearsal, and every practice run.** It reloads the
+demo preset in one transaction (about 25 seconds) and starts a fresh audit chain.
 
 ### The safety net
 
-`run_simulator.py` pre-flights the database and prints a loud banner if scores have drifted from
-the clean baseline:
+`run_simulator.py` pre-flights the API (`GET /v1/sensor-readings/baseline`) and prints a loud
+banner if scores have drifted from the seeded baseline:
 
 ```
 ==============================================================================
   WARNING: SCORES DO NOT MATCH THE CLEAN BASELINE
 ==============================================================================
-  MINE                   SCORE       PPE    BREACHES
-  MP-SGR-02           80 -> 75        +1           -  LOW -> MEDIUM
+  MINE                   SCORE  VIOLATIONS  BREACHES
+  MP-SGR-02           80 -> 70          +2         -  low -> medium
   ...
-  FIX BEFORE DEMOING:  python scripts/seed_db.py --reset
+  FIX BEFORE DEMOING:  api\yii.bat seed demo
 ==============================================================================
 ```
 
-Three modes:
-
 | Command | Behaviour | Use it for |
 |---|---|---|
-| `run_simulator.py --check-only` | Reports and exits. Exit 0 clean, 1 drifted. | Pre-demo check, CI |
-| `run_simulator.py --require-clean` | Refuses to start if drifted. | Rehearsal runs |
-| `run_simulator.py` | Warns loudly, then continues. | **The live demo** |
+| `python scripts\run_simulator.py --check-only` | Reports and exits. Exit 0 clean, 1 drifted. | Pre-demo check |
+| `python scripts\run_simulator.py --require-clean` | Refuses to start if drifted. | Rehearsal runs |
+| `python scripts\run_simulator.py --loop` | Warns loudly, then continues. | **The live demo** |
 
-The default warns rather than blocks on purpose: step 3 below runs the CV demo *before* the
-simulator, so by step 4 the database has legitimately drifted. A blocking check would break the
-very demo it is meant to protect. Use `--require-clean` when you want the hard gate.
+The default warns rather than blocks on purpose: step 3 below runs the PPE demo *before* the
+simulator, so by step 4 the scores have legitimately drifted.
 
 ---
 
 ## Before the room
 
-- [ ] **`python scripts/seed_db.py --reset`** (required after pulling the directives change -
-      SQLite cannot add the new alert columns to an existing database)
-- [ ] Have a photograph ready to attach as resolution proof, and know its path — the board must read 100 / 80 / 70 / 60 / 45
-- [ ] `python scripts/run_simulator.py --check-only` — must print `Pre-flight : OK`
-- [ ] **Double-click `run_all.bat`** - it pre-flights the setup, opens `SIH-Backend` and
-      `SIH-Frontend` windows, waits for both ports, and opens the dashboard. It warns loudly if
-      a previous stack is still holding a port, or if the database is missing.
-- [ ] `http://localhost:8000/docs` reachable and `http://localhost:5173` shows the login page
-- [ ] `backend/ml/weights/ppe.pt` present (`demo_vision.py --dry-run` shows `backend : yolo`)
-- [ ] Sample images in `backend/data/samples/images/`
-- [ ] **Two browser tabs** pre-opened and signed in — Government in one, Mine Head
-      (Singrauli) in the other. Sessions are per-tab, so both stay signed in at once.
-      Arrange them side by side if the projector allows: the live hand-off in step 3 is
-      far stronger when both boards are visible at the same time.
-- [ ] A sample image ready to pick in the file dialog — know the path before you are on stage
-- [ ] A terminal ready with the re-seed command already typed, not yet run
+- [ ] **`run_all.bat`** - starts PostgreSQL if needed, the API, the ai-service and the frontend,
+      waits for the ports and opens the dashboard. It stops with a clear message if the database
+      will not start. (First run on a machine: it migrates and seeds by itself.)
+- [ ] **`api\yii.bat seed demo`** - the board must read **100 / 80 / 70 / 60 / 45** for the five
+      demo mines and **83.2** national average.
+- [ ] `python scripts\run_simulator.py --check-only` - must print `Pre-flight : OK`.
+- [ ] `http://127.0.0.1:8080/v1/health` answers `{"status":"ok",...}`; `http://localhost:5173`
+      shows the login page.
+- [ ] PPE vision: with YOLO weights (`backend/ml/weights/ppe.pt`) use
+      `backend/data/samples/images/metro_shaft_workers.jpg`; without weights the fixture backend
+      answers for `ppe_sample.jpg` (two violations) and `with_ppe.jpg` (clean frame). Know the path.
+- [ ] **Two browser tabs**, signed in - Government in one, Mine Head (Jayant,
+      `head.mp-sgr-02@coalmine.in`) in the other. Sessions are per tab, so both stay signed in.
+- [ ] A photograph ready to attach as resolution proof (JPG, PNG or WEBP).
+- [ ] A terminal with `api\yii.bat seed demo` typed, not yet run.
 
-Clean baseline: **74 mines across 10 states**, national average **83.2**.
+Clean baseline: **74 mines across 10 states**, national average **83.2**, **6 high / 21 medium /
+47 low**. The Overview board shows the five highest-risk mines nationally, not all 74. The five
+demo mines keep their codes; their names now come from the real roster
+(`data/reference/mines_real.csv`, old codes in `mine_code_mapping.csv`):
 
-The Overview board defaults to the five highest-risk mines nationally, not all 74. The five
-original named mines are still in the dataset under their real states. With the rolling breach
-window their opening scores come from open PPE violations alone (the seeded readings are days
-old), retuned to keep the same bands:
-
-| Mine | District, State | Score | Risk |
-|---|---|---|---|
-| JH-DHN-01 Jharia | Dhanbad, Jharkhand | 100 | LOW (green) - no PPE violations; moves only with its sensors |
-| MP-SGR-02 Singrauli | Singrauli, Madhya Pradesh | 80 | LOW (green) - one detection tips it to Medium |
-| CG-KRB-03 Korba | Korba, Chhattisgarh | 70 | MEDIUM (yellow) |
-| WB-RNG-04 Raniganj | Raniganj, West Bengal | 60 | MEDIUM (yellow) |
-| OD-TLC-05 Talcher | Angul, Odisha | 45 | HIGH (red) |
+| Mine | Company | District, State | Score | Risk |
+|---|---|---|---|---|
+| JH-DHN-01 Moonidih | BCCL | Dhanbad, Jharkhand | 100 | Low - no open violations |
+| MP-SGR-02 Jayant | NCL | Singrauli, Madhya Pradesh | 80 | Low - one PPE detection tips it to Medium |
+| CG-KRB-03 Gevra | SECL | Korba, Chhattisgarh | 70 | Medium |
+| WB-RNG-04 Sonepur Bazari | ECL | Paschim Bardhaman, West Bengal | 60 | Medium |
+| OD-TLC-05 Bhubaneswari | MCL | Angul, Odisha | 45 | High |
 
 If the national average does not read 83.2 before the simulator starts, **re-seed before
 continuing.**
@@ -98,99 +94,87 @@ continuing.**
 
 ## Run of show
 
-1. **Government login** (`gov@dgms.gov.in`) → national overview at `/gov`. The headline
-   numbers cover all 74 monitored mines; the core sample board shows the **five highest-risk
-   mines nationally**, each labelled with its district so it is obvious where the worst risk
-   sits. The page refreshes itself, so nothing needs reloading on stage.
+1. **Government login** (`gov@dgms.gov.in`, quick-fill "Government (DGMS)") → national overview.
+   The headline numbers cover all 74 mines; the core sample board shows the five highest-risk
+   mines nationally, each with its district. The page refreshes itself.
 
-   **Then use the Region dropdown** on the Core Sample Board. Pick Jharkhand: the board fills
-   with all 13 of that state's mines, and every number above it rescopes - the average drops
-   from 83.2 national to 78.1 for Jharkhand. The selection follows you to the Priority Queue,
-   Sensors and Trends tabs, so an official working one region never has to reselect it.
-2. **Inspection priority** → `/gov/inspections`. All five ranked most urgent first, each with
-   plain-language reasoning and a trend arrow. Talcher is #1.
-3. **CV demo — in the product, not a terminal.** Switch to the **Mine Head tab** (Singrauli,
-   `head.mp-sgr-02@coalmine.in`) and use the **PPE detection** panel: choose
-   `backend/data/samples/images/metro_shaft_workers.jpg` and press *Run PPE detection*.
+   **Then use the State dropdown.** Pick Odisha: the board fills with all 19 Odisha mines and
+   every number rescopes - the average moves from 83.2 national to 86.8 for Odisha. The
+   selection follows you to the Priority Queue, Sensors and Trends tabs.
+2. **Priority Queue tab** → every mine ranked most urgent first, each with its reasoning and a
+   trend. The ranking is urgency = (100 - score) + rising-event pressure.
+3. **PPE vision - in the product.** Switch to the **Mine Head tab** (Jayant) and press **Run PPE
+   detection**; choose the sample image (see *Before the room*). The panel shows the annotated
+   frame with violations boxed in red and the score move - **80 → 70, Low → Medium** with the
+   fixture's two violations (80 → 75 with real YOLO on the metro-shaft photo).
 
-   Real YOLO inference on a real photograph. The panel shows the annotated frame with the
-   violation boxed in red, and the score move **80 → 75, LOW → MEDIUM**.
+   Switch back to the **Government tab without reloading**: Jayant has turned yellow and the
+   fleet counts have moved within about 5 seconds. Uploading `with_ppe.jpg` afterwards is a clean
+   re-inspection: it resolves every open PPE finding from vision at that mine (older seeded ones
+   too), so the score climbs back - possibly above 80.
+4. **Live sensors** → `run_all.bat --sim` starts the simulator, or in a terminal:
+   `python scripts\run_simulator.py --interval 2 --loop`. It replays the last 14 days of the demo
+   data through `POST /v1/sensor-readings/ingest`, one data-hour per 2 s tick, judged against the
+   **legal limits** in `data/schema/rules.yaml` (methane 1.25 % / 0.75 % return air - SAF-11;
+   wet-bulb 33.5 °C - HLT-05; dust 2 mg/m³ as an 8-hour average - HLT-04; no verified CO limit).
+   Breaches are rare in calibrated data, so pick **Odisha** in the State filter: **Nandira
+   (OD-ANG-57)** breaches most often - down 3 on a breach, back 12 s later with nobody touching
+   anything. The terminal prints every move. Ctrl+C, and the board is back at baseline within
+   12 seconds. Expect the pre-flight banner here - step 3 already moved Jayant.
+   (Dust rarely breaches in the replay: its limit is an 8-hour average, and the replay compresses
+   hours into seconds.)
+5. **Drill down** → click Bhubaneswari. Score with the formula, alerts (each a translated
+   `{code, params}`), sensor trends with the legal limit lines, and one row of records:
+   **violations** (all 11 categories), **corrective actions** (overdue ones flagged),
+   **incidents** (the dangerous occurrence of 18 Sept, reported after 3 h - within 48 h, RPT-05 -
+   linked to the strata violation before it) and the **audit trail**.
+6. **Raise a directive** → **Flag for inspection** on the drill-down. It records the score at the
+   moment of the click and appears on the mine's dashboard tagged *From DGMS*.
+7. **Sensors tab (Government)** → which mines are breaching right now, per sensor type, with the
+   legal limit and "No verified limit" where none exists.
+8. **Sign out, Mine Head login** (quick-fill "Mine Head - Bhubaneswari") → own mine only. No
+   board, no comparison, no Priority Queue tab.
+9. **Close the loop** → resolve the directive with a written action and a photograph. Then open
+   **Violations**, pick an open one, **Record corrective action**, and close it from **Corrective
+   actions** with proof: the violation is resolved and the score rises **45 → 50, High → Medium**.
+   Back on the Government tab: the resolution and its proof are there, with **Reopen** if the
+   evidence is not good enough (the earlier attempt stays in the history).
+10. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
+    mines. Opening a mine of another company answers **404** - exactly like a mine that does not
+    exist, so nothing leaks.
+11. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
+    click. Prove it from the tests or the API:
 
-   Now switch back to the **Government tab without reloading it**: Singrauli has already turned
-   yellow and the fleet counts have moved. That hand-off is the strongest moment in the demo —
-   an operator uploads footage, and the authority's board changes on its own within ~5 seconds.
-
-   (`python scripts/demo_vision.py` still works and is the fallback if the browser misbehaves.)
-4. **IoT simulator** → `run_all.bat --sim` starts it for you, or in a terminal:
-   `backend\.venv\Scripts\python.exe scripts\run_simulator.py --interval 2 --loop`
-   Live sensor telemetry, one pass every 24 seconds. Most ticks are clean on purpose: a mine
-   breaches once or twice per pass, so the board sits at its baseline and dips when a site
-   actually has a problem. Each breach stops counting 12 s later, so mines climb back on their
-   own. Watch **Jharia** on a Mine Head tab: it has no PPE violations, so every move is its air -
-   down on a breach, back to 100 as the breach ages out, with nobody touching anything. The
-   terminal marks those ticks `(older breaches aged out)`. Press Ctrl+C and the whole board is
-   back at baseline within about 12 seconds. Expect the pre-flight banner here — step 3 already
-   moved Singrauli, which is exactly the drift it reports.
-   (If you change `--interval`, scale `BREACH_WINDOW_HOURS` with it: 6s -> 0.01, 2s -> 0.0033.)
-5. **Drill down** → click any tile. Score with the formula shown, active alerts, three sensor
-   charts with dashed limit lines and red breach markers, PPE violation log, and audit trail.
-6. **Back to inspection priority** → the moved mine has climbed the ranking. Closes the loop from
-   detection to authority action.
-7. **Sensors tab (Government)** → the risk view. Which mines are breaching *right now*,
-   sortable by severity and filterable by sensor, with breach counts split by gas / dust /
-   temperature so "this mine's problem is mostly gas" is readable at a glance. Distinct from the
-   Overview board, which shows accumulated score rather than current condition.
-
-8. **Raise a directive** → open any mine's drill-down and use **Raise alert**. This is a
-   Government instruction to that operator, not an automated finding, and it appears on their
-   dashboard tagged *From DGMS*.
-
-9. **Log out, Mine Head login** → own mine only. No grid, no comparison, no Priority Queue tab.
-   Their **Sensors** tab is the same data framed as performance: current reading per sensor with
-   a plain-language status.
-
-10. **Close the loop** → the directive is waiting on their Overview. Resolve it with a written
-    corrective action and a photograph. Switch back to the Government tab without reloading: the
-    resolution and its proof are there, with a **Reopen** control if the evidence is not good
-    enough. Reopening keeps the earlier attempt, so both submissions stay comparable.
-11. **If a judge asks about access control**, do not go looking for it in the UI - there is
-    deliberately nothing to click. A Mine Head simply never sees another mine, which is the
-    point. Prove it one of two ways:
-
-    ```bash
-    backend\.venv\Scripts\python.exe -m pytest backend/tests/test_access_control.py -v
+    ```bat
+    cd api && run_tests.bat api ScopingCest
     ```
 
-    That sweeps every mine-scoped route and asserts **403**, not a filtered empty list - an
-    empty list would read as a mine with no findings, which is the most dangerous possible
-    wrong answer here.
-
-    Or call the API directly with a Mine Head token and show the refusal:
-
-    ```bash
-    curl -i -H "Authorization: Bearer <mine head token>" http://localhost:8000/api/v1/mines/1
+    ```bat
+    curl -i -H "Authorization: Bearer <mine head token>" http://127.0.0.1:8080/v1/mines/1
     ```
 
-**After the run — and before the next one — re-seed.**
+    The second answers `404 {"error":{"code":"NOT_FOUND"}}` for any mine outside the account's
+    scope. An empty list would read as a mine with no findings - the most dangerous wrong answer
+    in a compliance system - so out-of-scope is always a 404, never a filtered empty result.
+
+**After the run - and before the next one - re-seed.**
 
 ---
 
 ## If a judge asks "how does a mine get its score back?"
 
-Two ways, on purpose:
-
-> "Environmental breaches are conditions, so they age out: a breach counts only inside a rolling
-> window, and once the air has been clean for the whole window the penalty is gone - you just
-> watched Jharia do that. PPE violations are findings about how people were working, so they
-> stay until a clean re-inspection resolves them. Nothing is ever deleted; every breach and
-> violation is still in the log and the audit trail. The demo window is 12 seconds so you can see
-> it happen; a real deployment would set it in hours."
+> "Sensor breaches are conditions, so they age out: a breach counts only inside a rolling window,
+> and once the air has been clean for the whole window the penalty is gone - you just watched
+> Nandira do that. Violations are findings, so they stay until someone closes them with evidence:
+> a corrective action with proof, or a clean PPE re-inspection. Nothing is deleted; every breach,
+> violation and resolution stays in the log, and the audit trail is hash-chained
+> (`api\yii.bat audit/verify`). The demo window is 12 seconds so you can see it happen; a real
+> deployment would set it in hours."
 
 ---
 
 ## Open questions to settle before the demo (PRD 8.1)
 
-- Recorded video over live feed — recorded is the safer bet on venue hardware; decide and lock it.
-- Final `weight_ppe` / `weight_env` values. Note that retuning changes the baseline table above,
-  so regenerate the seed and update this document together.
-- Number of mines on the grid — five reads well; three bands are visible at once.
+- Recorded video over live feed - recorded is the safer bet on venue hardware; decide and lock it.
+- Final `WEIGHT_PPE` / `WEIGHT_ENV` values (api/.env). Retuning changes the baseline table above;
+  the demo-score test (`api/tests/api/DemoScoreCest.php`) will say so.

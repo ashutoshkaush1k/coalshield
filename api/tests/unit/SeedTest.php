@@ -13,15 +13,16 @@ use Yii;
 use yii\console\ExitCode;
 use yii\helpers\FileHelper;
 
-/** The test database was seeded with `yii_test seed small` by run_tests.bat. */
+/** The test database was seeded by run_tests.bat (`yii_test seed demo` unless TEST_PRESET says otherwise). */
 class SeedTest extends Unit
 {
-    private const PHASE1_TABLES = ['subsidiary', 'area', 'mine', 'user', 'file'];
+    private const LOADED_TABLES = ['subsidiary', 'area', 'mine', 'user', 'file', 'inspection', 'observation',
+        'violation', 'alert', 'corrective_action', 'incident', 'sensor_reading', 'env_reading'];
 
     public function testRowCountsMatchTheManifest(): void
     {
-        $manifest = $this->manifest('small');
-        foreach (self::PHASE1_TABLES as $table) {
+        $manifest = $this->manifest(self::seededPreset());
+        foreach (self::LOADED_TABLES as $table) {
             $count = (int) Yii::$app->db->createCommand("SELECT count(*) FROM \"$table\"")->queryScalar();
             $this->assertSame($manifest['tables'][$table]['rows'], $count, $table);
         }
@@ -66,7 +67,7 @@ class SeedTest extends Unit
     {
         $dir = Yii::getAlias('@runtime') . '/seed-test-' . bin2hex(random_bytes(4));
         FileHelper::createDirectory($dir . '/broken');
-        $source = $this->presetDir('small');
+        $source = $this->presetDir(self::seededPreset());
         foreach (['_manifest.json', '_validation.json', 'subsidiary.csv', 'area.csv'] as $name) {
             copy("$source/$name", "$dir/broken/$name");
         }
@@ -94,7 +95,7 @@ class SeedTest extends Unit
     {
         $dir = Yii::getAlias('@runtime') . '/seed-test-' . bin2hex(random_bytes(4));
         FileHelper::createDirectory($dir . '/invalid');
-        copy($this->presetDir('small') . '/_manifest.json', "$dir/invalid/_manifest.json");
+        copy($this->presetDir(self::seededPreset()) . '/_manifest.json', "$dir/invalid/_manifest.json");
         file_put_contents("$dir/invalid/_validation.json", json_encode(['checks' => [['check' => 'V1 schema', 'pass' => false]]]));
 
         $params = Yii::$app->params;
@@ -106,6 +107,27 @@ class SeedTest extends Unit
             Yii::$app->params = $params;
             FileHelper::removeDirectory($dir);
         }
+    }
+
+    public static function seededPreset(): string
+    {
+        $values = Yii::$app->db->createCommand("SELECT new_values FROM audit_log WHERE entity = 'seed' ORDER BY id LIMIT 1")->queryScalar();
+        return json_decode($values, true)['preset'];
+    }
+
+    public function testBaselineIsRecordedInTheSeedEntry(): void
+    {
+        $values = json_decode(Yii::$app->db->createCommand("SELECT new_values FROM audit_log WHERE entity = 'seed' ORDER BY id LIMIT 1")->queryScalar(), true);
+        $open = (int) Yii::$app->db->createCommand('SELECT count(*) FROM violation WHERE NOT resolved')->queryScalar();
+        $this->assertSame($open, array_sum($values['baseline_open_violations']));
+    }
+
+    public function testSensorReadingsLandInMonthlyPartitions(): void
+    {
+        $inDefault = (int) Yii::$app->db->createCommand('SELECT count(*) FROM sensor_reading_default')->queryScalar();
+        $this->assertSame(0, $inDefault, 'every seeded reading has a monthly partition');
+        $partitions = Yii::$app->db->createCommand("SELECT count(*) FROM pg_inherits WHERE inhparent = 'sensor_reading'::regclass")->queryScalar();
+        $this->assertGreaterThan(12, (int) $partitions);
     }
 
     private function presetDir(string $preset): string

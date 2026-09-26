@@ -39,7 +39,8 @@ final class ListingQuery
             $query->andWhere([$table . '.' . $attribute => $value]);
         }
 
-        $order = [];
+        // An ordering the controller set first (e.g. open directives on top) stays in front.
+        $order = $query->orderBy ?? [];
         foreach (array_filter(explode(',', (string) $request->get('sort', $defaultSort))) as $key) {
             $desc = str_starts_with($key, '-');
             $attribute = ltrim($key, '-');

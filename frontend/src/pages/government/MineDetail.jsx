@@ -1,33 +1,36 @@
 // Drill-down: a compact summary on the page, supporting detail in drawers.
 //
-// Previously every section stacked on one long page - compliance, alerts, three sensor
-// charts, the violation log and the audit trail - so the useful part (the score and what
-// to do about it) was buried above a lot of scrolling. The summary now answers "how is
-// this mine and what needs doing"; everything else opens on demand.
+// The summary answers "how is this mine and what needs doing": score, band, the arithmetic,
+// alerts and directives. Sensors, violations, corrective actions, incidents and the audit trail
+// open on demand (components/records/MineRecords.jsx).
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ALERT_STATUS, ALERT_TYPE, reopenAlert } from "../../api/alerts";
-import { listAlerts } from "../../api/alerts";
+import { ALERT_STATUS, isOpenDirective, listAlerts, reopenAlert } from "../../api/alerts";
 import { listAudit } from "../../api/audit";
+import { listCorrectiveActions } from "../../api/correctiveActions";
+import { listIncidents } from "../../api/incidents";
 import { getMine } from "../../api/mines";
 import { getTrend } from "../../api/sensors";
 import { listViolations } from "../../api/violations";
+import { can } from "../../auth/permissions";
 import { AlertDetailDrawer } from "../../components/alerts/AlertDetailDrawer";
 import { AlertList } from "../../components/alerts/AlertList";
 import { FlagMineButton } from "../../components/alerts/FlagMineButton";
 import { SensorTrendChart } from "../../components/charts/SensorTrendChart";
-import { DetailDrawer } from "../../components/common/DetailDrawer";
-import { EmptyState } from "../../components/common/EmptyState";
+import { DemoTag } from "../../components/common/DemoTag";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { RiskMark } from "../../components/compliance/RiskMark";
+import { Topbar } from "../../components/layout/Topbar";
 import { Drawer } from "../../components/overlay/Overlay";
 import { useToast } from "../../components/overlay/ToastHost";
-import { Topbar } from "../../components/layout/Topbar";
+import { MineRecords } from "../../components/records/MineRecords";
+import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
-import { breachesLabel, fmtDateTime, fmtPercent, fmtScore, humanise } from "../../utils/format";
+import { sensorLabel } from "../../i18n/labels";
+import { useT } from "../../i18n/t";
+import { breachesLabel, fmtScore } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
-import { DemoTag } from "../../components/common/DemoTag";
 
 /**
  * One mine's full bundle. Exported so the Mine Head view composes exactly the same
@@ -37,10 +40,14 @@ export const loadMineBundle = (mineId) =>
   Promise.all([
     getMine(mineId),
     getTrend(mineId),
-    listViolations({ mine_id: mineId, limit: 25 }),
-    listAlerts({ mine_id: mineId, limit: 25 }),
-    listAudit({ mine_id: mineId, limit: 40 }),
-  ]).then(([mine, trend, violations, alerts, audit]) => ({ mine, trend, violations, alerts, audit }));
+    listViolations({ mine_id: mineId, per_page: 50 }),
+    listAlerts({ mine_id: mineId, per_page: 30 }),
+    listAudit({ mine_id: mineId, per_page: 40 }),
+    listCorrectiveActions({ mine_id: mineId, per_page: 50 }),
+    listIncidents({ mine_id: mineId, per_page: 50 }),
+  ]).then(([mine, trend, violations, alerts, audit, correctiveActions, incidents]) => ({
+    mine, trend, violations, alerts, audit, correctiveActions, incidents,
+  }));
 
 function Stat({ label, value, tone }) {
   return (
@@ -51,44 +58,71 @@ function Stat({ label, value, tone }) {
   );
 }
 
+/** Score, band, tallies and the formula - the same block on both dashboards. */
+export function ComplianceSummary({ mine }) {
+  const t = useT();
+  const c = mine.compliance;
+  const cls = riskClass(c.risk_level);
+  return (
+    <>
+      <div className="hero-figure">
+        <div>
+          <span className="label">{t("mine.score")} <DemoTag /></span>
+          <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
+          <div style={{ marginTop: "var(--space-3)" }}>
+            <RiskMark level={c.risk_level} />
+          </div>
+        </div>
+        <div className="spacer" />
+        <div className="tally-set">
+          <Stat label={t("mine.openViolations")} value={c.violation_count} />
+          <Stat label={breachesLabel(c.breach_window_hours)} value={c.breach_count} />
+          <Stat label={t("mine.openAlerts")} value={mine.open_alerts} tone={mine.open_alerts ? "risk-high" : undefined} />
+        </div>
+      </div>
+      <div className="meter" style={{ marginTop: "var(--space-5)" }}>
+        <i className={cls} style={{ width: `${Math.max(0, Math.min(100, c.score))}%` }} />
+      </div>
+      <div className="formula" style={{ marginTop: "var(--space-3)" }}>
+        100 - ({c.violation_count} {t("mine.violationsShort")} x {c.weight_ppe}) - ({c.breach_count} {t("mine.breachesShort")} x{" "}
+        {c.weight_env}) = {fmtScore(c.score)}
+      </div>
+    </>
+  );
+}
+
+export const mineSubtitle = (mine) => `${mine.code} · ${mine.district}, ${mine.state} · ${mine.operator_name}`;
+
 export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
+  const t = useT();
+  const { user } = useAuth();
   const load = () => loadMineBundle(mineId);
   const { data, error, loading, refresh } = usePolling(load, { deps: [mineId, refreshToken] });
-
-  // Which supporting detail is open. Drawers read from `data`, so a poll landing while
-  // one is open updates it in place rather than closing it.
-  const [panel, setPanel] = useState(null);
+  const [sensorsOpen, setSensorsOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState(null);
-  const [selectedRow, setSelectedRow] = useState(null);
 
-  if (loading && !data) return <Loader label="Loading mine..." />;
-  // A 403 here is the access model working, so it replaces the page rather than sitting
-  // beside a half-rendered one.
+  if (loading && !data) return <Loader label={t("mine.loading")} />;
+  // Out of scope is a 404 like a missing mine, so it replaces the page.
   if (error && !data) {
     return (
       <>
-        <Topbar title="Mine detail" />
+        <Topbar title={t("mine.detail")} />
         <div className="content">
           <ErrorNotice error={error} />
-          {backTo && <p style={{ marginTop: 12 }}><Link to={backTo}>Back</Link></p>}
+          {backTo && <p style={{ marginTop: 12 }}><Link to={backTo}>{t("mine.back")}</Link></p>}
         </div>
       </>
     );
   }
 
-  const { mine, trend, violations, alerts, audit } = data;
-  const c = mine.compliance;
-  const cls = riskClass(c.risk_level);
-  const openDirectives = alerts.filter(
-    (a) => a.alert_type === ALERT_TYPE.DIRECTIVE && a.status === ALERT_STATUS.OPEN,
-  ).length;
-  // Live alert, so a drawer opened on one reflects the latest poll instead of freezing.
+  const { mine, trend, alerts } = data;
+  const openDirectives = alerts.filter(isOpenDirective).length;
   const liveAlert = selectedAlert && alerts.find((a) => a.id === selectedAlert.id);
 
   return (
     <>
-      <Topbar title={mine.name} subtitle={`${mine.code} \u00b7 ${mine.location} \u00b7 ${mine.operator}`}>
-        {backTo && <Link className="btn" to={backTo}>Back to overview</Link>}
+      <Topbar title={mine.name} subtitle={mineSubtitle(mine)}>
+        {backTo && <Link className="btn" to={backTo}>{t("mine.backToOverview")}</Link>}
       </Topbar>
 
       <div className="content stack">
@@ -97,53 +131,21 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
         <div className="grid split">
           <section className="panel-block">
             <div className="panel-body">
-              <div className="hero-figure">
-                <div>
-                  <span className="label">Compliance score <DemoTag /></span>
-                  <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
-                  <div style={{ marginTop: "var(--space-3)" }}>
-                    <RiskMark level={c.risk_level} />
-                  </div>
-                </div>
-                <div className="spacer" />
-                <div className="tally-set">
-                  <Stat label="Violations" value={c.violation_count} />
-                  <Stat label={breachesLabel(c.breach_window_hours)} value={c.breach_count} />
-                  <Stat label="Alerts" value={mine.open_alerts}
-                        tone={mine.open_alerts ? "risk-high" : undefined} />
-                </div>
-              </div>
-
-              <div className="meter" style={{ marginTop: "var(--space-5)" }}>
-                <i className={cls} style={{ width: `${Math.max(0, Math.min(100, c.score))}%` }} />
-              </div>
-
-              <div className="formula" style={{ marginTop: "var(--space-3)" }}>
-                100 - ({c.violation_count} PPE x {c.weight_ppe}) - ({c.breach_count} breaches x{" "}
-                {c.weight_env}) = {fmtScore(c.score)}
-              </div>
-
+              <ComplianceSummary mine={mine} />
               <div className="row wrap" style={{ marginTop: "var(--space-5)" }}>
-                <button type="button" onClick={() => setPanel("sensors")}>Sensor trends</button>
-                <button type="button" onClick={() => setPanel("violations")}>
-                  PPE violations ({violations.length})
-                </button>
-                <button type="button" onClick={() => setPanel("audit")}>
-                  Audit trail ({audit.length})
-                </button>
+                <button type="button" onClick={() => setSensorsOpen(true)}>{t("mine.sensorTrends")}</button>
                 <div className="spacer" />
-                <FlagMineButton mineId={mine.id} onFlagged={refresh} />
+                {can(user, "directive.create") && <FlagMineButton mineId={mine.id} onFlagged={refresh} />}
               </div>
+              <MineRecords bundle={data} onChanged={refresh} />
             </div>
           </section>
 
           <section className="panel-block">
             <div className="panel-head">
               <div>
-                <h2>Alerts</h2>
-                <div className="hint">
-                  {openDirectives} open directive{openDirectives === 1 ? "" : "s"}
-                </div>
+                <h2>{t("mine.alerts")}</h2>
+                <div className="hint">{t("mine.openDirectives", { count: openDirectives })}</div>
               </div>
             </div>
             <div className="panel-body flush scroll-y">
@@ -155,17 +157,21 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
         {children}
       </div>
 
-      <Drawer open={panel === "sensors"} onClose={() => setPanel(null)}
-              title="Sensor trends" subtitle="Markers show readings past the safe limit">
+      <Drawer open={sensorsOpen} onClose={() => setSensorsOpen(false)}
+              title={t("mine.sensorTrends")} subtitle={t("mine.sensorTrendsHint")}>
         <div className="stack">
           {trend.series.map((series) => (
             <div key={series.sensor_type}>
               <div className="row" style={{ marginBottom: "var(--space-2)" }}>
-                <strong style={{ textTransform: "capitalize" }}>{series.sensor_type}</strong>
-                <span className="muted small">limit {series.threshold}{series.unit}</span>
+                <strong>{sensorLabel(series.sensor_type)}</strong>
+                <span className="muted small">
+                  {series.threshold != null
+                    ? t("sensor.limit", { limit: series.threshold, unit: series.unit, obligation: series.obligation })
+                    : t("sensor.noLimit")}
+                </span>
                 <div className="spacer" />
-                <span className={series.breach_count ? "sev HIGH" : "tag"}>
-                  {series.breach_count} breach{series.breach_count === 1 ? "" : "es"}
+                <span className={series.breach_count ? "sev high" : "tag"}>
+                  {t("mine.breaches", { count: series.breach_count })}
                 </span>
               </div>
               <SensorTrendChart series={series} mineId={trend.mine_id} />
@@ -174,120 +180,33 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
         </div>
       </Drawer>
 
-      <Drawer open={panel === "violations"} onClose={() => setPanel(null)}
-              title="PPE violations" subtitle={`${violations.length} most recent`} flush>
-        {violations.length ? (
-          <table>
-            <thead>
-              <tr><th>Violation</th><th className="num">Confidence</th><th>Detected</th></tr>
-            </thead>
-            <tbody>
-              {violations.map((v) => (
-                <tr key={v.id} className="clickable"
-                    onClick={() => setSelectedRow({ kind: "violation", row: v })}>
-                  <td><strong>{humanise(v.violation_type)}</strong></td>
-                  <td className="num">{fmtPercent(v.confidence)}</td>
-                  <td className="mono">{fmtDateTime(v.detected_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <EmptyState>No PPE violations recorded.</EmptyState>
-        )}
-      </Drawer>
-
-      <Drawer open={panel === "audit"} onClose={() => setPanel(null)}
-              title="Audit trail" subtitle="Every scored event, timestamped" flush>
-        {audit.length ? (
-          <table>
-            <thead><tr><th>Action</th><th>When</th></tr></thead>
-            <tbody>
-              {audit.map((entry) => (
-                <tr key={entry.id} className="clickable"
-                    onClick={() => setSelectedRow({ kind: "audit", row: entry })}>
-                  <td>
-                    <span className="mono">{entry.action}</span>
-                    <div className="muted small">{entry.detail.slice(0, 60)}</div>
-                  </td>
-                  <td className="mono">{fmtDateTime(entry.created_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <EmptyState>No audit entries yet.</EmptyState>
-        )}
-      </Drawer>
-
       <AlertDetailDrawer
         alert={liveAlert}
         onClose={() => setSelectedAlert(null)}
         action={
-          liveAlert?.alert_type === ALERT_TYPE.DIRECTIVE &&
-          liveAlert?.status === ALERT_STATUS.RESOLVED ? (
-            <ReopenAction alert={liveAlert} onReopened={refresh} />
-          ) : null
+          liveAlert?.is_directive && liveAlert?.status === ALERT_STATUS.RESOLVED && can(user, "directive.reopen")
+            ? <ReopenAction alert={liveAlert} onReopened={refresh} />
+            : null
         }
       />
-
-      <RowDetail selection={selectedRow} onClose={() => setSelectedRow(null)} />
     </>
-  );
-}
-
-/** Detail for one violation or audit entry, opened from its table row. */
-function RowDetail({ selection, onClose }) {
-  if (!selection) return null;
-  const { kind, row } = selection;
-
-  const fields =
-    kind === "violation"
-      ? [
-          { label: "Violation", value: humanise(row.violation_type) },
-          { label: "Confidence", value: fmtPercent(row.confidence) },
-          { label: "Source", value: row.source },
-          { label: "Detected", value: fmtDateTime(row.detected_at) },
-          { label: "Evidence frame", value: row.frame_ref, mono: true },
-          {
-            label: "Status",
-            value: row.resolved ? `Resolved ${fmtDateTime(row.resolved_at)}` : "Open",
-          },
-        ]
-      : [
-          { label: "Action", value: row.action, mono: true },
-          { label: "Detail", value: row.detail },
-          { label: "Actor", value: row.actor },
-          { label: "Recorded", value: fmtDateTime(row.created_at) },
-          {
-            label: "Entity",
-            value: row.entity_type ? `${row.entity_type} #${row.entity_id}` : null,
-            mono: true,
-          },
-        ];
-
-  return (
-    <DetailDrawer
-      open
-      onClose={onClose}
-      title={kind === "violation" ? "Violation detail" : "Audit entry"}
-      subtitle={kind === "violation" ? humanise(row.violation_type) : row.action}
-      fields={fields}
-    />
   );
 }
 
 /** Government sends a directive back when the submitted proof is not sufficient. */
 function ReopenAction({ alert, onReopened }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const { notify } = useToast();
 
   async function submit() {
     setBusy(true);
     try {
-      await reopenAlert(alert.id, "Proof not sufficient");
-      notify({ title: "Directive reopened", body: "The mine head has been asked to resubmit." });
+      await reopenAlert(alert.id, t("mine.reopenReason"));
+      notify({ title: t("mine.reopened"), body: t("mine.reopenedBody") });
       onReopened?.();
+    } catch (err) {
+      notify({ title: t("mine.reopenFailed"), body: err.message, tone: "error" });
     } finally {
       setBusy(false);
     }
@@ -295,7 +214,7 @@ function ReopenAction({ alert, onReopened }) {
 
   return (
     <button type="button" onClick={submit} disabled={busy}>
-      {busy ? "Reopening..." : "Reopen"}
+      {busy ? t("mine.reopening") : t("mine.reopen")}
     </button>
   );
 }

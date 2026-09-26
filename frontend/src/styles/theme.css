@@ -46,6 +46,9 @@
   --sensor-gas: #6366f1;
   --sensor-dust: #0ea5e9;
   --sensor-temperature: #f97316;
+  --sensor-gas-return: #8b5cf6;
+  --sensor-co: #64748b;
+  --sensor-humidity: #14b8a6;
   --chart-grid: #eef0f3;
   --chart-axis: #9ca3af;
 

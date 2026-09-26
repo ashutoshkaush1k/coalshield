@@ -3,7 +3,7 @@ import { getFleetSensors } from "../../../api/sensors";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { StateFilter } from "../../../components/common/StateFilter";
-import { BreachBreakdown } from "../../../components/sensors/BreachBreakdown";
+import { BreachBreakdown, countsByCategory } from "../../../components/sensors/BreachBreakdown";
 import { FleetRiskTable } from "../../../components/sensors/FleetRiskTable";
 import { usePolling } from "../../../hooks/usePolling";
 
@@ -16,14 +16,14 @@ export function SensorRiskPanel({ state, states, onStateChange }) {
 
   if (loading && !data) return <Loader label="Reading current sensor status..." />;
 
-  const fleetCounts = (data?.mines ?? []).reduce((acc, mine) => {
+  const fleetCounts = countsByCategory((data?.mines ?? []).reduce((acc, mine) => {
     for (const s of mine.sensors) acc[s.sensor_type] = (acc[s.sensor_type] ?? 0) + s.open_breaches;
     return acc;
-  }, {});
+  }, {}));
 
   return (
     <div className="stack">
-      <ErrorNotice error={error} context="The fleet sensor view is available to Government accounts only." />
+      <ErrorNotice error={error} context="The fleet sensor view covers more than one mine, so it is not available to a single-mine account." />
 
       {data && (
         <>

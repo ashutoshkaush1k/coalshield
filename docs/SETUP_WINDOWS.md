@@ -134,18 +134,115 @@ serve.bat
 
 - `yii.bat` / `yii_test.bat` run the console against the development / test database.
 - `yii seed <preset>` loads `data/out/<preset>/*.csv`. Generate a preset first with
-  `data\run_data.bat small|demo|full` (see `data/HANDOFF.md`); `run_tests.bat` generates `small`
-  itself if it is missing.
+  `data\run_data.bat small|demo|full` (see `data/HANDOFF.md`). `run_tests.bat` seeds `demo` into
+  the test database (about 25 s, so the demo-score test checks the real numbers) and generates it
+  if it is missing.
 - `serve.bat` starts PHP's built-in server on <http://127.0.0.1:8080> (check `/v1/health`).
 - Real environment variables win over `.env` (phpdotenv immutable mode); Docker uses this to point
   `DB_HOST` at the `db` container.
 
-## 7. Terminal pitfalls
+## 7. Everyday start and stop: run_all.bat
 
-- Running `pg_ctl start` from a tool that captures output (some IDE terminals, CI runners) can hang:
-  the server inherits the output pipe. `scripts\db.bat start` redirects the server's output to the
-  log file with `-l`; if a wrapper still hangs, start it detached:
-  `Start-Process D:\tools\pgsql\bin\pg_ctl.exe -ArgumentList '-D','D:\tools\pgdata16','-l','D:\tools\pglog\postgres.log','start' -WindowStyle Hidden`.
+```bat
+run_all.bat
+run_all.bat --sim
+run_all.bat --stop
+```
+
+`run_all.bat` (add `--sim` for the live sensor replay):
+
+1. Checks PHP, `api\vendor`, `api\.env` and `frontend\node_modules`.
+2. **Starts PostgreSQL** through `scripts\db.bat start` if it is not already accepting
+   connections, then waits (up to 30 s, polling `pg_isready`). If it does not come up, it stops
+   with the last lines of `D:\tools\pglog\postgres.log` and the usual causes, and starts nothing
+   else.
+3. First run only: migrations, RBAC and `yii seed demo`, and an API key for the simulator
+   (`scripts\.simulator.key`). Later runs only apply pending migrations.
+4. Opens `SIH-API` (8080), `SIH-AI` (8001, when `backend\.venv` exists), `SIH-Frontend` (5173)
+   and, with `--sim`, `SIH-Simulator`; waits for the ports and opens the dashboard.
+
+`run_all.bat --stop` closes the `SIH-*` windows and stops PostgreSQL.
+
+**Stopping never corrupts the database.** `db.bat start` launches PostgreSQL in its own hidden
+console, so closing any `SIH-*` window (or the window that ran `run_all.bat`) does not touch it.
+It stops only through `run_all.bat --stop` or `scripts\db.bat stop`, a `fast` shutdown: open
+connections are closed and a checkpoint is written, and the next start logs `database system was
+shut down` (clean) rather than a recovery. Even a power cut is survivable: PostgreSQL replays its
+write-ahead log on the next start. The one thing to avoid is deleting `postmaster.pid` while a
+`postgres.exe` is still running.
+
+`scripts\db.bat status | start | stop | wait | psql` also work on their own.
+
+## 8. Where the secrets live, and how to regenerate them
+
+Nothing secret is in the repository. The files, all outside git:
+
+| File | Holds | Used by |
+|---|---|---|
+| `D:\tools\secrets\pg_superuser.txt` | password of the PostgreSQL superuser `postgres` | setup only (roles, databases, PostGIS) |
+| `D:\tools\secrets\pg_app.txt` | password of the application role `coalshield` | copied into `api\.env` |
+| `api\.env` (git-ignored) | `DB_PASSWORD` (= `pg_app.txt`), `JWT_SECRET` (signs tokens and file links) | the API and its console |
+| `scripts\.simulator.key` (git-ignored) | the simulator's API key; the database stores only its SHA-256 | `scripts\run_simulator.py` |
+| `frontend\.env` (git-ignored) | no secret, only `VITE_API_URL` | Vite |
+
+Regenerate them (PowerShell, from the repository root; `api\.env` is edited by hand):
+
+```powershell
+# 1. New application-role password: write it, apply it, then copy it into api\.env as DB_PASSWORD
+-join ((48..57 + 65..90 + 97..122) | Get-Random -Count 24 | ForEach-Object {[char]$_}) | Set-Content -NoNewline D:\tools\secrets\pg_app.txt
+$env:PGPASSWORD = Get-Content D:\tools\secrets\pg_superuser.txt
+D:\tools\pgsql\bin\psql.exe -h 127.0.0.1 -U postgres -c "ALTER ROLE coalshield PASSWORD '$(Get-Content D:\tools\secrets\pg_app.txt)'"
+Remove-Item Env:PGPASSWORD
+
+# 2. New JWT secret: paste the output into api\.env as JWT_SECRET
+#    (signs everyone out and invalidates signed file links)
+C:\xampp\php\php.exe -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
+
+# 3. New simulator key (the old one stops working at once)
+cd api; .\yii.bat api-key/issue simulator --out=..\scripts\.simulator.key; cd ..
+```
+
+The superuser password changes the same way (`ALTER ROLE postgres PASSWORD '...'`, connected with
+the old one).
+
+**Check that no secret file is tracked** (worth running before any commit you are unsure about):
+
+```bat
+git ls-files | findstr /r /i "\.env$ \.key$ secret pg_app pg_superuser"
+```
+
+```bat
+git check-ignore -v api/.env frontend/.env backend/.env scripts/.simulator.key
+```
+
+The first must print nothing; the second must list all four files with the `.gitignore` rule
+that ignores them. Result on 2026-09-27: no secret file tracked, none anywhere in the git history
+(`git log --all --diff-filter=A --name-only`), and all four ignored (`api/.gitignore` for
+`api/.env`, the root `.gitignore` for the others).
+
+## 9. Falling back to the FastAPI prototype
+
+The old stack is still in `backend/` (kept until Phase 8 confirms parity), but `run_all.bat` no
+longer starts it and the frontend now speaks the new contract. To run the prototype as it was,
+use a separate worktree at the last commit before the switch (Phase 1, `b026164`):
+
+```bat
+git worktree add ..\SIH_prototype b026164
+cd ..\SIH_prototype
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+run_all.bat
+```
+
+That tree's `run_all.bat` starts FastAPI on 8000 and its own frontend on 5173; stop the new stack
+first (`run_all.bat --stop`) or the ports collide. Remove it afterwards with
+`git worktree remove ..\SIH_prototype`. The prototype's own tests still run in this tree:
+`backend\.venv\Scripts\python.exe -m pytest backend/tests`.
+
+## 10. Terminal pitfalls
+
+- Running `pg_ctl start` from a tool that captures output (some IDE terminals, CI runners) can
+  hang: the server inherits the output pipe. `scripts\db.bat start` avoids this by starting the
+  server in a hidden console of its own (PowerShell `Start-Process -WindowStyle Hidden`).
 - Git Bash strips backslashes in unquoted heredocs; write Windows paths in `.bat` files with an
   editor or PowerShell.
 

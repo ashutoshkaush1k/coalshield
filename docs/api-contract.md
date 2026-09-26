@@ -1,41 +1,75 @@
-# API contract (v1)
+# API contract (v1, Yii2 `api/`)
 
-Base: `/api/v1`. All routes except `/auth/login` require `Authorization: Bearer <token>`.
-"Scoped" means the response is filtered to the caller's mine by `deps.resolve_mine_scope`.
+Base: `http://127.0.0.1:8080/v1`. JSON only. All routes except `POST /auth/login`, `GET /health`,
+the machine ingest (API key) and signed file links need `Authorization: Bearer <token>`.
+Differences from the FastAPI prototype: [API_CHANGES.md](API_CHANGES.md).
 
-| Method | Path | Role | Purpose |
+## Conventions (brief rule 8)
+
+- Lists: `page`, `per_page` (max 200; `limit` accepted as an alias), headers `X-Total-Count`,
+  `X-Page`, `X-Per-Page`; `filter[attr]=value`; `sort=-attr`. Unknown filter or sort attributes
+  are a 422.
+- Timestamps ISO-8601 UTC with `Z`; field names snake_case.
+- Errors, always: `{"error": {"code": "VALIDATION_FAILED", "params"?: {...}, "fields"?: {"due_at": ["INVALID_DATETIME"]}}}`.
+  Codes, not text: the frontend translates (`frontend/src/i18n/`).
+- `401 UNAUTHENTICATED` no or bad token · `403 FORBIDDEN` missing permission ·
+  `404 NOT_FOUND` missing **or outside your scope** · `422` validation, `INVALID_TRANSITION`,
+  `RECORD_LOCKED` · `503 AI_SERVICE_UNAVAILABLE`.
+
+## Endpoints
+
+"Scoped" = filtered to the caller's mines ([access-control.md](access-control.md)); a `mine_id`
+outside scope is 404. Permissions are in `api/config/rbac.php`.
+
+| Method | Path | Permission | Purpose |
 |---|---|---|---|
-| POST | `/auth/login` | public | Both login types; returns token with `role` + `mine_id` |
-| GET | `/auth/me` | any | Current identity and scope |
-| GET | `/mines` | any | All mines (Government) / own mine only (Mine Head) |
-| GET | `/mines/{mine_id}` | scoped | Mine detail, drill-down |
-| GET | `/dashboard` | any | Role-aware payload: multi-mine grid or own-mine summary |
-| GET | `/compliance/{mine_id}` | scoped | Current score + risk level |
-| GET | `/compliance/{mine_id}/history` | scoped | Score trend |
-| GET | `/sensors/{mine_id}` | scoped | Readings, filterable by sensor type and window |
-| GET | `/sensors/{mine_id}/trend` | scoped | Gas/dust/temperature series with thresholds |
-| POST | `/vision/analyze` | scoped | Upload image/video → detections, violations, annotated frame |
-| GET | `/violations` | scoped | Violation log |
-| GET | `/alerts` | scoped | Alerts feed (aggregated for Government) |
-| POST | `/alerts/{id}/ack` | scoped | Acknowledge an alert |
-| GET | `/inspections` | **Government** | Auto-ranked inspection queue (`?limit=N`) |
-| GET | `/audit` | scoped | Audit trail |
-| GET/POST/PATCH | `/corrective-actions` | **Mine Head** | Remediation tracker for own site |
-| WS | `/ws` | any | Live alert and sensor push |
+| POST | `/auth/login` | public | `{access_token, token_type, expires_in, user}` |
+| GET | `/users/me` (alias `/auth/me`) | `user.viewOwn` | profile incl. `permissions`, `mine_name`, `subsidiary_code` |
+| PATCH | `/users/me` | `user.updateOwnLanguage` | `preferred_language` only |
+| GET | `/mines`, `/mines/{id}` | `mine.view` | scoped; with `compliance`, `open_alerts` (`total_readings` on detail) |
+| GET | `/mines/geojson` | `mine.view` | FeatureCollection with score and band per mine |
+| GET | `/dashboard?state=` | `dashboard.view` | role-aware overview: stats, worst mines, queue preview |
+| GET | `/compliance/{mine_id}`, `/compliance/{mine_id}/history` | `compliance.view` | score with inputs; recorded points |
+| GET | `/sensors?state=` | `sensor.viewFleet` | latest reading per sensor per mine (multi-mine roles) |
+| GET | `/sensors/breaches?state=&mine_id=` | `sensor.view` | breach counts in 6-hour buckets by gas / dust / temperature |
+| GET | `/sensors/{mine_id}`, `/sensors/{mine_id}/trend?points=` | `sensor.view` | readings (paged); one series per sensor type with its legal limit |
+| GET | `/sensors/thresholds` | `sensor.view` | limits in use, from `data/schema/rules.yaml` |
+| POST | `/sensor-readings/ingest` | API key (`X-Api-Key`) | `{readings: [{mine_id|mine_code, sensor_type, value, recorded_at?}]}` |
+| GET | `/sensor-readings/baseline` | API key | simulator pre-flight (same as `/admin/baseline-check`) |
+| GET | `/violations`, `/violations/{id}` | `violation.view` | scoped; `?mine_id=&resolved=`, `filter[category]` |
+| GET/POST | `/corrective-actions` | `correctiveAction.view` / `.create` | list (`?overdue=1`); record for an own violation |
+| GET | `/corrective-actions/{id}` | `correctiveAction.view` | with violation and history |
+| POST | `/corrective-actions/{id}/resolve` | `correctiveAction.resolve` | multipart `proof_text`, `file?`; resolves the violation |
+| GET | `/inspections/priority?state=&limit=` | `inspection.viewQueue` | ranked queue, reasons as `{code, params}` |
+| GET/POST | `/inspections`, `/inspections/{id}` | `inspection.view` / `.manage` | records; schedule |
+| PATCH | `/inspections/{id}` | `inspection.manage` | edit; a closed (locked) inspection needs `reason` → `record_edit_log` |
+| POST | `/inspections/{id}/visit`, `/close` | `inspection.manage` | transitions (422 `INVALID_TRANSITION`) |
+| POST | `/inspections/{id}/observations` | `inspection.manage` | record an observation (visited inspections) |
+| GET | `/observations` | `inspection.view` | scoped list |
+| POST | `/observations/{id}/promote`, `/dismiss` | `inspection.manage` | promote creates the violation and its alert |
+| GET | `/alerts`, `/alerts/{id}` | `alert.view` | `{code, params}`; open directives first; `?status=&directives=&since=` |
+| POST | `/alerts/{id}/ack` | `alert.acknowledge` | open → acknowledged |
+| POST | `/alerts/directives` | `directive.create` | `{mine_id, message?, severity?, reference_id?}` |
+| POST | `/alerts/{id}/resolve` | `alert.resolve` | multipart `proof_text`, `file?` |
+| POST | `/alerts/{id}/reopen` | `directive.reopen` | `{reason}` - directives only |
+| GET/POST | `/incidents`, `/incidents/{id}` | `incident.view` / `.create` | `?late=1`; each with `reporting_check` (48 h, obligation code) |
+| PATCH | `/incidents/{id}/violation` | `incident.linkViolation` | `{related_violation_id: id|null}` (same mine) |
+| GET | `/audit?mine_id=&entity=&action=` | `audit.view` | scoped audit trail (hash-chained) |
+| POST | `/vision/analyze` | `vision.analyze` | multipart `mine_id`, `file` → detections, violations, score before/after |
+| GET | `/files/{id}/content?expires=&signature=` | signed link | stored image (annotated frame, proof) |
+| GET | `/admin/baseline-check` | `admin.baselineCheck` | live scores vs seeded baseline |
+| GET | `/health` | public | `{status, database, time}` |
 
-### Inspection ranking
+## Compliance score
 
-`urgency = (100 - compliance_score) + trend_pressure x weight_trend`
+`score = 100 - (open violations x WEIGHT_PPE + in-window breaches x WEIGHT_ENV)`, clamped 0..100,
+rounded to 0.1. Bands: low >= 80, medium >= 50, else high. Breaches count only while younger than
+`BREACH_WINDOW_HOURS` (12 s in the demo). Weights and window are env-driven (`api/.env`). Every
+score is a demo value: `compliance.is_demo_value` is always `true`.
 
-Severity orders the risk bands on its own, since bands are score ranges. `trend_pressure` is the
-rise in violation + breach count over the trailing `TREND_WEIGHT` window versus the window before
-it, floored at zero so an improving mine falls down the queue rather than leapfrogging a worse one.
+## Inspection ranking
 
-Ties resolve in a fixed order — urgency, then severity, then recent events, then `mine_id` — so the
-queue never reorders between two identical requests.
-
-`GET /dashboard` embeds the top 3 of this same queue for Government callers; it is empty for a
-Mine Head, since a cross-mine ranking would leak where other mines stand.
-
-Errors: `401` no or bad token, `403` out-of-scope mine or wrong role, `404` mine does not exist,
-`422` validation.
+`urgency = (100 - score) + max(0, recent events - previous events) x WEIGHT_TREND`, events being
+violations plus breaches in the last `TREND_WINDOW_HOURS` (24) against the 24 hours before.
+Ties: urgency, severity, recent events, mine id - so the queue never reorders between identical
+requests. `GET /dashboard` embeds the top 3 for multi-mine roles; a mine head gets none.

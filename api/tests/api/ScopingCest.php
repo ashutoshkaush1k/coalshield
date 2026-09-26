@@ -35,7 +35,7 @@ class ScopingCest
     {
         $user = Auth::user(Auth::CORPORATE_SECL);
         $own = Mine::find()->where(['subsidiary_id' => $user->subsidiary_id])->select('id')->column();
-        $I->assertNotEmpty($own, 'the small preset has a SECL mine');
+        $I->assertNotEmpty($own, 'the seeded preset has a SECL mine');
 
         $I->amBearerOf(Auth::CORPORATE_SECL);
         $I->sendGet('/v1/mines', ['per_page' => 200]);

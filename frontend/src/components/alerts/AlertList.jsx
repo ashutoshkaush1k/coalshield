@@ -1,17 +1,21 @@
-// Alerts feed. Rows open a detail drawer rather than expanding in place.
-import { ALERT_STATUS, ALERT_TYPE } from "../../api/alerts";
+// Alerts feed. Rows open a detail drawer rather than expanding in place. The API sends
+// {code, params}; the sentence is composed here through i18n.
+import { ALERT_STATUS } from "../../api/alerts";
+import { alertSource, alertText, severityLabel, statusLabel } from "../../i18n/labels";
+import { useT } from "../../i18n/t";
 import { EmptyState } from "../common/EmptyState";
 import { fmtDateTime } from "../../utils/format";
 
-export function AlertList({ alerts, showMine = false, mineLookup = {}, onSelect, actionFor }) {
-  if (!alerts?.length) return <EmptyState>No active alerts.</EmptyState>;
+const STATUS_TAG = { open: "tag-open", acknowledged: "tag-ack", resolved: "tag-resolved" };
+
+export function AlertList({ alerts, showMine = false, onSelect, actionFor }) {
+  const t = useT();
+  if (!alerts?.length) return <EmptyState>{t("alertList.empty")}</EmptyState>;
 
   return (
     <div className="alert-feed">
       {alerts.map((alert) => {
-        const directive = alert.alert_type === ALERT_TYPE.DIRECTIVE;
-        const resolved = alert.status === ALERT_STATUS.RESOLVED;
-
+        const directive = alert.is_directive;
         return (
           <div
             key={alert.id}
@@ -22,20 +26,17 @@ export function AlertList({ alerts, showMine = false, mineLookup = {}, onSelect,
             onKeyDown={onSelect ? (e) => e.key === "Enter" && onSelect(alert) : undefined}
           >
             <div className="row wrap" style={{ gap: "var(--space-2)" }}>
-              <span className={`sev ${alert.severity}`}>{alert.severity}</span>
-              {directive && <span className="tag tag-directive">From DGMS</span>}
-              {directive && (
-                <span className={`tag ${resolved ? "tag-resolved" : "tag-open"}`}>
-                  {resolved ? "Resolved" : "Open"}
-                </span>
+              <span className={`sev ${alert.severity}`}>{severityLabel(alert.severity)}</span>
+              <span className={`tag${directive ? " tag-directive" : ""}`}>{alertSource(alert)}</span>
+              {(directive || alert.status !== ALERT_STATUS.OPEN) && (
+                <span className={`tag ${STATUS_TAG[alert.status] ?? ""}`}>{statusLabel(alert.status)}</span>
               )}
-              {!directive && <span className="tag">{alert.source}</span>}
-              {showMine && <span className="mono">{mineLookup[alert.mine_id] || alert.mine_id}</span>}
+              {showMine && <span className="mono">{alert.mine_code}</span>}
               <div className="spacer" />
               <span className="mono">{fmtDateTime(alert.created_at)}</span>
             </div>
 
-            <p className="alert-message">{alert.message}</p>
+            <p className="alert-message">{alertText(alert)}</p>
 
             {/* The action stops the row's own click so pressing Resolve does not also
                 open the drawer behind the modal. */}

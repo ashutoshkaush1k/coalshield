@@ -6,13 +6,16 @@ import { ErrorNotice } from "../components/common/ErrorNotice";
 import { DemoFooter } from "../components/common/DemoFooter";
 import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
+import { useT } from "../i18n/t";
 
 // One form for both roles: the account decides the scope, not the login screen. Quick-fill
 // buttons exist so nobody types a password on stage.
+// Mine names from data/reference/mines_real.csv (the five demo mines keep their codes).
 const DEMO = [
-  { label: "Government - all mines", email: "gov@dgms.gov.in" },
-  { label: "Mine Head - Talcher (high risk)", email: "head.od-tlc-05@coalmine.in" },
-  { label: "Mine Head - Jharia (low risk)", email: "head.jh-dhn-01@coalmine.in" },
+  { key: "government", email: "gov@dgms.gov.in" },
+  { key: "corporate", email: "corporate.secl@coalmine.in" },
+  { key: "headHigh", email: "head.od-tlc-05@coalmine.in" },
+  { key: "headLow", email: "head.jh-dhn-01@coalmine.in" },
 ];
 
 export default function Login() {
@@ -21,6 +24,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const { signIn } = useAuth();
+  const t = useT();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,7 +75,7 @@ export default function Login() {
             {DEMO.map((account) => (
               <button key={account.email} type="button"
                       onClick={() => { setEmail(account.email); setPassword("demo123"); }}>
-                {account.label}
+                {t(`login.demo.${account.key}`)}
               </button>
             ))}
           </div>

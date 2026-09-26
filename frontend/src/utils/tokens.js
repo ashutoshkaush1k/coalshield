@@ -25,5 +25,8 @@ export const chartTokens = () => ({
   riskHigh: token("--risk-high-dot", "#ef4444"),
 });
 
+// Sensor types share their category's colour identity (the two methane readings are "gas").
+const COLOUR_KEY = { ch4: "gas", ch4_return_air: "gas-return", co: "co", dust: "dust", temperature: "temperature", humidity: "humidity" };
+
 export const sensorColour = (sensorType) =>
-  token(`--sensor-${sensorType}`, token("--muted", "#6b7280"));
+  token(`--sensor-${COLOUR_KEY[sensorType] ?? sensorType}`, token("--muted", "#6b7280"));

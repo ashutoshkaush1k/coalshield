@@ -7,6 +7,8 @@ import { TabPanel } from "../../components/common/Tabs";
 import { Masthead } from "../../components/layout/Masthead";
 import { usePolling } from "../../hooks/usePolling";
 import { OverviewPanel } from "./panels/OverviewPanel";
+import { useAuth } from "../../hooks/useAuth";
+import { scopeWhere } from "../../i18n/labels";
 import { PriorityPanel } from "./panels/PriorityPanel";
 import { SensorRiskPanel } from "./panels/SensorRiskPanel";
 import { TrendsPanel } from "./panels/TrendsPanel";
@@ -20,6 +22,7 @@ const TABS = [
 
 export default function GovernmentDashboard({ initialTab = "overview" }) {
   const [tab, setTab] = useState(initialTab);
+  const { user } = useAuth();
   // Held here rather than in each panel so the selection survives tab switches.
   const [state, setState] = useState(null);
   // Unchanged: the same poll that has always driven this screen. Tab state is
@@ -35,7 +38,7 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
         subtitle={
           state
             ? `${data?.stats?.mine_count ?? 0} monitored mines in ${state}`
-            : `${data?.stats?.mine_count ?? 0} mines monitored nationwide`
+            : `${data?.stats?.mine_count ?? 0} mines monitored ${scopeWhere(user)}`
         }
         tabs={TABS}
         active={tab}
@@ -60,7 +63,7 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
         <TabPanel id="trends" active={tab}>
           <TrendsPanel
             state={state}
-            title={state ? `${state} breach frequency` : "National breach frequency"}
+            title={state ? `${state} breach frequency` : `Breach frequency ${scopeWhere(user)}`}
             caption={
               state
                 ? `This chart covers every monitored mine in ${state}.`

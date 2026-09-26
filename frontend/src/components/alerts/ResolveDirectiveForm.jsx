@@ -4,10 +4,13 @@
 // expanding it in place pushed the rest of the feed around while the operator typed.
 import { useRef, useState } from "react";
 import { resolveAlert } from "../../api/alerts";
-import { ACCEPT_ATTR, ACCEPTED_IMAGE_TYPES } from "../../api/vision";
+// The API stores proof images as JPG, PNG or WEBP (FileStorage whitelist).
+const PROOF_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ACCEPT_ATTR = ".jpg,.jpeg,.png,.webp";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Modal } from "../overlay/Overlay";
 import { useToast } from "../overlay/ToastHost";
+import { alertText } from "../../i18n/labels";
 
 export function ResolveDirectiveForm({ alert, onResolved }) {
   const [open, setOpen] = useState(false);
@@ -22,8 +25,8 @@ export function ResolveDirectiveForm({ alert, onResolved }) {
     setError(null);
     if (!selected) return setFile(null);
     // Same allowlist the vision upload uses, checked here for an instant message.
-    if (!ACCEPTED_IMAGE_TYPES.includes(selected.type)) {
-      setError({ message: "Attach a JPG, PNG, WEBP or BMP image as evidence." });
+    if (!PROOF_TYPES.includes(selected.type)) {
+      setError({ message: "Attach a JPG, PNG or WEBP image as evidence." });
       return;
     }
     setFile(selected);
@@ -62,7 +65,7 @@ export function ResolveDirectiveForm({ alert, onResolved }) {
         open={open}
         onClose={close}
         title="Resolve directive"
-        subtitle={alert.message}
+        subtitle={alertText(alert)}
         footer={
           <>
             <button type="button" onClick={close} disabled={busy}>Cancel</button>

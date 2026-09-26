@@ -5,12 +5,15 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "../common/EmptyState";
-import { BreachBreakdown } from "./BreachBreakdown";
+import { BreachBreakdown, countsByCategory } from "./BreachBreakdown";
 import { fmtDateTime } from "../../utils/format";
 import { sensorColour } from "../../utils/tokens";
+import { sensorLabel } from "../../i18n/labels";
+import { t } from "../../i18n/t";
 
-const SEVERITY_RANK = { HIGH: 0, MEDIUM: 1, LOW: 2, OK: 3 };
-const SENSORS = ["gas", "dust", "temperature"];
+// Severities come lower case from the API. Columns: every sensor type in rules.yaml.
+const SEVERITY_RANK = { high: 0, medium: 1, low: 2, ok: 3 };
+const SENSORS = ["ch4", "ch4_return_air", "dust", "temperature", "co", "humidity"];
 
 const SORTS = {
   severity: { label: "Breach severity", fn: (a, b) => SEVERITY_RANK[a.worst_severity] - SEVERITY_RANK[b.worst_severity] || b.breaching_now - a.breaching_now },
@@ -19,7 +22,10 @@ const SORTS = {
 };
 
 function Cell({ sensor }) {
-  const tone = sensor.breached ? "breached" : sensor.status_label === "Approaching limit" ? "near" : "ok";
+  if (!sensor) {
+    return <td><div className="sensor-cell sensor-ok"><span className="sensor-status faint">{t("sensor.status.NOT_FITTED")}</span></div></td>;
+  }
+  const tone = sensor.breached ? "breached" : sensor.status_code === "APPROACHING_LIMIT" ? "near" : "ok";
   return (
     <td>
       <div className={`sensor-cell sensor-${tone}`}>
@@ -27,7 +33,7 @@ function Cell({ sensor }) {
           {sensor.value == null ? "-" : sensor.value}
           <span className="sensor-unit">{sensor.unit}</span>
         </span>
-        <span className="sensor-status">{sensor.status_label}</span>
+        <span className="sensor-status">{t(`sensor.status.${sensor.status_code}`)}</span>
       </div>
     </td>
   );
@@ -65,7 +71,7 @@ export function FleetRiskTable({ fleet }) {
           <select id="fleet-filter" value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All mines</option>
             <option value="breaching">Breaching now</option>
-            {SENSORS.map((s) => <option key={s} value={s}>Breaching {s}</option>)}
+            {SENSORS.slice(0, 4).map((s) => <option key={s} value={s}>Breaching: {sensorLabel(s)}</option>)}
           </select>
         </div>
         <div className="spacer" />
@@ -82,9 +88,7 @@ export function FleetRiskTable({ fleet }) {
             <thead>
               <tr>
                 <th>Mine</th>
-                <th>Gas</th>
-                <th>Dust</th>
-                <th>Temperature</th>
+                {SENSORS.map((s) => <th key={s}>{sensorLabel(s)}</th>)}
                 <th>Open breaches by type</th>
               </tr>
             </thead>
@@ -106,7 +110,7 @@ export function FleetRiskTable({ fleet }) {
                       <Cell key={s} sensor={mine.sensors.find((x) => x.sensor_type === s)} />
                     ))}
                     <td style={{ minWidth: 200 }}>
-                      <BreachBreakdown counts={byType} total={mine.total_open_breaches} compact />
+                      <BreachBreakdown counts={countsByCategory(byType)} total={mine.total_open_breaches} compact />
                     </td>
                   </tr>
                 );

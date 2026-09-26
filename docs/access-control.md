@@ -1,37 +1,55 @@
-# Access control (PRD 4.2)
+# Access control (PRD 4.2, brief rules 2 and 3)
 
-The PRD is explicit: enforcement is server-side, not UI-hidden. A Mine Head must not be able to
-reach another mine's data by calling the API directly.
+Enforcement is server-side, not UI-hidden. No account can reach another mine's data by calling
+the API directly. The frontend hides actions an account may not take only as a courtesy (it reads
+the account's `permissions` from `GET /v1/users/me`).
 
 ## Model
 
-- Every mine has a unique `mine_id`.
-- A Mine Head user row carries exactly one `mine_id`.
-- A Government user row has `mine_id = NULL`, meaning no restriction.
-- The JWT carries `role` and `mine_id`, so scope is derived from the token, never from a query
-  parameter the client controls.
+| Role | Sees | Scope column |
+|---|---|---|
+| `government` | every mine | none |
+| `inspector` | every mine (reads like government; carries out inspections) | none |
+| `corporate` | the mines of its company (`subsidiary`) | `user.subsidiary_id` |
+| `mine_head` | its own mine | `user.mine_id` |
 
-## Enforcement
+A database CHECK keeps each role's scope columns consistent (`m260927_000005_create_user`). Scope is
+read from the user row on every request, never from the token or a client-supplied parameter, so
+re-mapping an account takes effect immediately.
 
-One choke point: `app/api/deps.py`.
+## Two layers
 
-- `get_current_user()` — decodes the token, loads the user.
-- `require_role(Role.GOVERNMENT)` — for Government-only endpoints
-  (cross-mine comparison, inspection prioritisation, full audit trail).
-- `resolve_mine_scope(requested_mine_id)` — returns the mine ids the caller may read.
-  For a Government user, all of them. For a Mine Head, only their own — and a request for any
-  other mine raises **403 before the query runs**.
+1. **Scoping - what rows exist for you.** One place: `api/components/ScopedActiveQuery.php`.
+   Every mine-owned model extends `ScopedActiveRecord` and declares its mine column
+   (`scopePath()`: `mine_id`, `id` for the mine itself, or `relation.column`). Controllers read
+   through `Model::findScoped($id)` or `Model::find()->forCurrentUser()`; a `?mine_id=` filter
+   is itself scope-checked (`ApiController::mineParam()`).
+2. **Permissions - what you may do.** RBAC with `yii\rbac\DbManager`, one permission per action
+   (`api/config/rbac.php`, installed by `yii rbac/init`): e.g. `directive.create` (government),
+   `correctiveAction.resolve` (mine head), `inspection.viewQueue` (multi-mine roles). A missing
+   permission is **403 `FORBIDDEN`**.
 
-`services/access/scope.py` holds the same rule as a pure function so it can be tested without HTTP.
+## The 404 rule (owner decision, 2026-09-27)
 
-## The 403 vs 404 choice
+A record outside your scope answers **404 `NOT_FOUND`** - byte for byte the same response as a
+record that does not exist - so the API never confirms that another mine's record exists. The
+prototype answered 403 there; that leaked existence.
 
-A Mine Head requesting another mine gets **403**, not a silently filtered empty result. An empty
-list would look like a mine with no violations, which is exactly the wrong signal in a compliance
-system.
+It is never a filtered empty list either: an empty violation list would read as a mine with no
+findings, the most dangerous wrong answer in a compliance system. So: out of scope → 404; not
+permitted → 403; never silently empty.
 
-## Test that proves it
+## Tests that prove it
 
-`tests/test_access_control.py` logs in as a Mine Head and calls every mine-scoped endpoint with a
-foreign `mine_id`. Each must return 403. This is the test to run in front of judges if asked
-whether the restriction is real.
+- `api/tests/api/ScopingCest.php` - government, inspector, corporate and mine head against
+  `GET /v1/mines` and `/v1/mines/{id}`, including that an out-of-scope id and a missing id get
+  identical responses.
+- `api/tests/unit/ScopedActiveQueryTest.php` - the scope rule itself, including misconfigured
+  accounts (a corporate user without a company sees nothing).
+- Every Phase 2 resource repeats the check: alerts, sensors, violations, corrective actions,
+  incidents, the audit trail and PPE vision (`api/tests/api/*Cest.php`).
+
+```bat
+cd api
+run_tests.bat api ScopingCest
+```

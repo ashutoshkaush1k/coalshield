@@ -95,11 +95,17 @@ class SeedController extends Controller
             }
 
             $assigned = RbacController::syncAssignments($db);
+            // Open violations per mine right after seeding: the baseline the simulator pre-flight
+            // (GET /v1/admin/baseline-check) compares live scores with.
+            $baseline = isset($loaded['violation'])
+                ? array_map('intval', $db->createCommand('SELECT mine_id, count(*) FROM violation WHERE NOT resolved GROUP BY mine_id ORDER BY mine_id')->queryAll(\PDO::FETCH_KEY_PAIR))
+                : [];
             AuditChain::append('seed', null, 'seed', null, [
                 'preset' => $preset,
                 'roster' => $manifest['roster'] ?? null,
                 'generator_seed' => $manifest['seed'] ?? null,
                 'tables' => $loaded,
+                'baseline_open_violations' => (object) $baseline,
             ], $db);
             $transaction->commit();
         } catch (\Throwable $e) {
@@ -110,6 +116,23 @@ class SeedController extends Controller
 
         $this->stdout(sprintf("Seeded preset '%s' (%d tables, %d role assignments) in %.1fs.\n",
             $preset, count($loaded), $assigned, microtime(true) - $started), Console::FG_GREEN);
+        return ExitCode::OK;
+    }
+
+    /** yii seed/status - exit 0 and print the preset when the database has been seeded, else 1. */
+    public function actionStatus(): int
+    {
+        try {
+            $values = Yii::$app->db->createCommand("SELECT new_values FROM audit_log WHERE entity = 'seed' AND action = 'seed' ORDER BY id DESC LIMIT 1")->queryScalar();
+        } catch (\Throwable) {
+            $this->stdout("not migrated\n");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+        if (!$values) {
+            $this->stdout("not seeded\n");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+        $this->stdout('seeded: ' . (json_decode($values, true)['preset'] ?? '?') . "\n");
         return ExitCode::OK;
     }
 

@@ -1,221 +1,253 @@
-"""Replay the seeded sensor dataset as a live feed (PRD 4.2).
+"""Replay the demo sensor dataset as a live feed through the API (brief section 2).
 
-One tick = every mine reports gas, dust and temperature. Breaches raise alerts and immediately
-move the mine's compliance score, exactly like a CV detection does.
+The simulator never touches the database. It reads data/out/<preset>/sensor_reading.csv, and each
+tick POSTs one data-hour of readings for every mine to POST /v1/sensor-readings/ingest with an API
+key. The API stamps them with the current time, applies the legal limits from
+data/schema/rules.yaml, raises alerts and rescores. A breach costs its mine 3 points only inside
+the 12 s window, so scores dip and recover while the feed runs.
 
-Usage:
-    python scripts/run_simulator.py                    # 2s ticks, one full pass, then stop
-    python scripts/run_simulator.py --loop             # keep cycling until Ctrl+C - the live demo
-    python scripts/run_simulator.py --interval 6       # slower ticks (see the window note)
-    python scripts/run_simulator.py --ticks 5          # stop after 5 ticks
-    python scripts/run_simulator.py --dry-run          # roll back; nothing is persisted
-    python scripts/run_simulator.py --check-only       # pre-flight the database, run nothing
-    python scripts/run_simulator.py --require-clean    # refuse to start unless state is pristine
+Breaches are rare in the calibrated data (a handful a day across 74 mines), so by default the last
+14 days are replayed, one data-hour per 2 s tick. That gives a genuine breach every few ticks rather
+than a flat board. Per mine and sensor, a tick sends that hour's breached reading if there was one,
+else its last reading.
 
-Scores fall AND recover: a breach counts against its mine only for BREACH_WINDOW_HOURS (12s by
-default - six ticks at the default 2s interval), so --loop settles into a live rise-and-fall rather
-than grinding mines to zero, and stopping the feed lets every mine climb back within one window.
-Keep the window at about six ticks if you change --interval: 6s -> 0.01, 2s -> 0.0033, 1s -> 0.0017.
+Usage (stdlib only; any Python 3.10+):
+    python scripts/run_simulator.py                   # 2 s ticks, one pass, then stop
+    python scripts/run_simulator.py --loop            # keep cycling until Ctrl+C - the live demo
+    python scripts/run_simulator.py --ticks 5         # stop after 5 ticks
+    python scripts/run_simulator.py --days 3          # replay a shorter period
+    python scripts/run_simulator.py --check-only      # pre-flight the scores, run nothing
+    python scripts/run_simulator.py --require-clean   # refuse to start unless state is pristine
 
-Most ticks are clean by design - the seeded feed gives a mine one or two breaches per 12-tick pass,
-so the board mostly sits at its baseline and dips when a site actually has a problem.
+The API key comes from --key-file (default scripts/.simulator.key, written by
+`api\\yii.bat api-key/issue simulator --out=..\\scripts\\.simulator.key`; run_all.bat does this).
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
+import json
+import os
 import sys
 import time
+import urllib.error
+import urllib.request
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-BACKEND = Path(__file__).resolve().parents[1] / "backend"
-sys.path.insert(0, str(BACKEND))
-
-from app.db.seed import BaselineReport, baseline_report  # noqa: E402
-from app.db.session import SessionLocal  # noqa: E402
-from app.services.compliance.scoring import configured_breach_window  # noqa: E402
-from app.services.iot.simulator import SensorSimulator  # noqa: E402
-
-ARROW = "->"
+ROOT = Path(__file__).resolve().parents[1]
 RULE = "=" * 78
+CACHE_DIR = ROOT / "scripts" / ".cache"
 
 
-def _window_label() -> str:
-    hours = configured_breach_window()
-    return "all-time (no window)" if hours is None else f"{hours * 3600:.0f}s"
+# --- API -------------------------------------------------------------------------------------
+
+class Api:
+    def __init__(self, base: str, key: str, timeout: float = 30.0) -> None:
+        self.base = base.rstrip("/")
+        self.key = key
+        self.timeout = timeout
+
+    def call(self, method: str, path: str, body: dict | None = None) -> dict:
+        data = json.dumps(body).encode() if body is not None else None
+        request = urllib.request.Request(
+            f"{self.base}{path}", data=data, method=method,
+            headers={"X-Api-Key": self.key, "Content-Type": "application/json", "Accept": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                return json.loads(response.read() or b"{}")
+        except urllib.error.HTTPError as exc:
+            try:
+                error = json.loads(exc.read()).get("error", {})
+            except ValueError:
+                error = {}
+            raise ApiError(exc.code, error.get("code", "HTTP_%d" % exc.code), error) from None
+        except urllib.error.URLError as exc:
+            raise ApiError(0, "UNREACHABLE", {"reason": str(exc.reason)}) from None
 
 
-def preflight(report: BaselineReport) -> bool:
-    """Report how far the database has drifted from a freshly seeded baseline.
+class ApiError(RuntimeError):
+    def __init__(self, status: int, code: str, detail: dict) -> None:
+        super().__init__(f"{status} {code}")
+        self.status, self.code, self.detail = status, code, detail
 
-    Open PPE violations persist until a clean re-inspection resolves them, so extra ones from an
-    earlier run - a CV demo, a rehearsal - start the board lower than the demo script expects.
-    Breaches only count inside the rolling window, so breach drift clears on its own and shows
-    here only if a run finished moments ago. This makes both visible before a run, not on stage.
 
-    Returns True when the scores match the seeded baseline.
+# --- replay data -----------------------------------------------------------------------------
+
+def load_ticks(preset: str, days: int, mine_codes: set[str] | None) -> list[dict]:
+    """Ticks oldest first: {"hour": iso, "readings": [{mine_code, sensor_type, value}]}.
+
+    Cached in scripts/.cache keyed by the CSV's size and mtime - reading 1.7 M rows takes a few
+    seconds, and the demo should not wait for it every time.
     """
-    if report.is_clean:
-        print(f"Pre-flight   : OK - all {len(report.mines)} mines match the seeded baseline.")
-        return True
+    out_dir = ROOT / "data" / "out" / preset
+    csv_path = out_dir / "sensor_reading.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError(f"{csv_path} not found - run data\\run_data.bat {preset}")
+    stat = csv_path.stat()
+    cache = CACHE_DIR / f"replay_{preset}_{days}d_{stat.st_size}_{int(stat.st_mtime)}.json"
+    if cache.exists():
+        ticks = json.loads(cache.read_text(encoding="utf-8"))
+    else:
+        with (out_dir / "mine.csv").open(encoding="utf-8", newline="") as fh:
+            code_of = {row["id"]: row["code"] for row in csv.DictReader(fh)}
+        rows = []
+        with csv_path.open(encoding="utf-8", newline="") as fh:
+            for row in csv.DictReader(fh):
+                rows.append((row["recorded_at"], row["mine_id"], row["sensor_type"], row["value"], row["breached"] == "true"))
+        end = max(r[0] for r in rows)
+        start = (datetime.fromisoformat(end.replace("Z", "+00:00")) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        chosen: dict[str, dict[tuple, tuple]] = defaultdict(dict)   # hour -> (mine, sensor) -> row
+        for recorded_at, mine_id, sensor, value, breached in rows:
+            if recorded_at <= start:
+                continue
+            hour = recorded_at[:13] + ":00:00Z"
+            key = (mine_id, sensor)
+            current = chosen[hour].get(key)
+            # Keep the hour's breached reading if any, else its latest.
+            if current is None or (breached and not current[2]) or (breached == current[2] and recorded_at > current[0]):
+                chosen[hour][key] = (recorded_at, value, breached)
+        ticks = [
+            {"hour": hour, "readings": [
+                {"mine_code": code_of[mine_id], "sensor_type": sensor, "value": float(value)}
+                for (mine_id, sensor), (_, value, _) in sorted(chosen[hour].items())
+            ]}
+            for hour in sorted(chosen)
+        ]
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(ticks), encoding="utf-8")
+    if mine_codes:
+        for tick in ticks:
+            tick["readings"] = [r for r in tick["readings"] if r["mine_code"] in mine_codes]
+    return [t for t in ticks if t["readings"]]
 
+
+# --- pre-flight ------------------------------------------------------------------------------
+
+def preflight(report: dict) -> bool:
+    """Print how far live scores are from the seeded baseline. True when they match."""
+    if not report.get("has_baseline"):
+        print("Pre-flight   : no seed baseline recorded - run `api\\yii.bat seed demo`.")
+        return False
+    mines = report["mines"]
+    if report["is_clean"]:
+        print(f"Pre-flight   : OK - all {len(mines)} mines match the seeded baseline ({report['preset']}).")
+        return True
+    window = report.get("breach_window_hours")
     print()
     print(RULE)
     print("  WARNING: SCORES DO NOT MATCH THE CLEAN BASELINE")
     print(RULE)
-    print("  Extra PPE violations below persist until a clean re-inspection resolves them.")
-    print(f"  Extra breaches are recent ones still inside the {_window_label()} scoring window;")
-    print("  those age out on their own, so if a run just ended, wait a moment and re-check.")
+    print("  Extra violations persist until a corrective action or a clean re-inspection resolves them.")
+    print(f"  Breaches count only inside the {window * 3600:.0f}s window and age out on their own." if window else "")
     print()
-    print(f"  {'MINE':<12}{'SCORE':>16}{'PPE':>10}{'BREACHES':>12}")
-    for mine in report.mines:
-        if mine.is_clean:
-            print(f"  {mine.code:<12}{mine.actual_score:>9.1f} (ok){'':>10}{'':>12}")
+    print(f"  {'MINE':<12}{'SCORE':>16}{'VIOLATIONS':>12}{'BREACHES':>10}")
+    for mine in mines:
+        if mine["is_clean"]:
             continue
-        band = f"  {mine.expected_risk} -> {mine.actual_risk}" if mine.band_changed else ""
-        score = f"{mine.expected_score:.0f} -> {mine.actual_score:.0f}"
-        ppe = f"+{mine.extra_violations}" if mine.extra_violations else "-"
-        breaches = f"+{mine.extra_breaches}" if mine.extra_breaches else "-"
-        print(f"  {mine.code:<12}{score:>16}{ppe:>10}{breaches:>12}{band}")
-
-    if report.bands_changed:
-        codes = ", ".join(m.code for m in report.bands_changed)
-        print()
-        print(f"  {len(report.bands_changed)} mine(s) already moved risk band: {codes}")
-
+        score = f"{mine['expected_score']:.0f} -> {mine['actual_score']:.0f}"
+        extra = f"{mine['extra_violations']:+d}" if mine["extra_violations"] else "-"
+        breaches = str(mine["window_breaches"]) if mine["window_breaches"] else "-"
+        band = f"  {mine['expected_risk']} -> {mine['actual_risk']}" if mine["expected_risk"] != mine["actual_risk"] else ""
+        print(f"  {mine['code']:<12}{score:>16}{extra:>12}{breaches:>10}{band}")
     print()
-    print("  FIX BEFORE DEMOING:  python scripts/seed_db.py --reset")
+    print("  FIX BEFORE DEMOING:  api\\yii.bat seed demo")
     print(RULE)
     return False
 
 
-def render(tick) -> None:
-    """One line per mine, measured from its last recorded score so recoveries show as well."""
+# --- replay ----------------------------------------------------------------------------------
+
+def render(index: int, tick: dict, result: dict) -> None:
     stamp = time.strftime("%H:%M:%S")
-    print(f"\n[{stamp}] tick {tick.index}  readings={tick.total_readings}  "
-          f"breaches={tick.total_breaches}  recovering={len(tick.recovered)}")
-
-    for mine in tick.mines:
-        after = mine.score_after
-        flag = "  <-- RISK LEVEL CHANGED" if mine.band_moved else ""
-        note = ""
-        if mine.breaches:
-            note = "  " + ", ".join(f"{r.sensor_type}={r.value}{r.unit}" for r in mine.breaches)
-        elif mine.recovered:
-            note = "  (older breaches aged out)"
-        delta = f"{mine.movement:+.0f}" if mine.movement else "  ."
-        print(f"   {mine.code:<11} {mine.reference_score:>5.1f} {ARROW} {after.score:>5.1f} "
-              f"({delta:>3})  {after.risk_level.value:<6} {after.risk_level.colour:<6}"
-              f"{note}{flag}")
-
-
-def tick_limit(ticks: int | None, loop: bool, full_pass: int) -> int | None:
-    """How many ticks this run emits; None means until Ctrl+C.
-
-    An explicit --ticks always wins. Otherwise a single pass stops when the dataset does,
-    and --loop keeps cycling. It used to fall back to one full pass either way, so --loop
-    on its own stopped after 12 ticks and the dashboards went quiet mid-demo.
-    """
-    if ticks:
-        return ticks
-    return None if loop else full_pass
-
-
-def replay(sim, limit: int | None, interval: float, *, commit: bool = True,
-           on_tick=render, sleep=time.sleep) -> int:
-    """Tick until the limit, the end of a non-looping dataset, or Ctrl+C. Returns ticks run."""
-    completed = 0
-    try:
-        while limit is None or completed < limit:
-            if sim.exhausted and not sim.loop:
-                print("\nDataset exhausted - replay complete.")
-                break
-            on_tick(sim.tick(commit=commit))
-            completed += 1
-            if limit is None or completed < limit:
-                sleep(interval)
-    except KeyboardInterrupt:
-        print("\n\nStopped by user.")
-    return completed
+    moved = [m for m in result["mines"] if m["score_before"] != m["score_after"] or m["breaches"]]
+    print(f"[{stamp}] tick {index:>3}  data {tick['hour'][:13].replace('T', ' ')}h  "
+          f"readings={result['stored']}  breaches={len(result['breaches'])}  moved={len(moved)}")
+    by_mine = defaultdict(list)
+    for breach in result["breaches"]:
+        by_mine[breach["mine_id"]].append(f"{breach['sensor_type']}={breach['value']}")
+    for mine in moved:
+        delta = mine["score_after"] - mine["score_before"]
+        band = "  <-- RISK LEVEL CHANGED" if mine["risk_before"] != mine["risk_after"] else ""
+        note = ", ".join(by_mine.get(mine["mine_id"], [])) or "(older breaches aged out)"
+        print(f"     mine {mine['mine_id']:>3}  {mine['score_before']:>5.1f} -> {mine['score_after']:>5.1f} "
+              f"({delta:+.0f})  {mine['risk_after']:<6}  {note}{band}")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Replay seeded sensor data as a live feed.")
+    parser = argparse.ArgumentParser(description="Replay demo sensor data through the API.")
+    parser.add_argument("--api", default=os.environ.get("API_URL", "http://127.0.0.1:8080"), help="API origin")
+    parser.add_argument("--key-file", default=str(ROOT / "scripts" / ".simulator.key"))
+    parser.add_argument("--preset", default="demo")
+    parser.add_argument("--days", type=int, default=14, help="data period to replay")
+    parser.add_argument("--mines", default="", help="comma-separated mine codes (default: all)")
     parser.add_argument("--interval", type=float, default=2.0, help="seconds between ticks")
     parser.add_argument("--ticks", type=int, default=None, help="stop after N ticks")
-    parser.add_argument("--loop", action="store_true", help="restart the dataset when exhausted")
-    parser.add_argument("--dry-run", action="store_true", help="roll back instead of committing")
-    parser.add_argument("--check-only", action="store_true",
-                        help="run the pre-flight baseline check and exit")
-    parser.add_argument("--require-clean", action="store_true",
-                        help="abort unless the database is at the clean seeded baseline")
+    parser.add_argument("--loop", action="store_true", help="restart the period when it ends")
+    parser.add_argument("--check-only", action="store_true", help="run the pre-flight and exit")
+    parser.add_argument("--require-clean", action="store_true", help="abort unless scores match the baseline")
     args = parser.parse_args()
 
-    with SessionLocal() as db:
-        try:
-            clean = preflight(baseline_report(db))
-        except FileNotFoundError as exc:
-            print(f"ERROR: cannot pre-flight - {exc}")
-            return 1
+    key_path = Path(args.key_file)
+    if not key_path.exists():
+        print(f"ERROR: no API key at {key_path}.")
+        print("       Issue one:  api\\yii.bat api-key/issue simulator --out=..\\scripts\\.simulator.key")
+        return 1
+    api = Api(args.api, key_path.read_text(encoding="utf-8").strip())
 
-        if args.check_only:
-            return 0 if clean else 1
+    try:
+        clean = preflight(api.call("GET", "/v1/sensor-readings/baseline"))
+    except ApiError as exc:
+        print(f"ERROR: pre-flight failed - {exc} {exc.detail or ''}")
+        if exc.code == "UNREACHABLE":
+            print(f"       Is the API running at {args.api}? (api\\serve.bat)")
+        return 1
+    if args.check_only:
+        return 0 if clean else 1
+    if not clean and args.require_clean:
+        print("\nAborting: --require-clean was set and the scores have drifted.")
+        return 1
 
-        if not clean and args.require_clean:
-            print()
-            print("Aborting: --require-clean was set and the database has drifted.")
-            return 1
+    codes = {c.strip() for c in args.mines.split(",") if c.strip()} or None
+    try:
+        ticks = load_ticks(args.preset, args.days, codes)
+    except FileNotFoundError as exc:
+        print(f"ERROR: {exc}")
+        return 1
+    if not ticks:
+        print("ERROR: no readings to replay for that selection.")
+        return 1
+    print(f"Replaying    : {len(ticks)} data-hours from the last {args.days} days of '{args.preset}', "
+          f"{args.interval:g}s per tick{', looping' if args.loop else ''}; limits from data/schema/rules.yaml")
 
-        if not clean:
-            # Deliberately not fatal: the demo script runs the vision demo before this, so some
-            # drift is expected mid-run. The banner above is the safeguard; --require-clean is
-            # the hard gate for a pre-demo rehearsal check.
-            print()
-            print("Continuing anyway (pass --require-clean to make this fatal).")
-            print()
-
-        try:
-            sim = SensorSimulator(db, loop=args.loop)
-        except FileNotFoundError as exc:
-            print(f"ERROR: {exc}")
-            return 1
-
-        if not sim.mines:
-            print("ERROR: no mines in the database. Run scripts/seed_db.py first.")
-            return 1
-
-        limit = tick_limit(args.ticks, args.loop, sim.total_ticks)
-        print(f"Mines        : {len(sim.mines)}")
-        print(f"Full pass    : {sim.total_ticks} ticks "
-              f"({sim.total_ticks * len(sim.mines) * 3} readings)")
-        duration = ("until Ctrl+C" if limit is None
-                    else f"about {limit * args.interval:.0f}s for this run")
-        print(f"Interval     : {args.interval}s   -> {duration}")
-        print(f"Mode         : {'LOOP' if args.loop else 'single pass'}"
-              f"{'  (dry run)' if args.dry_run else ''}")
-        window = configured_breach_window()
-        if window is None:
-            print("Score window : none - every breach counts forever (BREACH_WINDOW_HOURS=0)")
-        else:
-            seconds = window * 3600
-            print(f"Score window : {seconds:.0f}s (BREACH_WINDOW_HOURS={window:g}) = "
-                  f"{seconds / args.interval:.0f} ticks at this interval")
-            if seconds >= sim.total_ticks * args.interval:
-                # A window of a whole pass or more holds an almost constant breach count while
-                # looping, so the rise-and-fall the window exists for would not be visible.
-                print("  NOTE: the window spans a full pass at this interval - while looping, "
-                      "scores will barely move. Shorten BREACH_WINDOW_HOURS or raise --interval.")
-        print("Ctrl+C to stop.")
-
-        completed = replay(sim, limit, args.interval, commit=not args.dry_run)
-
-        if args.dry_run:
-            db.rollback()
-            print("\n(dry run - nothing was written)")
-
-        print(f"\nTicks run: {completed}")
+    limit = args.ticks or (None if args.loop else len(ticks))
+    done, position = 0, 0
+    try:
+        while limit is None or done < limit:
+            if position >= len(ticks):
+                if not args.loop:
+                    print("\nPeriod replayed - done.")
+                    break
+                position = 0
+            tick = ticks[position]
+            try:
+                result = api.call("POST", "/v1/sensor-readings/ingest", {"readings": tick["readings"]})
+                render(done + 1, tick, result)
+            except ApiError as exc:
+                print(f"[{time.strftime('%H:%M:%S')}] tick {done + 1} rejected: {exc} {exc.detail or ''}")
+                if exc.status in (0, 401):
+                    return 1
+            done += 1
+            position += 1
+            if limit is None or done < limit:
+                time.sleep(args.interval)
+    except KeyboardInterrupt:
+        print("\n\nStopped by user.")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

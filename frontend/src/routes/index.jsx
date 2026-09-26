@@ -2,6 +2,10 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 import { ROLES, homeFor } from "../auth/roles";
+
+// Roles that see more than one mine share the overview screens; the API scopes the data
+// (government and inspector: all mines, corporate: its company's mines).
+const MULTI_MINE = [ROLES.GOVERNMENT, ROLES.CORPORATE, ROLES.INSPECTOR];
 import { AppShell } from "../components/layout/AppShell";
 import { useAuth } from "../hooks/useAuth";
 import Login from "../pages/Login";
@@ -32,15 +36,15 @@ export function AppRoutes() {
       >
         <Route
           path="/gov"
-          element={<ProtectedRoute allow={[ROLES.GOVERNMENT]}><Overview /></ProtectedRoute>}
+          element={<ProtectedRoute allow={MULTI_MINE}><Overview /></ProtectedRoute>}
         />
         <Route
           path="/gov/inspections"
-          element={<ProtectedRoute allow={[ROLES.GOVERNMENT]}><InspectionPriority /></ProtectedRoute>}
+          element={<ProtectedRoute allow={MULTI_MINE}><InspectionPriority /></ProtectedRoute>}
         />
         <Route
           path="/gov/mines/:mineId"
-          element={<ProtectedRoute allow={[ROLES.GOVERNMENT]}><MineDetail /></ProtectedRoute>}
+          element={<ProtectedRoute allow={MULTI_MINE}><MineDetail /></ProtectedRoute>}
         />
         <Route
           path="/mine"

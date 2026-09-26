@@ -2,21 +2,24 @@
 rem Rebuild the TEST database from scratch and run every test (brief: migrations from scratch + seed + tests).
 rem   run_tests.bat            all suites
 rem   run_tests.bat api        one suite (extra arguments go to codecept run)
-rem Needs PostgreSQL running (scripts\db.bat start) and data\out\small (data\run_data.bat small).
+rem Needs PostgreSQL running (scripts\db.bat start) and data\out\demo (data\run_data.bat demo).
+rem The demo preset is used so the demo-score test checks the real numbers (100/80/70/60/45, 83.2).
 setlocal
 cd /d "%~dp0"
 if not defined PHP set "PHP=C:\xampp\php\php.exe"
+if not defined TEST_PRESET set "TEST_PRESET=demo"
 
-if not exist "..\data\out\small\_manifest.json" (
-  echo data\out\small is missing: generating it with data\run_data.bat small
-  call "..\data\run_data.bat" small || exit /b 1
+if not exist "..\data\out\%TEST_PRESET%\_manifest.json" (
+  echo data\out\%TEST_PRESET% is missing: generating it with data\run_data.bat %TEST_PRESET%
+  call "..\data\run_data.bat" %TEST_PRESET% || exit /b 1
 )
 
 echo === migrations down/up on the test database
 "%PHP%" yii_test migrate/down all --interactive=0 >nul || exit /b 1
 "%PHP%" yii_test migrate --interactive=0 >nul || exit /b 1
-echo === seed small
-"%PHP%" yii_test seed small || exit /b 1
+"%PHP%" yii_test rbac/init >nul || exit /b 1
+echo === seed %TEST_PRESET%
+"%PHP%" yii_test seed %TEST_PRESET% || exit /b 1
 "%PHP%" yii_test audit/verify || exit /b 1
 
 echo === codeception

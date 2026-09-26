@@ -106,7 +106,7 @@ class AuditChainTest extends Unit
         $db->createCommand(<<<'SQL'
             UPDATE audit_log SET new_values = '{"preferred_language": "en"}',
                    row_hash = audit_row_hash(prev_hash, id, entity, entity_id, action, old_values,
-                                             '{"preferred_language": "en"}', user_id, ip, created_at)
+                                             '{"preferred_language": "en"}', user_id, ip, created_at, mine_id)
              WHERE id = :id
             SQL, [':id' => $target])->execute();
         $db->createCommand('ALTER TABLE audit_log ENABLE TRIGGER audit_log_immutable')->execute();

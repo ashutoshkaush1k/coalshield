@@ -9,8 +9,8 @@ import { useT } from "../../i18n/t";
 function scopeLabel(t, user) {
   const role = normalizeRole(user?.role);
   const name = t(`roles.${role}`, { defaultValue: role || "" });
-  if (role === ROLES.MINE_HEAD) return t("shell.scopeMine", { role: name, id: user?.mine_id });
-  if (role === ROLES.CORPORATE) return t("shell.scopeSubsidiary", { role: name, id: user?.subsidiary_id });
+  if (role === ROLES.MINE_HEAD) return t("shell.scopeMine", { role: name, name: user?.mine_name ?? `#${user?.mine_id}` });
+  if (role === ROLES.CORPORATE) return t("shell.scopeSubsidiary", { role: name, code: user?.subsidiary_code ?? "" });
   return t("shell.scopeAll", { role: name });
 }
 

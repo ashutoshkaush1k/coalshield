@@ -2,7 +2,7 @@
 import { getTrend } from "../../../api/sensors";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
-import { BreachBreakdown } from "../../../components/sensors/BreachBreakdown";
+import { BreachBreakdown, countsByCategory } from "../../../components/sensors/BreachBreakdown";
 import { SensorPerformance } from "../../../components/sensors/SensorPerformance";
 import { usePolling } from "../../../hooks/usePolling";
 
@@ -13,9 +13,9 @@ export function SensorPerformancePanel({ mineId }) {
 
   if (loading && !data) return <Loader label="Reading your sensors..." />;
 
-  const counts = Object.fromEntries(
+  const counts = countsByCategory(Object.fromEntries(
     (data?.series ?? []).map((s) => [s.sensor_type, s.breach_count])
-  );
+  ));
 
   return (
     <div className="stack">

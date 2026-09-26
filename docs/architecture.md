@@ -1,6 +1,31 @@
 # Architecture
 
-## Layering
+## Current stack (from Phase 2)
+
+```
+React (frontend/, :5173) --HTTP /v1--> Yii2 API (api/, :8080) --> PostgreSQL 16 + PostGIS
+                                            |   (scoping, RBAC, audit chain, workflows, scores)
+                                            +--HTTP--> ai-service (ai-service/, :8001) - PPE vision only
+scripts/run_simulator.py --API key--> POST /v1/sensor-readings/ingest
+```
+
+- **api/** - controllers are thin (`modules/v1/controllers`); logic lives in `services/`
+  (`ComplianceScoreService`, `InspectionPriorityService`, `SensorService`, `AlertService`,
+  `CorrectiveActionService`, `InspectionService`, `VisionService`, `BaselineService`).
+  Scoping in one place (`components/ScopedActiveQuery.php`), permissions via RBAC, every model
+  change in the hash-chained `audit_log`, workflows through `components/StatusTransition.php`.
+  Legal sensor limits are read from `data/schema/rules.yaml`, never typed into code.
+- **ai-service/** - stateless; it never sees users or the database. Down or slow → the API
+  answers 503 `AI_SERVICE_UNAVAILABLE`, records a low alert, and nothing else changes.
+- **Data** - `yii seed <preset>` loads `data/out/<preset>/*.csv` (built by `data/`) with COPY.
+- Contract: [api-contract.md](api-contract.md); access model: [access-control.md](access-control.md);
+  setup: [SETUP_WINDOWS.md](SETUP_WINDOWS.md); plan and decisions: `PLAN.md`.
+
+The rest of this document describes the **FastAPI prototype** in `backend/`, which stays in the
+repository until Phase 8 confirms parity (fallback: `SETUP_WINDOWS.md`, "Falling back to the
+FastAPI prototype"). Its scoring, windowing and ranking rules were ported unchanged.
+
+## Prototype layering
 
 ```
    React pages ──► src/api/*  ──HTTP──►  api/v1/endpoints/*
@@ -95,8 +120,8 @@ seeded reading is days old, so under any short window the opening board is set b
 which left no red on it (avg 91.8, 0 High / 6 Medium / 68 Low). `scripts/generate_sensor_data.py`
 now re-expresses the historical breach penalty of every mine below the Low band as extra open
 violations, putting each back within 2 points of its old score: 6 High / 21 Medium / 47 Low as
-before, avg 83.2. The five named mines are set by hand; Jharia keeps zero violations as the
-sensor-only mine whose score moves purely with its air.
+before, avg 83.2. The five named mines are set by hand; Jharia (now Moonidih, JH-DHN-01) keeps zero violations as
+the sensor-only mine whose score moves purely with its air.
 
 **The replayed feed is thinner than the record.** A mine's seeded breach count describes its
 three-day record and sets that baseline; the telemetry the simulator replays is thinned to roughly a

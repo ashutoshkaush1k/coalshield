@@ -9,13 +9,14 @@ repository layout and how to run it.
 
 | Layer | Choice |
 |---|---|
-| Frontend | React 18 + Vite + Recharts |
-| Backend | Python + FastAPI |
-| Database | SQLite via SQLAlchemy (one-line swap to PostgreSQL) |
-| Computer Vision | Pretrained YOLO (ultralytics) + OpenCV |
-| IoT | Seeded dataset replayed by a simulator — no hardware |
+| Frontend | React 18 + Vite + Recharts, i18next (`frontend/`) |
+| API | PHP 8.2 + Yii2 pure JSON API, module `v1` (`api/`) |
+| Database | PostgreSQL 16 + PostGIS (monthly-partitioned sensor readings, hash-chained audit log) |
+| AI | `ai-service/` (FastAPI, stateless): pretrained YOLO PPE detection |
+| IoT | Calibrated demo data replayed through the API by a simulator - no hardware |
 
-SQLite and a local frontend mean the whole demo runs offline at the venue.
+The FastAPI prototype in `backend/` is kept until Phase 8 confirms parity but is no longer started
+(fallback: `docs/SETUP_WINDOWS.md` section 9). Everything still runs offline at the venue.
 
 ## Layout
 
@@ -60,7 +61,10 @@ SIH/
 │   │                          inspections, vision (upload + detection preview)
 │   ├── hooks/                 useAuth, usePolling
 │   ├── utils/  styles/
-├── run_all.bat                one-click stack launcher (--sim adds the sensor feed)
+├── api/                       Yii2 API: config, migrations, models, services, v1 controllers, tests
+├── ai-service/                stateless PPE vision service (port 8001)
+├── data/                      reference data and demo-data generators (data/out is loaded by yii seed)
+├── run_all.bat                one-click launcher: PostgreSQL, API, AI, frontend (--sim, --stop)
 ├── docs/                      architecture, API contract, access control, demo script
 └── scripts/                   setup, run, seed, sensor-data generation
 ```
@@ -86,48 +90,43 @@ Every must-have and should-have maps to a home:
 
 ## Running it
 
-One-time setup per machine:
+One-time setup per machine: `docs/SETUP_WINDOWS.md` (PostgreSQL + PostGIS, PHP extensions,
+Composer, `api\.env`), then `cd frontend && npm install` and
+`powershell -ExecutionPolicy Bypass -File scripts/setup.ps1` for the Python venv the ai-service uses.
 
-```bash
-powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
-```
+Then double-click **`run_all.bat`**, or:
 
-Then start everything with a single double-click on **`run_all.bat`**, or:
-
-```bash
+```bat
 run_all.bat
 ```
 
-It checks the venv and `node_modules` are present, opens `SIH-Backend` and `SIH-Frontend`
-windows, waits until both ports are actually listening, and opens the dashboard. Add `--sim` to
-also start the IoT simulator. Close the `SIH-*` windows to shut the stack down.
+It starts PostgreSQL if needed (and says clearly if it cannot), migrates and seeds on the first
+run, opens `SIH-API` (8080), `SIH-AI` (8001) and `SIH-Frontend` (5173), waits for the ports and
+opens the dashboard. `--sim` adds the live sensor replay; `run_all.bat --stop` shuts everything
+down cleanly. API health: `http://127.0.0.1:8080/v1/health`.
 
-To start the pieces individually instead:
-
-```bash
-powershell -File scripts/run_backend.ps1
-```
-
-```bash
-powershell -File scripts/run_frontend.ps1
-```
-
-Backend on `http://localhost:8000` (docs at `/docs`), frontend on `http://localhost:5173`.
+Before a demo: `api\yii.bat seed demo` (about 25 s) - see `docs/demo-script.md`. Tests:
+`api\run_tests.bat` (rebuilds the test database, seeds demo, runs every suite).
 
 ## Demo accounts
 
-Seeded by `scripts/seed_db.py`. Demo fixtures only — not real credentials.
+Loaded by `yii seed`. Demo fixtures only - not real credentials. Mine names are real (Global
+Energy Monitor, Global Coal Mine Tracker, August 2026, CC BY 4.0); every score is a demo value
+computed from synthetic data.
 
 | Role | Email | Password | Scope |
 |---|---|---|---|
-| Government | `gov@dgms.gov.in` | `demo123` | All 5 mines |
-| Mine Head | `head.jh-dhn-01@coalmine.in` | `demo123` | Jharia (88, green) |
-| Mine Head | `head.cg-krb-03@coalmine.in` | `demo123` | Korba (70, yellow) |
-| Mine Head | `head.od-tlc-05@coalmine.in` | `demo123` | Talcher (46, red) |
+| Government | `gov@dgms.gov.in` | `demo123` | All 74 mines |
+| Corporate | `corporate.secl@coalmine.in` (one per company) | `demo123` | SECL's 17 mines |
+| Mine Head | `head.jh-dhn-01@coalmine.in` | `demo123` | Moonidih, BCCL (100, low) |
+| Mine Head | `head.mp-sgr-02@coalmine.in` | `demo123` | Jayant, NCL (80, low) |
+| Mine Head | `head.cg-krb-03@coalmine.in` | `demo123` | Gevra, SECL (70, medium) |
+| Mine Head | `head.wb-rng-04@coalmine.in` | `demo123` | Sonepur Bazari, ECL (60, medium) |
+| Mine Head | `head.od-tlc-05@coalmine.in` | `demo123` | Bhubaneswari, MCL (45, high) |
+| Inspector | `inspector.01@dgms.example` | `demo123` | All mines (reads like government) |
 
-The seed spreads five mines across all three risk bands so the cross-mine comparison has
-something to compare. Regenerate with `python scripts/generate_sensor_data.py` — it is seeded
-with a fixed RNG value, so the numbers are identical on every machine and every re-run.
+Every mine has a head account: `head.<code in lower case>@coalmine.in`. National average 83.2,
+6 high / 21 medium / 47 low - asserted by `api/tests/api/DemoScoreCest.php`.
 
 ## Data
 
@@ -155,6 +154,9 @@ see `data\MANUAL_STEPS.md`.
 
 ## Notes
 
-- Copy `backend/.env.example` → `backend/.env` and `frontend/.env.example` → `frontend/.env`.
-- Scoring weights and sensor thresholds are env-driven so they can be tuned live (PRD 8.1).
-- Model weights are downloaded, never committed — see `backend/ml/README.md`.
+- Copy `api/.env.example` → `api/.env` (secrets: `docs/SETUP_WINDOWS.md` section 8) and
+  `frontend/.env.example` → `frontend/.env`.
+- Scoring weights and the breach window are env-driven (`api/.env`); legal sensor limits come
+  from `data/schema/rules.yaml`, each tied to a verified obligation.
+- Model weights are downloaded, never committed - see `backend/ml/README.md`.
+- API contract: `docs/api-contract.md`; changes from the prototype: `docs/API_CHANGES.md`.
