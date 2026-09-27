@@ -4,7 +4,7 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 
 ## Remaining phases, in order
 
-5 (grievances) → **5B** → 6 (multilingual) → 7 (automation, ai-service) → **7B** → 8 (hardening).
+5 (grievances, done) → **5B** (done) → 6 (multilingual) → 7 (automation, ai-service) → **7B** → 8 (hardening).
 The full scope of each is in `PLAN.md` §6.
 
 - **Phase 5B - compliance obligation register and GIS map** (owner addition, 2026-09-27).
@@ -35,6 +35,167 @@ The full scope of each is in `PLAN.md` §6.
     existing services, so the audit chain and history stay intact.
   - Device time and out-of-boundary locations are flagged.
   - Tested by an offline → online browser run.
+
+## Phase 5B: Obligation register and GIS map, plus the grievance tracking code (done, 2026-09-28)
+
+### Fix first: grievance tracking code
+
+- At submission the API issues a random 8-character code (`ABCDEFGHJKMNPQRSTUVWXYZ23456789`, no
+  0/O, 1/I/L), shown once on the confirmation screen next to the ticket number. Only an
+  HMAC-SHA256 of it is stored (`grievance.tracking_code_hash`, migration `m261002_000001`).
+- Tracking is now `POST /v1/grievances/track` with `{ticket_no, tracking_code}` (the old GET is
+  removed), so the code never appears in a URL. A wrong code gets byte for byte the response of an
+  unknown ticket; the comparison is constant-time, against a dummy hash for unknown tickets.
+- Seeded grievances carry codes generated deterministically in the data track
+  (`common.tracking_code(seed, ticket_no)`, validate check V13); `yii seed` stores only the hash.
+- The confirmation screen hands the code to the tracking page in router state, not the URL.
+- `GrievanceCest` (9 tests) and the phase5 browser check (new shot `04b-public-track-wrong-code`)
+  cover it; the phase5 screenshots are refreshed.
+
+### Data track
+
+- `data/generators/gen_obligations.py` produces `obligation` (40), `obligation_applicability`,
+  `obligation_task` and `obligation_submission`, plus evidence `file` rows. It comes with schema
+  YAMLs, validate check V12, a card in `data/DATASETS.md` and the load order in `data/HANDOFF.md`.
+- Only verified obligations with a calendar frequency get tasks; RPT-08 (TODO-VERIFY) never does.
+  SAF-07/09/12 apply to underground or mixed mines, SAF-01 to a workforce of 500 or more.
+- Filing discipline varies per mine: mostly on time, some late, some overdue and still open, and
+  about 3 % of submissions rejected (60 % of those resubmitted). Demo preset: 4,506 tasks and
+  3,595 submissions (108 rejected).
+- `data/scripts/clean_state_boundaries.py` builds the offline map's outlines, deterministically:
+  - `data/reference/state_boundaries.geojson`: 36 states and UTs from DataMeet, 148 KB;
+  - `data/reference/map_districts.geojson`: the 28 Census 2011 districts that contain the real
+    roster's 74 mines, placed by point in polygon, 125 KB.
+
+  The older `district_boundaries.geojson` was built from the prototype seed's district names, and 6
+  of today's mines (Giridih, Ranchi, Chhindwara, Paschim Bardhaman, Surajpur) had no outline in it.
+  The script now runs after `clean_mines_real.py`.
+- All presets regenerated and validated (14/16 checks pass as before, V12 and V13 included);
+  determinism byte-identical. Among existing files only `grievance.csv` and `file.csv` changed.
+
+### Obligation register (API)
+
+- Migration `m261003_000001`: the four tables with CHECKs, FKs and indexes; alert codes
+  `OBLIGATION_DUE_SOON` and `OBLIGATION_OVERDUE`.
+- `yii seed` loads the register and backfills its history (submissions, reviews) into the audit
+  chain.
+- The mine head submits evidence (file required, note optional). Government or inspector accepts
+  or rejects; a rejection needs a reason, which the mine sees; accepting resolves the overdue
+  alert. Government may also waive a task for its period, with a reason (PLAN's `waived`). A waived
+  task leaves statutory compliance, and its overdue alert is resolved. Corporate reads only.
+- Reminders come 3 days before a due time (one alert per mine and due time). Past due, a task
+  becomes `overdue` (level 1, `OBLIGATION_OVERDUE`); still nothing 168 h later, `escalated`
+  (level 2). All alerts are `{code, params}`, with the citation in the params. The check runs on
+  register reads (once per request), in `yii obligation/check [--at=ISO]` and in `run_all.bat`.
+- The PHP schedule mirrors the generator exactly (`ObligationScheduleTest`).
+- **Statutory compliance** is a separate metric (tasks due in the last 90 days, evidence on time
+  and accepted), per mine, company and domain. **The compliance score formula is unchanged.** The
+  demo scores (100/80/70/60/45, 6/21/47, 83.2) are identical and `DemoScoreCest` is green;
+  `ObligationCest::statutoryComplianceLeavesTheScoreAlone` checks that obligation alerts do not
+  move them.
+- RBAC: `obligation.view` (all), `obligation.submit` (mine head), `obligation.review`
+  (government, inspector), `obligation.waive` (government), `obligation.summary` (government,
+  corporate, inspector).
+- Obligations without dated tasks are listed under *Obligations not on the dated register*, each
+  with its citation and how it is handled:
+  - limits the sensor rules watch (SAF-11, HLT-04, HLT-05; `monitored_by` comes from `rules.yaml`);
+  - continuous duties;
+  - every shift;
+  - on an event;
+  - once or on renewal.
+
+### GIS map
+
+- Works with no internet: Leaflet 1.9.4 is bundled, and the state and district outlines come from
+  local data through `/v1/geo/states` and `/v1/geo/districts` (ETag, cached a day).
+- Mines are at their real coordinates, coloured **and** labelled by risk band. The tooltip gives
+  score, open alerts, district and location quality, with approximate locations dashed. District
+  outlines are limited to the districts of the mines in scope, and a shared district never names
+  another company's mine. A click opens the mine
+  (a mine head goes to their overview). Scope is the API's: government sees all 74 demo mines,
+  corporate SECL 17, a mine head one.
+- The OpenStreetMap basemap is optional and off by default. When on, it carries the OSM
+  attribution and loads only the tiles in view; offline it says the tiles are unavailable and the
+  outlines stay. Global Energy Monitor (CC BY 4.0) and DataMeet are credited on the map.
+
+### Frontend
+
+- Obligations and Map tabs on the mine head dashboard and on the government / corporate /
+  inspector dashboard; each is one request per polling cycle (`/v1/views/obligations`,
+  `/v1/views/map`).
+- Mine head: statutory compliance, then due soon, overdue, open, submitted and recently accepted.
+  Every row shows act and section. The task drawer shows the verbatim quote with source file and
+  page, the due time and its basis (law or product setting), the evidence history and the upload
+  form.
+- Government / corporate:
+  - compliance per company;
+  - the most overdue items;
+  - evidence awaiting review (oldest first; the state filter narrows it);
+  - compliance per mine (lowest first) and per domain;
+  - review in the drawer.
+- All new UI text goes through i18n (`obligation.*`, `map.*`, alert and status keys).
+
+### Tests, performance, browser check
+
+- API: 154 tests, 1,785 assertions, all passing (new: `ObligationCest` 7 and
+  `ObligationScheduleTest` 2; `GrievanceCest` updated). One test depended on today's date (a
+  reminder for another due time at the same mine) and is fixed.
+- New screens (`scripts/perf_check.mjs`): obligations 73-87 ms median (p95 at most 90), map
+  34-41 ms, district outlines 58 ms on first load. This run was on battery power, and every screen was about three times slower than in
+  Phase 5, including untouched ones. The Phase 5 commit and this code, run side by side on the same
+  database, gave identical times. So the slowdown is the machine, not the code
+  (docs/PERFORMANCE.md).
+- `node scripts/browser_check.mjs phase5b --side-tabs`: 21 screenshots in
+  `docs/screenshots/phase5b/`, all steps passed:
+  - the mine head submits evidence;
+  - government rejects (refused without a reason, then with one) and accepts the resubmission;
+  - government waives an overdue task with a reason;
+  - the obligations without dated tasks, with how each is handled;
+  - an item goes overdue with its alert, then escalates to level 2 (`yii obligation/check --at`);
+  - the register views for mine head, government and corporate;
+  - the map for all three roles with every off-machine request blocked (28 tile requests failed;
+    the outlines stayed).
+
+  The side tabs polled throughout with no failure.
+
+### Known issues (Phase 5B)
+
+- **Where the owner's rules override PLAN.md:**
+  - PLAN had on-event notice tasks created from incidents. The owner's rule for this phase is that
+    only verified obligations with a calendar frequency get tasks, so on-event obligations are
+    listed (with citations) but get no tasks. The seeded incidents already carry their notice's
+    code (RPT-03/04/05), so this is a small follow-up if wanted.
+  - PLAN had an optional "overdue obligations" score component (weight 0). The owner's rule is
+    not to touch the score formula, so there is none.
+- **Source PDF pages are named, not linked:** the legal PDFs (`raw/legal/`) are not in the
+  repository.
+- **`obligation/check --at`** simulates a later time for statuses and alerts, but the alerts and
+  history record the real time at which the command ran. It also creates the tasks of the periods
+  started by then. Reseed after using it.
+- **Evidence files of the seeded history are not stored.** The drawer says *File not stored (demo
+  history)*; only evidence uploaded through the app has a file.
+- **The review queue shows the 50 oldest** items in scope, with a note and the state filter to
+  narrow it; there is no paging yet.
+- **The street map needs internet** and follows the OSM tile usage policy: interactive use only,
+  off by default, no prefetching or bulk download. A deployment with real traffic should use its
+  own tile server or a commercial provider.
+- **Performance was measured on battery**; rerun `node scripts/perf_check.mjs` on mains power for
+  numbers comparable with earlier phases.
+
+### How to verify (Phase 5B)
+
+```bat
+run_all.bat
+api\yii.bat seed demo
+api\yii.bat obligation/check
+api\yii.bat obligation/summary
+cd api && run_tests.bat
+node scripts\perf_check.mjs
+node scripts\browser_check.mjs phase5 --side-tabs
+node scripts\browser_check.mjs phase5b --side-tabs
+```
+
+Re-seed after a browser check (phase5b moves the obligation clock forward).
 
 ## Phase 5: Grievance handling, plus two owner decisions (done, 2026-09-27)
 
@@ -117,8 +278,8 @@ The full scope of each is in `PLAN.md` §6.
 - **Rate limits are per IP.** Behind a shared NAT (a mine colony, a cyber cafe) many people share
   one address. The limits are env settings (`GRIEVANCE_SUBMIT_PER_HOUR`,
   `GRIEVANCE_TRACK_PER_MINUTE`). There is no CAPTCHA, by design.
-- **Anyone with a ticket number sees its status.** Tickets are sequential, but tracking shows no
-  text and no people, and it is rate-limited.
+- **Anyone with a ticket number sees its status.** Fixed in Phase 5B: tracking needs the ticket
+  number and its tracking code.
 - **Satisfaction rating:** the column is loaded and shown, but there is no public endpoint yet for
   a complainant to rate.
 - **Severity** at submission follows the category (a product setting); staff cannot change it yet.

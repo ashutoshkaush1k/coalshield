@@ -17,6 +17,8 @@ import { SensorPerformancePanel } from "./panels/SensorPerformancePanel";
 import { ContractorsPanel } from "./panels/ContractorsPanel";
 import { ProductionPanel } from "./panels/ProductionPanel";
 import { GrievancePanel } from "./panels/GrievancePanel";
+import { ObligationsPanel } from "./panels/ObligationsPanel";
+import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
 
 const TABS = [
@@ -26,6 +28,8 @@ const TABS = [
   { id: "production", label: t("production.tabLabel") },
   { id: "contractors", label: t("contractor.tabLabel") },
   { id: "grievances", label: t("grievance.tabLabel") },
+  { id: "obligations", label: t("obligation.tabLabel") },
+  { id: "map", label: t("map.tabLabel") },
 ];
 
 export default function MineHeadDashboard() {
@@ -97,6 +101,14 @@ export default function MineHeadDashboard() {
 
         <TabPanel id="grievances" active={tab}>
           <GrievancePanel />
+        </TabPanel>
+
+        <TabPanel id="obligations" active={tab}>
+          <ObligationsPanel />
+        </TabPanel>
+
+        <TabPanel id="map" active={tab}>
+          <MapPanel onOpenMine={() => setTab("overview")} />
         </TabPanel>
 
         <TabPanel id="trends" active={tab}>

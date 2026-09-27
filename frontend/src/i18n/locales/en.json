@@ -52,7 +52,10 @@
     "locked": "Locked",
     "received": "Received",
     "under_investigation": "Under investigation",
-    "reopened": "Reopened"
+    "reopened": "Reopened",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "waived": "Waived"
   },
   "errors": {
     "UNAUTHENTICATED": "Please sign in again.",
@@ -72,7 +75,9 @@
     "ENTRY_LOCKED": "This entry has been submitted. Correct it with a reason instead.",
     "NOTHING_CHANGED": "Nothing was changed.",
     "RATE_LIMITED": "Too many requests from this device. Please try again in {{retry_after}} seconds.",
-    "SUBMISSION_REJECTED": "The form could not be accepted."
+    "SUBMISSION_REJECTED": "The form could not be accepted.",
+    "ALREADY_REVIEWED": "This evidence has already been reviewed.",
+    "BOUNDARIES_MISSING": "The map outlines are missing on the server ({{file}})."
   },
   "fields": {
     "REQUIRED": "required",
@@ -159,7 +164,9 @@
     "history": "History",
     "proof": "Proof submitted",
     "reopenedBecause": "Reopened: {{reason}}",
-    "CONTRACT_WORKER_CAP_EXCEEDED": "Contract #{{contract_id}} has {{active_workers}} active workers, above its limit of {{max_workers}}."
+    "CONTRACT_WORKER_CAP_EXCEEDED": "Contract #{{contract_id}} has {{active_workers}} active workers, above its limit of {{max_workers}}.",
+    "OBLIGATION_DUE_SOON": "{{count}} statutory obligation(s) due {{due_at}}: {{obligations}}.",
+    "OBLIGATION_OVERDUE": "{{obligation}} for {{period}} is overdue (due {{due_at}}; {{instrument}} {{clause}})."
   },
   "category": {
     "roof_strata": "Roof and strata",
@@ -288,7 +295,9 @@
       "close": "closed",
       "reopen": "reopened",
       "escalate": "escalated (SLA breach)",
-      "assign": "assigned"
+      "assign": "assigned",
+      "accepted": "accepted",
+      "rejected": "rejected"
     },
     "entity": {
       "alert": "Alert",
@@ -313,7 +322,10 @@
       "production_edit_log": "Production correction",
       "production_detail_request": "Detailed report request",
       "grievance": "Grievance",
-      "grievance_action": "Grievance step"
+      "grievance_action": "Grievance step",
+      "obligation_task": "Obligation task",
+      "obligation_submission": "Obligation evidence",
+      "obligation": "Obligation"
     },
     "system": "System",
     "changes": "Changes",
@@ -763,16 +775,18 @@
       "sensitiveNote": "Harassment grievances and grievances about the mine head go directly to the regulator (DGMS); the mine head cannot see them.",
       "doneTitle": "Grievance received",
       "doneTicket": "Your ticket number",
-      "doneHint": "Keep this number. Use it to follow your grievance.",
+      "doneHint": "Keep the ticket number and the tracking code.",
       "doneDue": "A first response is due by {{when}}.",
       "another": "Raise another",
       "trackThis": "Track this grievance",
       "honeypot": "Leave this field empty",
-      "backToLogin": "Staff sign-in"
+      "backToLogin": "Staff sign-in",
+      "doneCode": "Your tracking code",
+      "doneCodeOnce": "Write down both. The tracking code is shown only this once - it is needed with the ticket number to follow your grievance, and nobody can look it up for you."
     },
     "track": {
       "title": "Track a grievance",
-      "hint": "Enter the ticket number you received, e.g. GRV-2026-000123.",
+      "hint": "Enter the ticket number and the tracking code you received when you raised the grievance.",
       "ticket": "Ticket number",
       "submit": "Track",
       "status": "Status",
@@ -781,7 +795,8 @@
       "overdue": "The response time has passed; the grievance has been escalated.",
       "outcome": "Outcome",
       "timeline": "What happened",
-      "notFound": "No grievance with this ticket number."
+      "notFound": "No grievance matches this ticket number and tracking code.",
+      "code": "Tracking code"
     },
     "queue": {
       "title": "Grievances at this mine",
@@ -850,5 +865,134 @@
       "escalatedEmpty": "Nothing escalated and open.",
       "allTitle": "All grievances"
     }
+  },
+  "obligation": {
+    "tabLabel": "Obligations",
+    "loading": "Loading the register...",
+    "domain": {
+      "reporting": "Reporting",
+      "safety": "Safety",
+      "health": "Health",
+      "labour": "Labour",
+      "environment": "Environment"
+    },
+    "citation": {
+      "source": "Source: {{file}}, page {{page}}",
+      "showQuote": "Show the text",
+      "unverified": "TODO-VERIFY: not verified - never on the register"
+    },
+    "dueBasis": {
+      "law": "due date set by the rule",
+      "product": "due date is a product setting, not law"
+    },
+    "mine": {
+      "title": "Statutory obligations of this mine",
+      "hint": "Every obligation shows its act, section or rule and the text it comes from. Upload evidence before the due time; a reviewer at DGMS accepts it or sends it back with a reason.",
+      "compliance": "Statutory compliance",
+      "complianceHint": "Tasks due in the last {{days}} days, evidence submitted on time and accepted. A separate measure - the compliance score is unchanged.",
+      "dueSoon": "Due soon",
+      "overdue": "Overdue",
+      "open": "Open",
+      "submitted": "Submitted, awaiting review",
+      "accepted": "Recently accepted",
+      "empty": "Nothing here."
+    },
+    "list": {
+      "obligation": "Obligation",
+      "period": "Period",
+      "due": "Due",
+      "status": "Status",
+      "mine": "Mine",
+      "evidence": "Evidence",
+      "action": ""
+    },
+    "task": {
+      "title": "{{code}} - {{period}}",
+      "evidenceType": "Evidence expected",
+      "frequency": "Frequency",
+      "dueRule": "Rule",
+      "submissions": "Evidence submitted",
+      "noSubmissions": "No evidence yet.",
+      "submittedBy": "{{name}}, {{when}}",
+      "reviewedBy": "Reviewed by {{name}}, {{when}}",
+      "upload": "Submit evidence",
+      "file": "File (PDF, JPEG, PNG or WEBP)",
+      "note": "Note",
+      "submit": "Submit evidence",
+      "submitted": "Evidence submitted",
+      "accept": "Accept",
+      "reject": "Reject",
+      "reason": "Reason (required to reject; shown to the mine)",
+      "reviewed": "Review recorded",
+      "escalation": "Escalation level {{level}}",
+      "history": "History",
+      "openFile": "Open the file",
+      "noFile": "File not stored (demo history)",
+      "waive": "Waive",
+      "waiveTitle": "Waive this task (government)",
+      "waiveHint": "Waiving says the mine is not bound for this period, for example because the mine was closed. The reason is recorded in the task's history; a waived task leaves statutory compliance.",
+      "waiveReason": "Reason (required)",
+      "waivedToast": "Task waived",
+      "waivedBy": "Waived by {{name}}, {{when}}"
+    },
+    "gov": {
+      "title": "Statutory compliance",
+      "hint": "Tasks due in the last {{days}} days: evidence submitted on time and accepted. Separate from the compliance score, which does not change.",
+      "fleet": "In view",
+      "onTime": "On time",
+      "late": "Accepted late",
+      "awaiting": "Awaiting review",
+      "overdue": "Overdue",
+      "escalated": "Escalated",
+      "byCompany": "By company",
+      "byMine": "By mine (lowest first)",
+      "byDomain": "By domain",
+      "mostOverdue": "Most overdue",
+      "pendingReview": "Evidence awaiting review",
+      "company": "Company",
+      "due": "Due",
+      "pct": "Compliance",
+      "noneOverdue": "Nothing overdue.",
+      "noneWaiting": "Nothing awaiting review.",
+      "showing": "Oldest first: showing {{shown}} of {{total}}. Choose a state to narrow the list."
+    },
+    "other": {
+      "title": "Obligations not on the dated register",
+      "hint": "These have no dated tasks. Each is shown with its citation and how it is handled.",
+      "how": "How it is handled",
+      "appliesTo": "Applies to: {{who}}",
+      "kind": {
+        "monitored": "Monitored continuously by the sensor rules ({{sensors}})",
+        "continuous": "A continuous duty - not a dated task",
+        "shift": "Every shift - too frequent for the register",
+        "event": "On an event - due when the event happens; not tracked here yet",
+        "other": "Once or on renewal - not on the calendar register"
+      }
+    }
+  },
+  "map": {
+    "tabLabel": "Map",
+    "loading": "Loading the map...",
+    "title": "Mines on the map",
+    "hint": "Real coordinates; colour and label show the risk band. State and district outlines are local data - the map works without internet.",
+    "basemap": "Show street map (OpenStreetMap, needs internet)",
+    "basemapOff": "Street map off - outlines only",
+    "legend": "Risk band",
+    "quality": {
+      "exact_gem": "exact (GEM)",
+      "approx_gem": "approximate (GEM)",
+      "wikidata": "approximate (Wikidata)",
+      "district_centroid": "district centre (approximate)"
+    },
+    "qualityLabel": "Location: {{quality}}",
+    "score": "Score {{score}}",
+    "open": "Open",
+    "openMine": "Open the mine",
+    "mines": "{{count}} mine(s)",
+    "offline": "Tiles unavailable - showing the local outlines only.",
+    "attributionGem": "Mines: Global Energy Monitor, Global Coal Mine Tracker (CC BY 4.0)",
+    "attributionDatameet": "Boundaries: DataMeet (CC BY 4.0 / CC BY 2.5 IN)",
+    "qualityNote": "A dashed outline marks an approximate location.",
+    "openAlerts": "{{count}} open alert(s)"
   }
 }

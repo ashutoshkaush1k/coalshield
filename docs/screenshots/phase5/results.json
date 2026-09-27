@@ -11,13 +11,20 @@
   },
   {
     "name": "03-public-ticket",
-    "note": "ticket GRV-2026-000375, with the response due time",
+    "note": "ticket GRV-2026-000375 and the tracking code, shown once, with the response due time",
     "errors": []
   },
   {
     "name": "04-public-track",
-    "note": "tracking: status and the public timeline only - no text, no people",
+    "note": "tracking with ticket + code: status and the public timeline only - no text, no people",
     "errors": []
+  },
+  {
+    "name": "04b-public-track-wrong-code",
+    "note": "a wrong code: the same answer as an unknown ticket",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
   },
   {
     "name": "05-head-queue",
@@ -76,12 +83,12 @@
   },
   {
     "name": "side-tab gov@dgms.gov.in",
-    "note": "14 API requests in 69 s",
+    "note": "12 API requests in 81 s",
     "errors": []
   },
   {
     "name": "side-tab head.od-tlc-05@coalmine.in",
-    "note": "12 API requests in 63 s",
+    "note": "14 API requests in 74 s",
     "errors": []
   }
 ]

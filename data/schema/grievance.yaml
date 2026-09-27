@@ -7,6 +7,7 @@ primary_key: id
 columns:
   - {name: id, type: integer, nullable: false}
   - {name: ticket_no, type: string, nullable: false, unique: true}
+  - {name: tracking_code, type: string, nullable: false, note: "8 characters from ABCDEFGHJKMNPQRSTUVWXYZ23456789; deterministic from (seed, ticket_no) in the demo data; the API stores an HMAC, never the code"}
   - {name: mine_id, type: integer, nullable: false, fk: mine.id}
   - {name: submitter_type, type: enum, nullable: false, values: [employee, contract_worker, community, anonymous]}
   - {name: name, type: string, nullable: true, note: "fictitious; empty when anonymous"}

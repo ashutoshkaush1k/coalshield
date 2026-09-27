@@ -133,7 +133,8 @@ class SeedTest extends Unit
             + $q('SELECT count(*) FROM contract') + $q('SELECT count(*) FROM contractor_compliance_doc')
             + $q('SELECT count(*) FROM daily_production WHERE submitted_at IS NOT NULL') + $q('SELECT count(*) FROM production_edit_log')
             + $q('SELECT count(*) FROM production_detail_request') + $q('SELECT count(*) FROM production_detail_request WHERE responded_at IS NOT NULL')
-            + $q('SELECT count(*) FROM grievance_action');
+            + $q('SELECT count(*) FROM grievance_action')
+            + $q('SELECT count(*) FROM obligation_submission') + $q('SELECT count(*) FROM obligation_submission WHERE reviewed_at IS NOT NULL');
         $this->assertSame($expected, $q("SELECT count(*) FROM audit_log WHERE source = 'seed_history'"));
 
         // Original timestamp and actor: an incident's report, an inspection visit by its inspector.

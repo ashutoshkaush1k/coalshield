@@ -81,8 +81,8 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 | POST | `/detail-requests/{id}/respond` | `detailRequest.respond` | mine head: multipart `response_note`, `file?` - also late (overdue / escalated); resolves the overdue alert |
 | POST | `/detail-requests/{id}/close` | `detailRequest.create` | submitted → closed |
 | GET | `/public/mines` | public (rate-limited) | mines to choose from on the public grievance form (id, code, name, district, state) |
-| POST | `/grievances/public` | public (rate-limited: 5 per hour per IP) | multipart or JSON: `mine_id, submitter_type, name?, contact?, is_anonymous, category, safety_category (safety), language, description, against_mine_head, latitude?, longitude?, file?` (PDF/JPEG/PNG, 5 MB), `website` (honeypot, must be empty → 400 `SUBMISSION_REJECTED`) → `{ticket_no, status, sla_due_at, created_at}`; 429 `RATE_LIMITED` with `Retry-After` |
-| GET | `/grievances/track/{ticket_no}` | public (rate-limited: 20 per minute per IP) | status, category, dates, public timeline (action, status, time), resolution note once resolved - no text, no people |
+| POST | `/grievances/public` | public (rate-limited: 5 per hour per IP) | multipart or JSON: `mine_id, submitter_type, name?, contact?, is_anonymous, category, safety_category (safety), language, description, against_mine_head, latitude?, longitude?, file?` (PDF/JPEG/PNG, 5 MB), `website` (honeypot, must be empty → 400 `SUBMISSION_REJECTED`) → `{ticket_no, tracking_code, status, sla_due_at, created_at}` - the tracking code is returned this once only; 429 `RATE_LIMITED` with `Retry-After` |
+| POST | `/grievances/track` | public (rate-limited: 20 per minute per IP) | `{ticket_no, tracking_code}` → status, category, dates, public timeline (action, status, time), resolution note once resolved - no text, no people. A wrong code and an unknown ticket get the same 404 `NOT_FOUND` |
 | GET | `/grievances?mine_id=&state=&status=&category=&language=&open=&escalated=&sensitive=` | `grievance.view` | scoped and routed (a mine head never sees a sensitive grievance); open first, earliest SLA due first; runs the SLA check |
 | GET | `/grievances/{id}` | `grievance.view` | with `timeline`; 404 for a sensitive grievance to a mine head |
 | GET | `/grievances/stats?state=` | `grievance.stats` | totals, by category / mine / language, average hours to first resolution, SLA breaches, breach clusters |
@@ -90,6 +90,16 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 | POST | `/grievances/{id}/transition` | `grievance.manage` | `{to, note}` - `resolved` needs a note (shown to the complainant); `reopened` starts a new SLA period |
 | POST | `/grievances/{id}/assign` | `grievance.manage` | `{user_id}` - one of the assignees |
 | GET | `/views/grievances?state=` | `grievance.view` | the grievance screen in one request: `{stats, escalated, grievances}` (stats and escalated null for a mine head) |
+| GET | `/obligations` | `obligation.view` | the catalogue, each with `citation {instrument, clause, quote, source_file, page, verified}`, `generates_tasks` and `monitored_by` |
+| GET | `/obligation-tasks?view=&state=&status=&domain=&per_page=` | `obligation.view` | tasks in scope (`view`: `due_soon`, `open`, `overdue`, `submitted`, `accepted`), earliest due first (`accepted`: latest first); runs the obligation check |
+| GET | `/obligation-tasks/{id}` | `obligation.view` | with `obligation` (citation), `due_basis`, `submissions` (each with its review and a signed `file_url`) |
+| POST | `/obligation-tasks/{id}/submissions` | `obligation.submit` (mine head) | multipart `file` (required; PDF/JPEG/PNG/WEBP) + `note?` → the task, now `submitted`; 422 `INVALID_TRANSITION` for an accepted or already submitted task |
+| POST | `/obligation-tasks/{id}/waive` | `obligation.waive` (government) | `{reason}` - reason required (field `reason`: `REASON_REQUIRED`, `TOO_SHORT`); open, rejected, overdue or escalated → `waived`; resolves the overdue alert; 422 `INVALID_TRANSITION` otherwise |
+| POST | `/obligation-submissions/{id}/review` | `obligation.review` (government, inspector) | `{decision: accept\|reject, note}` - reject needs a reason (field `note`: `REASON_REQUIRED`, `TOO_SHORT`); 422 `ALREADY_REVIEWED` |
+| GET | `/obligations/summary?state=` | `obligation.summary` | statutory compliance per mine (lowest first), company and domain, totals, the 20 most overdue items, pending-review count |
+| GET | `/views/obligations?state=` | `obligation.view` | the register in one request - mine head: `{summary, due_soon, overdue, open, submitted, accepted}`; others: `{summary, pending_review}` (the 50 oldest) |
+| GET | `/views/map?state=` | `mine.view` | `{mines}` - the mines in scope as GeoJSON with score, band, district and location quality |
+| GET | `/geo/states`, `/geo/districts` | `mine.view` | local GeoJSON outlines; `ETag`, 304, cached a day; 503 `BOUNDARIES_MISSING`. Districts are the 2011 districts holding a mine in scope, each listing only those mines |
 | POST | `/vision/analyze` | `vision.analyze` | multipart `mine_id`, `file` → detections, violations, score before/after |
 | GET | `/files/{id}/content?expires=&signature=` | signed link | stored image (annotated frame, proof) |
 | GET | `/admin/baseline-check` | `admin.baselineCheck` | live scores vs seeded baseline |
@@ -174,6 +184,51 @@ visible to the mine head.
 
 **Tickets** `GRV-YYYY-NNNNNN` come from a per-year counter (`next_grievance_ticket()`) that never
 goes below the highest ticket already stored.
+
+## Obligation register (Phase 5B)
+
+**Source.** The 40 obligations, their applicability to each mine and the demo window's tasks and
+submissions come from the data track (`data/generators/gen_obligations.py`, `data/DATASETS.md`),
+loaded by `yii seed`. Only verified obligations with a calendar frequency get tasks; RPT-08
+(TODO-VERIFY) never does. Every screen shows each obligation's citation (act, section or rule,
+and the verbatim quote on hover or expand, with the source file and page). The source PDFs are
+not in the repository (`raw/legal/` is not distributed), so the page is named, not linked.
+Obligations without dated tasks are listed under *Obligations not on the dated register*, with how
+each is handled: continuous limits the sensor rules watch (SAF-11, HLT-04, HLT-05 -
+`monitored_by`), continuous duties, every shift (SAF-08), on an event, once or on renewal.
+
+**Schedule** (`ObligationService::periods()`, the same rules as the generator - proven by
+`api/tests/unit/ObligationScheduleTest.php`): weekly = ISO weeks, fortnightly = pairs of ISO weeks,
+monthly / quarterly / half-yearly / annual = calendar periods. The task is due at 23:59:59 IST on
+the period's last day - a product setting (`rules.yaml` `obligation_schedule.due`), labelled so on
+screen - except where the law names the date: ENV-03 (financial year, due 30 September) and RPT-06
+(calendar year, due end of February).
+
+**Workflow.** `open` → `submitted` (mine head uploads evidence) → `accepted` or `rejected` (government
+or inspector; a rejection needs a reason, which the mine sees) → `submitted` again. Government may
+waive a task that has no accepted evidence (`waived`, with a reason kept in the history); a waived
+task leaves statutory compliance. Past its due
+time an open or rejected task becomes `overdue` (escalation level 1, `OBLIGATION_OVERDUE` high);
+still unsubmitted `escalate_after_hours` (168) later it becomes `escalated` (level 2). Evidence
+submitted late is accepted as late. `OBLIGATION_DUE_SOON` reminds a mine `reminder_days` (3) before
+a due time, one alert per mine and due time. The check runs on register reads (once per request),
+in `yii obligation/check` and in `run_all.bat`; it is idempotent and recorded as a system action.
+New periods' tasks are created once a day.
+
+**Statutory compliance** = tasks due in the last 90 days whose evidence was submitted by the due
+time and accepted, divided by the tasks due. It is a **separate metric**: the compliance score and
+its formula are unchanged (`api/tests/api/ObligationCest.php`
+`statutoryComplianceLeavesTheScoreAlone`, and the demo-score test).
+
+## Map (Phase 5B)
+
+Works with no internet: Leaflet is bundled, and the state and district outlines are served by the
+API from `data/reference/` (DataMeet, CC BY 4.0 / CC BY 2.5 IN, simplified in the data track). The
+districts are the Census 2011 districts containing the real roster's mines
+(`map_districts.geojson`), limited to the caller's scope. Mines are drawn at their coordinates, coloured and labelled by risk band, with the location
+quality (exact GEM, approximate GEM, Wikidata, district centre - approximate ones dashed). The
+OpenStreetMap basemap is optional and off by default; when on, it carries OSM's attribution and
+only loads the tiles in view. GEM (CC BY 4.0) and DataMeet are credited on the map.
 
 ## Inspection ranking
 

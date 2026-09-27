@@ -86,3 +86,31 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | `grievance_action.action` | adds `assign` to the data schema's list (an assignment step in the timeline) |
 | `file.uploaded_by` | nullable, only for a public grievance attachment (a CHECK enforces it); the data schema says not null |
 | `/v1/alerts`, `/v1/audit`, `open_alerts` | for a mine head, exclude everything about sensitive grievances |
+
+## After Phase 5: grievance tracking code
+
+| Changed | Notes |
+|---|---|
+| `POST /v1/grievances/public` | the response adds `tracking_code` (8 characters from `ABCDEFGHJKMNPQRSTUVWXYZ23456789`), returned once and never again; only an HMAC-SHA256 of it is stored (`grievance.tracking_code_hash`) |
+| `GET /v1/grievances/track/{ticket}` | **removed**. Now `POST /v1/grievances/track` with `{ticket_no, tracking_code}` in the body, so the code never appears in a URL or an access log. A wrong code gets exactly the same 404 `NOT_FOUND` as an unknown ticket |
+| seeded grievances | carry a code too, generated deterministically in the data track (`grievance.tracking_code`); `yii seed` stores only its hash |
+
+## Phase 5B additions (no prototype equivalent)
+
+| New | Notes |
+|---|---|
+| `GET /v1/obligations` | the catalogue (40 obligations), each with `citation {instrument, clause, quote, source_file, page, verified}`, `generates_tasks`, and `monitored_by` (the sensor types whose limit it gives) |
+| `GET /v1/obligation-tasks?view=due_soon\|open\|overdue\|submitted\|accepted&state=&status=&domain=` | tasks in scope, `X-Total-Count` |
+| `GET /v1/obligation-tasks/{id}` | one task with its obligation, due time and basis, and every submission |
+| `POST /v1/obligation-tasks/{id}/submissions` | mine head: multipart `file` (required) + `note`; the task becomes `submitted` |
+| `POST /v1/obligation-submissions/{id}/review` | government or inspector: `{decision: accept\|reject, note}`; reject needs a reason (field code `REASON_REQUIRED`, `TOO_SHORT`); accepting resolves the task's `OBLIGATION_OVERDUE` alert |
+| `POST /v1/obligation-tasks/{id}/waive` | government only: `{reason}` (field code `REASON_REQUIRED`, `TOO_SHORT`) - the mine is not bound for the period; the reason is kept in the task's history, the overdue alert is resolved, and the task leaves statutory compliance |
+| `GET /v1/obligations/summary?state=` | statutory compliance (tasks due in the last 90 days submitted on time and accepted) per mine, company, domain, plus the most overdue items. A separate metric - the compliance score is unchanged |
+| `GET /v1/views/obligations?state=` | one request per register screen: a mine head gets `{summary, due_soon, overdue, open, submitted, accepted}`, multi-mine roles `{summary, pending_review}` |
+| `GET /v1/views/map?state=` | `{mines}`: the `/v1/mines/geojson` part |
+| `GET /v1/geo/states`, `/v1/geo/districts` | local GeoJSON outlines (DataMeet via the data track), `ETag` + `Cache-Control: private, max-age=86400`; 503 `BOUNDARIES_MISSING` if the file is absent. Districts: the 2011 districts holding a mine in the caller's scope, each listing only those mines (`data/reference/map_districts.geojson`). PLAN named it `/v1/districts/geojson` |
+| `/v1/mines/geojson` | properties add `district` and `open_alerts` |
+| alert codes | `OBLIGATION_DUE_SOON` (params `{due_at, count, obligations, task_ids}`, entity `mine`), `OBLIGATION_OVERDUE` (params `{task_id, obligation, period, due_at, instrument, clause}`, levels 1 and 2) |
+| error codes | `ALREADY_REVIEWED` (422), `BOUNDARIES_MISSING` (503) |
+| audit | seeded submissions and reviews in the chain as `seed_history` |
+| console | `yii obligation/check [--at=ISO]`, `yii obligation/summary` |

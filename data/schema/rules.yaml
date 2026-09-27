@@ -85,6 +85,13 @@ product:
   grievance_breach_cluster:                       # a mine with at least `min_breaches` grievances raised within `window_days`
     window_days: 10                               # that all breached their SLA is flagged as a breach cluster (product setting)
     min_breaches: 5
+  obligation_schedule:                            # Phase 5B: when a calendar-frequency obligation falls due, where its rule
+                                                  # (reference/obligations.csv due_rule) gives a frequency but no date.
+                                                  # Weekly = ISO week (Mon-Sun); fortnightly = ISO weeks 1-2, 3-4, ...;
+                                                  # monthly, quarterly, half-yearly, annual = calendar periods.
+    due: period_end                               # due at 23:59 IST on the period's last day (product setting, labelled as such)
+    reminder_days: 3                              # OBLIGATION_DUE_SOON this many days before the due time
+    escalate_after_hours: 168                     # overdue this long -> escalated (level 2)
   contractor_doc_due_day: 10                      # brief Phase 3: "due day configurable"
   production_lock_after_days: 7                   # brief Phase 4: a submitted entry's period closes (status locked) after this many days
   production_anomaly:                             # brief Phase 4: "flags days where actual > target by a configurable % or deviates

@@ -165,7 +165,7 @@ HEADER true, NULL '')`, then reset each table's id sequence to `max(id)`.
 | 10 | `daily_production` | mine, user | |
 | 11 | `production_edit_log` | daily_production, user | |
 | 12 | `production_detail_request` | mine, user, file | |
-| 13 | `grievance` | mine, user, file | `location` WKT, as for mine |
+| 13 | `grievance` | mine, user, file | `location` WKT, as for mine. `tracking_code` is a demo code: store an HMAC of it, never the code (Phase 5B) |
 | 14 | `grievance_action` | grievance, user | |
 | 15 | `inspection` | mine, user | |
 | 16 | `observation` | inspection, grievance, contractor, mine, **violation** | **Cycle** with `violation.observation_id`: create the FK `DEFERRABLE` and load 16–17 in one transaction, or load `observation.violation_id` as NULL and `UPDATE` it after 17 |
@@ -173,8 +173,12 @@ HEADER true, NULL '')`, then reset each table's id sequence to `max(id)`.
 | 18 | `alert` | mine, user | `entity_type` / `entity_id` are loose references (no FK), as today |
 | 19 | `corrective_action` | violation, alert, contractor, mine, user | |
 | 20 | `incident` | mine, violation | |
-| 21 | `sensor_reading` | mine | Largest table; partition by month on `recorded_at` (brief rule 10) before `COPY` |
-| 22 | `env_reading` | mine | |
+| 21 | `obligation` | - | the cited catalogue (Phase 5B) |
+| 22 | `obligation_applicability` | mine, obligation | |
+| 23 | `obligation_task` | mine, obligation | |
+| 24 | `obligation_submission` | obligation_task, file, user | the evidence file rows are in `file.csv` (entity `obligation_submission`) |
+| 25 | `sensor_reading` | mine | Largest table; partition by month on `recorded_at` (brief rule 10) before `COPY` |
+| 26 | `env_reading` | mine | |
 | - | `scenario_label` | mine | **Do not load into the app database.** Ground truth for scoring detectors; keep it in a separate evaluation schema or read it from the CSV |
 
 ### Row counts per preset

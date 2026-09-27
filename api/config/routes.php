@@ -33,13 +33,25 @@ return [
     // Grievances (Phase 5): public (no login) and staff
     'GET v1/public/mines' => 'v1/grievance-public/mines',
     'POST v1/grievances/public' => 'v1/grievance-public/submit',
-    'GET v1/grievances/track/<ticket:[A-Za-z0-9-]{1,32}>' => 'v1/grievance-public/track',
+    'POST v1/grievances/track' => 'v1/grievance-public/track',
     'GET v1/grievances' => 'v1/grievance/index',
     'GET v1/grievances/stats' => 'v1/grievance/stats',
     'GET v1/grievances/<id:\d+>' => 'v1/grievance/view',
     'GET v1/grievances/<id:\d+>/assignees' => 'v1/grievance/assignees',
     'POST v1/grievances/<id:\d+>/transition' => 'v1/grievance/transition',
     'POST v1/grievances/<id:\d+>/assign' => 'v1/grievance/assign',
+
+    // Obligation register and map (Phase 5B)
+    'GET v1/obligations' => 'v1/obligation/index',
+    'GET v1/obligations/summary' => 'v1/obligation/summary',
+    'GET v1/obligation-tasks' => 'v1/obligation/tasks',
+    'GET v1/obligation-tasks/<id:\d+>' => 'v1/obligation/task',
+    'POST v1/obligation-tasks/<id:\d+>/submissions' => 'v1/obligation/submit',
+    'POST v1/obligation-submissions/<id:\d+>/review' => 'v1/obligation/review',
+    'POST v1/obligation-tasks/<id:\d+>/waive' => 'v1/obligation/waive',
+    'GET v1/geo/<kind:states|districts>' => 'v1/geo/boundaries',
+    'GET v1/views/obligations' => 'v1/view/obligations',
+    'GET v1/views/map' => 'v1/view/map',
 
     // Production reporting (Phase 4)
     'GET v1/production' => 'v1/production/index',

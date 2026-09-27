@@ -15,6 +15,8 @@ import { TrendsPanel } from "./panels/TrendsPanel";
 import { ContractorsPanel } from "./panels/ContractorsPanel";
 import { ProductionPanel } from "./panels/ProductionPanel";
 import { GrievancesPanel } from "./panels/GrievancesPanel";
+import { ObligationsPanel } from "./panels/ObligationsPanel";
+import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
 
 const TABS = [
@@ -25,6 +27,8 @@ const TABS = [
   { id: "production", label: t("production.tabLabel") },
   { id: "contractors", label: t("contractor.tabLabel") },
   { id: "grievances", label: t("grievance.tabLabel") },
+  { id: "obligations", label: t("obligation.tabLabel") },
+  { id: "map", label: t("map.tabLabel") },
 ];
 
 export default function GovernmentDashboard({ initialTab = "overview" }) {
@@ -75,6 +79,14 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
 
         <TabPanel id="grievances" active={tab}>
           <GrievancesPanel state={state} states={data?.states} onStateChange={setState} />
+        </TabPanel>
+
+        <TabPanel id="obligations" active={tab}>
+          <ObligationsPanel state={state} states={data?.states} onStateChange={setState} />
+        </TabPanel>
+
+        <TabPanel id="map" active={tab}>
+          <MapPanel state={state} states={data?.states} onStateChange={setState} />
         </TabPanel>
 
         <TabPanel id="contractors" active={tab}>

@@ -1,0 +1,148 @@
+[
+  {
+    "name": "01-head-register",
+    "note": "mine head: statutory compliance 83.3 % (separate from the score), due soon, overdue, open, submitted, accepted - each with act and section",
+    "errors": []
+  },
+  {
+    "name": "01b-head-other-obligations",
+    "note": "obligations without dated tasks, each with its citation and how it is handled (sensor rules, continuous, per shift, on event, once)",
+    "errors": []
+  },
+  {
+    "name": "02-head-task-citation",
+    "note": "SAF-03 2026-Q3: the citation with the verbatim quote, source file and page; the due time and its basis",
+    "errors": []
+  },
+  {
+    "name": "03-head-submitted",
+    "note": "evidence submitted (file + note): awaiting review",
+    "errors": []
+  },
+  {
+    "name": "04-gov-register",
+    "note": "government: statutory compliance 77.5 % across the fleet, per company, the most overdue items with their citations",
+    "errors": []
+  },
+  {
+    "name": "05-gov-pending-and-by-mine",
+    "note": "Chhattisgarh: evidence awaiting review, oldest first; statutory compliance per mine, lowest first, and per domain",
+    "errors": []
+  },
+  {
+    "name": "06-gov-reject-needs-reason",
+    "note": "rejecting without a reason is refused (REASON_REQUIRED)",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 422 (Unprocessable entity)"
+    ]
+  },
+  {
+    "name": "07-gov-rejected",
+    "note": "rejected with the reason, which the mine head sees",
+    "errors": []
+  },
+  {
+    "name": "08-head-sees-rejection",
+    "note": "the mine head sees the rejection and its reason, and uploads again",
+    "errors": []
+  },
+  {
+    "name": "09-gov-accepted",
+    "note": "accepted: the task keeps the rejection and both uploads",
+    "errors": []
+  },
+  {
+    "name": "09b-gov-waived",
+    "note": "government waives an overdue task with a reason: kept in its history, its alert resolved, out of statutory compliance",
+    "errors": []
+  },
+  {
+    "name": "10-head-overdue-alert",
+    "note": "mine head overview: ENV-03 FY2025-26 overdue - an alert {code, params} with its citation",
+    "errors": []
+  },
+  {
+    "name": "11-head-escalated",
+    "note": "ENV-03 FY2025-26: escalated (level 2) 168 hours after the due time",
+    "errors": []
+  },
+  {
+    "name": "12-gov-after-escalation",
+    "note": "the regulator's register after the clock moved on: overdue and escalated items across the fleet",
+    "errors": []
+  },
+  {
+    "name": "13-corporate-register",
+    "note": "corporate SECL: statutory compliance for its mines only",
+    "errors": []
+  },
+  {
+    "name": "14-gov-map-offline",
+    "note": "government, offline: 74 mines at their coordinates, coloured and labelled by band; outlines are local data; GEM and DataMeet credited",
+    "errors": []
+  },
+  {
+    "name": "15-gov-map-tooltip",
+    "note": "a mine's tooltip: name, band, score, district and location quality",
+    "errors": []
+  },
+  {
+    "name": "16-gov-map-click-through",
+    "note": "click through to the mine's detail",
+    "errors": []
+  },
+  {
+    "name": "17-gov-map-basemap-offline",
+    "note": "street map switched on with no internet: tiles fail, the outlines and mines remain",
+    "errors": [
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+    ]
+  },
+  {
+    "name": "18-corporate-map-offline",
+    "note": "corporate SECL, offline: its 17 mines only",
+    "errors": []
+  },
+  {
+    "name": "19-head-map-offline",
+    "note": "mine head, offline: their mine only",
+    "errors": []
+  },
+  {
+    "name": "side-tab gov@dgms.gov.in",
+    "note": "23 API requests in 159 s",
+    "errors": []
+  },
+  {
+    "name": "side-tab head.od-tlc-05@coalmine.in",
+    "note": "21 API requests in 153 s",
+    "errors": []
+  }
+]

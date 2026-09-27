@@ -1,7 +1,7 @@
 // Public page (no login): follow a grievance by its ticket number - status and the public
 // timeline only (no text, no people), as the API serves it.
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { trackGrievance } from "../../api/grievances";
 import { DemoFooter } from "../../components/common/DemoFooter";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
@@ -11,16 +11,19 @@ import { useT } from "../../i18n/t";
 export default function TrackGrievance() {
   const t = useT();
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
   const [ticket, setTicket] = useState(params.get("ticket") ?? "");
+  // From the confirmation screen the code arrives in router state (memory), never in the URL.
+  const [code, setCode] = useState(location.state?.code ?? "");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const look = async (value) => {
-    if (!value.trim()) return;
+  const look = async (value, secret) => {
+    if (!value.trim() || !secret.trim()) return;
     setBusy(true); setError(null); setResult(null);
     try {
-      setResult(await trackGrievance(value));
+      setResult(await trackGrievance(value, secret));
       setParams({ ticket: value.trim().toUpperCase() }, { replace: true });
     } catch (err) {
       setError(err);
@@ -28,7 +31,7 @@ export default function TrackGrievance() {
       setBusy(false);
     }
   };
-  useEffect(() => { if (params.get("ticket")) look(params.get("ticket")); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (params.get("ticket") && location.state?.code) look(params.get("ticket"), location.state.code); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="login-wrap">
@@ -37,10 +40,19 @@ export default function TrackGrievance() {
           <h1>{t("grievance.track.title")}</h1>
           <span>{t("grievance.track.hint")}</span>
         </div>
-        <form className="panel-block" onSubmit={(e) => { e.preventDefault(); look(ticket); }}>
-          <div className="panel-body row wrap-row">
-            <label htmlFor="track-ticket" className="label">{t("grievance.track.ticket")}</label>
-            <input id="track-ticket" className="mono" value={ticket} onChange={(e) => setTicket(e.target.value)} placeholder="GRV-2026-000123" required />
+        <form className="panel-block" onSubmit={(e) => { e.preventDefault(); look(ticket, code); }}>
+          <div className="panel-body stack tight">
+            <div className="form-grid">
+              <div>
+                <label htmlFor="track-ticket">{t("grievance.track.ticket")}</label>
+                <input id="track-ticket" className="mono" value={ticket} onChange={(e) => setTicket(e.target.value)} placeholder="GRV-2026-000123" required />
+              </div>
+              <div>
+                <label htmlFor="track-code">{t("grievance.track.code")}</label>
+                <input id="track-code" className="mono" value={code} onChange={(e) => setCode(e.target.value)} placeholder="ABCD2345"
+                       autoComplete="off" spellCheck={false} maxLength={12} required />
+              </div>
+            </div>
             <button className="primary" type="submit" disabled={busy}>{t("grievance.track.submit")}</button>
           </div>
         </form>

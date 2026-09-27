@@ -78,6 +78,21 @@ permitted → 403; never silently empty.
   a mine head contains a `name` or `contact` key, and none of the mine's complainant names or
   contacts appears in any response to it (lists, details, the screen view, the audit trail).
   Corporate sees identities only for grievances that are not sensitive.
+- Obligations (`ObligationCest.php`, Phase 5B): tasks are scoped by `mine_id`, submissions through
+  `task.mine_id`. Only a mine head submits evidence, and only for its own mine (another mine's task
+  is 404; government submitting is 403). Government and inspector review; corporate and the mine
+  head cannot (403 - the permission is checked before scope). Corporate's register and the
+  statutory-compliance roll-up cover its company only.
+- Map (`ObligationCest.php` `mapIsScopedAndItsOutlinesAreLocal`): `/v1/views/map` returns every
+  mine to government, the company's mines to corporate and one mine to a mine head, with the same
+  band and open-alert count as the mine list. The state outlines are the same for everyone. The
+  district outlines are only those holding a mine in scope, and each lists only the mines in
+  scope, so a district shared with another company's mine does not name it.
+- Waiving an obligation task is government only (`obligation.waive`); inspector, corporate and the
+  mine head get 403 (`governmentWaivesWithAReason`).
+- Public grievance tracking (`GrievanceCest.php`): tracking needs the ticket and its tracking code;
+  a wrong code gets byte for byte the response of an unknown ticket, so a ticket number alone
+  reveals nothing.
 - The view endpoints (`ViewCest.php`): each part of `/v1/views/*` equals its own endpoint for the
   same account, and another mine's view is 404.
 

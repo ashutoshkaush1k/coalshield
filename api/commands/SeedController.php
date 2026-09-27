@@ -37,12 +37,13 @@ class SeedController extends Controller
         'contractor' => 3, 'contract' => 3, 'contract_worker' => 3, 'contractor_compliance_doc' => 3,
         'daily_production' => 4, 'production_edit_log' => 4, 'production_detail_request' => 4,
         'grievance' => 5, 'grievance_action' => 5,
+        'obligation' => 5, 'obligation_applicability' => 5, 'obligation_task' => 5, 'obligation_submission' => 5,
         'inspection' => 2, 'observation' => 2, 'violation' => 2, 'alert' => 2,
         'corrective_action' => 2, 'incident' => 2, 'sensor_reading' => 2, 'env_reading' => 2,
     ];
 
     /** CSV column => table column, where they differ (HANDOFF conflict C11). */
-    private const RENAMED = ['user' => ['password' => 'password_hash']];
+    private const RENAMED = ['user' => ['password' => 'password_hash'], 'grievance' => ['tracking_code' => 'tracking_code_hash']];
 
     private const CHUNK = 5000;
 
@@ -238,6 +239,18 @@ class SeedController extends Controller
                     ga.actor_id, ga.created_at, g.mine_id, 3
                FROM grievance_action ga JOIN grievance g ON g.id = ga.grievance_id";
         }
+        if ($has('obligation_submission', 'obligation_task', 'obligation')) {
+            $parts[] = "SELECT 'obligation_submission', s.id, 'submitted', NULL::jsonb,
+                    jsonb_build_object('task_id', s.task_id, 'obligation', o.code, 'period', t.period, 'file_id', s.file_id),
+                    s.submitted_by, s.submitted_at, t.mine_id, 5
+               FROM obligation_submission s JOIN obligation_task t ON t.id = s.task_id JOIN obligation o ON o.id = t.obligation_id";
+            $parts[] = "SELECT 'obligation_submission', s.id, CASE WHEN s.status = 'accepted' THEN 'accepted' ELSE 'rejected' END,
+                    jsonb_build_object('status', 'pending'),
+                    jsonb_build_object('status', s.status, 'review_note', s.review_note, 'obligation', o.code, 'period', t.period),
+                    s.reviewed_by, s.reviewed_at, t.mine_id, 6
+               FROM obligation_submission s JOIN obligation_task t ON t.id = s.task_id JOIN obligation o ON o.id = t.obligation_id
+              WHERE s.reviewed_at IS NOT NULL";
+        }
         if ($has('alert')) {
             $parts[] = "SELECT 'alert', a.id, 'raised', NULL::jsonb,
                     jsonb_build_object('code', a.code, 'params', a.params, 'severity', a.severity, 'entity_type', a.entity_type,
@@ -305,6 +318,8 @@ class SeedController extends Controller
             $pdo = $db->getMasterPdo();
             $fieldList = implode(',', array_map([$db, 'quoteColumnName'], $columns));
             $passwordIndex = array_search('password_hash', $columns, true);
+            // Grievance tracking codes (demo codes in the CSV) are stored only as an HMAC.
+            $trackingIndex = array_search('tracking_code_hash', $columns, true);
             $count = 0;
             $buffer = [];
             while (($row = fgetcsv($handle, null, ',', '"', '')) !== false) {
@@ -313,6 +328,9 @@ class SeedController extends Controller
                 }
                 if (count($row) !== count($columns)) {
                     throw new \RuntimeException(sprintf('%s: row %d has %d fields, expected %d', $table, $count + 2, count($row), count($columns)));
+                }
+                if ($trackingIndex !== false) {
+                    $row[$trackingIndex] = \app\services\GrievanceService::trackingHash($row[$trackingIndex]);
                 }
                 if ($passwordIndex !== false) {
                     $row[$passwordIndex] = $this->hashPassword($row[$passwordIndex]);

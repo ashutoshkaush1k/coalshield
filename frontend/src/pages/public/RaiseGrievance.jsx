@@ -63,11 +63,22 @@ export default function RaiseGrievance() {
           <section className="panel-block" id="grievance-done">
             <div className="panel-body stack">
               <h2>{t("grievance.public.doneTitle")}</h2>
-              <span className="label">{t("grievance.public.doneTicket")}</span>
-              <div className="ticket-no mono" id="grievance-ticket">{done.ticket_no}</div>
+              <div className="form-grid">
+                <div>
+                  <span className="label">{t("grievance.public.doneTicket")}</span>
+                  <div className="ticket-no mono" id="grievance-ticket">{done.ticket_no}</div>
+                </div>
+                <div>
+                  <span className="label">{t("grievance.public.doneCode")}</span>
+                  <div className="ticket-no mono" id="grievance-code">{done.tracking_code}</div>
+                </div>
+              </div>
+              <div className="notice">{t("grievance.public.doneCodeOnce")}</div>
               <p>{t("grievance.public.doneHint")} {t("grievance.public.doneDue", { when: fmtWhen(done.sla_due_at) })}</p>
               <div className="row wrap-row">
-                <Link className="btn primary" to={`/grievance/track?ticket=${encodeURIComponent(done.ticket_no)}`}>{t("grievance.public.trackThis")}</Link>
+                {/* The code travels in router state (memory), never in the URL. */}
+                <Link className="btn primary" to={`/grievance/track?ticket=${encodeURIComponent(done.ticket_no)}`}
+                      state={{ code: done.tracking_code }}>{t("grievance.public.trackThis")}</Link>
                 <button type="button" onClick={() => setDone(null)}>{t("grievance.public.another")}</button>
               </div>
             </div>

@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from faker import Faker
 
-from common import REF, Ctx, GenerationError
+from common import REF, Ctx, GenerationError, tracking_code
 from gen_contractors import REGIONAL_SURNAMES
 from grievance_templates import RESOLUTION, TEMPLATES
 
@@ -125,6 +125,7 @@ def run(ctx: Ctx) -> None:
     g = g.sort_values("created_at", kind="mergesort")
     g["ticket_no"] = [f"GRV-{y}-{i:06d}" for y, i in zip(g["created_at"].dt.year, g.groupby(g["created_at"].dt.year).cumcount() + 1)]
     g = g.sort_values("id")
+    g.insert(2, "tracking_code", [tracking_code(ctx.seed, t) for t in g["ticket_no"]])
     ctx.notes["grievances"] = g[["id", "mine_id", "category", "created_at", "_breached", "sla_due_at", "status",
                                  "_template", "_resolved_at", "escalation_level", "assigned_to"]].copy()
     ctx.emit("grievance", g.drop(columns=["_resolved_at", "_breached", "_template"]))

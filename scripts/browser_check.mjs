@@ -1,6 +1,6 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5] [outDir] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
+//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b] [outDir] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
 //   --side-tabs  also keep a government overview and a mine-head dashboard polling in two more tabs
 //
 // phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
@@ -10,6 +10,10 @@
 // phase5: grievances - public submission and tracking (no login), the Gevra mine head's queue
 //         (no sensitive case, no identity), government analytics with the S6 cluster, a sensitive
 //         case, corporate (SECL) scope.
+// phase5b: the obligation register - the Gevra mine head submits evidence, government rejects
+//         (reason required) then accepts, an overdue item escalates (yii obligation/check --at),
+//         the register for each role; the map for all three roles with every off-machine request
+//         blocked (no internet), and the street map failing gracefully.
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -418,12 +422,19 @@ async function phase5(page) {
   await page.click("Submit grievance", "#grievance-form button[type=submit]");
   text = await page.until((t) => t.includes("Grievance received"));
   const ticket = await page.eval(`document.querySelector("#grievance-ticket")?.textContent`);
+  const code = await page.eval(`document.querySelector("#grievance-code")?.textContent`);
   expect(/^GRV-\d{4}-\d{6}$/.test(ticket ?? ""), "a GRV-YYYY-NNNNNN ticket");
-  await page.shot("03-public-ticket", `ticket ${ticket}, with the response due time`);
+  expect(/^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{8}$/.test(code ?? ""), "an 8-character tracking code");
+  await page.shot("03-public-ticket", `ticket ${ticket} and the tracking code, shown once, with the response due time`);
   await page.click("Track this grievance", "#grievance-done a");
   text = await page.until((t) => t.includes("What happened") && t.includes(ticket));
   expect(!text.includes(COMPLAINANT), "tracking shows no identity");
-  await page.shot("04-public-track", "tracking: status and the public timeline only - no text, no people");
+  expect(!(await page.eval("location.href")).includes(code), "the code is not in the URL");
+  await page.shot("04-public-track", "tracking with ticket + code: status and the public timeline only - no text, no people");
+  await page.type("#track-code", code === "AAAAAAAA" ? "BBBBBBBB" : "AAAAAAAA");
+  await page.click("Track", "form button[type=submit]");
+  await page.until((t) => t.includes("No grievance matches"));
+  await page.shot("04b-public-track-wrong-code", "a wrong code: the same answer as an unknown ticket");
 
   console.log("Mine head of Gevra: its queue - never a sensitive grievance, never a name");
   await page.as(HEAD, "/mine");
@@ -446,6 +457,8 @@ async function phase5(page) {
 
   console.log("Public: the outcome");
   await page.goto(`${APP}/grievance/track?ticket=${ticket}`, 2500);
+  await page.type("#track-code", code);
+  await page.click("Track", "form button[type=submit]");
   await page.until((t) => t.includes("Outcome"));
   await page.shot("08-public-track-resolved", "the complainant sees the status and the resolution");
 
@@ -491,6 +504,233 @@ async function phase5(page) {
   expect(codes.length > 0 && codes.every((c) => secl.includes(c)), "corporate analytics only for SECL mines");
   expect(!text.includes("Kulda"), "Kulda (MCL) is not in SECL's view");
   await page.shot("15-corporate-analytics", "corporate SECL: the same analytics for its 17 mines");
+}
+
+// A small, valid PDF for the evidence upload.
+function evidencePdf() {
+  const body = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+    + "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 100]>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n";
+  const path = join(mkdtempSync(join(tmpdir(), "cs-evidence-")), "safety-committee-minutes-2026-09.pdf");
+  writeFileSync(path, body);
+  return path;
+}
+
+/** `yii obligation/check --at=<iso>`: what the clock will do when that time comes. */
+function obligationCheckAt(iso) {
+  const php = process.env.PHP ?? "C:/xampp/php/php.exe";
+  return new Promise((res, rej) => {
+    const p = spawn(php, [join(ROOT, "api", "yii"), "obligation/check", `--at=${iso}`], { stdio: ["ignore", "pipe", "pipe"] });
+    let out = "";
+    p.stdout.on("data", (d) => (out += d));
+    p.stderr.on("data", (d) => (out += d));
+    p.on("close", (code) => (code === 0 ? res(out.trim()) : rej(new Error(`obligation/check: ${out}`))));
+  });
+}
+
+/** Block every request that is not to this machine - the app must work with no internet. */
+async function blockInternet(page) {
+  const blocked = [];
+  page.ws.addEventListener("message", (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.method !== "Fetch.requestPaused") return;
+    const { requestId, request } = msg.params;
+    const host = new URL(request.url).hostname;
+    if (["localhost", "127.0.0.1", "[::1]"].includes(host)) page.send("Fetch.continueRequest", { requestId }).catch(() => null);
+    else { blocked.push(host); page.send("Fetch.failRequest", { requestId, errorReason: "InternetDisconnected" }).catch(() => null); }
+  });
+  await page.send("Fetch.enable", { patterns: [{ urlPattern: "*" }] });
+  return blocked;
+}
+
+async function phase5b(page) {
+  const HEAD = "head.cg-krb-03@coalmine.in";   // Gevra (SECL)
+  const tab = (name) => page.click(name, "button[role=tab]");
+  const api = async (email, path) => (await fetch(`${API}${path}`, { headers: { Authorization: `Bearer ${await login(email)}` } })).json();
+  const count = (selector) => page.eval(`document.querySelectorAll(${JSON.stringify(selector)}).length`);
+  const SECTIONS = ["due_soon", "overdue", "open", "submitted", "accepted"];
+  let text;
+
+  console.log("Mine head of Gevra: the register, a citation, evidence submitted");
+  const mine = await api(HEAD, "/views/obligations");
+  const target = mine.due_soon.find((t) => t.status === "open") ?? mine.open[0];
+  expect(target, "Gevra has an open task");
+  await page.as(HEAD, "/mine");
+  await tab("Obligations");
+  text = await page.until((t) => t.includes(target.obligation.code));
+  const rows = await count(SECTIONS.map((s) => `#obligations-${s} tbody tr`).join(", "));
+  const cited = await count(SECTIONS.map((s) => `#obligations-${s} tbody tr .citation-head`).join(", "));
+  expect(rows > 0 && rows === cited, `every register row carries its citation (${cited}/${rows})`);
+  expect(!text.includes("RPT-08"), "RPT-08 (TODO-VERIFY) has no task");
+  await page.shot("01-head-register", `mine head: statutory compliance ${mine.summary.totals.compliance_pct} % (separate from the score), due soon, overdue, open, submitted, accepted - each with act and section`);
+  await page.eval(`document.querySelector("#obligations-other details").open = true`);
+  await page.scrollTo("Obligations not on the dated register");
+  expect(await page.eval(`(document.querySelector('#obligations-other tr[data-code="SAF-11"]')?.textContent ?? "").includes("Monitored")`),
+    "SAF-11 is shown as monitored by the sensor rules");
+  expect(await count('#obligations-other tr[data-code="RPT-08"]') === 1, "RPT-08 is listed, unverified, with no task");
+  await page.shot("01b-head-other-obligations", "obligations without dated tasks, each with its citation and how it is handled (sensor rules, continuous, per shift, on event, once)");
+  await page.eval(`document.querySelector("#obligations-other details").open = false`);
+  await page.eval("window.scrollTo(0, 0)");
+  await page.click(target.obligation.code, `tr[data-task="${target.id}"] strong`);
+  await page.until((t) => t.includes(target.period) && t.includes("Evidence"));
+  await page.eval(`document.querySelector("#obligation-task details.citation-quote")?.setAttribute("open", "")`);
+  await sleep(300);
+  expect(await page.eval(`!!document.querySelector("#obligation-task .citation-quote blockquote")`), "the verbatim quote expands");
+  await page.shot("02-head-task-citation", `${target.obligation.code} ${target.period}: the citation with the verbatim quote, source file and page; the due time and its basis`);
+  await page.setFile("#ob-file", evidencePdf());
+  const kind = target.obligation.evidence_type ?? target.obligation.title;
+  const evidence = kind[0].toUpperCase() + kind.slice(1);
+  await page.type("#ob-note", `${evidence} for ${target.period}, attached.`);
+  await page.click("Submit evidence", "#obligation-upload button");
+  await page.until((t) => t.includes(`${evidence} for ${target.period}, attached.`));
+  const submitted = await api(HEAD, `/obligation-tasks/${target.id}`);
+  expect(submitted.status === "submitted" && submitted.latest_submission.status === "pending", "the task is submitted, the evidence pending");
+  await page.shot("03-head-submitted", "evidence submitted (file + note): awaiting review");
+  await page.escape();
+
+  console.log("Government: the register across mines; reject with a reason, then accept");
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Obligations");
+  await page.until((t) => t.includes("By company") && t.includes("Most overdue"));
+  const gov = await api("gov@dgms.gov.in", "/views/obligations");
+  expect(await count("#obligation-by-company tbody tr") === gov.summary.by_company.length, "one row per company");
+  expect(await count("#obligation-most-overdue tbody tr") > 0, "the most overdue items are listed");
+  await page.shot("04-gov-register", `government: statutory compliance ${gov.summary.totals.compliance_pct} % across the fleet, per company, the most overdue items with their citations`);
+  // The queue is oldest first; the reviewer narrows it to the state.
+  await page.select("#obligation-state-filter", "Chhattisgarh");
+  for (let i = 0; i < 40 && await count(`#obligation-pending-review tr[data-task="${target.id}"]`) === 0; i++) await sleep(500);
+  expect(await count(`#obligation-pending-review tr[data-task="${target.id}"]`) === 1, "the new evidence awaits review");
+  await page.scrollTo("Evidence awaiting review");
+  await page.shot("05-gov-pending-and-by-mine", "Chhattisgarh: evidence awaiting review, oldest first; statutory compliance per mine, lowest first, and per domain");
+  await page.click(target.obligation.code, `#obligation-pending-review tr[data-task="${target.id}"] strong`);
+  await page.until((t) => t.includes(`${evidence} for ${target.period}, attached.`) && t.includes("Accept"));
+  await page.click("Reject", "#obligation-review button");
+  expect((await api(HEAD, `/obligation-tasks/${target.id}`)).status === "submitted", "no reason, no rejection");
+  await page.shot("06-gov-reject-needs-reason", "rejecting without a reason is refused (REASON_REQUIRED)");
+  await page.type("#ob-reason", "The copy is not signed by the mine manager. Resubmit the signed copy.");
+  await page.click("Reject", "#obligation-review button");
+  await page.until((t) => t.includes("not signed by the mine manager"));
+  expect((await api(HEAD, `/obligation-tasks/${target.id}`)).status === "rejected", "rejected");
+  await page.shot("07-gov-rejected", "rejected with the reason, which the mine head sees");
+  await page.escape();
+
+  console.log("Mine head: resubmits; government accepts");
+  await page.as(HEAD, "/mine");
+  await tab("Obligations");
+  await page.until((t) => t.includes(target.obligation.code));
+  await page.click(target.obligation.code, `tr[data-task="${target.id}"] strong`);
+  await page.until((t) => t.includes("not signed by the mine manager"));
+  await page.shot("08-head-sees-rejection", "the mine head sees the rejection and its reason, and uploads again");
+  await page.setFile("#ob-file", evidencePdf());
+  await page.type("#ob-note", "Signed copy, with the mine manager's signature.");
+  await page.click("Submit evidence", "#obligation-upload button");
+  await page.until((t) => t.includes("Signed copy"));
+  await page.escape();
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Obligations");
+  await page.until((t) => t.includes("Most overdue"));
+  await page.select("#obligation-state-filter", "Chhattisgarh");
+  for (let i = 0; i < 40 && await count(`#obligation-pending-review tr[data-task="${target.id}"]`) === 0; i++) await sleep(500);
+  await page.click(target.obligation.code, `#obligation-pending-review tr[data-task="${target.id}"] strong`);
+  await page.until((t) => t.includes("Signed copy") && t.includes("Accept"));
+  await page.click("Accept", "#obligation-review button");
+  for (let i = 0; i < 20 && (await api(HEAD, `/obligation-tasks/${target.id}`)).status !== "accepted"; i++) await sleep(500);
+  expect((await api(HEAD, `/obligation-tasks/${target.id}`)).status === "accepted", "accepted");
+  await sleep(800);
+  await page.shot("09-gov-accepted", "accepted: the task keeps the rejection and both uploads");
+  await page.escape();
+
+  console.log("Government: waive a task, with a reason");
+  const waiveId = await page.eval(`document.querySelector("#obligation-most-overdue tbody tr")?.dataset.task`);
+  expect(waiveId, "a most-overdue item to waive");
+  await page.eval(`document.querySelector('#obligation-most-overdue tr[data-task="${waiveId}"] strong').click()`);
+  await page.until((t) => t.includes("Waive this task"));
+  await page.eval(`document.querySelector("#obligation-waive").open = true`);
+  await sleep(300);
+  await page.type("#ob-waiver", "Mine closed for the whole period by a DGMS prohibition order (demo).");
+  await page.click("Waive", "#obligation-waive button");
+  await page.until((t) => t.includes("Waived by"));
+  expect((await api("gov@dgms.gov.in", `/obligation-tasks/${waiveId}`)).status === "waived", "waived");
+  await page.shot("09b-gov-waived", "government waives an overdue task with a reason: kept in its history, its alert resolved, out of statutory compliance");
+  await page.escape();
+
+  console.log("An overdue item escalating: the clock moved past the due time, then 168 hours on");
+  const later = (await api(HEAD, "/views/obligations")).open.filter((t) => t.status === "open" && Date.parse(t.due_at) > Date.now())
+    .sort((a, b) => Date.parse(a.due_at) - Date.parse(b.due_at))[0];
+  expect(later, "Gevra has a task due later");
+  const due = Date.parse(later.due_at);
+  console.log("  " + await obligationCheckAt(new Date(due + 3600e3).toISOString()));
+  let t1 = await api(HEAD, `/obligation-tasks/${later.id}`);
+  expect(t1.status === "overdue" && t1.escalation_level === 1, `${later.obligation.code} overdue, level 1`);
+  await page.as(HEAD, "/mine");
+  await page.until((t) => t.includes(`${later.obligation.code} for ${later.period} is overdue`));
+  await page.eval(`(() => { const m = [...document.querySelectorAll(".alert-message")].find((e) => e.textContent.startsWith(${JSON.stringify(`${later.obligation.code} for ${later.period}`)}));
+    m?.closest(".alert-row")?.scrollIntoView({ block: "nearest" }); })()`);
+  await sleep(600);
+  await page.shot("10-head-overdue-alert", `mine head overview: ${later.obligation.code} ${later.period} overdue - an alert {code, params} with its citation`);
+  console.log("  " + await obligationCheckAt(new Date(due + 169 * 3600e3).toISOString()));
+  t1 = await api(HEAD, `/obligation-tasks/${later.id}`);
+  expect(t1.status === "escalated" && t1.escalation_level === 2, `${later.obligation.code} escalated, level 2`);
+  await tab("Obligations");
+  await page.until((t) => t.includes(later.obligation.code));
+  await page.scrollTo("Overdue");
+  expect(await count(`#obligations-overdue tr[data-task="${later.id}"]`) === 1, "the escalated item is in the overdue list");
+  await page.shot("11-head-escalated", `${later.obligation.code} ${later.period}: escalated (level 2) 168 hours after the due time`);
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Obligations");
+  await page.until((t) => t.includes("Most overdue"));
+  await page.shot("12-gov-after-escalation", "the regulator's register after the clock moved on: overdue and escalated items across the fleet");
+
+  console.log("Corporate (SECL): its companies' mines only");
+  await page.as("corporate.secl@coalmine.in", "/gov");
+  await tab("Obligations");
+  await page.until((t) => t.includes("By company"));
+  const companies = await page.eval(`[...document.querySelectorAll("#obligation-by-company tbody tr td:first-child strong")].map((e) => e.textContent)`);
+  expect(companies.length === 1 && companies[0] === "SECL", `corporate sees SECL only (${companies})`);
+  await page.shot("13-corporate-register", "corporate SECL: statutory compliance for its mines only");
+
+  console.log("The map with no internet: every request off this machine fails");
+  const blocked = await blockInternet(page);
+  const outlines = async () => ({ states: await count("#mine-map path.state-outline"), districts: await count("#mine-map path.district-outline"), mines: await count("#mine-map path.mine-marker") });
+  const mapFor = async (email, path, expected, shot, note) => {
+    await page.as(email, path);
+    await tab("Map");
+    for (let i = 0; i < 40 && ((await outlines()).states === 0 || (await outlines()).mines === 0); i++) await sleep(500);
+    await sleep(800);
+    const o = await outlines();
+    expect(o.states === 36 && o.districts > 0, `state and district outlines drawn offline (${o.states}, ${o.districts})`);
+    expect(o.mines === expected, `${expected} mine(s) on the map (got ${o.mines})`);
+    const attribution = await page.eval(`document.querySelector("#mine-map .leaflet-control-attribution")?.textContent ?? ""`);
+    expect(attribution.includes("Global Energy Monitor") && attribution.includes("CC BY 4.0"), "GEM attribution visible");
+    await page.shot(shot, note);
+  };
+  const all = (await api("gov@dgms.gov.in", "/views/map")).mines.features.length;
+  const secl = (await api("corporate.secl@coalmine.in", "/views/map")).mines.features.length;
+  await mapFor("gov@dgms.gov.in", "/gov", all, "14-gov-map-offline", `government, offline: ${all} mines at their coordinates, coloured and labelled by band; outlines are local data; GEM and DataMeet credited`);
+  await page.eval(`document.querySelector('#mine-map path.mine-marker[data-mine="CG-KRB-03"]').dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))`);
+  await sleep(500);
+  const tip = await page.eval(`document.querySelector(".leaflet-tooltip")?.textContent ?? ""`);
+  expect(tip.includes("Location:") && tip.includes("open alert"), "the tooltip shows open alerts and the location quality");
+  await page.shot("15-gov-map-tooltip", "a mine's tooltip: name, band, score, district and location quality");
+  await page.eval(`document.querySelector('#mine-map path.mine-marker[data-mine="CG-KRB-03"]').dispatchEvent(new MouseEvent("click", { bubbles: true }))`);
+  await page.until((t) => t.includes("Gevra"));
+  await sleep(1500);
+  expect(/\/gov\/mines\/\d+$/.test(await page.eval("location.pathname")), "a click opens the mine");
+  await page.shot("16-gov-map-click-through", "click through to the mine's detail");
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Map");
+  for (let i = 0; i < 40 && (await outlines()).states === 0; i++) await sleep(500);
+  await page.eval(`document.querySelector("#map-basemap").click()`);
+  await page.until((t) => t.includes("Tiles unavailable"));
+  await sleep(800);
+  expect((await outlines()).states === 36, "the outlines stay when the street map cannot load");
+  const osm = await page.eval(`document.querySelector("#mine-map .leaflet-control-attribution")?.textContent ?? ""`);
+  expect(osm.includes("OpenStreetMap"), "OSM attribution while the street map is on");
+  await page.shot("17-gov-map-basemap-offline", "street map switched on with no internet: tiles fail, the outlines and mines remain");
+  await mapFor("corporate.secl@coalmine.in", "/gov", secl, "18-corporate-map-offline", `corporate SECL, offline: its ${secl} mines only`);
+  await mapFor(HEAD, "/mine", 1, "19-head-map-offline", "mine head, offline: their mine only");
+  expect(blocked.length > 0 && blocked.every((h) => !["localhost", "127.0.0.1"].includes(h)), "only off-machine requests were blocked");
+  console.log(`  blocked ${blocked.length} request(s) to: ${[...new Set(blocked)].join(", ")}`);
+  await page.send("Fetch.disable");
 }
 
 /** Two more tabs, a government overview and a mine-head dashboard, polling on their own. */
@@ -550,7 +790,7 @@ async function main() {
     if (side.length) await fetch(`http://127.0.0.1:${PORT}/json/activate/${target.id}`, { method: "PUT" }).catch(() => null);
 
     try {
-      await ({ phase2, phase3, phase4, phase5 }[PHASE] ?? phase2)(page);
+      await ({ phase2, phase3, phase4, phase5, phase5b }[PHASE] ?? phase2)(page);
     } catch (e) {
       // Keep what the page showed when a check failed, for diagnosis.
       const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));

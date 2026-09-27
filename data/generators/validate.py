@@ -27,6 +27,11 @@ Checks
                    the previous day's closing; each mine's first day has no recorded opening)
   V11 incidents    reported_within_48h agrees with the timestamps; obligation code matches severity
                    (fatal RPT-03, injuries RPT-04, dangerous occurrence RPT-05) and is verified
+  V12 obligations  tasks only for verified mine obligations with a calendar frequency (RPT-08 never);
+                   applicability (underground-only, 500+ workers); every period present; due dates
+                   (law or product setting); task status and escalation agree with the submissions
+  V13 tracking     grievance tracking codes: 8 characters of the unambiguous alphabet, derived from
+                   (seed, ticket), unique
 """
 
 from __future__ import annotations
@@ -53,6 +58,7 @@ TYPE_RE = {"integer": r"-?\d+", "number": r"-?\d+(\.\d+)?", "boolean": r"true|fa
            "month": r"\d{4}-\d{2}", "datetime": r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z",
            "wkt_point": r"POINT\(-?\d+(\.\d+)? -?\d+(\.\d+)?\)"}
 FORWARD_OK = {("corrective_action", "due_at"), ("production_detail_request", "due_at"), ("grievance", "sla_due_at"),
+              ("obligation_task", "due_at"), ("obligation_task", "period_end"),
               ("contractor", "licence_valid_to"), ("contract", "end_date"), ("contract_worker", "vt_cert_valid_to")}
 IST = pd.Timedelta(hours=5, minutes=30)
 BIG = 1_000_000
@@ -450,6 +456,105 @@ def v11_incidents(folder: Path, rep: Report) -> None:
              "by_severity": i["severity"].value_counts().to_dict()})
 
 
+def v12_obligations(folder: Path, manifest: dict, rep: Report) -> None:
+    """The obligation register: which obligations get tasks, applicability, due dates, statuses."""
+    from gen_obligations import IST as OB_IST, LEGAL_ANNUAL, UNDERGROUND_ONLY, WORKFORCE_500, periods
+    rules = load_rules()
+    esc_after = pd.Timedelta(hours=float(rules["product"]["obligation_schedule"]["escalate_after_hours"]))
+    ob = read(folder, "obligation")
+    t = read(folder, "obligation_task")
+    s = read(folder, "obligation_submission")
+    ap = read(folder, "obligation_applicability")
+    mines = read(folder, "mine").set_index("id")
+    roster = load_roster(manifest["roster"]).set_index("code")
+    ref = pd.read_csv(REF / "obligations.csv", dtype=str)
+    probs = []
+
+    gen = ob[ob["generates_tasks"] == "true"]
+    expected_gen = ref[(ref["verified"] == "yes") & (ref["applies_to"] == "mine")
+                       & ~ref["frequency"].isin(["continuous", "on event", "every shift"]) & ~ref["frequency"].str.startswith("once")]
+    if set(gen["code"]) != set(expected_gen["obligation_code"]):
+        probs.append(f"task-generating set differs: {sorted(set(gen['code']) ^ set(expected_gen['obligation_code']))}")
+    code_of = dict(zip(ob["id"], ob["code"]))
+    with_tasks = set(t["obligation_id"].map(code_of))
+    if not with_tasks <= set(gen["code"]):
+        probs.append(f"tasks for non-generating obligations: {sorted(with_tasks - set(gen['code']))}")
+    if "RPT-08" in with_tasks or ob.loc[ob["code"] == "RPT-08", "verified"].eq("true").any():
+        probs.append("RPT-08 (TODO-VERIFY) has tasks or is marked verified")
+
+    ap["code"] = ap["obligation_id"].map(code_of)
+    ap["type"] = ap["mine_id"].map(mines["type"])
+    ap["workforce"] = ap["mine_id"].map(mines["code"]).map(roster["workforce"]).astype(float)
+    if (ap["code"].isin(UNDERGROUND_ONLY) & ~ap["type"].isin(["underground", "mixed"])).any():
+        probs.append("an underground-only obligation applies to an opencast mine")
+    if (ap["code"].isin(WORKFORCE_500) & ~(ap["workforce"] >= 500)).any():
+        probs.append("SAF-01 applies to a mine with fewer than 500 workers")
+    pairs = set(zip(t["mine_id"], t["obligation_id"]))
+    if pairs != set(zip(ap["mine_id"], ap["obligation_id"])):
+        probs.append("tasks and applicability disagree")
+
+    first = pd.Timestamp(manifest["window"][0]).date()
+    last = pd.Timestamp(manifest["window"][1]).date()
+    end = pd.Timestamp(manifest["window"][1], tz="UTC") + pd.Timedelta(hours=23, minutes=59, seconds=59)
+    sched = dict(zip(ob["code"], ob["schedule"]))
+    missing = 0
+    for (mine_id, oid), grp in t.groupby(["mine_id", "obligation_id"]):
+        want = {p[0]: p for p in periods(sched[code_of[oid]], code_of[oid], first, last)}
+        if set(grp["period"]) != set(want):
+            missing += 1
+            continue
+        for row in grp.itertuples():
+            p = want[row.period]
+            due = pd.Timestamp(pd.Timestamp(p[3]).to_pydatetime().replace(hour=23, minute=59, second=59) - OB_IST, tz="UTC")
+            if ts(pd.Series([row.due_at])).iloc[0] != due or row.due_basis != p[4]:
+                probs.append(f"due date of task {row.id} ({code_of[oid]} {row.period})")
+                break
+    if missing:
+        probs.append(f"{missing} (mine, obligation) pairs without exactly the expected periods")
+    if set(t.loc[t["due_basis"] == "law", "obligation_id"].map(code_of)) - set(LEGAL_ANNUAL):
+        probs.append("due_basis law on an obligation whose rule names no date")
+
+    s["submitted_at_ts"], s["reviewed_at_ts"] = ts(s["submitted_at"]), ts(s["reviewed_at"].replace("", None))
+    last_sub = s.sort_values(["task_id", "submitted_at_ts", "id"]).groupby("task_id").last()
+    t["due_ts"] = ts(t["due_at"])
+    t["latest"] = t["id"].map(last_sub["status"])
+    t["latest_reviewed"] = t["id"].map(last_sub["reviewed_at"])
+    past = t["due_ts"] <= end
+    expect = np.select(
+        [t["latest"] == "accepted", t["latest"] == "pending", past & ((end - t["due_ts"]) > esc_after), past,
+         t["latest"] == "rejected"],
+        ["accepted", "submitted", "escalated", "overdue", "rejected"], default="open")
+    bad_status = int((t["status"] != expect).sum())
+    level = np.where(t["status"] == "escalated", "2", np.where(t["status"] == "overdue", "1", "0"))
+    bad_level = int((t["escalation_level"] != level).sum())
+    bad_accept = int(((t["status"] == "accepted") & (t["accepted_at"] != t["latest_reviewed"])).sum())
+    if bad_status or bad_level or bad_accept:
+        probs.append(f"statuses: {bad_status} wrong, levels: {bad_level} wrong, accepted_at: {bad_accept} wrong")
+    ps = s["task_id"].map(dict(zip(t["id"], ts(t["period_start"].astype(str) + "T00:00:00Z") - pd.Timedelta(hours=5, minutes=30))))
+    if (s["submitted_at_ts"] < ps).any() or (s["submitted_at_ts"] > end).any():
+        probs.append("a submission outside its period start .. window end")
+    reviewed = s["reviewed_at"] != ""
+    if (s.loc[reviewed, "reviewed_at_ts"] < s.loc[reviewed, "submitted_at_ts"]).any():
+        probs.append("a review before its submission")
+    if (s.loc[s["status"] == "rejected", "review_note"] == "").any() or (s.loc[s["status"] == "pending", "reviewed_by"] != "").any():
+        probs.append("a rejection without a reason, or a pending submission with a reviewer")
+    counts = t["status"].value_counts().to_dict()
+    rep.add(f"V12 obligations: {len(t):,} tasks from {len(gen)} verified calendar obligations, applicability, due dates, statuses; "
+            f"RPT-08 never", not probs, {"problems": probs[:6], "by_status": counts,
+                                         "rejected_submissions": int((s['status'] == 'rejected').sum())})
+
+
+def v13_tracking_codes(folder: Path, rep: Report) -> None:
+    from common import TRACKING_ALPHABET, tracking_code
+    g = read(folder, "grievance", usecols=["ticket_no", "tracking_code"])
+    seed = int(load_config()["seed"])
+    fmt = g["tracking_code"].str.fullmatch(f"[{TRACKING_ALPHABET}]{{8}}")
+    derived = g["tracking_code"] == [tracking_code(seed, x) for x in g["ticket_no"]]
+    rep.add(f"V13 grievance tracking codes: {len(g)} codes, 8 characters of the unambiguous alphabet, derived from (seed, ticket)",
+            bool(fmt.all() and derived.all() and g["tracking_code"].is_unique),
+            {"bad_format": int((~fmt).sum()), "not_derived": int((~derived).sum()), "duplicates": int(g["tracking_code"].duplicated().sum())})
+
+
 def hashes(folder: Path) -> dict:
     return {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(folder.iterdir()) if p.suffix in (".csv",) or p.name == "scenario_expectations.json"}
@@ -497,6 +602,8 @@ def main() -> int:
     scores = v8_scores(folder, manifest, config, rep)
     v10_stock(folder, rep)
     v11_incidents(folder, rep)
+    v12_obligations(folder, manifest, rep)
+    v13_tracking_codes(folder, rep)
     if args.determinism:
         with tempfile.TemporaryDirectory() as t1, tempfile.TemporaryDirectory() as t2:
             generate(preset, manifest["roster"], Path(t1))

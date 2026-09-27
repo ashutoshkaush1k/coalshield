@@ -25,7 +25,9 @@ export const submitGrievance = (fields, file) => {
   if (file) form.append("file", file);
   return client.post("/grievances/public", form).then((r) => r.data);
 };
-export const trackGrievance = (ticket) => client.get(`/grievances/track/${encodeURIComponent(ticket.trim().toUpperCase())}`).then((r) => r.data);
+/** POST, so the code is never in a URL. A wrong code answers exactly like an unknown ticket (404). */
+export const trackGrievance = (ticket, code) =>
+  client.post("/grievances/track", { ticket_no: ticket.trim().toUpperCase(), tracking_code: code.trim().toUpperCase() }).then((r) => r.data);
 
 // Staff.
 /** { stats, escalated, grievances } - stats and escalated are null for a mine head. */

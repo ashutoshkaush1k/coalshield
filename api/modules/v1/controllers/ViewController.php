@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace app\modules\v1\controllers;
 
 use app\components\ApiController;
+use app\components\Format;
+use app\models\ObligationTask;
+use app\services\ObligationService;
 use Yii;
 
 /**
@@ -23,7 +26,7 @@ class ViewController extends ApiController
 {
     protected function verbs(): array
     {
-        return ['overview' => ['GET'], 'mine' => ['GET'], 'production' => ['GET'], 'production-overview' => ['GET'], 'grievances' => ['GET']];
+        return ['overview' => ['GET'], 'mine' => ['GET'], 'production' => ['GET'], 'production-overview' => ['GET'], 'grievances' => ['GET'], 'obligations' => ['GET'], 'map' => ['GET']];
     }
 
     public function actionOverview(): array
@@ -110,6 +113,66 @@ class ViewController extends ApiController
             'escalated' => $this->part('v1/grievance/index', $query + ['escalated' => 1, 'open' => 1, 'per_page' => 100]),
             'grievances' => $this->part('v1/grievance/index', $query + ['per_page' => 200]),
         ];
+    }
+
+    /**
+     * The obligation register screen. A mine head: its own register (statutory compliance, due soon,
+     * overdue, submitted, recently accepted). Multi-mine roles: statutory compliance per mine and
+     * company, the most overdue items, and the evidence awaiting review. ?state= narrows.
+     */
+    public function actionObligations(): array
+    {
+        $this->requirePermission('obligation.view');
+        $state = Yii::$app->request->get('state');
+        $query = $state !== null && $state !== '' ? ['state' => $state] : [];
+        if (!Yii::$app->user->can('obligation.summary')) {
+            return $this->mineRegister();
+        }
+        return [
+            'summary' => $this->part('v1/obligation/summary', $query),
+            'pending_review' => $this->part('v1/obligation/tasks', $query + ['view' => 'submitted', 'per_page' => 50]),
+        ];
+    }
+
+    /**
+     * A mine head's register in two queries: every task not yet accepted, and the latest accepted
+     * ones, split into the screen's lists here.
+     */
+    private function mineRegister(): array
+    {
+        $this->requirePermission('obligation.view');
+        ObligationService::checkForRequest();
+        $mineId = $this->currentUser()->mine_id;
+        $with = ['obligation', 'mine', 'latestSubmission.submitter', 'latestSubmission.reviewer', 'latestSubmission.file'];
+        $base = fn() => ObligationTask::find()->forCurrentUser()->with($with);
+        $pending = $base()->andWhere(['obligation_task.status' => ['open', 'rejected', 'overdue', 'escalated', 'submitted']])
+            ->orderBy(['obligation_task.due_at' => SORT_ASC, 'obligation_task.id' => SORT_ASC])->all();
+        $accepted = $base()->andWhere(['obligation_task.status' => 'accepted'])
+            ->orderBy(['obligation_task.due_at' => SORT_DESC, 'obligation_task.id' => SORT_ASC])->limit(20)->all();
+        $soonBefore = Format::now()->modify('+' . (int) ObligationService::settings()['reminder_days'] . ' days')->getTimestamp();
+        $lists = ['due_soon' => [], 'overdue' => [], 'submitted' => [], 'open' => []];
+        foreach ($pending as $task) {
+            $row = $task->toArray();
+            if (in_array($task->status, ObligationTask::LATE, true)) {
+                $lists['overdue'][] = $row;
+            } elseif ($task->status === 'submitted') {
+                $lists['submitted'][] = $row;
+            } else {
+                $lists['open'][] = $row;
+                if (strtotime((string) $task->due_at) <= $soonBefore) {
+                    $lists['due_soon'][] = $row;
+                }
+            }
+        }
+        return ['summary' => ObligationService::summary($mineId === null ? [] : [(int) $mineId])] + $lists
+            + ['accepted' => array_map(fn(ObligationTask $t) => $t->toArray(), $accepted)];
+    }
+
+    /** The map: the mines in scope with their score and band (outlines come from /v1/geo/*, once). */
+    public function actionMap(): array
+    {
+        $state = Yii::$app->request->get('state');
+        return ['mines' => $this->part('v1/mine/geojson', $state !== null && $state !== '' ? ['state' => $state] : [])];
     }
 
     /** Run another v1 action with the given query string; its serialized result. */

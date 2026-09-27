@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 from faker import Faker
 
-from common import NAMED, Ctx, categories
+from common import NAMED, Ctx, categories, tracking_code
 from gen_contractors import REGIONAL_SURNAMES
 from gen_inspections import CA_TEXT
 from grievance_templates import RESOLUTION, TEMPLATES
@@ -440,7 +440,8 @@ class Injector:
             y = str(created.year)
             year_max[y] = year_max.get(y, 0) + 1
             anon = j % 4 == 3
-            new_g.append({"id": gid, "ticket_no": f"GRV-{y}-{year_max[y]:06d}", "mine_id": mid,
+            new_g.append({"id": gid, "ticket_no": f"GRV-{y}-{year_max[y]:06d}",
+                          "tracking_code": tracking_code(self.ctx.seed, f"GRV-{y}-{year_max[y]:06d}"), "mine_id": mid,
                           "submitter_type": "anonymous" if anon else ("contract_worker" if j % 2 else "employee"),
                           "name": None if anon else f"{self.fake.first_name()} {surn[j % len(surn)]}",
                           "contact": None if anon else f"XXXXXX{int(self.rng.integers(0, 10000)):04d}", "is_anonymous": anon,

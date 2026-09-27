@@ -43,6 +43,30 @@ final class GrievanceService
         'environment' => 'medium', 'land_compensation' => 'low', 'other' => 'low',
     ];
 
+    /** Tracking codes: 8 characters with no look-alikes (no 0/O, 1/I/L) - as in the demo data. */
+    public const TRACKING_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+    /** A new tracking code from the CSPRNG; shown to the complainant once, stored only as an HMAC. */
+    public static function newTrackingCode(): string
+    {
+        $code = '';
+        for ($i = 0; $i < 8; $i++) {
+            $code .= self::TRACKING_ALPHABET[random_int(0, strlen(self::TRACKING_ALPHABET) - 1)];
+        }
+        return $code;
+    }
+
+    /** HMAC-SHA256 of a tracking code, keyed from the application secret (never stored in clear). */
+    public static function trackingHash(string $code): string
+    {
+        $secret = (string) env('JWT_SECRET', '');
+        if ($secret === '') {
+            throw new \RuntimeException('JWT_SECRET is not set (api/.env)');
+        }
+        $normalised = strtoupper(preg_replace('/[\s-]+/', '', $code) ?? '');
+        return hash_hmac('sha256', $normalised, hash_hmac('sha256', 'grievance-tracking-code', $secret));
+    }
+
     public static function slaHours(string $category): int
     {
         return (int) (Rules::value('product', 'grievance_sla_hours')[$category] ?? 168);
@@ -52,7 +76,8 @@ final class GrievanceService
      * A grievance from the public form. The honeypot must be empty; the caller has been
      * rate-limited already.
      */
-    public static function submitPublic(array $data, ?UploadedFile $file): Grievance
+    /** @return array{0: Grievance, 1: string} the grievance and its tracking code (shown once) */
+    public static function submitPublic(array $data, ?UploadedFile $file): array
     {
         if (trim((string) ($data['website'] ?? '')) !== '') {
             throw new ApiException(400, 'SUBMISSION_REJECTED');   // honeypot: a field people never see
@@ -115,6 +140,8 @@ final class GrievanceService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $grievance->ticket_no = (string) Yii::$app->db->createCommand('SELECT next_grievance_ticket(:y)', [':y' => (int) $now->format('Y')])->queryScalar();
+            $trackingCode = self::newTrackingCode();
+            $grievance->tracking_code_hash = self::trackingHash($trackingCode);
             $grievance->created_at = Format::sql($now);
             $grievance->sla_due_at = Format::sql($now->modify('+' . self::slaHours($category) . ' hours'));
             $grievance->assigned_to = self::routeTo($grievance);
@@ -142,15 +169,19 @@ final class GrievanceService
             $transaction->rollBack();
             throw $e;
         }
-        return $grievance;
+        return [$grievance, $trackingCode];
     }
 
     /** What the public may see about a ticket: status and when things happened - no people, no text. */
-    public static function track(string $ticket): array
+    public static function track(string $ticket, string $code): array
     {
         $ticket = strtoupper(trim($ticket));
         $grievance = preg_match('/^GRV-\d{4}-\d{6}$/', $ticket) ? Grievance::find()->where(['ticket_no' => $ticket])->with('actions')->one() : null;
-        if ($grievance === null) {
+        // The code is checked even when the ticket does not exist (against a dummy), in constant
+        // time: an unknown ticket and a wrong code take the same path and give the same 404.
+        $stored = $grievance?->tracking_code_hash ?? str_repeat('0', 64);
+        $matches = hash_equals($stored, self::trackingHash($code));
+        if ($grievance === null || $grievance->tracking_code_hash === null || !$matches) {
             throw ApiException::notFound();
         }
         return [

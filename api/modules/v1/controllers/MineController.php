@@ -44,7 +44,9 @@ class MineController extends ApiController
     {
         $this->requirePermission('mine.view');
         $mines = $this->visibleMines(Yii::$app->request->get('state'));
-        $scores = ComplianceScoreService::scoreMines(array_map(fn(Mine $m) => (int) $m->id, $mines));
+        $ids = array_map(fn(Mine $m) => (int) $m->id, $mines);
+        $scores = ComplianceScoreService::scoreMines($ids);
+        $alerts = ComplianceScoreService::openAlertCounts($ids);
         $features = [];
         foreach ($mines as $mine) {
             if ($mine->location_geojson === null) {
@@ -55,8 +57,9 @@ class MineController extends ApiController
                 'geometry' => json_decode($mine->location_geojson, true),
                 'properties' => [
                     'id' => (int) $mine->id, 'code' => $mine->code, 'name' => $mine->name,
-                    'type' => $mine->type, 'state' => $mine->state, 'location_quality' => $mine->location_quality,
+                    'type' => $mine->type, 'state' => $mine->state, 'district' => $mine->district, 'location_quality' => $mine->location_quality,
                     'score' => $scores[$mine->id]->score, 'risk_level' => $scores[$mine->id]->riskLevel,
+                    'open_alerts' => $alerts[$mine->id] ?? 0,
                 ],
             ];
         }

@@ -640,13 +640,66 @@ loanword is kept, sometimes with a native gloss.
 
 ---
 
+## `reference/state_boundaries.geojson` (Phase 5B)
+
+| | |
+|---|---|
+| **Kind** | **Real** (published boundaries) |
+| **Source** | S03 DataMeet maps, `States/Admin2` (the repository's non-district data: CC BY 4.0) |
+| **Produced by** | `data/scripts/clean_state_boundaries.py` (stage D3, `run_data.bat clean`) |
+| **Rows** | 36 features (states and union territories), 148 KB |
+| **Checksum** | `6c7af545db57d2b77ef800fe737306398aac6bec5895de1d0dc61c666fd8522b` |
+
+**Method.** Topology-preserving simplification at 2.5 km in EPSG:7755 (India LCC), back to
+EPSG:4326, coordinates rounded to 3 dp (about 100 m). Property `state` is DataMeet's `ST_NM`;
+`mines` counts the real roster's mines in the state. Every roster state has an outline. The file
+is byte-identical across runs (sorted features, fixed formatting). Served by the API for the
+offline map, so the map needs no internet.
+
+**Limitations**
+- **Simplified outlines** for a national dashboard map, not for measuring or legal boundaries.
+- **As published by DataMeet**, simplified; the map is not an authoritative boundary source.
+
+---
+
+## `reference/map_districts.geojson` (Phase 5B)
+
+| | |
+|---|---|
+| **Kind** | **Real** (published boundaries) |
+| **Source** | S03 DataMeet maps, `Districts/2011_Dist` (Census 2011, CC BY 2.5 IN) |
+| **Produced by** | `data/scripts/clean_state_boundaries.py` (stage D3, `run_data.bat clean`, after `clean_mines_real.py`) |
+| **Rows** | 28 features (the 2011 districts containing the 74 mines of the real roster), 125 KB |
+| **Checksum** | `ffa3f66b60425e1b2ea720e6ffd32299af5a59027a2ecd65be3af22471088157` |
+
+**Method.** Each mine of `reference/mines_real.csv` is placed in the 2011 district that contains
+its point; a point outside every polygon would join the nearest within 5 km (none does). The
+districts found are simplified at 300 m in EPSG:7755 and rounded to 4 dp (about 10 m).
+Properties are `district_2011`, `state_2011`, `censuscode_2011` and `mines` (the roster codes
+inside). The API limits the outlines to the districts of the mines in the user's scope. The file is
+byte-identical across runs.
+
+**Why a second district file.** `reference/district_boundaries.geojson` is built from the
+prototype seed's district names, for placing seed mines (`clean_mines.py`). The real roster
+replaced some seed mines with mines in other districts (Giridih, Ranchi, Chhindwara, Paschim
+Bardhaman, Surajpur), so 6 of the 74 mines had no outline on the map. This file follows the
+roster the generator uses.
+
+**Limitations**
+- **Census 2011 districts.** Districts created later (Paschim Bardhaman, Surajpur) are shown
+  inside their 2011 parent (Barddhaman, Surguja). The mine's own `district` field keeps the
+  current name.
+- **Simplified outlines** for a dashboard map, not for measuring or legal boundaries.
+
+---
+
 ## `data/out/<preset>/` - generated operational data (stage D4)
 
 | | |
 |---|---|
 | **Kind** | **Calibrated-synthetic**: generated; volumes and mixes are tuned to the real references above. Environment rows are `calibrated` (real station data plus noise) or `synthetic` |
 | **Produced by** | `data/generators/generate.py` (`run_data.bat generate [small\|demo\|full]`), one module per table group |
-| **Schemas** | `data/schema/*.yaml`, 21 tables; every CSV is checked against its schema as it is written |
+| **Schemas** | `data/schema/*.yaml`, 25 tables; every CSV is checked against its schema as it is written |
 | **Roster** | `config.yaml mine_roster: real` (default) or `seed`; both pass every check |
 | **Determinism** | Seed 2026, one random stream per generator. Two demo runs are byte-identical (checked 2026-09-26) |
 | **Not in git** | `data/out/` is gitignored; `_manifest.json` records rows, bytes and SHA-256 per table |
@@ -773,3 +826,74 @@ back to the nearest eligible mine.
 - **Fatal and serious incidents never land on the demo mines** (a presentation choice).
 - **DGMS figures are national.** Per-mine incidence is not published, so the split by workforce is
   a model.
+
+---
+
+## `data/out/<preset>/obligation*.csv` - statutory obligation register (Phase 5B)
+
+| | |
+|---|---|
+| **Kind** | **Catalogue: real** (`reference/obligations.csv`, cited). **Tasks and submissions: synthetic** |
+| **Produced by** | `data/generators/gen_obligations.py`, run inside `generate.py` after the scenarios, on its own random stream (so no other table moves; evidence file rows are appended to `file.csv` after the existing ids) |
+| **Tables** | `obligation` (40, the catalogue with its schedule), `obligation_applicability` (961 in demo), `obligation_task` (4,506), `obligation_submission` (3,595); 3,595 file rows appended |
+| **Validated by** | `validate.py` V12 (and V1-V4 for schema, keys, references, dates) |
+
+**Which obligations get tasks.** Only verified obligations that apply to a mine and have a
+calendar frequency: 15 of 40 (SAF-01, SAF-03, SAF-06, SAF-07, SAF-09, SAF-10, SAF-12, SAF-13,
+HLT-01, HLT-03, ENV-03, ENV-05, ENV-06, ENV-07, RPT-06). On-event duties come from the events
+themselves, continuous limits are monitored by the sensor rules, "every shift" (SAF-08) is too
+fine-grained for a register, and contractor and worker duties belong to the contractor module.
+**RPT-08 (TODO-VERIFY) never gets a task**; V12 checks it.
+
+**Applicability** (modelling choices):
+- SAF-07, SAF-09, SAF-12 (winding ropes, CO testing of depillaring districts, gas checks where
+  electricity is used) apply only to underground and mixed mines - 81 rows.
+- SAF-01 applies only to mines with 500 or more workers, as the obligation's own note says
+  (r.14(1)) - 66 rows.
+- Everything else applies to every mine.
+
+**Due dates.**
+- Where the rule names a date, that date (`due_basis` law, 222 tasks):
+  - ENV-03: 30 September for the financial year ending 31 March;
+  - RPT-06: 28/29 February after the calendar year.
+- Otherwise the product setting `rules.yaml product.obligation_schedule`: 23:59 IST on the
+  period's last day (`due_basis` product). Weekly means ISO weeks, fortnightly means ISO weeks
+  (1, 2), (3, 4) and so on, and the others are calendar periods.
+
+Tasks cover every period that started by the window end and is due on or after the window start,
+so the current week, fortnight and month are there as open tasks.
+
+**History** (modelling choices):
+- Each mine has a filing discipline d ~ Beta(8, 2), nudged by its demo score (riskier mines miss
+  more).
+- A task is submitted on time with probability d, late with (1 - d) x 0.85, never with
+  (1 - d) x 0.15.
+- Reviews by an inspector or the government come 0.5-4 days after submission. 3 % of reviewed
+  evidence is rejected with a reason, and 60 % of those are resubmitted.
+- Unfinished past-due tasks are `overdue` (level 1), or `escalated` (level 2) once more than
+  `escalate_after_hours` (168 h) late.
+
+Demo result:
+- tasks: 3,316 accepted, 849 open, 171 submitted, 43 overdue, 127 escalated;
+- 108 rejected submissions and 554 late submissions;
+- on-time-accepted share of due tasks per mine: mean 79.5 %, range 36-100 %.
+
+**Limitations**
+- **Every submission and review is synthetic.** Evidence files are metadata only (path,
+  placeholder hash).
+- **The applicability rules and the filing model are modelling choices,** not a record of any
+  mine's compliance.
+- **Product-setting due dates are not law**, and the API labels them as such.
+
+---
+
+## `grievance.tracking_code` (Phase 5B fix)
+
+8 characters from `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (no 0/O, 1/I/L), derived deterministically
+from (seed, ticket number) by `common.tracking_code`. It uses no random stream, so adding it moved
+no other value. These are **demo codes only**, like the demo passwords:
+- the API stores an HMAC of each code, never the code itself;
+- codes for new grievances come from a cryptographic random generator and are shown once.
+
+V13 checks the format, the derivation and uniqueness.
+

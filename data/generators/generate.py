@@ -30,6 +30,7 @@ import gen_environment  # noqa: E402
 import gen_grievances  # noqa: E402
 import gen_incidents  # noqa: E402
 import gen_inspections  # noqa: E402
+import gen_obligations  # noqa: E402
 import gen_org  # noqa: E402
 import gen_production  # noqa: E402
 import gen_requests  # noqa: E402
@@ -44,6 +45,7 @@ STEPS = [("org", gen_org), ("users", gen_users), ("contractors", gen_contractors
          ("sensors", gen_sensors), ("environment", gen_environment)]
 # Deadlines and validity dates may lie after the reference time; every other date may not.
 FORWARD_OK = {("corrective_action", "due_at"), ("production_detail_request", "due_at"), ("grievance", "sla_due_at"),
+              ("obligation_task", "due_at"), ("obligation_task", "period_end"),
               ("contractor", "licence_valid_to"), ("contract", "end_date"), ("contract_worker", "vt_cert_valid_to")}
 
 
@@ -197,6 +199,9 @@ def main() -> int:
         gen_alerts.run(ctx)
         inject_scenarios.finalize(ctx)
         print(f"  {'scenarios+alerts':12s} {time.time() - t:6.1f} s")
+        t = time.time()
+        gen_obligations.run(ctx)   # own random stream: shifts nothing above; appends file rows
+        print(f"  {'obligations':12s} {time.time() - t:6.1f} s  {ctx.notes['obligation_summary']}")
         after = mine_scores(ctx)
         moved = {c: (before[c], after[c]) for c in before if before[c] != after[c]}
         checks = calibration(ctx) + demo_scores(ctx)

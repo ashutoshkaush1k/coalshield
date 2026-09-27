@@ -1,0 +1,27 @@
+table: obligation
+description: The statutory obligation catalogue (Phase 5B) - reference/obligations.csv with the schedule the register uses. Every row cites its instrument, clause, page and a verbatim quote.
+defined_by:
+  - "PLAN.md Phase 5B: obligation - the reference catalogue loaded from obligations.csv (code, domain, title, instrument, clause, frequency, due rule, applies to, responsible role, evidence type, citation page/file/quote, verified)"
+generator: gen_obligations.py
+primary_key: id
+unique: [[code]]
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: code, type: string, nullable: false}
+  - {name: domain, type: enum, nullable: false, values: [reporting, safety, health, labour, environment]}
+  - {name: title, type: string, nullable: false}
+  - {name: instrument, type: string, nullable: true}
+  - {name: clause, type: string, nullable: true}
+  - {name: applies_to, type: enum, nullable: false, values: [mine, contractor, worker]}
+  - {name: frequency, type: string, nullable: false}
+  - {name: due_rule, type: text, nullable: true}
+  - {name: responsible_role, type: string, nullable: false}
+  - {name: evidence_type, type: string, nullable: false}
+  - {name: citation_page, type: integer, nullable: true}
+  - {name: citation_file, type: string, nullable: true}
+  - {name: citation_quote, type: text, nullable: true}
+  - {name: verified, type: boolean, nullable: false, note: "false = TODO-VERIFY; such an obligation never gets tasks"}
+  - {name: note, type: text, nullable: true}
+  - {name: schedule, type: enum, nullable: false, values: [weekly, fortnightly, monthly, quarterly, half_yearly, annual, none]}
+  - {name: generates_tasks, type: boolean, nullable: false, note: "verified AND applies_to mine AND a calendar frequency"}
+  - {name: due_basis, type: enum, nullable: false, values: [law, product, none], note: "law = the due_rule names the date; product = rules.yaml product.obligation_schedule"}

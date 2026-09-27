@@ -1,0 +1,17 @@
+table: obligation_submission
+description: Evidence submitted against an obligation task, and its review (accepted / rejected with a reason).
+defined_by:
+  - "PLAN.md Phase 5B: obligation_submission (task_id, file_id, note, submitted_by, submitted_at, reviewed_by, reviewed_at, review_note)"
+generator: gen_obligations.py
+primary_key: id
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: task_id, type: integer, nullable: false, fk: obligation_task.id}
+  - {name: file_id, type: integer, nullable: false, fk: file.id}
+  - {name: note, type: text, nullable: true}
+  - {name: submitted_by, type: integer, nullable: false, fk: user.id}
+  - {name: submitted_at, type: datetime, nullable: false}
+  - {name: status, type: enum, nullable: false, values: [pending, accepted, rejected]}
+  - {name: reviewed_by, type: integer, nullable: true, fk: user.id}
+  - {name: reviewed_at, type: datetime, nullable: true}
+  - {name: review_note, type: text, nullable: true, note: "required when rejected"}

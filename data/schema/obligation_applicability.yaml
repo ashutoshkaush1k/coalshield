@@ -1,0 +1,12 @@
+table: obligation_applicability
+description: Which task-generating obligations apply to which mine, and why (modelling choices documented in gen_obligations.py).
+defined_by:
+  - "PLAN.md Phase 5B: tasks only for verified obligations with a calendar frequency, per mine"
+generator: gen_obligations.py
+primary_key: id
+unique: [[mine_id, obligation_id]]
+columns:
+  - {name: id, type: integer, nullable: false}
+  - {name: mine_id, type: integer, nullable: false, fk: mine.id}
+  - {name: obligation_id, type: integer, nullable: false, fk: obligation.id}
+  - {name: basis, type: enum, nullable: false, values: [all_mines, underground_or_mixed, workforce_500]}

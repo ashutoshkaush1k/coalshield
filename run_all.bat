@@ -105,6 +105,9 @@ echo  [ok] Production periods and detailed-report deadlines checked
 REM Grievance SLA breaches and escalations - idempotent.
 "%PHP%" "%ROOT%api\yii" grievance/check >nul
 echo  [ok] Grievance SLAs checked
+REM Obligation register: new periods, reminders, overdue and escalation - idempotent.
+"%PHP%" "%ROOT%api\yii" obligation/check >nul
+echo  [ok] Obligation register checked
 
 REM --- port checks -------------------------------------------------------------
 REM netstat prints the state after the address, so the port comes first.

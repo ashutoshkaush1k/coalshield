@@ -41,20 +41,38 @@ class GrievanceCest
         $ticket = $I->grabDataFromResponseByJsonPath('$.ticket_no')[0];
         $I->assertMatchesRegularExpression('/^GRV-\d{4}-\d{6}$/', $ticket);
         $I->assertGreaterThan($maxSeeded, (int) substr($ticket, 9));
-        $I->assertSame(['ticket_no', 'status', 'sla_due_at', 'created_at'], array_keys(json_decode($I->grabResponse(), true)));
+        $I->assertSame(['ticket_no', 'tracking_code', 'status', 'sla_due_at', 'created_at'], array_keys(json_decode($I->grabResponse(), true)));
+        $code = $I->grabDataFromResponseByJsonPath('$.tracking_code')[0];
+        $I->assertMatchesRegularExpression('/^[' . GrievanceService::TRACKING_ALPHABET . ']{8}$/', $code);
         $grievance = Grievance::find()->where(['ticket_no' => $ticket])->one();
         $I->assertSame('received', $grievance->status);
         $I->assertSame(Auth::user(self::GEVRA_HEAD)->id, $grievance->assigned_to, 'routed to the mine head');
         $I->assertSame(168, (int) round((strtotime($grievance->sla_due_at) - strtotime($grievance->created_at)) / 3600), 'wages SLA from rules.yaml');
+        $I->assertSame(GrievanceService::trackingHash($code), $grievance->tracking_code_hash, 'only an HMAC is stored');
+        $I->assertStringNotContainsString($code, json_encode($grievance->getAttributes()), 'the code itself is stored nowhere');
 
-        $I->sendGet("/v1/grievances/track/$ticket");
+        $I->sendPost('/v1/grievances/track', ['ticket_no' => $ticket, 'tracking_code' => strtolower($code)]);
         $I->seeResponseCodeIs(200);
         $I->seeResponseContainsJson(['ticket_no' => $ticket, 'status' => 'received', 'timeline' => [['action' => 'submit', 'status' => 'received']]]);
         $I->dontSeeResponseContains('Test Complainant');
         $I->dontSeeResponseContains('9000000001');
         $I->dontSeeResponseJsonMatchesJsonPath('$.description');
-        $I->sendGet('/v1/grievances/track/GRV-2026-999999');
+
+        // The ticket alone is not enough, and a wrong code looks exactly like an unknown ticket.
+        $I->sendPost('/v1/grievances/track', ['ticket_no' => $ticket]);
         $I->seeApiError(404, 'NOT_FOUND');
+        $I->sendPost('/v1/grievances/track', ['ticket_no' => $ticket, 'tracking_code' => $code === 'AAAAAAAA' ? 'BBBBBBBB' : 'AAAAAAAA']);
+        $I->seeApiError(404, 'NOT_FOUND');
+        $wrongCode = $I->grabResponse();
+        $I->sendPost('/v1/grievances/track', ['ticket_no' => 'GRV-2026-999999', 'tracking_code' => $code]);
+        $I->seeApiError(404, 'NOT_FOUND');
+        $I->assertSame($wrongCode, $I->grabResponse(), 'identical responses');
+        $I->sendGet("/v1/grievances/track/$ticket");
+        $I->seeResponseCodeIs(404);
+
+        // Seeded grievances have codes too (deterministic in the data track).
+        $seed = Grievance::find()->orderBy('id')->one();
+        $I->assertNotNull($seed->tracking_code_hash);
 
         // Anonymous: no name or contact is stored even if sent.
         $I->sendPost('/v1/grievances/public', $this->publicForm(['is_anonymous' => 'true', 'submitter_type' => 'employee']));

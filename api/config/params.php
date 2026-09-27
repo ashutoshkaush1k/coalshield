@@ -15,6 +15,8 @@ return [
     'fileStorage.mimeTypes' => ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
     // Where data/schema lives (rules.yaml: legal sensor limits; violation_categories.yaml).
     'dataSchemaDir' => (string) env('DATA_SCHEMA_DIR', '../data/schema'),
+    // data/reference: the offline map's state and district outlines (Phase 5B).
+    'dataReferenceDir' => (string) env('DATA_REFERENCE_DIR', '../data/reference'),
     // The prototype's scoring weights, bands and windows, env-driven as in the old backend (brief
     // Phase 2: "scoring weights stay env-driven"). Demo settings, not legal values.
     'score.weightPpe' => (float) env('WEIGHT_PPE', 5.0),

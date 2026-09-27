@@ -14,6 +14,7 @@ const MODE = process.argv[2] ?? "aggregated";
 const CYCLES = Number(process.argv[3] ?? 12);
 const WARMUP = 2;
 const GOV = "gov@dgms.gov.in";
+const CORP = "corporate.secl@coalmine.in";
 const HEAD = "head.od-tlc-05@coalmine.in";   // Bhubaneswari, mine 5
 const MINE = 5;
 
@@ -37,6 +38,13 @@ const VIEWS = {
     "mine head production": { who: HEAD, paths: ["/views/production"] },
     "government grievances": { who: GOV, paths: ["/views/grievances"] },
     "mine head grievances": { who: HEAD, paths: ["/views/grievances"] },
+    "government obligations": { who: GOV, paths: ["/views/obligations"] },
+    "corporate obligations": { who: CORP, paths: ["/views/obligations"] },
+    "mine head obligations": { who: HEAD, paths: ["/views/obligations"] },
+    "government map": { who: GOV, paths: ["/views/map"] },
+    "mine head map": { who: HEAD, paths: ["/views/map"] },
+    // Fetched once when the map opens (then revalidated by ETag), not polled.
+    "map outlines, first load": { who: GOV, paths: ["/geo/states", "/geo/districts"] },
   },
 };
 
@@ -91,7 +99,7 @@ async function loop(view, token) {
 async function main() {
   const views = VIEWS[MODE];
   if (!views) throw new Error(`mode is legacy or aggregated, not ${MODE}`);
-  const tokens = { [GOV]: await login(GOV), [HEAD]: await login(HEAD) };
+  const tokens = { [GOV]: await login(GOV), [HEAD]: await login(HEAD), [CORP]: await login(CORP) };
   console.log(`API ${API}, mode ${MODE}`);
 
   console.log("\n== one client ==");

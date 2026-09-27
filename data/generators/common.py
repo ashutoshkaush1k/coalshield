@@ -47,6 +47,22 @@ def stable_int(*parts) -> int:
     return int.from_bytes(hashlib.sha256("|".join(map(str, parts)).encode()).digest()[:8], "big")
 
 
+# Grievance tracking codes: 8 characters from an alphabet without look-alikes (no 0/O, 1/I/L).
+TRACKING_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+
+
+def tracking_code(seed: int, ticket_no: str) -> str:
+    """A seeded grievance's tracking code - deterministic from (seed, ticket), so adding it shifts no
+    other random stream. Demo data only: the API stores an HMAC of it, never the code, and issues
+    real codes from a CSPRNG."""
+    n = int.from_bytes(hashlib.sha256(f"tracking|{seed}|{ticket_no}".encode()).digest()[:10], "big")
+    out = []
+    for _ in range(8):
+        n, r = divmod(n, len(TRACKING_ALPHABET))
+        out.append(TRACKING_ALPHABET[r])
+    return "".join(out)
+
+
 # ---------------------------------------------------------------------------------------------
 # Schemas
 # ---------------------------------------------------------------------------------------------

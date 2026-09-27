@@ -179,8 +179,12 @@ continuing.**
     `DETAIL_REQUEST_OVERDUE` alert - Nandira (OD-ANG-57)'s seeded call falls due during the day.
 12. **Grievances.** Sign out; on the login page press **Raise a grievance** (no account). Choose
     Gevra, *Contract worker*, Hindi, *Safety* → *PPE*, write the complaint in Hindi, submit: a
-    ticket `GRV-2026-000xxx` and the response due time (48 h for safety). **Track this grievance**
-    shows the status and the timeline only - no text, no names.
+    ticket `GRV-2026-000xxx`, an 8-character **tracking code** (shown this once - say so) and the
+    response due time (48 h for safety). **Track this grievance** shows the status and the
+    timeline only - no text, no names. Change one letter of the code and track again: *No
+    grievance matches* - the same answer as a ticket that does not exist, so a ticket number alone
+    tells nobody anything. (A seeded grievance's code is in `data/out/demo/grievance.csv`,
+    column `tracking_code` - demo data only.)
     - Sign in as the Gevra mine head (`head.cg-krb-03@coalmine.in`), Grievances tab:
       - the new grievance is at the top, its text shown as written and labelled *Hindi*;
       - **Submitted by** says *Identity not shown to this role*;
@@ -196,10 +200,27 @@ continuing.**
     - Filter **Sensitive**: Gevra has two harassment grievances, routed to DGMS, identity visible
       to the regulator. Back as the Gevra mine head they are nowhere - not in the list, not in the
       alerts, not in the audit trail - and by id the API answers 404.
-13. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
+13. **Statutory obligations** (Obligations tab). As the Gevra mine head: statutory compliance
+    (a separate measure - the compliance score does not move), then *Due soon*, *Overdue*, *Open*,
+    *Submitted* and *Recently accepted*. Every row shows its act and section; open one and
+    **Show the text** gives the verbatim quote with the source file and page. Upload a PDF with a
+    note → *Submitted*. As Government, Obligations tab: compliance per company, the most overdue
+    items, then choose *Chhattisgarh* and open the new evidence under *Evidence awaiting review*:
+    **Reject** without a reason is refused; write one and reject. Back as the mine head the reason
+    is on the task; upload again, and Government **Accepts**. Overdue items carry an
+    `OBLIGATION_OVERDUE` alert (level 1) and escalate to level 2 after 168 h; to show it live,
+    `api\yii.bat obligation/check --at=<a time after a due date>` does now what the clock will
+    do then (reseed afterwards).
+14. **The map, offline** (Map tab). Pull the network cable or switch Wi-Fi off first: the state and
+    district outlines are local data and the mines are at their real coordinates, coloured and
+    labelled by risk band (hover: score, district, location quality - dashed for approximate).
+    Click a mine to open it. The street map (OpenStreetMap) is off by default; switching it on
+    offline says the tiles are unavailable and the outlines stay. Global Energy Monitor (CC BY
+    4.0) and DataMeet are credited on the map. As corporate SECL: 17 mines; as a mine head: one.
+15. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
     mines. Opening a mine of another company answers **404** - exactly like a mine that does not
     exist, so nothing leaks.
-14. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
+16. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
     click. Prove it from the tests or the API:
 
     ```bat

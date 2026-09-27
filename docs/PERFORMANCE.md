@@ -95,9 +95,42 @@ for the government overview). They are a few milliseconds slower than above, par
 mine head's alert and audit queries now also exclude sensitive grievances. Side by side:
 52 / 59 and 42 / 50.
 
+## After Phase 5B (obligation register and map)
+
+Same method, 2026-09-28, freshly seeded demo, Apache, median / p95 in ms over 12 cycles:
+
+| New screen (one request per cycle) | median / p95 |
+|---|---|
+| Government obligations (`/views/obligations`) | **87 / 90** |
+| Corporate SECL obligations | **82 / 85** |
+| Mine head obligations | **73 / 76** |
+| Government map (`/views/map`, with open-alert counts) | **41 / 46** |
+| Mine head map | **34 / 37** |
+| Map outlines, first load (`/geo/states` 21 / 26 + `/geo/districts` 58 / 62, limited to scope; then revalidated by ETag) | 58 / 63 |
+
+**This run was on battery power** (discharging, 27 % down to 5 %), and everything was slower than
+in the Phase 5 run, not only the new screens. Government overview 151 / 157 (was 42-56 / 86),
+government production 157 / 158, mine screen 117-124 / 133-150, mine head grievances 41 / 43
+(was 14 / 15).
+To tell a code regression from the machine, the Phase 5 commit and the current code were served
+side by side with `php -S` against the same database, in the same power state: the government
+overview took 333 and 332 ms, `/dashboard` 236 and 234 ms, the grievance view 227 and 227 ms.
+The Phase 5B changes do not slow the existing screens; the machine was about three times slower
+(the same `php -S` overview measured 110 ms in the table above). The new screens stay under 150 ms
+even so. Rerun `node scripts/perf_check.mjs` on mains power for numbers comparable with the
+earlier sections.
+
+What keeps the register fast: the obligation check runs once per request with targeted queries
+(late tasks, due-soon groups, stale reminders), and new periods' tasks are generated once a day.
+The roll-up is a single grouped query per (mine, domain), summed in PHP and cached until any task
+or submission changes (a version counter) or the hour turns. A mine head's register is two
+queries. The first government request after a change or a new hour recomputes the roll-up:
+124-135 ms (measured three times, on battery), then 86-95 ms. After a full cache flush
+(`yii cache/flush-all`, which also drops the schema cache) the first request took 547 ms, once.
+
 ## In the browser
 
-The Phase 2, 3 and 4 browser checks were rerun with a government overview and a mine-head
+The Phase 2, 3 and 4 browser checks (and later the Phase 5 and 5B ones) were rerun with a government overview and a mine-head
 dashboard open and polling in two more tabs for the whole run (`node scripts/browser_check.mjs
 <phase> --side-tabs`): all steps passed, and the side tabs made their polls without a failure
 (for example 17 and 14 API requests during the 90 s Phase 2 run).
