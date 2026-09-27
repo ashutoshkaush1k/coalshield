@@ -19,6 +19,9 @@ env/
 # Model weights (fetched, not committed - see backend/ml/README.md)
 backend/ml/weights/*
 !backend/ml/weights/.gitkeep
+# Training runs and downloaded base weights (scripts/build_ppe_model.py)
+backend/ml/runs/
+yolo*.pt
 
 # Runtime artefacts
 backend/data/uploads/*

@@ -14,11 +14,14 @@ import { loadMineBundle, mineSubtitle } from "../government/MineDetail";
 import { TrendsPanel } from "../government/panels/TrendsPanel";
 import { MineOverviewPanel } from "./panels/MineOverviewPanel";
 import { SensorPerformancePanel } from "./panels/SensorPerformancePanel";
+import { ContractorsPanel } from "./panels/ContractorsPanel";
+import { t } from "../../i18n/t";
 
 const TABS = [
   { id: "overview", label: "Overview" },
   { id: "sensors", label: "Sensors" },
   { id: "trends", label: "Trends" },
+  { id: "contractors", label: t("contractor.tabLabel") },
 ];
 
 export default function MineHeadDashboard() {
@@ -78,6 +81,10 @@ export default function MineHeadDashboard() {
 
         <TabPanel id="sensors" active={tab}>
           <SensorPerformancePanel mineId={mineId} />
+        </TabPanel>
+
+        <TabPanel id="contractors" active={tab}>
+          <ContractorsPanel mineId={mineId} />
         </TabPanel>
 
         <TabPanel id="trends" active={tab}>

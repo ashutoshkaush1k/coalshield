@@ -6,9 +6,9 @@ export const listCorrectiveActions = (params = {}) =>
 
 export const getCorrectiveAction = (id) => client.get(`/corrective-actions/${id}`).then((r) => r.data);
 
-export const createCorrectiveAction = ({ violationId, description, dueAt }) =>
+export const createCorrectiveAction = ({ violationId, description, dueAt, contractorId }) =>
   client
-    .post("/corrective-actions", { violation_id: violationId, description, due_at: dueAt })
+    .post("/corrective-actions", { violation_id: violationId, description, due_at: dueAt, contractor_id: contractorId ?? null })
     .then((r) => r.data);
 
 export const resolveCorrectiveAction = (id, { proofText, file }) => {

@@ -246,6 +246,22 @@ first (`run_all.bat --stop`) or the ports collide. Remove it afterwards with
 - Git Bash strips backslashes in unquoted heredocs; write Windows paths in `.bat` files with an
   editor or PowerShell.
 
+## 11. PPE detection weights
+
+The ai-service uses `backend\ml\weights\ppe.pt`, a YOLO11n model fine-tuned on the S13 PPE dataset.
+The weights are not in git (Ultralytics AGPL-3.0 and size); rebuild them once per machine:
+
+```bat
+data\run_data.bat download
+backend\.venv\Scripts\python.exe scripts\build_ppe_model.py
+```
+
+The first line fetches S13 if `data\raw\ppe\dataset` is missing. The second trains on the CPU
+(about 20 minutes), evaluates on the held-out test split, installs `ppe.pt` and rewrites the
+results in `docs/AI_EVALUATION.md`. Without the weights `run_all.bat` prints a warning box and the
+ai-service answers with its test fixture. `set PPE_DETECTOR=fixture` before starting it forces
+the fixture even when the weights exist.
+
 ## Docker alternative (not verified)
 
 `docker-compose.yml` at the repository root starts `postgis/postgis:16-3.4` (with the test

@@ -14,7 +14,7 @@ use yii\db\Query;
  * GET /v1/audit - the audit trail, newest first, scoped like everything else: government and
  * inspector see all entries, corporate its company's mines, a mine head its own mine. Entries
  * without a mine (logins of other users, seed) are visible to government only.
- * ?mine_id=, ?entity=, ?action=, page/per_page. Values are raw; the frontend labels them.
+ * ?mine_id=, ?entity=, ?action=, ?source=app|seed|seed_history, page/per_page. Values are raw; the frontend labels them.
  */
 class AuditController extends ApiController
 {
@@ -31,7 +31,7 @@ class AuditController extends ApiController
         $query = (new Query())->from(['a' => '{{%audit_log}}'])
             ->leftJoin(['u' => '{{%user}}'], 'u.id = a.user_id')
             ->select(['a.id', 'a.mine_id', 'a.entity', 'a.entity_id', 'a.action', 'a.old_values', 'a.new_values',
-                'a.user_id', 'actor' => 'u.full_name', 'a.created_at', 'a.row_hash']);
+                'a.user_id', 'actor' => 'u.full_name', 'a.created_at', 'a.row_hash', 'a.source']);
 
         $mine = $this->mineParam();
         if ($mine !== null) {
@@ -39,7 +39,7 @@ class AuditController extends ApiController
         } elseif (!in_array($user->role, [User::ROLE_GOVERNMENT, User::ROLE_INSPECTOR], true)) {
             $query->andWhere(['a.mine_id' => array_map(fn($m) => (int) $m->id, $this->visibleMines())]);
         }
-        $query->andFilterWhere(['a.entity' => $request->get('entity'), 'a.action' => $request->get('action')]);
+        $query->andFilterWhere(['a.entity' => $request->get('entity'), 'a.action' => $request->get('action'), 'a.source' => $request->get('source')]);
 
         $perPage = max(1, min((int) ($request->get('per_page') ?? $request->get('limit') ?? 50), 200));
         $page = max(1, (int) $request->get('page', 1));
@@ -62,6 +62,7 @@ class AuditController extends ApiController
             'actor' => $r['actor'],
             'created_at' => Format::utc($r['created_at']),
             'row_hash' => $r['row_hash'],
+            'source' => $r['source'],
         ], $rows);
     }
 }

@@ -66,9 +66,12 @@ simulator, so by step 4 the scores have legitimately drifted.
 - [ ] `python scripts\run_simulator.py --check-only` - must print `Pre-flight : OK`.
 - [ ] `http://127.0.0.1:8080/v1/health` answers `{"status":"ok",...}`; `http://localhost:5173`
       shows the login page.
-- [ ] PPE vision: with YOLO weights (`backend/ml/weights/ppe.pt`) use
-      `backend/data/samples/images/metro_shaft_workers.jpg`; without weights the fixture backend
-      answers for `ppe_sample.jpg` (two violations) and `with_ppe.jpg` (clean frame). Know the path.
+- [ ] PPE vision: `backend/ml/weights/ppe.pt` is the model fine-tuned on S13 (docs/AI_EVALUATION.md;
+      rebuild with `backend\.venv\Scripts\python.exe scripts\build_ppe_model.py`, about 20 min).
+      It is strong on construction-style photos (test mAP50 0.85) but misses people and hard hats
+      on some of the repository's sample photos, so **for the scripted numbers start the ai-service
+      with `set PPE_DETECTOR=fixture`**: `ppe_sample.jpg` then gives two violations and `with_ppe.jpg`
+      a clean frame. Show the real model separately, as what it is.
 - [ ] **Two browser tabs**, signed in - Government in one, Mine Head (Jayant,
       `head.mp-sgr-02@coalmine.in`) in the other. Sessions are per tab, so both stay signed in.
 - [ ] A photograph ready to attach as resolution proof (JPG, PNG or WEBP).
@@ -139,10 +142,20 @@ continuing.**
    actions** with proof: the violation is resolved and the score rises **45 → 50, High → Medium**.
    Back on the Government tab: the resolution and its proof are there, with **Reopen** if the
    evidence is not good enough (the earlier attempt stays in the history).
-10. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
+10. **Contractors** (Contractors tab). Sign in as the mine head of **Block-B (MP-SIN-42,
+    `head.mp-sin-42@coalmine.in`)**: **Prakash Infra Projects** is at the top, flagged - wage
+    registers and EPF challans missing month after month and 3 violations per active worker at
+    this mine (1.03 across all its contracts, the highest in the fleet). Open it: the Documents tab
+    lists every missing month with an Upload button; uploading one lifts the score at once. The
+    Alerts tab carries its `CONTRACTOR_DOC_MISSING` alerts. Licence, training and medical rules cite
+    the OSH Code, 2020 and the OSH (Central) Rules, 2026 (LAB-02, SAF-04, HLT-01) - never the
+    repealed Contract Labour Act. On the Government overview, the **Contractor compliance** card
+    lists it first among flagged contractors; the Contractors tab gives the read-only per-mine
+    summary.
+11. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
     mines. Opening a mine of another company answers **404** - exactly like a mine that does not
     exist, so nothing leaks.
-11. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
+12. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
     click. Prove it from the tests or the API:
 
     ```bat

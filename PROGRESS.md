@@ -2,6 +2,118 @@
 
 Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF.md`.
 
+## Phase 3: Contractor management, plus two Phase 2 fixes (done, 2026-09-27)
+
+### Fix 1: audit history backfill
+
+- `audit_log.source` (`app`, `seed`, `seed_history`; migration `m260929_000001`) is part of the
+  row hash (`audit_row_hash`, 12 arguments).
+- After loading, `yii seed` writes the seeded history into the chain in one `INSERT ... SELECT
+  ... ORDER BY at`, through the same trigger that chains every entry, so nothing bypasses it.
+  - The history covers: violations recorded and resolved; corrective actions recorded and
+    resolved; incidents reported; inspections visited and closed; directives and alerts raised;
+    contracts started; contractor documents uploaded.
+  - Each entry keeps its original timestamp and actor (inspector, corrective-action author,
+    uploader).
+  - The demo seed writes 12,632 entries, and `yii audit/verify` passes.
+- `GET /v1/audit` returns `source` and accepts `?source=` as a filter.
+- Tests:
+  - `SeedTest::testSeededHistoryIsInTheChainWithOriginalTimestampsAndActors`;
+  - `AuditTrailCest::aMinesTrailShowsItsHistoryRightAfterSeeding`.
+
+### Fix 2: real PPE detection
+
+- The model is YOLO11n, fine-tuned on S13 (CC BY 4.0) on CPU.
+  - Settings: 10 epochs, 512 px, the first 10 layers frozen. Training took 19.4 min.
+  - Results on the held-out test split (213 images): mAP50 0.850, mAP50-95 0.560.
+  - The per-class table is in `docs/AI_EVALUATION.md`.
+- No openly licensed pretrained PPE model that can be downloaded without a login was usable.
+  The candidates and the reasons are in `docs/AI_EVALUATION.md`.
+- Ultralytics code and weights are AGPL-3.0; that document sets out what this means for the
+  project.
+- The weights are gitignored:
+  - `scripts/build_ppe_model.py` rebuilds them into `backend/ml/weights/ppe.pt`;
+  - `run_all.bat` warns if they are missing;
+  - the ai-service falls back to the fixture without them, or when `PPE_DETECTOR=fixture` is set.
+- `VisionCest` covers both backends.
+
+### Phase 3: contractors
+
+- **Migrations** (reversible):
+  - `contractor`, `contract`, `contract_worker` and `contractor_compliance_doc`, with CHECKs,
+    unique keys and indexes;
+  - FKs from `violation`, `corrective_action` and `observation` to `contractor`;
+  - the alert code `CONTRACT_WORKER_CAP_EXCEEDED`.
+- **Seeding:** `yii seed` loads the four tables and their files from `data/out`.
+- **Scoping:** a contractor has no mine of its own. It is in scope when one of its contracts is:
+  `ScopedActiveQuery` `via:contract.contractor_id`. Contracts, workers and documents scope by
+  `contract.mine_id`. Anything out of scope is 404.
+- **Compliance scoring (`ContractorService`):** 100 minus penalties, computed from the data.
+  - Penalties come from: violations per active worker; missing monthly wage register, EPF challan
+    and ESI challan; the labour licence (expired or expiring); workers with expired training or
+    overdue medicals; contracts over their worker cap.
+  - Bands: compliant, watch, flagged.
+  - Ordering: worst first.
+  - Every reason is a `{code, params}` pair and cites `rules.yaml`: LAB-02 (OSH Code s.48(3)),
+    SAF-04, HLT-01 (OSH (Central) Rules, 2026). The repealed Acts are never cited.
+- **Alerts:** `ContractorAlertService` raises the brief's alert codes from the data, and running
+  it twice changes nothing. Run it with `yii contractor/check`; `yii contractor/report` prints
+  the ranking.
+- **Mine head:**
+  - full CRUD: register a contractor with its first contract; contracts; workers; monthly
+    document upload and verification; status changes with a reason;
+  - a contractor selector in the violation detail and the corrective-action form.
+- **Government, inspector and corporate:** read-only.
+  - The Overview page has a contractor compliance card, with flagged contractors worst first.
+  - The Contractors tab has the per-mine summary and all contractors.
+- **Scenario S4 (Prakash Infra Projects):** flagged and first in the fleet.
+  - It has the most violations per worker (1.03) and months of missing wage and EPF proof.
+  - At Block-B (MP-SIN-42) its score is 40, with 3 violations per worker.
+- **i18n:** all new UI text is in `en.json` (`contractor.*`, the new alert, audit sources and
+  actions).
+- **Tests:** 119 tests, 964 assertions, all passing.
+  - `ContractorCest` covers S4 visibility, scoping, 404s, the full management flow, generated
+    alerts and read-only roles.
+  - `ContractorServiceTest` covers due periods, score, licence and status.
+- **Browser check:** `node scripts\browser_check.mjs phase3` saves 16 screenshots, for the S4 mine
+  head, government and corporate NCL, to `docs/screenshots/phase3/`. No browser errors were
+  logged.
+  - The check now waits for the data rather than sleeping a fixed time.
+  - If a check fails, it saves `failure.png` and `failure.txt`.
+
+### Known issues (Phase 3)
+
+- **The PPE model is weak out of distribution:**
+  - it reports a false `no_helmet` on `with_ppe.jpg`;
+  - it misses people on the metro-shaft photo.
+
+  For the scripted demo numbers, start the ai-service with `PPE_DETECTOR=fixture`
+  (demo-script.md). A longer run (25 epochs, 640 px, no freezing; about 1.5-2 h on CPU) is
+  proposed and needs owner approval.
+- **AGPL-3.0:** any non-open deployment of the YOLO model needs an owner decision (an Ultralytics
+  Enterprise licence or a different detector).
+- **The PHP built-in server (`php -S`) handles one request at a time.** A browser tab left
+  polling the dashboard slows every other client, including the headless check. Close other tabs
+  before `browser_check.mjs`.
+- **The vision test skips itself while the ai-service is still loading the model.** Run the
+  tests once the ai-service answers `/health`.
+- The document due day (10th of the following month) and the 30-day licence warning are
+  **product settings**, not statutory periods.
+- `epf_challan` is kept as a document type without a legal claim (EPF Act status is still
+  TODO-VERIFY).
+
+### How to verify
+
+```bat
+run_all.bat
+api\yii.bat seed demo
+api\yii.bat contractor/check
+cd api && run_tests.bat
+node scripts\browser_check.mjs phase3
+```
+
+Re-seed after the browser check.
+
 ## Phase 2: Port existing modules to Yii2 (done, 2026-09-27)
 
 ### Done
@@ -101,14 +213,12 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 ### Known issues
 
 - **Docker path not verified:** Docker Desktop is not installed on the development machine.
-- **Audit trail empty after a seed:** seeded history is loaded by COPY, not through the audit
-  log, so a mine's trail starts with the first change made in the app (the seed itself is the
-  chain's genesis entry).
+- ~~**Audit trail empty after a seed**~~: fixed in Phase 3 (seeded history is backfilled into the chain).
 - **Dust rarely breaches in the live replay:** its limit is an 8-hour average, and the replay
   compresses data-hours into seconds. Methane and wet-bulb breaches (instantaneous) do fire,
   about one every 20 s somewhere in the fleet (most at Nandira, OD-ANG-57).
-- **PPE vision in this environment uses the fixture backend:** there are no YOLO weights on the
-  machine. The browser check cannot drive a file picker, so vision is covered by `VisionCest`
+- ~~**PPE vision in this environment uses the fixture backend**~~: fine-tuned weights since
+  Phase 3 (the fixture remains the fallback). The browser check cannot drive a file picker, so vision is covered by `VisionCest`
   (against the running ai-service) rather than by a screenshot.
 - **Violation types and DGMS cause codes** are shown humanised from their tokens; translation
   keys for them come in Phase 6.
@@ -136,7 +246,8 @@ Commit `b026164`.
 
 ## TODO-VERIFY register
 
-No new regulatory facts were introduced in Phases 1-2. Every limit, period and obligation code the
+No new regulatory facts were introduced in Phases 1-3 (Phase 3 cites LAB-02, SAF-04 and HLT-01
+from `rules.yaml`; its due day and warning window are product settings). Every limit, period and obligation code the
 API uses is read from `data/schema/rules.yaml` or the incident data, each tied to a verified row
 of `data/reference/obligations.csv`. The 48-hour reporting check is the rule the data's
 `reported_within_48h` column encodes.

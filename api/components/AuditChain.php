@@ -25,7 +25,7 @@ final class AuditChain
      * @param array<string, mixed>|null $old
      * @param array<string, mixed>|null $new
      */
-    public static function append(string $entity, ?int $entityId, string $action, ?array $old, ?array $new, ?Connection $db = null, ?int $mineId = null): void
+    public static function append(string $entity, ?int $entityId, string $action, ?array $old, ?array $new, ?Connection $db = null, ?int $mineId = null, string $source = 'app'): void
     {
         $db ??= Yii::$app->db;
         [$userId, $ip] = self::actor();
@@ -39,6 +39,7 @@ final class AuditChain
             'user_id' => $userId,
             'ip' => $ip,
             'mine_id' => $mineId,
+            'source' => $source,
         ])->execute();
     }
 
@@ -56,7 +57,7 @@ final class AuditChain
               FROM (SELECT id, prev_hash, row_hash,
                            lag(row_hash) OVER (ORDER BY id) AS expected_prev,
                            audit_row_hash(prev_hash, id, entity, entity_id, action, old_values, new_values,
-                                          user_id, ip, created_at, mine_id) AS recomputed
+                                          user_id, ip, created_at, mine_id, source) AS recomputed
                       FROM audit_log) chain
              WHERE prev_hash IS DISTINCT FROM coalesce(expected_prev, :genesis)
                 OR row_hash IS DISTINCT FROM recomputed

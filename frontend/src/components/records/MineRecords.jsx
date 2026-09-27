@@ -4,6 +4,8 @@
 // corrective action) appear only when the account holds the permission; the API checks it again.
 import { useState } from "react";
 import { createCorrectiveAction, resolveCorrectiveAction } from "../../api/correctiveActions";
+import { linkViolationContractor } from "../../api/contractors";
+import { ContractorSelect } from "../contractors/ContractorSelect";
 import { can } from "../../auth/permissions";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -125,6 +127,7 @@ export function MineRecords({ bundle, onChanged }) {
                 <tr key={entry.id} className="clickable" onClick={() => setSelected({ kind: "audit", id: entry.id })}>
                   <td>
                     <strong>{auditHeadline(entry)}</strong>
+                    {entry.source === "seed_history" && <span className="tag" style={{ marginLeft: 6 }}>{t("audit.source.seed_history")}</span>}
                     <div className="muted small">{entry.actor || t("audit.system")} &middot; {auditChanges(entry).slice(0, 2).join("; ")}</div>
                   </td>
                   <td className="mono">{fmtDateTime(entry.created_at)}</td>
@@ -165,6 +168,9 @@ function ViolationDetail({ violation, actions, onClose, onChanged }) {
         </Field>
         {frame && <Field label={t("violation.frame")} mono>{frame}</Field>}
         {violation.inspection_id && <Field label={t("records.inspection")} mono>#{violation.inspection_id}</Field>}
+        {can(user, "violation.linkContractor")
+          ? <LinkContractor violation={violation} onChanged={onChanged} />
+          : violation.contractor_id && <Field label={t("contractor.responsible")} mono>#{violation.contractor_id}</Field>}
         <div>
           <span className="label">{t("correctiveAction.title")}</span>
           {own.length ? own.map((a) => (
@@ -179,12 +185,28 @@ function ViolationDetail({ violation, actions, onClose, onChanged }) {
   );
 }
 
+function LinkContractor({ violation, onChanged }) {
+  const t = useT();
+  const { notify } = useToast();
+  async function change(contractorId) {
+    try {
+      await linkViolationContractor(violation.id, contractorId);
+      notify({ title: t("contractor.linked") });
+      onChanged?.();
+    } catch (err) {
+      notify({ title: t("contractor.linkFailed"), body: err.message, tone: "error" });
+    }
+  }
+  return <ContractorSelect id={`v-contractor-${violation.id}`} mineId={violation.mine_id} value={violation.contractor_id} onChange={change} />;
+}
+
 function RecordActionButton({ violation, onSaved }) {
   const t = useT();
   const { notify } = useToast();
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [due, setDue] = useState(() => new Date(Date.now() + 7 * 86400e3).toISOString().slice(0, 10));
+  const [contractorId, setContractorId] = useState(violation.contractor_id ?? null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
@@ -193,7 +215,7 @@ function RecordActionButton({ violation, onSaved }) {
     setBusy(true);
     setError(null);
     try {
-      await createCorrectiveAction({ violationId: violation.id, description, dueAt: `${due}T12:00:00Z` });
+      await createCorrectiveAction({ violationId: violation.id, description, dueAt: `${due}T12:00:00Z`, contractorId });
       notify({ title: t("correctiveAction.saved") });
       setOpen(false);
       setDescription("");
@@ -225,6 +247,7 @@ function RecordActionButton({ violation, onSaved }) {
             <label htmlFor={`ca-due-${violation.id}`}>{t("correctiveAction.dueLabel")}</label>
             <input id={`ca-due-${violation.id}`} type="date" value={due} required onChange={(e) => setDue(e.target.value)} />
           </div>
+          <ContractorSelect id={`ca-contractor-${violation.id}`} mineId={violation.mine_id} value={contractorId} onChange={setContractorId} />
           <ErrorNotice error={error} />
         </form>
       </Modal>

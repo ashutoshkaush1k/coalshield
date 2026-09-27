@@ -21,7 +21,9 @@ re-mapping an account takes effect immediately.
 
 1. **Scoping - what rows exist for you.** One place: `api/components/ScopedActiveQuery.php`.
    Every mine-owned model extends `ScopedActiveRecord` and declares its mine column
-   (`scopePath()`: `mine_id`, `id` for the mine itself, or `relation.column`). Controllers read
+   (`scopePath()`: `mine_id`, `id` for the mine itself, `relation.column` - e.g. a contract
+   worker through `contract.mine_id` - or `via:table.key` for a record with no mine of its own:
+   a contractor is in scope when one of its contracts is, `via:contract.contractor_id`). Controllers read
    through `Model::findScoped($id)` or `Model::find()->forCurrentUser()`; a `?mine_id=` filter
    is itself scope-checked (`ApiController::mineParam()`).
 2. **Permissions - what you may do.** RBAC with `yii\rbac\DbManager`, one permission per action
@@ -48,6 +50,9 @@ permitted → 403; never silently empty.
   accounts (a corporate user without a company sees nothing).
 - Every Phase 2 resource repeats the check: alerts, sensors, violations, corrective actions,
   incidents, the audit trail and PPE vision (`api/tests/api/*Cest.php`).
+- Contractors (`ContractorCest.php`): a mine head sees only contractors with a contract at its
+  mine (another mine's contractor or contract is 404), government and corporate read but cannot
+  manage (403), and the per-mine summary is refused to a mine head (403).
 
 ```bat
 cd api

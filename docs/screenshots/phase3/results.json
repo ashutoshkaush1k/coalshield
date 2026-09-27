@@ -1,0 +1,82 @@
+[
+  {
+    "name": "01-head-contractor-list",
+    "note": "mine head: contractors worst first - S4 flagged at the top, with what drives it",
+    "errors": []
+  },
+  {
+    "name": "02-head-s4-overview",
+    "note": "S4 overview: reasons, score arithmetic, licence (OSH Code s.48(3), LAB-02)",
+    "errors": []
+  },
+  {
+    "name": "03-head-s4-missing-documents",
+    "note": "S4 documents: missing wage registers and EPF challans, month by month",
+    "errors": []
+  },
+  {
+    "name": "04-head-s4-violations",
+    "note": "S4's linked violations",
+    "errors": []
+  },
+  {
+    "name": "05-head-s4-alerts",
+    "note": "S4's alerts: CONTRACTOR_DOC_MISSING per month, medicals overdue (HLT-01)",
+    "errors": []
+  },
+  {
+    "name": "06-head-s4-workers",
+    "note": "S4 workers with VT (SAF-04) and medical (HLT-01) status",
+    "errors": []
+  },
+  {
+    "name": "07-head-upload-document",
+    "note": "uploading a missing month's document (preset from the missing row)",
+    "errors": []
+  },
+  {
+    "name": "08-head-document-uploaded",
+    "note": "uploaded: one missing document fewer, awaiting verification",
+    "errors": []
+  },
+  {
+    "name": "09-head-register-contractor",
+    "note": "registering a contractor with its first contract at this mine",
+    "errors": []
+  },
+  {
+    "name": "10-head-contractor-registered",
+    "note": "registered: licence expiring within 30 days already counts against it",
+    "errors": []
+  },
+  {
+    "name": "11-head-violation-contractor-select",
+    "note": "violation detail: responsible-contractor selector",
+    "errors": []
+  },
+  {
+    "name": "12-gov-overview-contractor-card",
+    "note": "government overview: contractor compliance card, S4 first among flagged",
+    "errors": []
+  },
+  {
+    "name": "13-gov-contractors-per-mine",
+    "note": "read-only summary per mine: count, compliance %, flagged, blacklisted",
+    "errors": []
+  },
+  {
+    "name": "14-gov-all-contractors",
+    "note": "all contractors nationally, worst first - S4 at the top",
+    "errors": []
+  },
+  {
+    "name": "15-gov-s4-detail",
+    "note": "S4 detail for government: all five contracts, read-only",
+    "errors": []
+  },
+  {
+    "name": "16-corporate-contractors",
+    "note": "corporate NCL: its mines only; S4 flagged first",
+    "errors": []
+  }
+]

@@ -27,7 +27,9 @@ final class CorrectiveActionService
         $action = new CorrectiveAction([
             'mine_id' => $violation->mine_id,
             'violation_id' => $violation->id,
-            'contractor_id' => $violation->contractor_id,
+            'contractor_id' => array_key_exists('contractor_id', $body)
+                ? ContractorLinkService::contractorFor((int) $violation->mine_id, $body['contractor_id'])
+                : $violation->contractor_id,
             'alert_id' => isset($body['alert_id']) && is_numeric($body['alert_id']) ? (int) $body['alert_id'] : null,
             'description' => is_string($body['description'] ?? null) ? trim($body['description']) : null,
             'due_at' => is_string($body['due_at'] ?? null) ? $body['due_at'] : null,

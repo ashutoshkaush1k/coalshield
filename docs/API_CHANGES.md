@@ -43,3 +43,14 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | `GET /audit` | `GET /v1/audit` | entries are `{entity, entity_id, action (insert/update/delete/...), old_values, new_values, actor, row_hash, mine_id}` from the hash-chained audit log instead of `{actor, action, entity_type, detail}` text |
 | `POST /vision/analyze` | `POST /v1/vision/analyze` | via ai-service; `annotated_url` is a signed `/v1/files/...` link; `resolution_reason` text → `resolution: {code, params}`; a clean frame resolves open **PPE vision** findings only (the prototype resolved every open violation); ai-service down → 503 `AI_SERVICE_UNAVAILABLE` |
 | (stubs) | `/v1/corrective-actions`, `/v1/compliance/{id}`, `/{id}/history`, `/v1/incidents`, `/v1/inspections` records, `/v1/observations`, `/v1/admin/baseline-check`, `/v1/files/{id}/content`, `/v1/health` | new |
+
+## Phase 3 additions (no prototype equivalent)
+
+| New | Notes |
+|---|---|
+| `/v1/contractors`, `/summary`, `/{id}`, `/{id}/status` | contractor register, per-mine summary, detail, status workflow |
+| `/v1/contracts`, `/{id}/workers`, `/{id}/documents`, `/v1/contract-workers/{id}`, `/v1/contractor-docs/{id}/verify` | contracts, workers, monthly documents (multipart upload through FileStorage) |
+| `PATCH /v1/violations/{id}/contractor`; `contractor_id` on `POST /v1/corrective-actions` | link findings to the contractor responsible |
+| alert code `CONTRACT_WORKER_CAP_EXCEEDED` | new; the other contractor codes existed in the data and are now also raised by `yii contractor/check` |
+| `GET /v1/audit` `source` field and filter | `seed_history` entries: the seeded records' history, backfilled with original timestamps and actors |
+| `/v1/vision/analyze` `backend` | now `yolo` when `backend/ml/weights/ppe.pt` exists (fine-tuned model, docs/AI_EVALUATION.md), `fixture` otherwise |

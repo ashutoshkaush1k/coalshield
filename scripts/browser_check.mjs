@@ -1,6 +1,9 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [outDir]        (default docs/screenshots/phase2)
+//   node scripts/browser_check.mjs [phase2|phase3] [outDir]   (default phase2, docs/screenshots/<phase>)
+//
+// phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
+// phase3: contractor screens for the S4 mine head, government and corporate (NCL).
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -12,7 +15,9 @@ import { mkdirSync, mkdtempSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-const OUT = resolve(process.argv[2] ?? "docs/screenshots/phase2");
+const PHASE = process.argv[2] ?? "phase2";
+const OUT = resolve(process.argv[3] ?? `docs/screenshots/${PHASE}`);
+const ROOT = resolve(new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), "..");
 const APP = process.env.APP_URL ?? "http://localhost:5173";
 const API = process.env.API_URL ?? "http://localhost:8080/v1";
 const PORT = 9223;
@@ -52,10 +57,15 @@ class Page {
     return r.result.value;
   }
   async goto(url, wait = 3500) { await this.send("Page.navigate", { url }); await sleep(wait); }
+  /** Click the first `selector` whose text starts with `text`, waiting up to 20 s for it to appear. */
   async click(text, selector = "button") {
-    const ok = await this.eval(`(() => { const el = [...document.querySelectorAll(${JSON.stringify(selector)})]
-      .find((b) => b.textContent.trim().startsWith(${JSON.stringify(text)})); if (el) el.click(); return !!el; })()`);
-    if (!ok) throw new Error(`no ${selector} starting "${text}"`);
+    for (let waited = 0; ; waited += 500) {
+      const ok = await this.eval(`(() => { const el = [...document.querySelectorAll(${JSON.stringify(selector)})]
+        .find((b) => b.textContent.trim().startsWith(${JSON.stringify(text)})); if (el) el.click(); return !!el; })()`);
+      if (ok) break;
+      if (waited >= 20000) throw new Error(`no ${selector} starting "${text}"`);
+      await sleep(500);
+    }
     await sleep(1800);
   }
   async type(selector, text) {
@@ -65,6 +75,26 @@ class Page {
       el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
   }
   async text() { return this.eval("document.body.innerText"); }
+  /** The page text once `test(text)` holds, polling for up to 20 s (slow API responses); the last text otherwise. */
+  async until(test, timeout = 20000) {
+    for (let waited = 0; ; waited += 500) {
+      const text = await this.text();
+      if (test(text) || waited >= timeout) return text;
+      await sleep(500);
+    }
+  }
+  async setFile(selector, path) {
+    const { root } = await this.send("DOM.getDocument", { depth: -1 });
+    const { nodeId } = await this.send("DOM.querySelector", { nodeId: root.nodeId, selector });
+    if (!nodeId) throw new Error(`no ${selector}`);
+    await this.send("DOM.setFileInputFiles", { nodeId, files: [path] });
+    await sleep(300);
+  }
+  async scrollTo(text, selector = "h2") {
+    await this.eval(`(() => { const el = [...document.querySelectorAll(${JSON.stringify(selector)})]
+      .find((b) => b.textContent.trim().startsWith(${JSON.stringify(text)})); if (el) el.scrollIntoView({ block: "start" }); })()`);
+    await sleep(600);
+  }
   async shot(name, note) {
     const { data } = await this.send("Page.captureScreenshot", { format: "png" });
     writeFileSync(join(OUT, `${name}.png`), Buffer.from(data, "base64"));
@@ -88,6 +118,176 @@ function expect(condition, message) {
   if (!condition) throw new Error(`check failed: ${message}`);
 }
 
+async function phase2(page) {
+  let text;
+  console.log("Government");
+  await page.goto(`${APP}/login`, 2500);
+  await page.shot("01-login", "login page with the new quick-fill accounts, demo footer and GEM credit");
+  await page.as("gov@dgms.gov.in", "/gov");
+  text = await page.text();
+  expect(text.includes("83.2") && text.includes("Bhubaneswari Coal Mine"), "national overview shows 83.2 and the demo mines");
+  await page.shot("02-gov-overview", "national overview: average 83.2, 6 / 21 / 47, the five worst mines");
+  await page.click("Priority Queue");
+  await page.shot("03-gov-priority", "inspection priority queue with translated reasons");
+  await page.click("Sensors");
+  await page.shot("04-gov-sensors", "fleet sensor standing against the rules.yaml limits");
+  await page.click("Trends");
+  await page.shot("05-gov-trends", "national breach frequency, 6-hour buckets");
+
+  await page.goto(`${APP}/gov/mines/5`, 4500);
+  text = await page.text();
+  expect(text.includes("45") && text.includes("OD-TLC-05"), "Bhubaneswari scores 45");
+  await page.shot("06-gov-mine-detail", "Bhubaneswari (OD-TLC-05): score 45, arithmetic, alerts");
+  await page.click("Flag for inspection");
+  await sleep(1500);
+  await page.shot("07-gov-directive-raised", "directive raised: toast and the directive on top of the alerts");
+  await page.click("Violations (");
+  await page.shot("08-gov-violations", "violations drawer: all categories, open and resolved");
+  await page.escape();
+  await page.click("Corrective actions (");
+  await page.shot("09-gov-corrective-actions", "corrective actions with overdue flags");
+  await page.escape();
+  await page.click("Incidents (");
+  await page.click("Dangerous occurrence", "td strong");
+  await page.shot("10-gov-incident-detail", "incident detail: 48-hour check citing RPT-05, linked strata violation");
+  await page.escape();
+  await page.escape();
+  await page.click("Audit trail (");
+  await page.shot("11-gov-audit-trail", "audit trail of the mine (hash-chained)");
+  await page.escape();
+  await page.click("Sensor trends");
+  await page.shot("12-gov-sensor-trends", "sensor trend drawer with legal limit lines");
+  await page.escape();
+
+  console.log("Mine head (Bhubaneswari)");
+  await page.as("head.od-tlc-05@coalmine.in", "/mine");
+  await page.shot("13-head-overview", "mine head overview: own mine only, open directive from DGMS");
+  await page.click("Resolve with proof");
+  await page.type("textarea", "Bench 3 re-bolted and examined by the overman; shift briefed on PPE.");
+  await sleep(300);
+  await page.shot("14-head-resolve-directive", "resolving the directive with proof");
+  await page.click("Submit resolution");
+  await sleep(1500);
+  await page.shot("15-head-directive-resolved", "directive resolved; visible to DGMS with the proof");
+  await page.click("Violations (");
+  await page.click("No helmet", "td strong");
+  await page.click("Record corrective action");
+  await page.type("textarea", "Issue helmets at the bench entry and add a PPE check to the shift start.");
+  await sleep(300);
+  await page.shot("16-head-record-action", "recording a corrective action for a PPE violation");
+  await page.click("Save action");
+  await page.escape();
+  await page.escape();
+  await page.click("Corrective actions (");
+  await page.click("Issue helmets at the bench entry", "td");
+  await page.click("Resolve with proof");
+  await page.type("textarea", "Helmets issued; PPE check added to the shift-start briefing.");
+  await page.click("Submit");
+  await page.escape();
+  await page.escape();
+  await sleep(2500);
+  text = await page.text();
+  expect(text.includes("50") && text.includes("Medium risk"), "score rose from 45 to 50, band medium");
+  await page.shot("17-head-score-recovered", "action closed with proof: violation resolved, 45 -> 50, High -> Medium");
+  await page.click("Sensors");
+  await page.shot("18-head-sensors", "own-mine sensors: dust as an 8-hour average (HLT-04), wet bulb (HLT-05)");
+  await page.click("Trends");
+  await page.shot("19-head-trends", "own-mine breach frequency");
+
+  console.log("Corporate (SECL)");
+  await page.as("corporate.secl@coalmine.in", "/gov");
+  text = await page.text();
+  expect(text.includes("SECL"), "corporate sees SECL scope");
+  await page.shot("20-corporate-overview", "corporate: only SECL's 17 mines, same screens");
+  await page.goto(`${APP}/gov/mines/5`, 4000);
+  text = await page.text();
+  expect(text.includes("Not available"), "another company's mine is 404");
+  await page.shot("21-corporate-out-of-scope", "another company's mine answers 404, shown as not available");
+}
+
+async function phase3(page) {
+  const S4 = "Prakash Infra Projects";
+  let text;
+
+  console.log("Mine head of MP-SIN-42 (Block-B, NCL) - the S4 mine");
+  await page.as("head.mp-sin-42@coalmine.in", "/mine");
+  await page.click("Contractors", "button[role=tab]");
+  text = await page.until((t) => t.includes(S4) && t.includes("Goswami"));
+  expect(text.indexOf(S4) > -1 && text.indexOf(S4) < text.indexOf("Goswami"), "S4 is listed first");
+  expect(text.includes("Flagged"), "S4 is flagged");
+  await page.shot("01-head-contractor-list", "mine head: contractors worst first - S4 flagged at the top, with what drives it");
+  await page.click(S4, "td strong");
+  await sleep(2500);
+  await page.shot("02-head-s4-overview", "S4 overview: reasons, score arithmetic, licence (OSH Code s.48(3), LAB-02)");
+  await page.click("Documents", "button[role=tab]");
+  await page.shot("03-head-s4-missing-documents", "S4 documents: missing wage registers and EPF challans, month by month");
+  await page.click("Violations", "button[role=tab]");
+  await page.shot("04-head-s4-violations", "S4's linked violations");
+  await page.click("Alerts", "button[role=tab]");
+  await page.shot("05-head-s4-alerts", "S4's alerts: CONTRACTOR_DOC_MISSING per month, medicals overdue (HLT-01)");
+  await page.click("Workers", "button[role=tab]");
+  await page.shot("06-head-s4-workers", "S4 workers with VT (SAF-04) and medical (HLT-01) status");
+
+  await page.click("Documents", "button[role=tab]");
+  await page.click("Upload", "td button");
+  await page.setFile(".modal input[type=file]", resolve(ROOT, "backend/data/samples/images/with_ppe.jpg"));
+  await page.shot("07-head-upload-document", "uploading a missing month's document (preset from the missing row)");
+  await page.click("Upload", ".modal .overlay-foot button");
+  await sleep(2500);
+  await page.shot("08-head-document-uploaded", "uploaded: one missing document fewer, awaiting verification");
+  await page.escape();
+
+  await page.click("Register contractor");
+  const fields = { "cn-name": "Test Haulage Co", "cn-registration_no": "REG-TEST-0001", "cn-labour_licence_no": "LL/TEST/0001",
+    "cn-epf_code": "EPF-TEST-0001", "cn-esi_code": "ESI-TEST-0001", "cn-contact": "+91-00000-00000",
+    "cn-licence": "2026-10-15", "cn-c-wo": "WO/MP-SIN-42/2026/9001", "cn-c-val": "2500000", "cn-c-end": "2027-09-30" };
+  for (const [id, value] of Object.entries(fields)) await page.type(`#${id}`, value);
+  await page.shot("09-head-register-contractor", "registering a contractor with its first contract at this mine");
+  await page.click("Save", ".modal .overlay-foot button");
+  text = await page.until((t) => t.includes("Test Haulage Co"));
+  expect(text.includes("Test Haulage Co"), "new contractor listed");
+  await page.shot("10-head-contractor-registered", "registered: licence expiring within 30 days already counts against it");
+
+  await page.click("Overview", "button[role=tab]");
+  await page.click("Violations (");
+  await page.click("No ", "td strong");
+  await page.shot("11-head-violation-contractor-select", "violation detail: responsible-contractor selector");
+  await page.escape();
+  await page.escape();
+
+  console.log("Government");
+  await page.as("gov@dgms.gov.in", "/gov");
+  const firstFlagged = async () => {
+    for (let waited = 0; waited < 20000; waited += 500) {
+      const name = await page.eval(`document.querySelector(".flagged-list li strong")?.textContent`);
+      if (name) return name;
+      await sleep(500);
+    }
+    return null;
+  };
+  const govFirst = await firstFlagged();
+  await page.scrollTo("Contractor compliance");
+  expect(govFirst === S4, "S4 first on the government overview card");
+  await page.shot("12-gov-overview-contractor-card", "government overview: contractor compliance card, S4 first among flagged");
+  await page.click("Contractors", "button[role=tab]");
+  await sleep(3000);
+  await page.shot("13-gov-contractors-per-mine", "read-only summary per mine: count, compliance %, flagged, blacklisted");
+  await page.scrollTo("All contractors");
+  await page.shot("14-gov-all-contractors", "all contractors nationally, worst first - S4 at the top");
+  await page.click(S4, "td strong");
+  await sleep(2500);
+  text = await page.text();
+  expect(!text.includes("Register contractor") && !text.includes("Change status"), "government view is read-only");
+  await page.shot("15-gov-s4-detail", "S4 detail for government: all five contracts, read-only");
+  await page.escape();
+
+  console.log("Corporate (NCL)");
+  await page.as("corporate.ncl@coalmine.in", "/gov");
+  await page.click("Contractors", "button[role=tab]");
+  expect((await firstFlagged()) === S4, "S4 first for corporate NCL");
+  await page.shot("16-corporate-contractors", "corporate NCL: its mines only; S4 flagged first");
+}
+
 async function main() {
   mkdirSync(OUT, { recursive: true });
   const exe = BROWSERS.find(existsSync);
@@ -107,91 +307,18 @@ async function main() {
     await page.send("Page.enable");
     await page.send("Runtime.enable");
     await page.send("Log.enable");
+    await page.send("DOM.enable");
     await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
 
-    console.log("Government");
-    await page.goto(`${APP}/login`, 2500);
-    await page.shot("01-login", "login page with the new quick-fill accounts, demo footer and GEM credit");
-    await page.as("gov@dgms.gov.in", "/gov");
-    let text = await page.text();
-    expect(text.includes("83.2") && text.includes("Bhubaneswari Coal Mine"), "national overview shows 83.2 and the demo mines");
-    await page.shot("02-gov-overview", "national overview: average 83.2, 6 / 21 / 47, the five worst mines");
-    await page.click("Priority Queue");
-    await page.shot("03-gov-priority", "inspection priority queue with translated reasons");
-    await page.click("Sensors");
-    await page.shot("04-gov-sensors", "fleet sensor standing against the rules.yaml limits");
-    await page.click("Trends");
-    await page.shot("05-gov-trends", "national breach frequency, 6-hour buckets");
-
-    await page.goto(`${APP}/gov/mines/5`, 4500);
-    text = await page.text();
-    expect(text.includes("45") && text.includes("OD-TLC-05"), "Bhubaneswari scores 45");
-    await page.shot("06-gov-mine-detail", "Bhubaneswari (OD-TLC-05): score 45, arithmetic, alerts");
-    await page.click("Flag for inspection");
-    await sleep(1500);
-    await page.shot("07-gov-directive-raised", "directive raised: toast and the directive on top of the alerts");
-    await page.click("Violations (");
-    await page.shot("08-gov-violations", "violations drawer: all categories, open and resolved");
-    await page.escape();
-    await page.click("Corrective actions (");
-    await page.shot("09-gov-corrective-actions", "corrective actions with overdue flags");
-    await page.escape();
-    await page.click("Incidents (");
-    await page.click("Dangerous occurrence", "td strong");
-    await page.shot("10-gov-incident-detail", "incident detail: 48-hour check citing RPT-05, linked strata violation");
-    await page.escape();
-    await page.escape();
-    await page.click("Audit trail (");
-    await page.shot("11-gov-audit-trail", "audit trail of the mine (hash-chained)");
-    await page.escape();
-    await page.click("Sensor trends");
-    await page.shot("12-gov-sensor-trends", "sensor trend drawer with legal limit lines");
-    await page.escape();
-
-    console.log("Mine head (Bhubaneswari)");
-    await page.as("head.od-tlc-05@coalmine.in", "/mine");
-    await page.shot("13-head-overview", "mine head overview: own mine only, open directive from DGMS");
-    await page.click("Resolve with proof");
-    await page.type("textarea", "Bench 3 re-bolted and examined by the overman; shift briefed on PPE.");
-    await sleep(300);
-    await page.shot("14-head-resolve-directive", "resolving the directive with proof");
-    await page.click("Submit resolution");
-    await sleep(1500);
-    await page.shot("15-head-directive-resolved", "directive resolved; visible to DGMS with the proof");
-    await page.click("Violations (");
-    await page.click("No helmet", "td strong");
-    await page.click("Record corrective action");
-    await page.type("textarea", "Issue helmets at the bench entry and add a PPE check to the shift start.");
-    await sleep(300);
-    await page.shot("16-head-record-action", "recording a corrective action for a PPE violation");
-    await page.click("Save action");
-    await page.escape();
-    await page.escape();
-    await page.click("Corrective actions (");
-    await page.click("Issue helmets at the bench entry", "td");
-    await page.click("Resolve with proof");
-    await page.type("textarea", "Helmets issued; PPE check added to the shift-start briefing.");
-    await page.click("Submit");
-    await page.escape();
-    await page.escape();
-    await sleep(2500);
-    text = await page.text();
-    expect(text.includes("50") && text.includes("Medium risk"), "score rose from 45 to 50, band medium");
-    await page.shot("17-head-score-recovered", "action closed with proof: violation resolved, 45 -> 50, High -> Medium");
-    await page.click("Sensors");
-    await page.shot("18-head-sensors", "own-mine sensors: dust as an 8-hour average (HLT-04), wet bulb (HLT-05)");
-    await page.click("Trends");
-    await page.shot("19-head-trends", "own-mine breach frequency");
-
-    console.log("Corporate (SECL)");
-    await page.as("corporate.secl@coalmine.in", "/gov");
-    text = await page.text();
-    expect(text.includes("SECL"), "corporate sees SECL scope");
-    await page.shot("20-corporate-overview", "corporate: only SECL's 17 mines, same screens");
-    await page.goto(`${APP}/gov/mines/5`, 4000);
-    text = await page.text();
-    expect(text.includes("Not available"), "another company's mine is 404");
-    await page.shot("21-corporate-out-of-scope", "another company's mine answers 404, shown as not available");
+    try {
+      await (PHASE === "phase3" ? phase3 : phase2)(page);
+    } catch (e) {
+      // Keep what the page showed when a check failed, for diagnosis.
+      const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));
+      if (data) writeFileSync(join(OUT, "failure.png"), Buffer.from(data, "base64"));
+      writeFileSync(join(OUT, "failure.txt"), await page.text().catch(() => ""));
+      throw e;
+    }
 
     ws.close();
   } finally {

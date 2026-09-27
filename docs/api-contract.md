@@ -54,7 +54,18 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 | POST | `/alerts/{id}/reopen` | `directive.reopen` | `{reason}` - directives only |
 | GET/POST | `/incidents`, `/incidents/{id}` | `incident.view` / `.create` | `?late=1`; each with `reporting_check` (48 h, obligation code) |
 | PATCH | `/incidents/{id}/violation` | `incident.linkViolation` | `{related_violation_id: id|null}` (same mine) |
-| GET | `/audit?mine_id=&entity=&action=` | `audit.view` | scoped audit trail (hash-chained) |
+| GET | `/audit?mine_id=&entity=&action=&source=` | `audit.view` | scoped audit trail (hash-chained); `source` = `app`, `seed` or `seed_history` (the seeded records' own history) |
+| GET | `/contractors?mine_id=&band=&status=` | `contractor.view` | contractors of the mines in scope, worst first, each with `compliance` (score, band, reasons, penalties) |
+| GET | `/contractors/summary?state=` | `contractor.summary` | per mine: contractors, compliance %, flagged, blacklisted; flagged contractors worst first |
+| GET | `/contractors/{id}` | `contractor.view` | detail: contracts, workers, documents, violations, alerts, status history (all in scope) |
+| POST | `/contractors` | `contractor.manage` | register with its first contract at the own mine: `{name, registration_no, ..., contract: {...}}` |
+| PATCH | `/contractors/{id}` | `contractor.manage` | edit registration details |
+| POST | `/contractors/{id}/status` | `contractor.manage` | `{status, reason}` - active / suspended / blacklisted (422 `INVALID_TRANSITION`) |
+| GET/POST | `/contracts`, PATCH/DELETE `/contracts/{id}` | `contractor.view` / `.manage` | contracts at the own mine; delete only without workers or documents (422 `IN_USE`) |
+| POST | `/contracts/{id}/workers`, PATCH/DELETE `/contract-workers/{id}` | `contractor.manage` | contract workers (VT and medical dates) |
+| POST | `/contracts/{id}/documents` | `contractor.manage` | multipart `doc_type`, `period` (YYYY-MM), `file`; 422 `ALREADY_UPLOADED` per contract, type and month |
+| POST | `/contractor-docs/{id}/verify`, DELETE `/contractor-docs/{id}` | `contractor.manage` | verify or remove a document |
+| PATCH | `/violations/{id}/contractor` | `violation.linkContractor` | `{contractor_id: id|null}`; the contractor must hold a contract at the violation's mine |
 | POST | `/vision/analyze` | `vision.analyze` | multipart `mine_id`, `file` → detections, violations, score before/after |
 | GET | `/files/{id}/content?expires=&signature=` | signed link | stored image (annotated frame, proof) |
 | GET | `/admin/baseline-check` | `admin.baselineCheck` | live scores vs seeded baseline |
@@ -66,6 +77,20 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 rounded to 0.1. Bands: low >= 80, medium >= 50, else high. Breaches count only while younger than
 `BREACH_WINDOW_HOURS` (12 s in the demo). Weights and window are env-driven (`api/.env`). Every
 score is a demo value: `compliance.is_demo_value` is always `true`.
+
+## Contractor score (Phase 3)
+
+`100 - penalties`, clamped 0..100, recomputed on every read (`api/services/ContractorService.php`):
+violations per active worker x 40 (max 40; all violations linked to the contractor over its
+active workers), 2 per missing monthly document (wage register, EPF challan, ESI challan, due by
+day 10 of the next month; max 30), 30 for an expired / 10 for an expiring licence (30 days),
+up to 15 for the share of active workers with an expired VT certificate or an overdue medical,
+5 per contract over its worker limit. Band: compliant >= 80, watch >= 50, flagged below or when
+suspended / blacklisted. Legal bases cited from `data/schema/rules.yaml`: LAB-02 (OSH Code 2020
+s.48(3)), SAF-04 (OSH (Central) Rules 2026 r.159), HLT-01 (r.109(1)). The weights and the due day
+are product settings. Contractor alerts (`CONTRACTOR_LICENCE_EXPIRING`, `WORKER_VT_EXPIRED`,
+`WORKER_MEDICAL_EXPIRED`, `CONTRACTOR_DOC_MISSING`, `CONTRACT_WORKER_CAP_EXCEEDED`) are raised by
+`yii contractor/check` (idempotent; run by `run_all.bat`).
 
 ## Inspection ranking
 

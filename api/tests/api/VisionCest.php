@@ -44,8 +44,19 @@ class VisionCest
         $I->sendPost('/v1/vision/analyze', ['mine_id' => 1], ['file' => ['name' => 'ppe_sample.jpg', 'type' => 'image/jpeg',
             'error' => UPLOAD_ERR_OK, 'size' => filesize(self::SAMPLE), 'tmp_name' => self::SAMPLE]]);
         $I->seeResponseCodeIs(201);
-        $I->seeResponseContainsJson(['score_before' => ['score' => 100], 'score_after' => ['score' => 90], 'score_delta' => -10,
-            'alerts_raised' => 2, 'resolution' => ['code' => 'VIOLATIONS_DETECTED']]);
+        if (json_decode($up, true)['backend'] === 'fixture') {
+            // The fixture's sidecar holds two inferred violations: 100 -> 90.
+            $I->seeResponseContainsJson(['backend' => 'fixture', 'score_before' => ['score' => 100], 'score_after' => ['score' => 90],
+                'score_delta' => -10, 'alerts_raised' => 2, 'resolution' => ['code' => 'VIOLATIONS_DETECTED']]);
+        } else {
+            // A real model: the numbers depend on the weights, the contract does not.
+            $before = $I->grabDataFromResponseByJsonPath('$.score_before.score')[0];
+            $after = $I->grabDataFromResponseByJsonPath('$.score_after.score')[0];
+            $violations = count($I->grabDataFromResponseByJsonPath('$.violations[*]'));
+            $I->assertEquals($before - 5 * $violations, $after);
+            $I->assertSame($violations, $I->grabDataFromResponseByJsonPath('$.alerts_raised')[0]);
+            $I->assertContains($I->grabDataFromResponseByJsonPath('$.resolution.code')[0], ['VIOLATIONS_DETECTED', 'CLEAN_FRAME', 'NO_WORKERS_SEEN']);
+        }
         $url = $I->grabDataFromResponseByJsonPath('$.annotated_url')[0];
         $I->assertStringStartsWith('/v1/files/', $url);
 

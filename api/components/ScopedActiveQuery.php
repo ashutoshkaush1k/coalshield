@@ -34,6 +34,25 @@ class ScopedActiveQuery extends ActiveQuery
         /** @var class-string<ScopedActiveRecord> $modelClass */
         $modelClass = $this->modelClass;
         $path = $modelClass::scopePath();
+        if ($user->role === User::ROLE_GOVERNMENT || $user->role === User::ROLE_INSPECTOR) {
+            return $this;
+        }
+        if (str_starts_with($path, 'via:')) {
+            // "via:table.key" - a record without a mine of its own (a contractor) is in scope when a
+            // row of `table` in scope points at it: id IN (SELECT key FROM table WHERE mine_id ...).
+            [$table, $key] = explode('.', substr($path, 4), 2);
+            $mines = match ($user->role) {
+                User::ROLE_CORPORATE => $user->subsidiary_id === null ? null
+                    : (new \yii\db\Query())->select('id')->from('{{%mine}}')->where(['subsidiary_id' => $user->subsidiary_id]),
+                User::ROLE_MINE_HEAD => $user->mine_id === null ? null : [$user->mine_id],
+                default => null,
+            };
+            if ($mines === null) {
+                return $this->andWhere(new Expression('FALSE'));
+            }
+            return $this->andWhere(['in', $modelClass::tableName() . '.id',
+                (new \yii\db\Query())->select($key)->from("{{%$table}}")->where(['mine_id' => $mines])]);
+        }
         if (str_contains($path, '.')) {
             [$relation, $column] = explode('.', $path, 2);
             $this->joinWith($relation, false);

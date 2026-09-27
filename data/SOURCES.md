@@ -313,7 +313,7 @@ Skipped as the brief directs: on both coalindiatenders.nic.in and eprocure.gov.i
 - **Publisher:** Roboflow Universe user "sdp-lfigk", mirrored in GitHub repo vyasdeepti/PPE-Object-Detection-using-YOLO11
 - **Landing page:** https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11
 - **Saved to:** `data/raw/ppe/`
-- **Purpose:** Evaluation images for the existing YOLO PPE model.
+- **Purpose:** Training and held-out evaluation data for the PPE model (scripts/build_ppe_model.py, from 2026-09-27): the 213-image test split is used only for docs/AI_EVALUATION.md. The trained weights (backend/ml/weights/ppe.pt, gitignored) start from Ultralytics YOLO11n COCO weights (yolo11n.pt, Ultralytics GitHub release assets, AGPL-3.0; Ultralytics states that models trained with its code are AGPL-3.0 too - see docs/AI_EVALUATION.md). No openly licensed pretrained PPE model with a traceable training-data licence was found.
 - **Access:** Automatic (optional)
 - **Licence:** CC BY 4.0 (stated in the dataset's own README.dataset.txt and data.yaml, Roboflow project ppe-detection-ozhfb v14) (https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11/blob/98085c8a901121d5ec0bf1194f7319a9b792b9cb/dataset/README.dataset.txt)
 - **Redistribution:** allowed with attribution; kept out of git (size)

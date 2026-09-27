@@ -552,3 +552,14 @@ body { overflow-x: hidden; }
 .demo-attribution { display: block; margin-top: 2px; opacity: 0.85; }
 .change-list { margin: var(--space-2) 0 0; padding-left: var(--space-5); font-size: var(--text-sm, 13px); }
 .change-list li { margin: 2px 0; word-break: break-word; }
+
+/* Contractors (Phase 3) */
+.contractor-table tr.is-flagged td:first-child, tr.is-flagged td:first-child { box-shadow: inset 3px 0 0 var(--risk-high-dot); }
+tr.is-flagged { background: var(--risk-high-bg); }
+.inline-tabs { border-bottom: 1px solid var(--line); margin-bottom: var(--space-2); flex-wrap: wrap; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-3); }
+.small-btn { padding: 2px 10px; font-size: var(--text-xs); }
+.flagged-list { margin: var(--space-4) 0 0; padding-left: var(--space-5); }
+.flagged-list li { margin: var(--space-2) 0; }
+
+.overlay-body td.mono { white-space: nowrap; }

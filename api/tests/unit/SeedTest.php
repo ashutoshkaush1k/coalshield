@@ -122,6 +122,33 @@ class SeedTest extends Unit
         $this->assertSame($open, array_sum($values['baseline_open_violations']));
     }
 
+    public function testSeededHistoryIsInTheChainWithOriginalTimestampsAndActors(): void
+    {
+        $db = Yii::$app->db;
+        $q = fn(string $sql) => (int) $db->createCommand($sql)->queryScalar();
+        $expected = $q('SELECT count(*) FROM violation') + $q('SELECT count(*) FROM violation WHERE resolved')
+            + $q('SELECT count(*) FROM corrective_action') + $q("SELECT count(*) FROM corrective_action WHERE status = 'resolved'")
+            + $q('SELECT count(*) FROM incident') + $q('SELECT count(*) FROM inspection WHERE visited_at IS NOT NULL')
+            + $q('SELECT count(*) FROM inspection WHERE closed_at IS NOT NULL') + $q('SELECT count(*) FROM alert')
+            + $q('SELECT count(*) FROM contract') + $q('SELECT count(*) FROM contractor_compliance_doc');
+        $this->assertSame($expected, $q("SELECT count(*) FROM audit_log WHERE source = 'seed_history'"));
+
+        // Original timestamp and actor: an incident's report, an inspection visit by its inspector.
+        $incident = $db->createCommand('SELECT id, reported_at FROM incident ORDER BY id LIMIT 1')->queryOne();
+        $entry = $db->createCommand("SELECT created_at, source FROM audit_log WHERE entity = 'incident' AND entity_id = :id AND action = 'reported'",
+            [':id' => $incident['id']])->queryOne();
+        $this->assertSame(strtotime($incident['reported_at']), strtotime($entry['created_at']));
+        $this->assertSame('seed_history', $entry['source']);
+        $visit = $db->createCommand("SELECT s.inspector_id, a.user_id FROM inspection s JOIN audit_log a
+            ON a.entity = 'inspection' AND a.entity_id = s.id AND a.action = 'visited' ORDER BY s.id LIMIT 1")->queryOne();
+        $this->assertSame((int) $visit['inspector_id'], (int) $visit['user_id']);
+
+        // History is in time order along the chain, and the chain verifies.
+        $this->assertSame(0, $q("SELECT count(*) FROM (SELECT created_at < lag(created_at) OVER (ORDER BY id) AS back
+            FROM audit_log WHERE source = 'seed_history') t WHERE back"));
+        $this->assertSame([], \app\components\AuditChain::verify());
+    }
+
     public function testSensorReadingsLandInMonthlyPartitions(): void
     {
         $inDefault = (int) Yii::$app->db->createCommand('SELECT count(*) FROM sensor_reading_default')->queryScalar();

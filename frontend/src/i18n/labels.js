@@ -49,6 +49,7 @@ export function alertSource(alert) {
     WORKER_VT_EXPIRED: "contractor",
     WORKER_MEDICAL_EXPIRED: "contractor",
     CONTRACTOR_DOC_MISSING: "contractor",
+    CONTRACT_WORKER_CAP_EXCEEDED: "contractor",
     GRIEVANCE_SLA_BREACHED: "grievance",
     DANGEROUS_OCCURRENCE_REPORTED: "incident",
     DETAIL_REQUEST_OVERDUE: "production",

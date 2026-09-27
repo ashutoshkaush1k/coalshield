@@ -36,23 +36,28 @@ $permissions = [
     'incident.linkViolation' => 'Link an incident to a violation',
     'vision.analyze' => 'Run PPE detection on an image for a mine in scope',
     'admin.baselineCheck' => 'Compare live scores with the seeded baseline (simulator pre-flight)',
+    // Phase 3
+    'contractor.view' => 'Contractors working at the mines in scope, with their compliance',
+    'contractor.summary' => 'Per-mine contractor summary (multi-mine roles, read-only)',
+    'contractor.manage' => 'Register contractors, manage contracts, workers and documents at the own mine',
+    'violation.linkContractor' => 'Link a violation to the contractor responsible',
 ];
 
 $read = ['user.viewOwn', 'user.updateOwnLanguage', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
     'correctiveAction.view', 'inspection.view', 'alert.view', 'alert.acknowledge', 'audit.view', 'compliance.view',
-    'incident.view'];
+    'incident.view', 'contractor.view'];
 
 return [
     'permissions' => $permissions,
     'roles' => [
         'government' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage',
             'directive.create', 'directive.reopen', 'incident.create', 'incident.linkViolation', 'vision.analyze',
-            'admin.baselineCheck']),
+            'admin.baselineCheck', 'contractor.summary']),
         // Corporate management: every mine of its company, read-only plus the ranking.
-        'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue']),
+        'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'contractor.summary']),
         'mine_head' => array_merge($read, ['correctiveAction.create', 'correctiveAction.resolve', 'alert.resolve',
-            'incident.create', 'incident.linkViolation', 'vision.analyze']),
+            'incident.create', 'incident.linkViolation', 'vision.analyze', 'contractor.manage', 'violation.linkContractor']),
         // Scoped like government for reading; carries out inspections.
-        'inspector' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage']),
+        'inspector' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage', 'contractor.summary']),
     ],
 ];

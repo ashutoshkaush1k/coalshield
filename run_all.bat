@@ -94,6 +94,9 @@ if errorlevel 1 goto :dbfail
 if errorlevel 1 goto :dbfail
 if not exist "%ROOT%scripts\.simulator.key" "%PHP%" "%ROOT%api\yii" api-key/issue simulator --out="%ROOT%scripts\.simulator.key" >nul
 echo  [ok] Database migrated and seeded
+REM Contractor alerts due today (licence, training, medicals, documents, worker limit) - idempotent.
+"%PHP%" "%ROOT%api\yii" contractor/check >nul
+echo  [ok] Contractor alerts checked
 
 REM --- port checks -------------------------------------------------------------
 REM netstat prints the state after the address, so the port comes first.
@@ -106,9 +109,20 @@ REM --- launch -----------------------------------------------------------------
 echo  Starting API       - window SIH-API, port 8080...
 start "SIH-API" /d "%ROOT%api" cmd /k "serve.bat"
 
-if exist "%ROOT%backend\.venv\Scripts\python.exe" goto :startai
+if exist "%ROOT%backend\.venv\Scripts\python.exe" goto :checkweights
 echo  [!] backend\.venv not found - PPE vision is off; uploads will answer 503.
 goto :startfrontend
+:checkweights
+if exist "%ROOT%backend\ml\weights\ppe.pt" goto :startai
+echo.
+echo  [!] ================================================================
+echo  [!]  PPE model weights missing: backend\ml\weights\ppe.pt
+echo  [!]  PPE detection falls back to the test fixture - real photos
+echo  [!]  will show no detections. Rebuild the weights, about 25 min:
+echo  [!]    backend\.venv\Scripts\python.exe scripts\build_ppe_model.py
+echo  [!]  See docs\AI_EVALUATION.md.
+echo  [!] ================================================================
+echo.
 :startai
 echo  Starting AI service - window SIH-AI, port 8001...
 start "SIH-AI" /d "%ROOT%" cmd /k "ai-service\run_ai_service.bat"

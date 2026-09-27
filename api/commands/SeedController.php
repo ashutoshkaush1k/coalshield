@@ -106,7 +106,8 @@ class SeedController extends Controller
                 'generator_seed' => $manifest['seed'] ?? null,
                 'tables' => $loaded,
                 'baseline_open_violations' => (object) $baseline,
-            ], $db);
+            ], $db, null, 'seed');
+            $history = $this->backfillHistory($db, array_keys($loaded));
             $transaction->commit();
         } catch (\Throwable $e) {
             $transaction->rollBack();
@@ -114,9 +115,106 @@ class SeedController extends Controller
             return ExitCode::DATAERR;
         }
 
-        $this->stdout(sprintf("Seeded preset '%s' (%d tables, %d role assignments) in %.1fs.\n",
-            $preset, count($loaded), $assigned, microtime(true) - $started), Console::FG_GREEN);
+        $this->stdout(sprintf("Seeded preset '%s' (%d tables, %d role assignments, %d history entries in the audit chain) in %.1fs.\n",
+            $preset, count($loaded), $assigned, $history, microtime(true) - $started), Console::FG_GREEN);
         return ExitCode::OK;
+    }
+
+    /**
+     * The seeded records' own history, written into the audit chain with source = seed_history,
+     * their original timestamps and actors, so a mine's audit trail reads like the months the data
+     * covers rather than starting empty. One INSERT ... SELECT ordered by time: every row still
+     * passes the audit_log_chain trigger (row triggers see the rows inserted before them in the
+     * same statement), so the chain is built by the same hash function as every other entry.
+     *
+     * Events (only where the data holds a timestamp; nothing is invented):
+     *   violation      recorded (detected_at; inspector for inspection findings), resolved
+     *                  (resolved_at; the mine head who closed its corrective action)
+     *   corrective_action  recorded (created_at, created_by), resolved (resolved_at, created_by)
+     *   incident       reported (reported_at)
+     *   inspection     visited (visited_at, inspector), closed (closed_at, inspector)
+     *   alert          raised (created_at). Acknowledgements carry no time in the data.
+     *   contract       started (start_date)
+     *   contractor_compliance_doc  uploaded (the file's created_at and uploaded_by)
+     * Directives: the seeded alerts contain none (government directives only arise in the app).
+     *
+     * @param string[] $loaded tables loaded by this seed
+     */
+    private function backfillHistory(Connection $db, array $loaded): int
+    {
+        $has = fn(string ...$tables) => !array_diff($tables, $loaded);
+        $parts = [];
+        if ($has('violation', 'corrective_action')) {
+            $parts[] = "SELECT 'violation' AS entity, v.id AS entity_id, 'recorded' AS action, NULL::jsonb AS old_values,
+                    jsonb_build_object('violation_type', v.violation_type, 'category', v.category, 'detected_by', v.source,
+                                       'confidence', v.confidence, 'inspection_id', v.inspection_id) AS new_values,
+                    i.inspector_id AS user_id, v.detected_at AS at, v.mine_id, 1 AS ord
+               FROM violation v LEFT JOIN inspection i ON i.id = v.inspection_id";
+            $parts[] = "SELECT 'violation', v.id, 'resolved', jsonb_build_object('resolved', false), jsonb_build_object('resolved', true),
+                    (SELECT ca.created_by FROM corrective_action ca WHERE ca.violation_id = v.id AND ca.status = 'resolved'
+                      ORDER BY ca.resolved_at LIMIT 1),
+                    v.resolved_at, v.mine_id, 4
+               FROM violation v WHERE v.resolved";
+            $parts[] = "SELECT 'corrective_action', ca.id, 'recorded', NULL::jsonb,
+                    jsonb_build_object('violation_id', ca.violation_id, 'description', ca.description,
+                                       'due_at', to_char(ca.due_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'), 'status', 'open'),
+                    ca.created_by, ca.created_at, ca.mine_id, 2
+               FROM corrective_action ca";
+            $parts[] = "SELECT 'corrective_action', ca.id, 'resolved', jsonb_build_object('status', 'open'),
+                    jsonb_build_object('status', 'resolved', 'proof_image_path', ca.proof_image_path),
+                    ca.created_by, ca.resolved_at, ca.mine_id, 3
+               FROM corrective_action ca WHERE ca.status = 'resolved'";
+        }
+        if ($has('incident')) {
+            $parts[] = "SELECT 'incident', n.id, 'reported', NULL::jsonb,
+                    jsonb_build_object('type', n.type, 'severity', n.severity, 'persons_affected', n.persons_affected,
+                                       'description_code', n.description_code, 'obligation_code', n.obligation_code,
+                                       'reported_within_48h', n.reported_within_48h, 'related_violation_id', n.related_violation_id,
+                                       'occurred_at', to_char(n.occurred_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"')),
+                    NULL::integer, n.reported_at, n.mine_id, 5
+               FROM incident n";
+        }
+        if ($has('inspection')) {
+            $parts[] = "SELECT 'inspection', s.id, 'visited', jsonb_build_object('status', 'scheduled'),
+                    jsonb_build_object('status', 'visited', 'inspection_type', s.inspection_type, 'scheduled_for', s.scheduled_for),
+                    s.inspector_id, s.visited_at, s.mine_id, 0
+               FROM inspection s WHERE s.visited_at IS NOT NULL";
+            $parts[] = "SELECT 'inspection', s.id, 'closed', jsonb_build_object('status', 'visited'),
+                    jsonb_build_object('status', 'closed', 'findings_count', s.findings_count, 'is_locked', s.is_locked),
+                    s.inspector_id, s.closed_at, s.mine_id, 6
+               FROM inspection s WHERE s.closed_at IS NOT NULL";
+        }
+        if ($has('contract', 'contractor')) {
+            $parts[] = "SELECT 'contract', c.id, 'started', NULL::jsonb,
+                    jsonb_build_object('contractor_id', c.contractor_id, 'work_type', c.work_type, 'work_order_no', c.work_order_no,
+                                       'max_workers', c.max_workers, 'end_date', c.end_date),
+                    NULL::integer, c.start_date::timestamptz, c.mine_id, 0
+               FROM contract c";
+        }
+        if ($has('contractor_compliance_doc', 'file', 'contract')) {
+            $parts[] = "SELECT 'contractor_compliance_doc', d.id, 'uploaded', NULL::jsonb,
+                    jsonb_build_object('contract_id', d.contract_id, 'doc_type', d.doc_type, 'period', d.period,
+                                       'file_id', d.file_id, 'verified', d.verified),
+                    f.uploaded_by, f.created_at, c.mine_id, 2
+               FROM contractor_compliance_doc d JOIN file f ON f.id = d.file_id JOIN contract c ON c.id = d.contract_id";
+        }
+        if ($has('alert')) {
+            $parts[] = "SELECT 'alert', a.id, 'raised', NULL::jsonb,
+                    jsonb_build_object('code', a.code, 'params', a.params, 'severity', a.severity, 'entity_type', a.entity_type,
+                                       'entity_id', a.entity_id),
+                    NULL::integer, a.created_at, a.mine_id, 7
+               FROM alert a";
+        }
+        if ($parts === []) {
+            return 0;
+        }
+        return $db->createCommand(
+            "INSERT INTO audit_log (entity, entity_id, action, old_values, new_values, user_id, ip, created_at, mine_id, source)
+             SELECT e.entity, e.entity_id, e.action, e.old_values, e.new_values, e.user_id, NULL, e.at, e.mine_id, 'seed_history'
+               FROM (" . implode("\n UNION ALL \n", $parts) . ") e
+              WHERE e.at IS NOT NULL
+              ORDER BY e.at, e.ord, e.entity_id"
+        )->execute();
     }
 
     /** yii seed/status - exit 0 and print the preset when the database has been seeded, else 1. */

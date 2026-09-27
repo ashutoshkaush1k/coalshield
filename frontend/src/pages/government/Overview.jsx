@@ -12,12 +12,15 @@ import { scopeWhere } from "../../i18n/labels";
 import { PriorityPanel } from "./panels/PriorityPanel";
 import { SensorRiskPanel } from "./panels/SensorRiskPanel";
 import { TrendsPanel } from "./panels/TrendsPanel";
+import { ContractorsPanel } from "./panels/ContractorsPanel";
+import { t } from "../../i18n/t";
 
 const TABS = [
   { id: "overview", label: "Overview" },
   { id: "priority", label: "Priority Queue" },
   { id: "sensors", label: "Sensors" },
   { id: "trends", label: "Trends" },
+  { id: "contractors", label: t("contractor.tabLabel") },
 ];
 
 export default function GovernmentDashboard({ initialTab = "overview" }) {
@@ -49,7 +52,7 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
         <ErrorNotice error={error} />
 
         <TabPanel id="overview" active={tab}>
-          <OverviewPanel data={data} state={state} onStateChange={setState} />
+          <OverviewPanel data={data} state={state} onStateChange={setState} onOpenContractors={() => setTab("contractors")} />
         </TabPanel>
 
         <TabPanel id="priority" active={tab}>
@@ -58,6 +61,10 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
 
         <TabPanel id="sensors" active={tab}>
           <SensorRiskPanel state={state} states={data?.states} onStateChange={setState} />
+        </TabPanel>
+
+        <TabPanel id="contractors" active={tab}>
+          <ContractorsPanel state={state} states={data?.states} onStateChange={setState} />
         </TabPanel>
 
         <TabPanel id="trends" active={tab}>

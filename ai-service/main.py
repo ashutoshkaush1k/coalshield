@@ -7,8 +7,9 @@ GET  /health       liveness.
 It never touches users, permissions or the database: the Yii2 API sends the bytes, then stores
 violations, alerts and scores itself. The detection code is imported in place from
 backend/app/services/vision (PLAN Q13); Phase 7 moves it here and adds the other endpoints.
-Without YOLO weights the backend's FixtureDetector answers from sidecar files next to the sample
-images, so the demo path works on a machine with no GPU and no weights.
+With backend/ml/weights/ppe.pt (built by scripts/build_ppe_model.py, docs/AI_EVALUATION.md) the
+real YOLO model runs. Without it - or with PPE_DETECTOR=fixture - the FixtureDetector answers from
+sidecar files next to the sample images, so tests and a weightless machine still work.
 
 Run:  backend\\.venv\\Scripts\\python -m uvicorn main:app --app-dir ai-service --port 8001
 """
@@ -16,6 +17,7 @@ Run:  backend\\.venv\\Scripts\\python -m uvicorn main:app --app-dir ai-service -
 from __future__ import annotations
 
 import base64
+import os
 import re
 import sys
 import tempfile
@@ -29,7 +31,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 from app.services.compliance.resolution import EVIDENCE_LABELS  # noqa: E402
 from app.services.vision.annotate import annotate_image  # noqa: E402
-from app.services.vision.detector import get_detector  # noqa: E402
+from app.services.vision.detector import FixtureDetector, get_detector  # noqa: E402
 from app.services.vision.ppe_rules import (  # noqa: E402
     PpePolicy,
     model_names_have_negatives,
@@ -41,12 +43,25 @@ VIDEO_SUFFIXES = {".mp4", ".avi", ".mov", ".mkv"}
 MAX_BYTES = 50 * 1024 * 1024
 _UNSAFE = re.compile(r"[^A-Za-z0-9._-]+")
 
-app = FastAPI(title="CoalShield ai-service", version="0.2.0")
+app = FastAPI(title="CoalShield ai-service", version="0.3.0")
+
+
+def detector():
+    """YOLO when backend/ml/weights/ppe.pt exists (scripts/build_ppe_model.py), else the fixture.
+
+    PPE_DETECTOR=fixture forces the fixture backend - the API tests use it for exact numbers.
+    """
+    if os.environ.get("PPE_DETECTOR", "").lower() == "fixture":
+        return _FIXTURE
+    return get_detector()
+
+
+_FIXTURE = FixtureDetector()
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "backend": get_detector().backend}
+    return {"status": "ok", "backend": detector().backend}
 
 
 def _evidence(detections, candidates) -> dict:
@@ -70,9 +85,9 @@ async def vision_ppe(file: UploadFile = File(...), filename: str = Form(default=
     if not data or len(data) > MAX_BYTES:
         raise HTTPException(422, {"code": "FILE_EMPTY" if not data else "FILE_TOO_LARGE", "params": {}})
 
-    detector = get_detector()
+    model = detector()
     policy = PpePolicy.from_settings()
-    infer = not model_names_have_negatives(detector.class_names)
+    infer = not model_names_have_negatives(model.class_names)
 
     with tempfile.TemporaryDirectory() as tmp:
         # "<stem>_<8 hex><ext>": the fixture detector maps this back to the sample's sidecar.
@@ -85,14 +100,14 @@ async def vision_ppe(file: UploadFile = File(...), filename: str = Form(default=
 
             detections, candidates, frames = [], [], 0
             for index, frame in sample_frames(path, 15, 20):
-                found = detector.detect(frame, frame_index=index)
+                found = model.detect(frame, frame_index=index)
                 detections.extend(found)
                 candidates.extend(violations_from_detections(found, policy=policy, infer=infer))
                 frames += 1
             candidates = deduplicate(candidates)
             annotated = None
         else:
-            detections = detector.detect(path)
+            detections = model.detect(path)
             candidates = violations_from_detections(detections, policy=policy, infer=infer)
             frames = 1
             annotated_path = annotate_image(path, detections, candidates)
@@ -101,7 +116,7 @@ async def vision_ppe(file: UploadFile = File(...), filename: str = Form(default=
                 annotated_path.unlink(missing_ok=True)
 
     return {
-        "backend": detector.backend,
+        "backend": model.backend,
         "frames_processed": frames,
         "detections": [
             {"raw_label": d.raw_label, "label": d.label, "confidence": round(d.confidence, 3),

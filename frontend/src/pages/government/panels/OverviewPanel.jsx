@@ -6,6 +6,7 @@ import { breachesLabel } from "../../../utils/format";
 import { t } from "../../../i18n/t";
 import { scopeWhere } from "../../../i18n/labels";
 import { useAuth } from "../../../hooks/useAuth";
+import { ContractorSummaryCard } from "./ContractorsPanel";
 
 function Tally({ label, value, tone }) {
   return (
@@ -16,7 +17,7 @@ function Tally({ label, value, tone }) {
   );
 }
 
-export function OverviewPanel({ data, state, onStateChange }) {
+export function OverviewPanel({ data, state, onStateChange, onOpenContractors }) {
   const stats = data?.stats;
   const { user } = useAuth();
   const scope = state ?? t(`scope.${data?.scope_label_code ?? "NATIONAL"}`);
@@ -84,6 +85,7 @@ export function OverviewPanel({ data, state, onStateChange }) {
           <CoreSampleBoard mines={data?.mines} />
         </div>
       </section>
+      <ContractorSummaryCard state={state} onOpen={onOpenContractors} />
     </div>
   );
 }
