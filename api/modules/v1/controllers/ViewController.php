@@ -23,7 +23,7 @@ class ViewController extends ApiController
 {
     protected function verbs(): array
     {
-        return ['overview' => ['GET'], 'mine' => ['GET'], 'production' => ['GET'], 'production-overview' => ['GET']];
+        return ['overview' => ['GET'], 'mine' => ['GET'], 'production' => ['GET'], 'production-overview' => ['GET'], 'grievances' => ['GET']];
     }
 
     public function actionOverview(): array
@@ -90,6 +90,25 @@ class ViewController extends ApiController
         return [
             'summary' => $this->part('v1/production/summary', $query),
             'requests' => $this->part('v1/detail-request/index', []),
+        ];
+    }
+
+    /**
+     * The grievance screen. A mine head: its queue. Multi-mine roles: analytics, the escalated
+     * open queue, and the grievances (newest SLA first). ?state= narrows all parts.
+     */
+    public function actionGrievances(): array
+    {
+        $this->requirePermission('grievance.view');
+        $state = Yii::$app->request->get('state');
+        $query = $state !== null && $state !== '' ? ['state' => $state] : [];
+        if (!Yii::$app->user->can('grievance.stats')) {
+            return ['stats' => null, 'escalated' => null, 'grievances' => $this->part('v1/grievance/index', ['per_page' => 200])];
+        }
+        return [
+            'stats' => $this->part('v1/grievance/stats', $query),
+            'escalated' => $this->part('v1/grievance/index', $query + ['escalated' => 1, 'open' => 1, 'per_page' => 100]),
+            'grievances' => $this->part('v1/grievance/index', $query + ['per_page' => 200]),
         ];
     }
 

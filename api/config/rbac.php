@@ -49,11 +49,15 @@ $permissions = [
     'detailRequest.view' => 'Calls for detailed report on the mines in scope',
     'detailRequest.create' => 'Call for a detailed production report (date range, reason, deadline); accept the answer',
     'detailRequest.respond' => 'Answer a call for a detailed report for the own mine',
+    // Phase 5
+    'grievance.view' => 'Grievances in scope (a mine head never sees sensitive ones - AccessRule)',
+    'grievance.manage' => 'Acknowledge, investigate, resolve, close, reopen and assign grievances in scope',
+    'grievance.stats' => 'Grievance analytics across the mines in scope',
 ];
 
 $read = ['user.viewOwn', 'user.updateOwnLanguage', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
     'correctiveAction.view', 'inspection.view', 'alert.view', 'alert.acknowledge', 'audit.view', 'compliance.view',
-    'incident.view', 'contractor.view', 'detailRequest.view'];
+    'incident.view', 'contractor.view', 'detailRequest.view', 'grievance.view'];
 $productionOversight = ['production.summary', 'production.viewRequested'];
 
 return [
@@ -61,13 +65,14 @@ return [
     'roles' => [
         'government' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage',
             'directive.create', 'directive.reopen', 'incident.create', 'incident.linkViolation', 'vision.analyze',
-            'admin.baselineCheck', 'contractor.summary', ...$productionOversight, 'detailRequest.create']),
+            'admin.baselineCheck', 'contractor.summary', ...$productionOversight, 'detailRequest.create',
+            'grievance.manage', 'grievance.stats']),
         // Corporate management: every mine of its company, read-only plus the ranking.
-        'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'contractor.summary', ...$productionOversight, 'detailRequest.create']),
+        'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'contractor.summary', ...$productionOversight, 'detailRequest.create', 'grievance.stats']),
         'mine_head' => array_merge($read, ['correctiveAction.create', 'correctiveAction.resolve', 'alert.resolve',
             'incident.create', 'incident.linkViolation', 'vision.analyze', 'contractor.manage', 'violation.linkContractor',
-            'production.manage', 'production.viewDetail', 'detailRequest.respond']),
+            'production.manage', 'production.viewDetail', 'detailRequest.respond', 'grievance.manage']),
         // Scoped like government for reading; carries out inspections.
-        'inspector' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage', 'contractor.summary', ...$productionOversight]),
+        'inspector' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage', 'contractor.summary', ...$productionOversight, 'grievance.stats']),
     ],
 ];

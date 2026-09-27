@@ -87,6 +87,14 @@ also makes the fallback server usable:
 | Mine screen | 375 / 405 | 112 / 116 |
 | Side by side, government / mine head | 515 / 616, 516 / 643 | 221 / 232, 223 / 231 |
 
+## After Phase 5 (grievances)
+
+Same method, 2026-09-27: government grievances **44 / 52**, mine head grievances **14 / 15**
+(one request each). The other screens measured 22-56 ms median in the same run (p95 at most 86 ms
+for the government overview). They are a few milliseconds slower than above, partly because a
+mine head's alert and audit queries now also exclude sensitive grievances. Side by side:
+52 / 59 and 42 / 50.
+
 ## In the browser
 
 The Phase 2, 3 and 4 browser checks were rerun with a government overview and a mine-head

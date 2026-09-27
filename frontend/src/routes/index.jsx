@@ -1,4 +1,4 @@
-// Route table: /login, /gov/* for Government, /mine/* for Mine Head.
+// Route table: /login and the public /grievance pages, /gov/* for Government, /mine/* for Mine Head.
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 import { ROLES, homeFor } from "../auth/roles";
@@ -14,6 +14,8 @@ import InspectionPriority from "../pages/government/InspectionPriority";
 import MineDetail from "../pages/government/MineDetail";
 import Overview from "../pages/government/Overview";
 import MineHeadDashboard from "../pages/minehead/Dashboard";
+import RaiseGrievance from "../pages/public/RaiseGrievance";
+import TrackGrievance from "../pages/public/TrackGrievance";
 
 function Home() {
   const { user, loading } = useAuth();
@@ -25,6 +27,9 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      {/* Public, no login (brief Phase 5) */}
+      <Route path="/grievance" element={<RaiseGrievance />} />
+      <Route path="/grievance/track" element={<TrackGrievance />} />
       <Route path="/" element={<Home />} />
 
       <Route

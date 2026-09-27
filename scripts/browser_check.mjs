@@ -1,12 +1,15 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [phase2|phase3|phase4] [outDir] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
+//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5] [outDir] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
 //   --side-tabs  also keep a government overview and a mine-head dashboard polling in two more tabs
 //
 // phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
 // phase3: contractor screens for the S4 mine head, government and corporate (NCL).
 // phase4: production - government, the Gevra mine head and corporate (SECL): numbers, the detail
 //         gate, call for detailed report -> response -> detail view, entry, submit, correction.
+// phase5: grievances - public submission and tracking (no login), the Gevra mine head's queue
+//         (no sensitive case, no identity), government analytics with the S6 cluster, a sensitive
+//         case, corporate (SECL) scope.
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -80,6 +83,14 @@ class Page {
       const proto = el.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
       Object.getOwnPropertyDescriptor(proto, "value").set.call(el, ${JSON.stringify(text)});
       el.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+  }
+  /** Choose an option of a <select> (by value, or by the start of its label) as a user would. */
+  async select(selector, value) {
+    await this.eval(`(() => { const el = document.querySelector(${JSON.stringify(selector)});
+      const opt = [...el.options].find((o) => o.value === ${JSON.stringify(value)}) || [...el.options].find((o) => o.text.startsWith(${JSON.stringify(value)}));
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value").set.call(el, opt.value);
+      el.dispatchEvent(new Event("change", { bubbles: true })); })()`);
+    await sleep(200);
   }
   async text() { return this.eval("document.body.innerText"); }
   /** The page text once `test(text)` holds, polling for up to 20 s (slow API responses); the last text otherwise. */
@@ -378,6 +389,110 @@ async function phase4(page) {
   await page.shot("15-corporate-detail", "corporate: Gevra's detail, opened by the answered (closed) request");
 }
 
+async function phase5(page) {
+  const HEAD = "head.cg-krb-03@coalmine.in";   // Gevra: its seed includes two harassment grievances
+  const COMPLAINANT = "Ramesh Test-Complainant";
+  const tab = (name) => page.click(name, "button[role=tab]");
+  const api = async (email, path) => fetch(`${API}${path}`, { headers: { Authorization: `Bearer ${await login(email)}` } });
+  let text;
+
+  // What the mine head must never see: the sensitive grievances at its mine (read as government).
+  const gevra = (await (await api(HEAD, "/users/me")).json()).mine_id;
+  const sensitive = (await (await api("gov@dgms.gov.in", `/grievances?mine_id=${gevra}&sensitive=1`)).json()).map((g) => g.ticket_no);
+  expect(sensitive.length > 0, "the seed has sensitive grievances at Gevra");
+
+  console.log("Public: raise a grievance without logging in, then track it");
+  await page.goto(`${APP}/login`, 2000);
+  await page.shot("01-login-grievance-links", "login page: raise / track a grievance without an account");
+  await page.click("Raise a grievance", "#grievance-links a");
+  await page.until((t) => t.includes("Choose the mine") && t.includes("Gevra"));
+  await page.select("#gr-mine", "Gevra");
+  await page.select("#gr-type", "contract_worker");
+  await page.select("#gr-language", "hi");
+  await page.type("#gr-name", COMPLAINANT);
+  await page.type("#gr-contact", "9000000042");
+  await page.select("#gr-category", "safety");
+  await page.select("#gr-safety", "ppe");
+  await page.type("#gr-description", "बेंच 4 पर नए लोडरों को पिछले एक सप्ताह से हेलमेट नहीं दिए गए हैं। कृपया जाँच करें।");
+  await page.shot("02-public-form", "public form: mine, who you are, category (safety: which kind), language, text as written; honeypot hidden");
+  await page.click("Submit grievance", "#grievance-form button[type=submit]");
+  text = await page.until((t) => t.includes("Grievance received"));
+  const ticket = await page.eval(`document.querySelector("#grievance-ticket")?.textContent`);
+  expect(/^GRV-\d{4}-\d{6}$/.test(ticket ?? ""), "a GRV-YYYY-NNNNNN ticket");
+  await page.shot("03-public-ticket", `ticket ${ticket}, with the response due time`);
+  await page.click("Track this grievance", "#grievance-done a");
+  text = await page.until((t) => t.includes("What happened") && t.includes(ticket));
+  expect(!text.includes(COMPLAINANT), "tracking shows no identity");
+  await page.shot("04-public-track", "tracking: status and the public timeline only - no text, no people");
+
+  console.log("Mine head of Gevra: its queue - never a sensitive grievance, never a name");
+  await page.as(HEAD, "/mine");
+  await tab("Grievances");
+  text = await page.until((t) => t.includes(ticket));
+  for (const t of sensitive) expect(!text.includes(t), `sensitive ${t} is not in the mine head's queue`);
+  await page.shot("05-head-queue", "mine head: own mine's grievances, most urgent first; sensitive ones are routed to the regulator");
+  await page.click(ticket, `tr[data-grievance="${ticket}"] td strong`);
+  text = await page.until((t) => t.includes("Timeline") && t.includes("Identity not shown"));
+  expect(!text.includes(COMPLAINANT) && !text.includes("9000000042"), "the complainant's identity is not shown to the mine head");
+  await page.shot("06-head-detail", "detail: text as written in Hindi (labelled), identity not shown to this role, timeline, actions");
+  await page.click("Start investigation", "#grievance-actions button");
+  await page.until((t) => t.includes("Under investigation"));
+  await page.type("#grievance-note", "Helmets issued to all 12 loaders on bench 4; stock checked with the contractor.");
+  await page.click("Resolve", "#grievance-actions button");
+  await page.until((t) => t.includes("Resolved") && t.includes("Helmets issued"));
+  await page.shot("07-head-resolved", "resolved with a note - the note is what the complainant sees");
+  const direct = await (await api(HEAD, `/grievances?sensitive=1`)).json();
+  expect(Array.isArray(direct) && direct.length === 0, "the API gives the mine head no sensitive grievance either");
+
+  console.log("Public: the outcome");
+  await page.goto(`${APP}/grievance/track?ticket=${ticket}`, 2500);
+  await page.until((t) => t.includes("Outcome"));
+  await page.shot("08-public-track-resolved", "the complainant sees the status and the resolution");
+
+  console.log("Government: analytics, the S6 cluster, the escalated queue, a sensitive case");
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Grievances");
+  text = await page.until((t) => t.includes("SLA-breach clusters") && t.includes("Kulda"));
+  const firstCluster = await page.eval(`document.querySelector("#grievance-clusters .flagged-list li strong")?.textContent`);
+  expect(firstCluster === "Kulda Coal Mine", "S6: Kulda flagged as a breach cluster");
+  expect(await page.eval(`document.querySelectorAll("#grievance-clusters .flagged-list li").length`) === 1, "only one mine flagged");
+  await page.shot("09-gov-analytics", "government: totals, average time to resolution, SLA breaches, the Kulda breach cluster (S6)");
+  await page.scrollTo("By mine");
+  expect(await page.eval(`document.querySelector("#grievance-by-mine tbody tr")?.dataset.mine`) === "OD-SUN-07", "Kulda leads the mine table");
+  expect(await page.eval(`!document.querySelector('#grievance-by-mine tr[data-mine="WB-BAR-08"].is-flagged')`), "N2: Jhanjra not flagged");
+  await page.shot("10-gov-by-category-and-mine", "by category and language; by mine with the cluster flag (Jhanjra's in-SLA burst, N2, is not flagged)");
+  await page.scrollTo("Escalated queue");
+  await page.shot("11-gov-escalated-queue", "escalated and open: SLA breached, level 1 or 2");
+  await page.scrollTo("All grievances");
+  await page.click("Sensitive", "#grievance-filter-sensitive");
+  await sleep(600);
+  await page.shot("12-gov-sensitive", "sensitive grievances (harassment, or about the mine head): visible to the regulator");
+  await page.click(sensitive[0], `tr[data-grievance="${sensitive[0]}"] td strong`);
+  text = await page.until((t) => t.includes("routed to the regulator"));
+  expect(await page.eval(`!!document.querySelector("#grievance-identity") || document.body.innerText.includes("Anonymous")`), "the regulator sees who complained");
+  await page.shot("13-gov-sensitive-detail", `a sensitive case at Gevra (${sensitive[0]}): routed to the regulator; the mine head cannot see it`);
+  await page.escape();
+
+  console.log("Mine head again: the sensitive case does not exist for it");
+  await page.as(HEAD, "/mine");
+  await tab("Grievances");
+  text = await page.until((t) => t.includes(ticket));
+  for (const t of sensitive) expect(!text.includes(t), `${t} still invisible`);
+  const byId = await api(HEAD, `/grievances/${(await (await api("gov@dgms.gov.in", `/grievances?mine_id=${gevra}&sensitive=1`)).json())[0].id}`);
+  expect(byId.status === 404, "by id it is 404 for the mine head");
+  await page.shot("14-head-no-sensitive", `the same mine head: ${sensitive.join(", ")} absent; by id the API answers 404`);
+
+  console.log("Corporate (SECL): its companies' mines only");
+  await page.as("corporate.secl@coalmine.in", "/gov");
+  await tab("Grievances");
+  text = await page.until((t) => t.includes("By mine") && t.includes("Gevra"));
+  const codes = await page.eval(`[...document.querySelectorAll("#grievance-by-mine tbody tr")].map((r) => r.dataset.mine)`);
+  const secl = (await (await api("corporate.secl@coalmine.in", "/mines?per_page=200")).json()).map((m) => m.code);
+  expect(codes.length > 0 && codes.every((c) => secl.includes(c)), "corporate analytics only for SECL mines");
+  expect(!text.includes("Kulda"), "Kulda (MCL) is not in SECL's view");
+  await page.shot("15-corporate-analytics", "corporate SECL: the same analytics for its 17 mines");
+}
+
 /** Two more tabs, a government overview and a mine-head dashboard, polling on their own. */
 async function openSideTabs() {
   const tabs = [];
@@ -435,7 +550,7 @@ async function main() {
     if (side.length) await fetch(`http://127.0.0.1:${PORT}/json/activate/${target.id}`, { method: "PUT" }).catch(() => null);
 
     try {
-      await ({ phase2, phase3, phase4 }[PHASE] ?? phase2)(page);
+      await ({ phase2, phase3, phase4, phase5 }[PHASE] ?? phase2)(page);
     } catch (e) {
       // Keep what the page showed when a check failed, for diagnosis.
       const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));

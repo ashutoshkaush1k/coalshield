@@ -42,6 +42,15 @@ class Alert extends ScopedActiveRecord implements HasStatusTransitions
         return '{{%alert}}';
     }
 
+    /** A mine head never sees the alerts of a sensitive grievance (AccessRule). */
+    public static function restrictFor(User $user, \app\components\ScopedActiveQuery $query): void
+    {
+        if (!\app\components\AccessRule::seesSensitiveGrievances($user)) {
+            $query->andWhere(['not', ['and', ['alert.entity_type' => 'grievance'],
+                ['in', 'alert.entity_id', \app\components\AccessRule::sensitiveGrievanceIds()]]]);
+        }
+    }
+
     public static function statusAttribute(): string
     {
         return 'status';

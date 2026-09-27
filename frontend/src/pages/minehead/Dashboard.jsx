@@ -16,6 +16,7 @@ import { MineOverviewPanel } from "./panels/MineOverviewPanel";
 import { SensorPerformancePanel } from "./panels/SensorPerformancePanel";
 import { ContractorsPanel } from "./panels/ContractorsPanel";
 import { ProductionPanel } from "./panels/ProductionPanel";
+import { GrievancePanel } from "./panels/GrievancePanel";
 import { t } from "../../i18n/t";
 
 const TABS = [
@@ -24,6 +25,7 @@ const TABS = [
   { id: "trends", label: "Trends" },
   { id: "production", label: t("production.tabLabel") },
   { id: "contractors", label: t("contractor.tabLabel") },
+  { id: "grievances", label: t("grievance.tabLabel") },
 ];
 
 export default function MineHeadDashboard() {
@@ -91,6 +93,10 @@ export default function MineHeadDashboard() {
 
         <TabPanel id="contractors" active={tab}>
           <ContractorsPanel mineId={mineId} />
+        </TabPanel>
+
+        <TabPanel id="grievances" active={tab}>
+          <GrievancePanel />
         </TabPanel>
 
         <TabPanel id="trends" active={tab}>

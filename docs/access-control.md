@@ -38,6 +38,12 @@ re-mapping an account takes effect immediately.
    answered (`submitted` or `closed`); otherwise **403 `DETAIL_REQUEST_REQUIRED`**. It applies
    after scoping, so a mine out of scope is still a plain 404. A mine head sees its own mine in
    full (`production.viewDetail`); the summary for multi-mine roles is numbers only.
+   The second is grievance routing (Phase 5). A grievance about harassment, or against the mine
+   head, does not exist for the mine head, even at its own mine. `ScopedActiveRecord::restrictFor`
+   removes it from every scoped query, together with its alert. The audit trail and the open-alert
+   count exclude it too. A complainant's name and contact are serialised only to government and
+   inspector (and corporate, for grievances that are not sensitive); a mine head's payloads do not
+   even carry the keys.
 
 ## The 404 rule (owner decision, 2026-09-27)
 
@@ -66,6 +72,12 @@ permitted → 403; never silently empty.
   while it is unanswered and for any day outside the answered range, 200 after the answer for
   government and for corporate of the same company; another company's mine is 404 before the rule
   applies; the mine head cannot call for reports and government cannot enter production.
+- Grievances (`GrievanceCest.php`): a sensitive grievance at the mine head's own mine is absent
+  from its list, 404 by id and for a transition, and absent from its alerts (list and by id), the
+  open-alert count and the audit trail, while government sees all of it. No grievance payload for
+  a mine head contains a `name` or `contact` key, and none of the mine's complainant names or
+  contacts appears in any response to it (lists, details, the screen view, the audit trail).
+  Corporate sees identities only for grievances that are not sensitive.
 - The view endpoints (`ViewCest.php`): each part of `/v1/views/*` equals its own endpoint for the
   same account, and another mine's view is 404.
 

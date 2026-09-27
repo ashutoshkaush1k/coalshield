@@ -78,6 +78,13 @@ class SeedController extends Controller
         try {
             $present = array_values(array_filter(array_keys(self::LOAD_ORDER), fn($t) => $db->getTableSchema($t, true) !== null));
             $truncate = array_merge($present, ['audit_log', $this->authManager()->assignmentTable]);
+            // Runtime state of the public grievance endpoints: rate-limit windows and ticket
+            // counters (the counter never goes below the highest ticket loaded).
+            foreach (['rate_limit', 'grievance_ticket_counter'] as $runtime) {
+                if ($db->getTableSchema($runtime, true) !== null) {
+                    $truncate[] = $runtime;
+                }
+            }
             $db->createCommand('TRUNCATE ' . implode(', ', array_map([$db, 'quoteTableName'], $truncate)) . ' RESTART IDENTITY CASCADE')->execute();
             $db->createCommand('SET CONSTRAINTS ALL DEFERRED')->execute();
 
@@ -223,6 +230,13 @@ class SeedController extends Controller
                     jsonb_build_object('status', 'submitted', 'response_note', r.response_note, 'response_file_id', r.response_file_id),
                     r.responded_by, r.responded_at, r.mine_id, 4
                FROM production_detail_request r WHERE r.responded_at IS NOT NULL";
+        }
+        if ($has('grievance', 'grievance_action')) {
+            // The timeline only - never the complainant's name or contact.
+            $parts[] = "SELECT 'grievance', ga.grievance_id, ga.action, CASE WHEN ga.from_status IS NULL THEN NULL ELSE jsonb_build_object('status', ga.from_status) END,
+                    jsonb_build_object('status', ga.to_status, 'category', g.category, 'ticket_no', g.ticket_no),
+                    ga.actor_id, ga.created_at, g.mine_id, 3
+               FROM grievance_action ga JOIN grievance g ON g.id = ga.grievance_id";
         }
         if ($has('alert')) {
             $parts[] = "SELECT 'alert', a.id, 'raised', NULL::jsonb,

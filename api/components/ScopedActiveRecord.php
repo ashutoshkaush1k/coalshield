@@ -17,6 +17,14 @@ abstract class ScopedActiveRecord extends ActiveRecord
         return 'mine_id';
     }
 
+    /**
+     * Rows this user may not see even within the mines in scope (AccessRule). Most models have
+     * none; ScopedActiveQuery::forUser() calls this for every role.
+     */
+    public static function restrictFor(\app\models\User $user, ScopedActiveQuery $query): void
+    {
+    }
+
     public static function find(): ScopedActiveQuery
     {
         return new ScopedActiveQuery(static::class);

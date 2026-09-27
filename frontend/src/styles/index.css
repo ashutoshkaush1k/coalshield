@@ -579,3 +579,26 @@ tr.is-flagged { background: var(--risk-high-bg); }
 .head-controls .label { margin: 0; }
 .production-table td:last-child { white-space: normal; min-width: 190px; }
 .production-table td:last-child .row { flex-wrap: wrap; gap: var(--space-2); }
+
+/* Grievances (Phase 5) */
+.grid.two-col { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.grid.two-col > * { min-width: 0; }
+.public-card { width: 100%; max-width: 640px; }
+.public-links { justify-content: center; margin-top: var(--space-3); }
+.public-links a { font-size: var(--text-sm); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.ticket-no { font-size: var(--text-xl); font-weight: 600; letter-spacing: 0.02em; }
+.check-row { display: flex; align-items: flex-start; gap: var(--space-2); font-weight: 400; }
+.check-row input { width: auto; margin-top: 3px; }
+/* The honeypot: off-screen (not display:none, which some bots skip). */
+.hp-field { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.wrap-row { flex-wrap: wrap; gap: var(--space-2); }
+.lang-tag { background: var(--accent-soft); color: var(--accent-ink); }
+.grievance-text { white-space: pre-wrap; font-size: var(--text-md, 15px); line-height: 1.6; margin: var(--space-2) 0; }
+.detail-grid { display: grid; grid-template-columns: max-content 1fr; gap: 6px var(--space-4); margin: 0; }
+.detail-grid dt { color: var(--muted); font-size: var(--text-sm); }
+.detail-grid dd { margin: 0; }
+.timeline { margin: var(--space-2) 0 0; padding-left: var(--space-5); }
+.timeline li { margin: 4px 0; }
+.grievance-table td { vertical-align: top; }

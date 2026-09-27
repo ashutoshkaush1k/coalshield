@@ -151,7 +151,14 @@ final class ComplianceScoreService
         if ($mineIds === []) {
             return [];
         }
-        return array_map('intval', (new Query())->select(['n' => 'count(*)', 'mine_id'])->from('{{%alert}}')
-            ->where(['mine_id' => $mineIds, 'status' => 'open'])->groupBy('mine_id')->indexBy('mine_id')->column());
+        $query = (new Query())->select(['n' => 'count(*)', 'mine_id'])->from('{{%alert}}')
+            ->where(['mine_id' => $mineIds, 'status' => 'open']);
+        // The count must match the list the caller can open: a mine head does not see the alerts
+        // of sensitive grievances (AccessRule), so they are not counted for it either.
+        $identity = \Yii::$app->has('user', true) ? \Yii::$app->user->identity : null;
+        if ($identity instanceof \app\models\User && !\app\components\AccessRule::seesSensitiveGrievances($identity)) {
+            $query->andWhere(['not', ['and', ['entity_type' => 'grievance'], ['in', 'entity_id', \app\components\AccessRule::sensitiveGrievanceIds()]]]);
+        }
+        return array_map('intval', $query->groupBy('mine_id')->indexBy('mine_id')->column());
     }
 }

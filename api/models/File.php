@@ -15,7 +15,7 @@ use app\components\ActiveRecord;
  * @property string $mime
  * @property int $size
  * @property string $sha256
- * @property int $uploaded_by
+ * @property int|null $uploaded_by (null only for a public grievance attachment)
  * @property string $entity
  * @property int $entity_id
  * @property string $created_at
@@ -30,7 +30,7 @@ class File extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['path', 'mime', 'size', 'sha256', 'uploaded_by', 'entity', 'entity_id'], 'required', 'message' => 'REQUIRED'],
+            [['path', 'mime', 'size', 'sha256', 'entity', 'entity_id'], 'required', 'message' => 'REQUIRED'],
             [['size', 'uploaded_by', 'entity_id'], 'integer', 'min' => 0, 'message' => 'INVALID_VALUE'],
             [['sha256'], 'match', 'pattern' => '/^[0-9a-f]{64}$/', 'message' => 'INVALID_VALUE'],
             [['path'], 'string', 'max' => 512, 'tooLong' => 'TOO_LONG'],

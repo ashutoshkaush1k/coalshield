@@ -34,6 +34,9 @@ class ScopedActiveQuery extends ActiveQuery
         /** @var class-string<ScopedActiveRecord> $modelClass */
         $modelClass = $this->modelClass;
         $path = $modelClass::scopePath();
+        // Rows a role may not see even inside its mines (AccessRule, e.g. sensitive grievances and
+        // their alerts for a mine head) - applied before the mine filter, for every role.
+        $modelClass::restrictFor($user, $this);
         if ($user->role === User::ROLE_GOVERNMENT || $user->role === User::ROLE_INSPECTOR) {
             return $this;
         }

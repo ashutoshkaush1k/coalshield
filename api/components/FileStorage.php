@@ -32,7 +32,7 @@ class FileStorage extends Component
         $this->mimeTypes ??= $params['fileStorage.mimeTypes'];
     }
 
-    public function storeUpload(UploadedFile $upload, string $entity, int $entityId, int $userId): File
+    public function storeUpload(UploadedFile $upload, string $entity, int $entityId, ?int $userId): File
     {
         if ($upload->hasError) {
             throw ApiException::fields(['file' => ['UPLOAD_FAILED']]);
@@ -41,7 +41,8 @@ class FileStorage extends Component
     }
 
     /** Store a local file (the source is copied, not moved). */
-    public function storeFile(string $sourcePath, string $entity, int $entityId, int $userId): File
+    /** $userId is null only for a public grievance attachment (a CHECK in the file table enforces it). */
+    public function storeFile(string $sourcePath, string $entity, int $entityId, ?int $userId): File
     {
         $size = @filesize($sourcePath);
         if ($size === false || $size === 0) {

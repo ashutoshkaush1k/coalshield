@@ -37,4 +37,10 @@ return [
     'ai.timeoutSeconds' => (float) env('AI_SERVICE_TIMEOUT', 20),
     // Signed file links (annotated frames, proof images) stay valid this long.
     'files.linkTtlSeconds' => 3600,
+    // Public grievance endpoints (no login): fixed-window limits per client IP, and the upload
+    // limits for a grievance attachment (stricter than the general file store).
+    'grievance.submitPerHour' => (int) env('GRIEVANCE_SUBMIT_PER_HOUR', 5),
+    'grievance.trackPerMinute' => (int) env('GRIEVANCE_TRACK_PER_MINUTE', 20),
+    'grievance.maxFileBytes' => 5 * 1024 * 1024,
+    'grievance.fileMimeTypes' => ['application/pdf', 'image/jpeg', 'image/png'],
 ];

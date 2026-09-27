@@ -48,8 +48,19 @@ For CoalShield that means:
   not open-sourced) would need an **Ultralytics Enterprise License**, or the detector would have to
   be replaced by a permissively licensed one. The ai-service boundary (HTTP, one endpoint) keeps
   such a swap contained to `ai-service/`.
-- This is a licensing decision for the project owner, not a legal opinion. **Owner decision needed
-  before any non-open deployment** (tracked in `PROGRESS.md`).
+- This is a licensing decision for the project owner, not a legal opinion.
+
+**Owner decision (2026-09-27):** the repository will be **public and open-source for SIH**, which
+satisfies AGPL-3.0 for this use. The source - including `ai-service/`, the training script and the
+selection script - is in the repository. The trained weights are gitignored for size but rebuilt
+from public inputs by `scripts/build_ppe_model.py`. Whenever the service is offered to others over
+a network, the conservative course is also to publish the exact weights in use (for example as a
+release asset next to the source), since Ultralytics names model weights as part of the
+corresponding source.
+
+**A closed deployment** (a government or company rollout that is not open-sourced) **would need a
+licence review first**: an Ultralytics Enterprise License, or a detector under a permissive
+licence. The ai-service boundary keeps such a swap contained to `ai-service/`.
 
 ## Rebuilding the weights
 

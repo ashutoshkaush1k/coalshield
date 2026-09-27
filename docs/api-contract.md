@@ -80,6 +80,16 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 | POST | `/detail-requests` | `detailRequest.create` | `{mine_id, date_from, date_to, reason, due_at}` (range ≤ 92 days, ending by today; due in the future, ≤ 60 days) |
 | POST | `/detail-requests/{id}/respond` | `detailRequest.respond` | mine head: multipart `response_note`, `file?` - also late (overdue / escalated); resolves the overdue alert |
 | POST | `/detail-requests/{id}/close` | `detailRequest.create` | submitted → closed |
+| GET | `/public/mines` | public (rate-limited) | mines to choose from on the public grievance form (id, code, name, district, state) |
+| POST | `/grievances/public` | public (rate-limited: 5 per hour per IP) | multipart or JSON: `mine_id, submitter_type, name?, contact?, is_anonymous, category, safety_category (safety), language, description, against_mine_head, latitude?, longitude?, file?` (PDF/JPEG/PNG, 5 MB), `website` (honeypot, must be empty → 400 `SUBMISSION_REJECTED`) → `{ticket_no, status, sla_due_at, created_at}`; 429 `RATE_LIMITED` with `Retry-After` |
+| GET | `/grievances/track/{ticket_no}` | public (rate-limited: 20 per minute per IP) | status, category, dates, public timeline (action, status, time), resolution note once resolved - no text, no people |
+| GET | `/grievances?mine_id=&state=&status=&category=&language=&open=&escalated=&sensitive=` | `grievance.view` | scoped and routed (a mine head never sees a sensitive grievance); open first, earliest SLA due first; runs the SLA check |
+| GET | `/grievances/{id}` | `grievance.view` | with `timeline`; 404 for a sensitive grievance to a mine head |
+| GET | `/grievances/stats?state=` | `grievance.stats` | totals, by category / mine / language, average hours to first resolution, SLA breaches, breach clusters |
+| GET | `/grievances/{id}/assignees` | `grievance.manage` | users who may handle it (never a mine head for a sensitive one) |
+| POST | `/grievances/{id}/transition` | `grievance.manage` | `{to, note}` - `resolved` needs a note (shown to the complainant); `reopened` starts a new SLA period |
+| POST | `/grievances/{id}/assign` | `grievance.manage` | `{user_id}` - one of the assignees |
+| GET | `/views/grievances?state=` | `grievance.view` | the grievance screen in one request: `{stats, escalated, grievances}` (stats and escalated null for a mine head) |
 | POST | `/vision/analyze` | `vision.analyze` | multipart `mine_id`, `file` → detections, violations, score before/after |
 | GET | `/files/{id}/content?expires=&signature=` | signed link | stored image (annotated frame, proof) |
 | GET | `/admin/baseline-check` | `admin.baselineCheck` | live scores vs seeded baseline |
@@ -135,6 +145,35 @@ for output ÷ target**, so a move the target explains is not flagged; needs 14 p
 Settings: `data/schema/rules.yaml` `product.production_anomaly` (product settings, not law). On the
 demo data it flags 5 of 6,142 mine-days: S2 (Gevra, 4 Sep, 2.0x, z 14.4) and four month-boundary
 steps; the decoys N1 and N3 are not flagged (`api/tests/unit/ProductionAnomalyTest.php`).
+
+## Grievances (Phase 5)
+
+**Routing and visibility** (`api/components/AccessRule.php`): a grievance is *sensitive* when its
+category is `harassment` or `against_mine_head` is true. A sensitive grievance is assigned to the
+government and **does not exist for a mine head**. It is not listed, 404 by id, and neither its
+`GRIEVANCE_SLA_BREACHED` alert, nor the open-alert count, nor its audit entries reach the mine
+head. The complainant's `name` and `contact` are serialised only to government and inspector, and
+to corporate for grievances that are not sensitive; for everyone else the keys are absent. The
+audit log stores them as `[redacted]`.
+
+**SLA** (`rules.yaml` `product.grievance_sla_hours`, product settings): safety 48 h, harassment
+72 h, working conditions and environment 120 h, wages and other 168 h, land compensation 336 h.
+A grievance still open at `sla_due_at` is an SLA breach: escalation level 1, an `escalate` step in
+its timeline and `GRIEVANCE_SLA_BREACHED` (high). Still open one more SLA period later
+(`grievance_escalate_again_after_sla`), it reaches level 2. The check runs on every read and in
+`yii grievance/check`; it is idempotent and recorded as a system action. A reopened grievance gets
+a new SLA period.
+
+**Breach clusters** (`grievance_breach_cluster`: at least 5 grievances raised within 10 days, all
+breaching their SLA): on the demo seed only Kulda (OD-SUN-07, scenario S6) is flagged. Jhanjra's
+burst of six grievances handled in time (N2) is not (`api/tests/unit/GrievanceClusterTest.php`).
+
+**Safety grievances** that are not sensitive open an observation (category from the form, severity
+high, status open) for the inspection flow. Sensitive ones do not, because an observation is
+visible to the mine head.
+
+**Tickets** `GRV-YYYY-NNNNNN` come from a per-year counter (`next_grievance_ticket()`) that never
+goes below the highest ticket already stored.
 
 ## Inspection ranking
 

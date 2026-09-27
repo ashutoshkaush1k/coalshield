@@ -2,6 +2,142 @@
 
 Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF.md`.
 
+## Remaining phases, in order
+
+5 (grievances) → **5B** → 6 (multilingual) → 7 (automation, ai-service) → **7B** → 8 (hardening).
+The full scope of each is in `PLAN.md` §6.
+
+- **Phase 5B - compliance obligation register and GIS map** (owner addition, 2026-09-27).
+  - **Register:**
+    - The 40 obligations of `data/reference/obligations.csv` are loaded as a cited catalogue:
+      instrument, clause, quote, and a link to the source PDF page.
+    - Due tasks are generated per mine only for verified, calendar-frequency obligations. On-event
+      ones come from the events themselves; continuous limits are shown as "monitored"; RPT-08
+      stays TODO-VERIFY and is never generated.
+    - Mine heads submit evidence per task.
+    - Government, corporate and inspector see the register across mines, compliance % per mine and
+      per domain, and the overdue / escalated queue. Government and inspector accept or reject
+      submissions; corporate is read-only.
+    - Overdue raises `OBLIGATION_OVERDUE` and escalates; reminders come as `OBLIGATION_DUE_SOON`.
+    - Due days not stated in law are product settings, labelled as such.
+  - **GIS map:**
+    - Leaflet with OpenStreetMap: mines coloured by risk band (with a text label too) and the 35
+      district boundaries.
+    - The state filter and click-through to mine detail work as elsewhere.
+    - Scoped per role like `/v1/mines`, and approximate locations are marked.
+- **Phase 7B - offline-capable PWA for field inspection** (owner addition, 2026-09-27).
+  - Installable PWA with an offline shell and cached reference data.
+  - A checklist-driven field inspection: geo-tagged (with accuracy), time-stamped observations
+    with camera photos, in an IndexedDB outbox with per-item status.
+  - Idempotent batch sync by client UUID, with resumable photo upload, the same scoping and
+    validation as the normal endpoints, and conflicts surfaced rather than dropped.
+  - Sync creates observations, violations (with alerts) and corrective actions through the
+    existing services, so the audit chain and history stay intact.
+  - Device time and out-of-boundary locations are flagged.
+  - Tested by an offline → online browser run.
+
+## Phase 5: Grievance handling, plus two owner decisions (done, 2026-09-27)
+
+### Decisions recorded
+
+- **AGPL-3.0:** the repository is public and open-source for SIH, which satisfies AGPL-3.0. A
+  closed deployment would need a licence review first (README, `docs/AI_EVALUATION.md`).
+- **Phases 5B and 7B** are added to `PLAN.md` §6 and to "Remaining phases" above:
+  - 5B: the compliance obligation register and GIS map, after Phase 5;
+  - 7B: an offline PWA for field inspection, after Phase 7.
+
+### Phase 5: grievances
+
+- **Migration** `m261001_000001`:
+  - `grievance` and `grievance_action` (CHECKs, FKs, indexes, and a partial index for sensitive
+    grievances);
+  - `grievance_ticket_counter` + `next_grievance_ticket()` for `GRV-YYYY-NNNNNN` from a per-year
+    counter that never goes below the highest stored ticket;
+  - `rate_limit`, the FK `observation.grievance_id`, and `file.uploaded_by` nullable only for a
+    public attachment.
+- **Seeding:** `yii seed` loads 374 grievances and 1,748 timeline steps, and their history goes into
+  the audit chain (without names or contacts).
+- **Public pages (no login), linked from the login page:**
+  - `/grievance` is the form: mine, who you are, anonymous or not, category (safety: which kind),
+    about the mine head, language, text, optional file and location;
+  - `/grievance/track` shows status and the public timeline only.
+  - The API rate-limits both per IP, accepts only PDF, JPEG or PNG up to 5 MB, and rejects a filled
+    honeypot.
+- **Mine head:** a queue for its own mine, most urgent first. It can acknowledge, investigate,
+  resolve (a note is required; the complainant sees it), close, reopen (a new SLA period) and
+  assign, with the timeline shown.
+- **Government and inspector:** all grievances and the analytics:
+  - totals, open, SLA breaches and breach rate, average time to first resolution, escalated and
+    open;
+  - breakdowns by category, by mine and by language;
+  - breach clusters, the escalated queue, and filters (open / escalated / sensitive).
+- **Corporate:** the same analytics, for its company's mines (read-only).
+- **SLA:** per category from `rules.yaml` (product settings). A breach escalates to level 1 and
+  raises `GRIEVANCE_SLA_BREACHED`; one more SLA period without resolution takes it to level 2.
+  - The check runs on reads and in `yii grievance/check` (`run_all.bat`); it is idempotent and a
+    system action.
+  - On the demo seed the first check records 7 new breaches (reopened seeded grievances still
+    unresolved past their new SLA period) and 7 escalations to level 2 (open grievances a full SLA
+    period past their breach; some are the same grievances).
+- **Sensitive routing** (`AccessRule`): harassment, or a grievance against the mine head, is
+  assigned to the government and does not exist for the mine head - not listed, 404 by id, and not
+  visible through its alert, the open-alert count or the audit trail.
+  - The complainant's identity is never serialised to a mine head (the keys are absent), and is
+    shown to corporate only for grievances that are not sensitive.
+  - Both are proved by `GrievanceCest`.
+- **Safety grievances** open a linked observation (category from the form), unless sensitive: an
+  observation would show a sensitive case to the mine head.
+- **Scenarios:**
+  - S6 (Kulda, OD-SUN-07) is flagged as a breach cluster: 7 grievances raised 1-9 September, all
+    breached; 8 after the first check adds a reopened one.
+  - The N2 decoy (Jhanjra, WB-BAR-08: six grievances, all within SLA) is not.
+  - `GrievanceClusterTest` scores this against `scenario_expectations.json`: TP 1, FN 0, FP 0,
+    TN 1, and no other mine is flagged.
+- **Languages:** grievance texts are shown as written, labelled with their language (for example
+  "Hindi · हिन्दी"). All new UI text is in `en.json` (`grievance.*`, the public pages, the new
+  error and field codes, statuses, audit labels).
+- **Tests:** 145 tests, 1,490 assertions, all passing.
+  - `GrievanceCest` (9): public submit and track, the honeypot, file and field checks, the rate
+    limit, safety → observation, sensitive routing, identity, the queue workflow, SLA escalation,
+    and analytics per role.
+  - `GrievanceClusterTest`.
+- **Browser check:** `node scripts/browser_check.mjs phase5 --side-tabs` saves 15 screenshots in
+  `docs/screenshots/phase5/`, with a government tab and a mine-head tab polling alongside. All
+  steps passed and no browser errors were logged. It covers:
+  - public submission and tracking (the outcome after resolution included);
+  - the Gevra mine head's queue and detail, with no identity shown;
+  - government analytics with the Kulda cluster;
+  - a sensitive case at Gevra seen by government and absent (404 by id) for its mine head;
+  - corporate SECL scope.
+- **Performance:** the grievance screens take 44 ms (government) and 14 ms (mine head) median, in
+  one request each (`docs/PERFORMANCE.md`).
+
+### Known issues (Phase 5)
+
+- **Rate limits are per IP.** Behind a shared NAT (a mine colony, a cyber cafe) many people share
+  one address. The limits are env settings (`GRIEVANCE_SUBMIT_PER_HOUR`,
+  `GRIEVANCE_TRACK_PER_MINUTE`). There is no CAPTCHA, by design.
+- **Anyone with a ticket number sees its status.** Tickets are sequential, but tracking shows no
+  text and no people, and it is rate-limited.
+- **Satisfaction rating:** the column is loaded and shown, but there is no public endpoint yet for
+  a complainant to rate.
+- **Severity** at submission follows the category (a product setting); staff cannot change it yet.
+- **Translation of grievance text** is not done: texts are shown as written (brief Phase 6: machine
+  translation is roadmap).
+
+### How to verify (Phase 5)
+
+```bat
+run_all.bat
+api\yii.bat seed demo
+api\yii.bat grievance/check
+api\yii.bat grievance/clusters
+cd api && run_tests.bat
+node scripts\browser_check.mjs phase5 --side-tabs
+```
+
+Re-seed after a browser check.
+
 ## Phase 4: Production reporting, plus the PPE rerun and performance work (done, 2026-09-27)
 
 ### PPE model: second training run
@@ -92,8 +228,8 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 ### Known issues (Phase 4)
 
 - **The PPE model is still out of distribution for mines.** It misses people on the repository's
-  own sample photos, and there is no coal-mine footage to train or test on. The AGPL-3.0 decision
-  is still open (unchanged from Phase 3).
+  own sample photos, and there is no coal-mine footage to train or test on. (AGPL-3.0: decided
+  2026-09-27 - see Phase 3 known issues.)
 - **Four of the detector's five flags are real step changes, not scenarios.** Month-boundary
   jumps in the synthetic data (1-2 August and 2 September, at four mines) are flagged alongside S2. They are defensible
   deviations, but not planted ones.
@@ -201,8 +337,9 @@ Re-seed after a browser check.
 
 - ~~**The PPE model is weak out of distribution**~~: retrained in Phase 4 (see above). The demo
   now uses held-out test images with the real model.
-- **AGPL-3.0:** any non-open deployment of the YOLO model needs an owner decision (an Ultralytics
-  Enterprise licence or a different detector).
+- **AGPL-3.0 - decided 2026-09-27:** the repository is public and open-source for SIH, which
+  satisfies AGPL-3.0. A closed deployment would need a licence review first (README,
+  `docs/AI_EVALUATION.md`).
 - ~~**The PHP built-in server handles one request at a time**~~: the API runs under Apache since
   Phase 4 (`docs/PERFORMANCE.md`).
 - **The vision test skips itself while the ai-service is still loading the model.** Run the

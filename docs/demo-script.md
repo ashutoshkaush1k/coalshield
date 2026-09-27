@@ -177,10 +177,29 @@ continuing.**
     opens the entries, charts and the mine's response; **Accept and close**. A call nobody answers
     turns *Overdue* at its deadline and *Escalated* 72 h later, each with a
     `DETAIL_REQUEST_OVERDUE` alert - Nandira (OD-ANG-57)'s seeded call falls due during the day.
-12. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
+12. **Grievances.** Sign out; on the login page press **Raise a grievance** (no account). Choose
+    Gevra, *Contract worker*, Hindi, *Safety* → *PPE*, write the complaint in Hindi, submit: a
+    ticket `GRV-2026-000xxx` and the response due time (48 h for safety). **Track this grievance**
+    shows the status and the timeline only - no text, no names.
+    - Sign in as the Gevra mine head (`head.cg-krb-03@coalmine.in`), Grievances tab:
+      - the new grievance is at the top, its text shown as written and labelled *Hindi*;
+      - **Submitted by** says *Identity not shown to this role*;
+      - **Start investigation**, then write the resolution and **Resolve**; tracking now shows
+        the outcome;
+      - the safety grievance also opened an observation for the inspection flow.
+    - As Government, Grievances tab:
+      - totals, average time to resolution, SLA breaches;
+      - the **SLA-breach cluster at Kulda (OD-SUN-07, scenario S6)**: grievances raised
+        1-9 September, all past their response time;
+      - Jhanjra's burst of six grievances, all handled in time (N2), is *not* flagged;
+      - the escalated queue.
+    - Filter **Sensitive**: Gevra has two harassment grievances, routed to DGMS, identity visible
+      to the regulator. Back as the Gevra mine head they are nowhere - not in the list, not in the
+      alerts, not in the audit trail - and by id the API answers 404.
+13. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
     mines. Opening a mine of another company answers **404** - exactly like a mine that does not
     exist, so nothing leaks.
-13. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
+14. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
     click. Prove it from the tests or the API:
 
     ```bat

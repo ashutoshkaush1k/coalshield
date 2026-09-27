@@ -369,6 +369,77 @@ The UI still talks to FastAPI during Phase 1.
 - Tests: harassment invisible to mine head, identity never serialized, public endpoint works
   unauthenticated and is rate-limited, SLA breach escalates
 
+### Phase 5B — Compliance obligation register and GIS map (owner addition, 2026-09-27; after Phase 5)
+
+Two views the brief does not name but the data already supports: what each mine owes the
+regulator and when, and where the mines are.
+
+**Obligation register** (source: `data/reference/obligations.csv`, 40 obligations, each with
+`instrument`, `clause`, `citation_page`, `citation_file`, `citation_quote`, `frequency`, `due_rule`,
+`applies_to`, `responsible_role`, `evidence_type`, `verified`):
+
+- Migrations:
+  - `obligation` - the reference catalogue loaded from `obligations.csv` (code, domain, title,
+    instrument, clause, frequency, due rule, applies to, responsible role, evidence type,
+    citation page/file/quote, verified);
+  - `obligation_task` - one due occurrence for one mine (mine_id, obligation_code, period,
+    due_at, status `open / submitted / accepted / rejected / overdue / escalated / waived`,
+    escalation_level), unique (mine, obligation, period);
+  - `obligation_submission` - evidence against a task (task_id, file_id, note, submitted_by,
+    submitted_at, reviewed_by, reviewed_at, review_note);
+  - all mine-scoped, with indexes on (mine_id, status, due_at) and (status, due_at).
+- Task generation (`ObligationService::generate`, `yii obligations/generate`, idempotent):
+  - only for **verified** obligations with `applies_to = mine` and a **calendar frequency**
+    (monthly, quarterly, half-yearly, annual, every N months/years, fortnightly, weekly);
+  - `on event` obligations (accident notices, RPT-03..05) are created from the events themselves
+    (an incident creates its notice task), never on a calendar;
+  - `continuous` limits (HLT-04, SAF-11, ENV-04/08 ...) are not tasks; they are monitored by the
+    sensor rules and shown in the register as "monitored";
+  - `every shift` (SAF-08) is too fine-grained for a register and is shown as "per shift", not
+    generated.
+  - Due dates come from the obligation's `due_rule` only where it names a date or an interval
+    (e.g. ENV-03 "on or before 30 September", RPT-06 "on or before 28/29 February"). Otherwise the
+    due day is a **product setting** in `rules.yaml` (`product.obligation_default_due_day`), marked
+    as such in the UI - never presented as law.
+  - `RPT-08` stays TODO-VERIFY and is never generated.
+  - A seeded history for the demo, from a data-track generator run: most tasks on time, some late,
+    a few overdue (one per scenario mine), fixed seed.
+- Workflow: `open → submitted → accepted | rejected (→ open)`; `open → overdue` at `due_at`, raising
+  `OBLIGATION_OVERDUE`; `overdue → escalated` after `product.obligation_escalate_after_hours`
+  (alert level 2); `waived` only by government with a reason. `StatusTransition` + `status_history`.
+- Reminders: `OBLIGATION_DUE_SOON` alerts N days before `due_at` (product setting). Run by
+  `yii obligations/check` now and by the Phase 7 jobs later; idempotent, recorded as system actions.
+- Mine head: the own mine's register (due, overdue, submitted), upload evidence (FileStorage),
+  history per obligation.
+- Government, corporate and inspector: the register across mines in scope - compliance % per mine
+  and per domain, overdue and escalated queue, accept / reject a submission with a note
+  (government and inspector; corporate read-only).
+- **Every obligation is shown with its citation**: instrument, clause, the quote, and a link to the
+  page of the source PDF (`citation_file` + `citation_page`, served read-only). Unverified rows are
+  labelled TODO-VERIFY and never produce tasks.
+- Endpoints: `GET /v1/obligations` (catalogue), `GET /v1/obligation-tasks?mine_id=&status=&domain=`,
+  `POST /v1/obligation-tasks/{id}/submissions` (multipart), `POST /v1/obligation-submissions/{id}/review`,
+  `GET /v1/obligations/summary?state=`, `GET /v1/views/obligations` (one request per screen).
+- Score: optional component "overdue obligations" behind a weight in `.env` (default 0, so the
+  published demo scores do not move until the owner sets it).
+
+**GIS map:**
+
+- `GET /v1/mines/geojson` (exists) gains score, band and open-alert counts per mine and a `?state=`
+  filter; `GET /v1/districts/geojson` serves `data/reference/district_boundaries.geojson` (35
+  districts of the seeded mines, Census 2011 codes), limited to districts containing a mine in scope.
+- Frontend: a Map tab for every role (Leaflet with OpenStreetMap tiles, attribution shown; offline
+  fallback: boundaries only, no tiles). Mines as points coloured by risk band (never colour alone:
+  the band is also in the marker's label and popup), district outlines, a legend, the state filter.
+  Clicking a mine opens its detail (government / corporate / inspector) or the own dashboard (mine
+  head).
+- Scoped per role exactly like `/v1/mines`: a mine head sees one mine, corporate its company's
+  mines; an out-of-scope mine never appears (and its detail is 404).
+- `location_quality` from the roster is shown (exact / approximate), so an approximate point is
+  not read as precise.
+- Tests: scoping of both GeoJSON endpoints per role, band per feature equals the compliance band,
+  district list limited to scope; a browser check of the map for each role.
+
 ### Phase 6 — Multilingual
 
 - `src/i18n/locales/{hi,bn,or,te,mr}.json`, each with `"_meta": {"reviewed": false}`
@@ -389,6 +460,49 @@ The UI still talks to FastAPI during Phase 1.
   columns · a materialised view for current scores
 - Extended score (weights in `.env`), same bands
 - `scripts/register_tasks.ps1` (Task Scheduler) + `docs/CRON.md`
+
+### Phase 7B — Offline-capable PWA for field inspection (owner addition, 2026-09-27; after Phase 7)
+
+An inspector (or a mine's safety officer) records an inspection underground or on the benches,
+where there is no signal, and syncs later.
+
+- PWA shell: web app manifest, service worker (Workbox via `vite-plugin-pwa`) caching the app shell,
+  translations and the inspector's reference data (assigned inspections, mines in scope, the
+  checklist, violation categories, obligation codes); installable on Android/desktop.
+- Field inspection screen (`/field`, roles with `inspection.manage` and, for self-inspection, the
+  mine head): pick an assigned inspection (or start an unscheduled one at an own-scope mine), work
+  through a **checklist** per area (checklist items from a versioned `inspection_checklist` table
+  keyed to violation categories and obligation codes), record **observations** with category,
+  severity, note, **photos** (camera capture, client-side resized/compressed), **geo-tag**
+  (Geolocation API with accuracy; manual "location unknown underground" allowed and labelled) and a
+  **device timestamp** plus the server's receipt time.
+- Offline queue: IndexedDB outbox of operations (`create_inspection_visit`, `add_observation`,
+  `attach_photo`, `promote_to_violation`, `create_corrective_action`), each with a client UUID;
+  photos stored as blobs until uploaded. Clear per-item status (queued / syncing / synced / failed
+  with the API error code) and a manual "sync now".
+- Sync API: `POST /v1/sync/batch` (authenticated; ordered operations, each idempotent by client
+  UUID - a replayed operation returns the original result), chunked photo upload with resume
+  (`POST /v1/sync/files`), server-side validation and scoping exactly as the normal endpoints
+  (an operation outside the account's scope fails with 404 and is shown as failed, never
+  silently dropped). Conflicts (e.g. the inspection was closed meanwhile): the operation fails with
+  `INVALID_TRANSITION`, the item stays in the outbox for the user to resolve.
+- What sync creates: `inspection` visit timestamps, `observation` rows (with `client_uuid`,
+  `recorded_at` from the device, `received_at` from the server, point geometry and accuracy), files
+  via FileStorage, and - when the inspector promotes on site - `violation` + its alert and
+  optionally a `corrective_action` for the mine head, all through the existing services (audit
+  chain, status history, alerts), so nothing bypasses the rules.
+- Clock and location honesty: the device time is stored as reported and flagged when it differs
+  from the receipt time by more than a threshold; geo-tags outside the mine's boundary polygon (when
+  the roster has one) are flagged, not rejected.
+- Security: the token is kept in memory plus an encrypted-at-rest IndexedDB copy only while offline
+  work is pending; logout wipes the outbox after confirming nothing unsynced is lost; photos never
+  leave the device except to the API.
+- Migrations: `observation` gains `client_uuid` (unique), `recorded_at`, `received_at`, `location`
+  (geometry Point), `location_accuracy_m`; `inspection_checklist`, `inspection_checklist_item`,
+  `inspection_checklist_result`; `sync_operation` (client_uuid, user_id, type, status, result).
+- Tests: idempotent replay, out-of-scope operation 404, conflict handling, photo resume; a Playwright
+  (or the CDP browser check) run that goes offline, records two observations with photos, comes back
+  online and verifies the rows, the violation and its alert.
 
 ### Phase 8 — Hardening, seed, docs, cleanup
 

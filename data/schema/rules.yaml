@@ -81,6 +81,10 @@ product:
     environment: 120
     land_compensation: 336
     other: 168
+  grievance_escalate_again_after_sla: 1           # still unresolved this many SLA periods after the breach -> escalation level 2
+  grievance_breach_cluster:                       # a mine with at least `min_breaches` grievances raised within `window_days`
+    window_days: 10                               # that all breached their SLA is flagged as a breach cluster (product setting)
+    min_breaches: 5
   contractor_doc_due_day: 10                      # brief Phase 3: "due day configurable"
   production_lock_after_days: 7                   # brief Phase 4: a submitted entry's period closes (status locked) after this many days
   production_anomaly:                             # brief Phase 4: "flags days where actual > target by a configurable % or deviates

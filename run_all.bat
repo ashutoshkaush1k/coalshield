@@ -102,6 +102,9 @@ echo  [ok] Contractor alerts checked
 REM Close past production periods and run the detailed-report deadlines - idempotent.
 "%PHP%" "%ROOT%api\yii" production/check >nul
 echo  [ok] Production periods and detailed-report deadlines checked
+REM Grievance SLA breaches and escalations - idempotent.
+"%PHP%" "%ROOT%api\yii" grievance/check >nul
+echo  [ok] Grievance SLAs checked
 
 REM --- port checks -------------------------------------------------------------
 REM netstat prints the state after the address, so the port comes first.

@@ -1,0 +1,87 @@
+[
+  {
+    "name": "01-login-grievance-links",
+    "note": "login page: raise / track a grievance without an account",
+    "errors": []
+  },
+  {
+    "name": "02-public-form",
+    "note": "public form: mine, who you are, category (safety: which kind), language, text as written; honeypot hidden",
+    "errors": []
+  },
+  {
+    "name": "03-public-ticket",
+    "note": "ticket GRV-2026-000375, with the response due time",
+    "errors": []
+  },
+  {
+    "name": "04-public-track",
+    "note": "tracking: status and the public timeline only - no text, no people",
+    "errors": []
+  },
+  {
+    "name": "05-head-queue",
+    "note": "mine head: own mine's grievances, most urgent first; sensitive ones are routed to the regulator",
+    "errors": []
+  },
+  {
+    "name": "06-head-detail",
+    "note": "detail: text as written in Hindi (labelled), identity not shown to this role, timeline, actions",
+    "errors": []
+  },
+  {
+    "name": "07-head-resolved",
+    "note": "resolved with a note - the note is what the complainant sees",
+    "errors": []
+  },
+  {
+    "name": "08-public-track-resolved",
+    "note": "the complainant sees the status and the resolution",
+    "errors": []
+  },
+  {
+    "name": "09-gov-analytics",
+    "note": "government: totals, average time to resolution, SLA breaches, the Kulda breach cluster (S6)",
+    "errors": []
+  },
+  {
+    "name": "10-gov-by-category-and-mine",
+    "note": "by category and language; by mine with the cluster flag (Jhanjra's in-SLA burst, N2, is not flagged)",
+    "errors": []
+  },
+  {
+    "name": "11-gov-escalated-queue",
+    "note": "escalated and open: SLA breached, level 1 or 2",
+    "errors": []
+  },
+  {
+    "name": "12-gov-sensitive",
+    "note": "sensitive grievances (harassment, or about the mine head): visible to the regulator",
+    "errors": []
+  },
+  {
+    "name": "13-gov-sensitive-detail",
+    "note": "a sensitive case at Gevra (GRV-2026-000092): routed to the regulator; the mine head cannot see it",
+    "errors": []
+  },
+  {
+    "name": "14-head-no-sensitive",
+    "note": "the same mine head: GRV-2026-000092, GRV-2026-000170 absent; by id the API answers 404",
+    "errors": []
+  },
+  {
+    "name": "15-corporate-analytics",
+    "note": "corporate SECL: the same analytics for its 17 mines",
+    "errors": []
+  },
+  {
+    "name": "side-tab gov@dgms.gov.in",
+    "note": "14 API requests in 69 s",
+    "errors": []
+  },
+  {
+    "name": "side-tab head.od-tlc-05@coalmine.in",
+    "note": "12 API requests in 63 s",
+    "errors": []
+  }
+]

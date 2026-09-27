@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\v1\controllers;
 
+use app\components\AccessRule;
 use app\components\ApiController;
 use app\components\Format;
 use app\models\User;
@@ -40,6 +41,13 @@ class AuditController extends ApiController
             $query->andWhere(['a.mine_id' => array_map(fn($m) => (int) $m->id, $this->visibleMines())]);
         }
         $query->andFilterWhere(['a.entity' => $request->get('entity'), 'a.action' => $request->get('action'), 'a.source' => $request->get('source')]);
+        if (!AccessRule::seesSensitiveGrievances($user)) {
+            // Sensitive grievances do not exist for a mine head - nor does their trail (AccessRule).
+            $sensitive = AccessRule::sensitiveGrievanceIds();
+            $query->andWhere(['not', ['and', ['a.entity' => 'grievance'], ['in', 'a.entity_id', $sensitive]]]);
+            $query->andWhere(['not', ['and', ['a.entity' => 'alert'], ['in', 'a.entity_id',
+                (new Query())->select('id')->from('{{%alert}}')->where(['entity_type' => 'grievance', 'entity_id' => $sensitive])]]]);
+        }
 
         $perPage = max(1, min((int) ($request->get('per_page') ?? $request->get('limit') ?? 50), 200));
         $page = max(1, (int) $request->get('page', 1));

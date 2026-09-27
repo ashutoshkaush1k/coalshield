@@ -162,5 +162,13 @@ see `data\MANUAL_STEPS.md`.
   `frontend/.env.example` → `frontend/.env`.
 - Scoring weights and the breach window are env-driven (`api/.env`); legal sensor limits come
   from `data/schema/rules.yaml`, each tied to a verified obligation.
-- Model weights are downloaded, never committed - see `backend/ml/README.md`.
+- Model weights are built, never committed: `scripts/build_ppe_model.py` (docs/AI_EVALUATION.md).
 - API contract: `docs/api-contract.md`; changes from the prototype: `docs/API_CHANGES.md`.
+
+## Licence note: Ultralytics YOLO (AGPL-3.0)
+
+PPE detection uses Ultralytics YOLO, licensed AGPL-3.0; Ultralytics treats models trained with it
+as AGPL-3.0 too. **This repository is public and open-source for SIH, which satisfies AGPL-3.0 for
+that use** (owner decision, 2026-09-27; details and the weights question in
+`docs/AI_EVALUATION.md`). **A closed deployment would need a licence review first** - an Ultralytics
+Enterprise License, or a permissively licensed detector behind the same `ai-service/` boundary.

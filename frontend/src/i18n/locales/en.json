@@ -49,7 +49,10 @@
     "overdue": "Overdue",
     "escalated": "Escalated",
     "draft": "Draft",
-    "locked": "Locked"
+    "locked": "Locked",
+    "received": "Received",
+    "under_investigation": "Under investigation",
+    "reopened": "Reopened"
   },
   "errors": {
     "UNAUTHENTICATED": "Please sign in again.",
@@ -67,7 +70,9 @@
     "UNKNOWN": "Something went wrong.",
     "DETAIL_REQUEST_REQUIRED": "Detailed records for this mine and period open only once the mine has answered a Call for Detailed Report covering it.",
     "ENTRY_LOCKED": "This entry has been submitted. Correct it with a reason instead.",
-    "NOTHING_CHANGED": "Nothing was changed."
+    "NOTHING_CHANGED": "Nothing was changed.",
+    "RATE_LIMITED": "Too many requests from this device. Please try again in {{retry_after}} seconds.",
+    "SUBMISSION_REJECTED": "The form could not be accepted."
   },
   "fields": {
     "REQUIRED": "required",
@@ -91,7 +96,9 @@
     "NEGATIVE": "cannot be negative",
     "TOO_LARGE": "too large",
     "INVALID_NUMBER": "not a number",
-    "INVALID_DATE": "invalid date"
+    "INVALID_DATE": "invalid date",
+    "FILE_EMPTY": "the file is empty",
+    "UPLOAD_FAILED": "the upload failed"
   },
   "sensor": {
     "ch4": "Methane",
@@ -273,7 +280,15 @@
       "submitted": "submitted",
       "edited": "corrected",
       "requested": "requested",
-      "responded": "answered"
+      "responded": "answered",
+      "submit": "submitted",
+      "acknowledge": "acknowledged",
+      "investigate": "investigation started",
+      "resolve": "resolved",
+      "close": "closed",
+      "reopen": "reopened",
+      "escalate": "escalated (SLA breach)",
+      "assign": "assigned"
     },
     "entity": {
       "alert": "Alert",
@@ -296,7 +311,9 @@
       "contractor_compliance_doc": "Contractor document",
       "daily_production": "Production entry",
       "production_edit_log": "Production correction",
-      "production_detail_request": "Detailed report request"
+      "production_detail_request": "Detailed report request",
+      "grievance": "Grievance",
+      "grievance_action": "Grievance step"
     },
     "system": "System",
     "changes": "Changes",
@@ -320,7 +337,10 @@
       "corporate": "Corporate - SECL mines",
       "headHigh": "Mine Head - Bhubaneswari, MCL (high risk)",
       "headLow": "Mine Head - Moonidih, BCCL (low risk)"
-    }
+    },
+    "raiseGrievance": "Raise a grievance",
+    "trackGrievance": "Track a grievance",
+    "grievanceHint": "Workers and the community can raise a grievance without an account."
   },
   "mine": {
     "score": "Compliance score",
@@ -669,5 +689,166 @@
     "close": "Accept and close",
     "closed": "Request closed",
     "awaiting": "Awaiting the mine"
+  },
+  "grievance": {
+    "tabLabel": "Grievances",
+    "loading": "Loading grievances...",
+    "category": {
+      "safety": "Safety",
+      "wages": "Wages",
+      "working_conditions": "Working conditions",
+      "harassment": "Harassment",
+      "environment": "Environment",
+      "land_compensation": "Land compensation",
+      "other": "Other"
+    },
+    "submitter": {
+      "employee": "Employee",
+      "contract_worker": "Contract worker",
+      "community": "Community member",
+      "anonymous": "Anonymous"
+    },
+    "language": {
+      "en": "English",
+      "hi": "Hindi · हिन्दी",
+      "bn": "Bengali · বাংলা",
+      "or": "Odia · ଓଡ଼ିଆ",
+      "te": "Telugu · తెలుగు",
+      "mr": "Marathi · मराठी"
+    },
+    "languageTag": "Written in {{language}} - shown as submitted",
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "action": {
+      "submit": "Submitted",
+      "acknowledge": "Acknowledged",
+      "investigate": "Investigation started",
+      "resolve": "Resolved",
+      "close": "Closed",
+      "reopen": "Reopened",
+      "escalate": "Escalated (response time passed)",
+      "assign": "Assigned"
+    },
+    "to": {
+      "acknowledged": "Acknowledge",
+      "under_investigation": "Start investigation",
+      "resolved": "Resolve",
+      "closed": "Close",
+      "reopened": "Reopen"
+    },
+    "public": {
+      "title": "Raise a grievance",
+      "hint": "About wages, safety, working conditions, harassment, the environment or land. You get a ticket number to follow it up. No account needed.",
+      "mine": "Mine",
+      "chooseMine": "Choose the mine",
+      "submitterType": "You are",
+      "anonymous": "Submit anonymously (no name or contact is stored)",
+      "name": "Name (optional)",
+      "contact": "Phone or email (optional)",
+      "category": "What is it about?",
+      "safetyCategory": "What kind of safety problem?",
+      "againstMineHead": "This is about the mine head (it goes directly to the regulator)",
+      "language": "Language you are writing in",
+      "description": "Describe the problem",
+      "descriptionHint": "Write in any of the six languages. Please do not include other people's phone numbers.",
+      "file": "Photo or document (optional: JPEG, PNG or PDF, up to 5 MB)",
+      "location": "Add my location (optional)",
+      "locationAdded": "Location added",
+      "locationFailed": "Location not available",
+      "submit": "Submit grievance",
+      "submitting": "Submitting...",
+      "sensitiveNote": "Harassment grievances and grievances about the mine head go directly to the regulator (DGMS); the mine head cannot see them.",
+      "doneTitle": "Grievance received",
+      "doneTicket": "Your ticket number",
+      "doneHint": "Keep this number. Use it to follow your grievance.",
+      "doneDue": "A first response is due by {{when}}.",
+      "another": "Raise another",
+      "trackThis": "Track this grievance",
+      "honeypot": "Leave this field empty",
+      "backToLogin": "Staff sign-in"
+    },
+    "track": {
+      "title": "Track a grievance",
+      "hint": "Enter the ticket number you received, e.g. GRV-2026-000123.",
+      "ticket": "Ticket number",
+      "submit": "Track",
+      "status": "Status",
+      "raised": "Raised",
+      "due": "Response due",
+      "overdue": "The response time has passed; the grievance has been escalated.",
+      "outcome": "Outcome",
+      "timeline": "What happened",
+      "notFound": "No grievance with this ticket number."
+    },
+    "queue": {
+      "title": "Grievances at this mine",
+      "hint": "Oldest response due first. Harassment grievances and grievances about the mine head go to the regulator and are not shown here.",
+      "empty": "No grievances.",
+      "open": "{{count}} open",
+      "overdue": "Overdue",
+      "escalated": "Escalated (level {{level}})"
+    },
+    "list": {
+      "ticket": "Ticket",
+      "mine": "Mine",
+      "category": "Category",
+      "language": "Language",
+      "status": "Status",
+      "due": "Response due",
+      "assignee": "Assigned to",
+      "raised": "Raised",
+      "filterAll": "All",
+      "filterOpen": "Open",
+      "filterEscalated": "Escalated",
+      "filterSensitive": "Sensitive"
+    },
+    "detail": {
+      "title": "Grievance {{ticket}}",
+      "description": "Grievance",
+      "submitter": "Submitted by",
+      "identityHidden": "Identity not shown to this role",
+      "anonymous": "Anonymous",
+      "routedToRegulator": "Sensitive: routed to the regulator; the mine head cannot see it",
+      "againstMineHead": "About the mine head",
+      "attachment": "Attachment",
+      "location": "Location",
+      "timeline": "Timeline",
+      "assign": "Assign to",
+      "assignSubmit": "Assign",
+      "assigned": "Assigned",
+      "note": "Note",
+      "resolutionNote": "Resolution (shown to the complainant)",
+      "changed": "Status updated",
+      "resolution": "Resolution",
+      "rating": "Satisfaction: {{rating}} / 5",
+      "observation": "Safety grievance: an observation was opened for the inspection flow"
+    },
+    "stats": {
+      "title": "Grievances",
+      "hint": "All grievances in view, including the sensitive ones routed to the regulator.",
+      "total": "Total",
+      "open": "Open",
+      "breaches": "SLA breaches",
+      "breachRate": "Breach rate",
+      "avgResolution": "Average time to resolution",
+      "escalatedOpen": "Escalated and open",
+      "sensitive": "Sensitive",
+      "hours": "{{value}} h",
+      "days": "{{value}} days",
+      "byCategory": "By category",
+      "byMine": "By mine",
+      "byLanguage": "By language",
+      "cluster": "Breach cluster",
+      "clusterLine": "{{count}} breaches among grievances raised {{from}} to {{to}}",
+      "clustersTitle": "SLA-breach clusters",
+      "noClusters": "No breach clusters.",
+      "clusterRule": "A mine is flagged when at least {{min}} grievances raised within {{days}} days all breached their response time (product setting in rules.yaml). Response times per category are product settings too.",
+      "escalatedTitle": "Escalated queue",
+      "escalatedEmpty": "Nothing escalated and open.",
+      "allTitle": "All grievances"
+    }
   }
 }

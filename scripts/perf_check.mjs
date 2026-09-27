@@ -35,6 +35,8 @@ const VIEWS = {
     "mine head dashboard": { who: HEAD, paths: [`/views/mine/${MINE}`] },
     "government production": { who: GOV, paths: ["/views/production-overview"] },
     "mine head production": { who: HEAD, paths: ["/views/production"] },
+    "government grievances": { who: GOV, paths: ["/views/grievances"] },
+    "mine head grievances": { who: HEAD, paths: ["/views/grievances"] },
   },
 };
 

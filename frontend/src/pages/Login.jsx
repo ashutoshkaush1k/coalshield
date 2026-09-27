@@ -1,6 +1,6 @@
 // Single login page with the two account types described in PRD Section 3.
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Card } from "../components/common/Card";
 import { ErrorNotice } from "../components/common/ErrorNotice";
 import { DemoFooter } from "../components/common/DemoFooter";
@@ -80,6 +80,13 @@ export default function Login() {
             ))}
           </div>
         </Card>
+        <div className="public-links stack tight" id="grievance-links">
+          <span className="faint small">{t("login.grievanceHint")}</span>
+          <div className="row wrap-row">
+            <Link className="btn" to="/grievance">{t("login.raiseGrievance")}</Link>
+            <Link className="btn" to="/grievance/track">{t("login.trackGrievance")}</Link>
+          </div>
+        </div>
         <DemoFooter />
       </div>
     </div>

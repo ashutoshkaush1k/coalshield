@@ -74,3 +74,15 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | `/v1/views/production`, `/v1/views/production-overview` | one request per production screen |
 | error codes | `DETAIL_REQUEST_REQUIRED` (403), `ENTRY_LOCKED`, `NOTHING_CHANGED` (422); field codes `REASON_REQUIRED`, `ALREADY_REPORTED`, `IN_FUTURE`, `IN_PAST`, `TOO_FAR`, `RANGE_TOO_LONG`, `BEFORE_START`, `OVER_SHIFT_HOURS`, `NEGATIVE`, `TOO_LARGE`, `INVALID_NUMBER`, `INVALID_DATE` |
 | audit | seeded production history (`submitted`, `edited`, `requested`, `responded`) in the chain as `seed_history` |
+
+## Phase 5 additions (no prototype equivalent)
+
+| New | Notes |
+|---|---|
+| `/v1/public/mines`, `POST /v1/grievances/public`, `GET /v1/grievances/track/{ticket}` | public, no token; rate-limited per IP (`rate_limit` table), honeypot, file type and size checks |
+| `/v1/grievances`, `/{id}`, `/stats`, `/{id}/assignees`, `/{id}/transition`, `/{id}/assign`, `/v1/views/grievances` | staff queue and analytics; sensitive routing and identity rules in `AccessRule` |
+| `GRIEVANCE_SLA_BREACHED` | now raised by the API (it existed in the seeded history); escalation levels 1 and 2 |
+| error codes | `RATE_LIMITED` (429), `SUBMISSION_REJECTED` (400); field codes `FILE_EMPTY`, `UPLOAD_FAILED` |
+| `grievance_action.action` | adds `assign` to the data schema's list (an assignment step in the timeline) |
+| `file.uploaded_by` | nullable, only for a public grievance attachment (a CHECK enforces it); the data schema says not null |
+| `/v1/alerts`, `/v1/audit`, `open_alerts` | for a mine head, exclude everything about sensitive grievances |
