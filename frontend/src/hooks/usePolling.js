@@ -1,13 +1,15 @@
 // Interval refetch so dashboards feel live during the demo.
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const DEFAULT_INTERVAL = 5000;
+// 10 s: each screen makes at most two requests per cycle (docs/PERFORMANCE.md).
+const DEFAULT_INTERVAL = 10000;
 
 /**
  * Fetch on mount, then on an interval.
  *
  * Polling rather than websockets: realtime/ws.py exists but polling is what survives a flaky
- * venue network, and a 5s refresh is indistinguishable from live at demo pace. `stale` lets the
+ * venue network, and a 10 s refresh (plus an immediate one when the tab becomes visible) is
+ * close enough to live at demo pace. `stale` lets the
  * UI show the previous data while a refresh is in flight instead of blanking the screen.
  */
 export function usePolling(fetcher, { interval = DEFAULT_INTERVAL, deps = [], enabled = true } = {}) {

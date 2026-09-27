@@ -22,6 +22,26 @@ return [
     'GET v1/mines/geojson' => 'v1/mine/geojson',
     'GET v1/mines/<id:\d+>' => 'v1/mine/view',
     'GET v1/dashboard' => 'v1/dashboard/index',
+    // One request per dashboard screen and polling cycle (docs/PERFORMANCE.md)
+    'GET v1/views/overview' => 'v1/view/overview',
+    'GET v1/views/mine/<id:\d+>' => 'v1/view/mine',
+    'GET v1/views/production' => 'v1/view/production',
+    'GET v1/views/production-overview' => 'v1/view/production-overview',
+
+    // Production reporting (Phase 4)
+    'GET v1/production' => 'v1/production/index',
+    'POST v1/production' => 'v1/production/create',
+    'GET v1/production/summary' => 'v1/production/summary',
+    'GET v1/production/detail' => 'v1/production/detail',
+    'GET v1/production/<id:\d+>' => 'v1/production/view',
+    'PATCH v1/production/<id:\d+>' => 'v1/production/update',
+    'POST v1/production/<id:\d+>/submit' => 'v1/production/submit',
+    'DELETE v1/production/<id:\d+>' => 'v1/production/delete',
+    'GET v1/detail-requests' => 'v1/detail-request/index',
+    'POST v1/detail-requests' => 'v1/detail-request/create',
+    'GET v1/detail-requests/<id:\d+>' => 'v1/detail-request/view',
+    'POST v1/detail-requests/<id:\d+>/respond' => 'v1/detail-request/respond',
+    'POST v1/detail-requests/<id:\d+>/close' => 'v1/detail-request/close',
     'GET v1/compliance/<mine_id:\d+>' => 'v1/compliance/view',
     'GET v1/compliance/<mine_id:\d+>/history' => 'v1/compliance/history',
 

@@ -78,5 +78,15 @@
     "name": "16-corporate-contractors",
     "note": "corporate NCL: its mines only; S4 flagged first",
     "errors": []
+  },
+  {
+    "name": "side-tab gov@dgms.gov.in",
+    "note": "15 API requests in 76 s",
+    "errors": []
+  },
+  {
+    "name": "side-tab head.od-tlc-05@coalmine.in",
+    "note": "12 API requests in 70 s",
+    "errors": []
   }
 ]

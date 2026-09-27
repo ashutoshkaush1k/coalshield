@@ -54,3 +54,23 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | alert code `CONTRACT_WORKER_CAP_EXCEEDED` | new; the other contractor codes existed in the data and are now also raised by `yii contractor/check` |
 | `GET /v1/audit` `source` field and filter | `seed_history` entries: the seeded records' history, backfilled with original timestamps and actors |
 | `/v1/vision/analyze` `backend` | now `yolo` when `backend/ml/weights/ppe.pt` exists (fine-tuned model, docs/AI_EVALUATION.md), `fixture` otherwise |
+
+## Performance (before Phase 4, docs/PERFORMANCE.md)
+
+| New / changed | Notes |
+|---|---|
+| `GET /v1/views/overview?state=` | `{dashboard, contractor_summary}` - the government / corporate overview in one request (was `/dashboard` + `/contractors/summary`) |
+| `GET /v1/views/mine/{id}` | `{mine, trend, violations, alerts, audit, corrective_actions, incidents}` - the mine screen in one request (was seven) |
+| polling | every 10 s (was 5 s); at most two requests per screen and cycle |
+| `/v1/sensors/{id}/trend` | same response; one query for all sensor types |
+| `/v1/alerts` | same response; the histories are loaded in one query |
+
+## Phase 4 additions (no prototype equivalent)
+
+| New | Notes |
+|---|---|
+| `/v1/production`, `/{id}`, `/{id}/submit`, `/summary`, `/detail` | daily entries (draft, submit, correction with reason → `production_edit_log`), numbers-only summary with the anomaly flag, detail behind the detail rule (403 `DETAIL_REQUEST_REQUIRED`) |
+| `/v1/detail-requests`, `/{id}`, `/{id}/respond`, `/{id}/close` | "Call for Detailed Report"; overdue and escalated automatically with `DETAIL_REQUEST_OVERDUE` (levels 1 and 2) |
+| `/v1/views/production`, `/v1/views/production-overview` | one request per production screen |
+| error codes | `DETAIL_REQUEST_REQUIRED` (403), `ENTRY_LOCKED`, `NOTHING_CHANGED` (422); field codes `REASON_REQUIRED`, `ALREADY_REPORTED`, `IN_FUTURE`, `IN_PAST`, `TOO_FAR`, `RANGE_TOO_LONG`, `BEFORE_START`, `OVER_SHIFT_HOURS`, `NEGATIVE`, `TOO_LARGE`, `INVALID_NUMBER`, `INVALID_DATE` |
+| audit | seeded production history (`submitted`, `edited`, `requested`, `responded`) in the chain as `seed_history` |

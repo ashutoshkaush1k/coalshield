@@ -1,9 +1,12 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [phase2|phase3] [outDir]   (default phase2, docs/screenshots/<phase>)
+//   node scripts/browser_check.mjs [phase2|phase3|phase4] [outDir] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
+//   --side-tabs  also keep a government overview and a mine-head dashboard polling in two more tabs
 //
 // phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
 // phase3: contractor screens for the S4 mine head, government and corporate (NCL).
+// phase4: production - government, the Gevra mine head and corporate (SECL): numbers, the detail
+//         gate, call for detailed report -> response -> detail view, entry, submit, correction.
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -15,8 +18,12 @@ import { mkdirSync, mkdtempSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-const PHASE = process.argv[2] ?? "phase2";
-const OUT = resolve(process.argv[3] ?? `docs/screenshots/${PHASE}`);
+const ARGS = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const PHASE = ARGS[0] ?? "phase2";
+const OUT = resolve(ARGS[1] ?? `docs/screenshots/${PHASE}`);
+// --side-tabs: keep a government overview and a mine-head dashboard open and polling in two more
+// tabs for the whole run - two dashboards side by side while the checked one is driven.
+const SIDE_TABS = process.argv.includes("--side-tabs");
 const ROOT = resolve(new URL(".", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"), "..");
 const APP = process.env.APP_URL ?? "http://localhost:5173";
 const API = process.env.API_URL ?? "http://localhost:8080/v1";
@@ -288,13 +295,125 @@ async function phase3(page) {
   await page.shot("16-corporate-contractors", "corporate NCL: its mines only; S4 flagged first");
 }
 
+async function phase4(page) {
+  const GEVRA = 'tr[data-mine="CG-KRB-03"]';
+  const tab = (name) => page.click(name, "button[role=tab]");
+  let text;
+
+  console.log("Government: numbers only, Gevra flagged (S2), call for a detailed report");
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Production");
+  text = await page.until((t) => t.includes("Production across mines") && t.includes("Gevra"));
+  expect(await page.eval(`!!document.querySelector('${GEVRA}.is-flagged')`), "Gevra (S2) is flagged");
+  expect(await page.eval(`!document.querySelector('${GEVRA}').innerText.includes('Pending')`), "no request for Gevra yet");
+  await page.shot("01-gov-production-numbers", "government: numbers only per mine - day and month to date, anomaly flag (Gevra, S2, 4 Sep)");
+  await page.click("View detail", `${GEVRA} button`);
+  await page.until((t) => t.includes("Detailed report required"));
+  await page.shot("02-gov-detail-required", "detail before any answered request: 403 DETAIL_REQUEST_REQUIRED, explained");
+  await page.escape();
+  await page.click("Call for detailed report", `${GEVRA} button`);
+  await page.shot("03-gov-call-for-report", "Call for Detailed Report: range around the flagged day, reason prefilled from the anomaly, deadline");
+  await page.click("Send request", ".modal .overlay-foot button");
+  await page.until((t) => t.includes("Request sent to the mine"));
+  expect(await page.eval(`document.querySelector('${GEVRA}').innerText.includes('Pending')`), "request pending");
+  await page.scrollTo("Calls for detailed report");
+  await page.shot("04-gov-request-pending", "the request, pending; overdue ones escalate automatically with an alert");
+
+  console.log("Mine head of Gevra: entry, submit, correction with reason, answer the request");
+  await page.as("head.cg-krb-03@coalmine.in", "/mine");
+  await tab("Production");
+  await page.until((t) => t.includes("Target vs actual") && t.includes("Pending"));
+  await page.shot("05-head-production", "mine head: inbox with the pending call, charts - target vs actual (anomaly marked), cumulative, shift split");
+  await page.click("New entry", "#production-new");
+  const figures = { "pe-coal_target_t": "3350", "pe-coal_actual_t": "3120.5", "pe-ob_target_m3": "9800", "pe-ob_actual_m3": "9400",
+    "pe-dispatch_t": "2900", "pe-closing_stock_t": "41250", "pe-breakdown_hours": "1.5", "pe-manpower_present": "640",
+    "pe-remarks": "Dragline 3 down for 90 minutes" };
+  for (const [id, value] of Object.entries(figures)) await page.type(`#${id}`, value);
+  await page.shot("06-head-entry-form", "daily entry form: one shift's figures");
+  await page.click("Submit", "#pe-submit");
+  await page.until((t) => t.includes("Entry submitted and locked"));
+  await page.scrollTo("Entries");
+  await page.shot("07-head-entry-submitted", "submitted: the entry is locked");
+  await page.click("Correct with reason", "tr[data-entry] button");
+  await page.type("#pe-coal_actual_t", "3080.5");
+  await page.type("#pe-reason", "Weighbridge reading corrected after reconciliation");
+  await page.shot("08-head-correction-form", "correcting a locked entry needs a reason");
+  await page.click("Save correction", ".modal .overlay-foot button");
+  text = await page.until((t) => t.includes("Correction saved and logged") && t.includes("3120.5 → 3080.5"));
+  expect(text.includes("3120.5 → 3080.5"), "edit log shows old and new value");
+  await page.scrollTo("Entries");
+  await page.shot("09-head-edit-log", "the correction in the edit log: field, old -> new, reason, who, when");
+  await page.scrollTo("Calls for detailed report");
+  await page.click("Respond", "#production-inbox button");
+  await page.type("#dr-note", "Shift-wise registers, weighbridge slips and the dragline log for 1-7 September attached. The 4 September figure includes a backlog of 2 days' dispatch.");
+  await page.setFile("#dr-file", resolve(ROOT, "backend/data/samples/images/with_ppe.jpg"));
+  await page.shot("10-head-respond", "answering the call: note and attachment");
+  await page.click("Respond", ".modal .overlay-foot button");
+  await page.until((t) => t.includes("Response sent"));
+  await page.shot("11-head-request-answered", "answered: status submitted");
+
+  console.log("Government: detail opens for the answered range; accept and close");
+  await page.as("gov@dgms.gov.in", "/gov");
+  await tab("Production");
+  await page.until((t) => t.includes("Production across mines") && t.includes("Gevra"));
+  expect(await page.eval(`document.querySelector('${GEVRA}').innerText.includes('Submitted')`), "request answered");
+  await page.click("View detail", `${GEVRA} button`);
+  text = await page.until((t) => t.includes("Response from the mine") && t.includes("Shift entries"));
+  expect(text.includes("Shift-wise registers, weighbridge slips"), "the mine's response is shown");
+  await page.shot("12-gov-detail-view", "detail view for the answered range: the mine's response, charts, every shift entry");
+  await page.escape();
+  await page.scrollTo("Calls for detailed report");
+  await page.click("Accept and close", "#production-requests button");
+  await page.until((t) => t.includes("Request closed"));
+  await page.shot("13-gov-request-closed", "accepted and closed");
+
+  console.log("Corporate (SECL): its 17 mines; the closed request opens Gevra's detail");
+  await page.as("corporate.secl@coalmine.in", "/gov");
+  await tab("Production");
+  text = await page.until((t) => t.includes("Production across mines") && t.includes("Gevra"));
+  expect(await page.eval(`document.querySelectorAll('tr[data-mine]').length`) === 17, "corporate sees SECL's 17 mines");
+  await page.shot("14-corporate-production", "corporate SECL: the same numbers-only table for its 17 mines");
+  await page.click("View detail", `${GEVRA} button`);
+  await page.until((t) => t.includes("Response from the mine"));
+  await page.shot("15-corporate-detail", "corporate: Gevra's detail, opened by the answered (closed) request");
+}
+
+/** Two more tabs, a government overview and a mine-head dashboard, polling on their own. */
+async function openSideTabs() {
+  const tabs = [];
+  for (const [who, path] of [["gov@dgms.gov.in", "/gov"], ["head.od-tlc-05@coalmine.in", "/mine"]]) {
+    const target = await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: "PUT" }).then((r) => r.json());
+    const ws = new WebSocket(target.webSocketDebuggerUrl);
+    await new Promise((r) => ws.addEventListener("open", r, { once: true }));
+    const tab = new Page(ws);
+    let count = 0, errors = 0;
+    const started = Date.now();
+    ws.addEventListener("message", (e) => {
+      const msg = JSON.parse(e.data);
+      if (msg.method === "Network.responseReceived" && msg.params.response.url.includes("/v1/")) {
+        count++;
+        if (msg.params.response.status >= 500) errors++;
+      }
+      if (msg.method === "Network.loadingFailed") errors++;
+    });
+    await tab.send("Page.enable");
+    await tab.send("Runtime.enable");
+    await tab.send("Network.enable");
+    await tab.as(who, path);
+    tabs.push({ who, ws, requests: () => ({ count, errors, seconds: (Date.now() - started) / 1000 }) });
+    console.log(`  side tab open: ${who} on ${path}`);
+  }
+  return tabs;
+}
+
 async function main() {
   mkdirSync(OUT, { recursive: true });
   const exe = BROWSERS.find(existsSync);
   if (!exe) throw new Error("Edge or Chrome not found");
   const profile = mkdtempSync(join(tmpdir(), "cs-check-"));
   const browser = spawn(exe, ["--headless=new", `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,
-    "--window-size=1440,900", "--hide-scrollbars", "about:blank"], { stdio: "ignore" });
+    "--window-size=1440,900", "--hide-scrollbars", "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "about:blank"], { stdio: "ignore" });
   try {
     let target;
     for (let i = 0; i < 40 && !target; i++) {
@@ -310,8 +429,13 @@ async function main() {
     await page.send("DOM.enable");
     await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
 
+    const side = SIDE_TABS ? await openSideTabs() : [];
+    // A new tab takes the foreground, and a background tab's screenshot can wait forever:
+    // bring the checked tab back to the front.
+    if (side.length) await fetch(`http://127.0.0.1:${PORT}/json/activate/${target.id}`, { method: "PUT" }).catch(() => null);
+
     try {
-      await (PHASE === "phase3" ? phase3 : phase2)(page);
+      await ({ phase2, phase3, phase4 }[PHASE] ?? phase2)(page);
     } catch (e) {
       // Keep what the page showed when a check failed, for diagnosis.
       const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));
@@ -321,12 +445,18 @@ async function main() {
     }
 
     ws.close();
+    for (const tab of side) {
+      const polls = tab.requests();
+      console.log(`  side tab ${tab.who}: ${polls.count} API requests in ${Math.round(polls.seconds)} s, ${polls.errors} failed`);
+      results.push({ name: `side-tab ${tab.who}`, note: `${polls.count} API requests in ${Math.round(polls.seconds)} s`, errors: polls.errors ? [`${polls.errors} failed requests`] : [] });
+      tab.ws.close();
+    }
   } finally {
     browser.kill();
   }
   writeFileSync(join(OUT, "results.json"), JSON.stringify(results, null, 2));
   const withErrors = results.filter((r) => r.errors.length);
-  console.log(`\n${results.length} screenshots in ${OUT}; ${withErrors.length} step(s) logged browser errors.`);
+  console.log(`\n${results.filter((r) => !r.name.startsWith("side-tab")).length} screenshots in ${OUT}; ${withErrors.length} step(s) logged browser errors.`);
   for (const r of withErrors) console.log(`  ${r.name}: ${r.errors.slice(0, 3).join(" | ")}`);
 }
 

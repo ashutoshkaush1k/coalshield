@@ -17,7 +17,7 @@ function Tally({ label, value, tone }) {
   );
 }
 
-export function OverviewPanel({ data, state, onStateChange, onOpenContractors }) {
+export function OverviewPanel({ data, contractorSummary, state, onStateChange, onOpenContractors }) {
   const stats = data?.stats;
   const { user } = useAuth();
   const scope = state ?? t(`scope.${data?.scope_label_code ?? "NATIONAL"}`);
@@ -85,7 +85,7 @@ export function OverviewPanel({ data, state, onStateChange, onOpenContractors })
           <CoreSampleBoard mines={data?.mines} />
         </div>
       </section>
-      <ContractorSummaryCard state={state} onOpen={onOpenContractors} />
+      <ContractorSummaryCard data={contractorSummary} onOpen={onOpenContractors} />
     </div>
   );
 }

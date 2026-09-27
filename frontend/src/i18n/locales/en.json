@@ -43,7 +43,13 @@
     "visited": "Visited",
     "closed": "Closed",
     "promoted": "Promoted",
-    "dismissed": "Dismissed"
+    "dismissed": "Dismissed",
+    "pending": "Pending",
+    "submitted": "Submitted",
+    "overdue": "Overdue",
+    "escalated": "Escalated",
+    "draft": "Draft",
+    "locked": "Locked"
   },
   "errors": {
     "UNAUTHENTICATED": "Please sign in again.",
@@ -58,7 +64,10 @@
     "NOT_A_DIRECTIVE": "Only directives can be reopened.",
     "INTERNAL_ERROR": "Something went wrong on the server. Please try again.",
     "NETWORK": "Cannot reach the API. Is it running on port 8080?",
-    "UNKNOWN": "Something went wrong."
+    "UNKNOWN": "Something went wrong.",
+    "DETAIL_REQUEST_REQUIRED": "Detailed records for this mine and period open only once the mine has answered a Call for Detailed Report covering it.",
+    "ENTRY_LOCKED": "This entry has been submitted. Correct it with a reason instead.",
+    "NOTHING_CHANGED": "Nothing was changed."
   },
   "fields": {
     "REQUIRED": "required",
@@ -70,7 +79,19 @@
     "NOT_FOUND": "not found",
     "FILE_TYPE_NOT_ALLOWED": "file type not allowed",
     "FILE_TOO_LARGE": "file too large",
-    "NOT_IN_SAME_MINE": "must belong to the same mine"
+    "NOT_IN_SAME_MINE": "must belong to the same mine",
+    "REASON_REQUIRED": "a reason is required",
+    "ALREADY_REPORTED": "this shift is already reported",
+    "IN_FUTURE": "cannot be in the future",
+    "IN_PAST": "must be in the future",
+    "TOO_FAR": "too far ahead",
+    "RANGE_TOO_LONG": "range too long (at most 92 days)",
+    "BEFORE_START": "before the start date",
+    "OVER_SHIFT_HOURS": "more than one shift (8 h)",
+    "NEGATIVE": "cannot be negative",
+    "TOO_LARGE": "too large",
+    "INVALID_NUMBER": "not a number",
+    "INVALID_DATE": "invalid date"
   },
   "sensor": {
     "ch4": "Methane",
@@ -248,7 +269,11 @@
       "closed": "closed",
       "raised": "raised",
       "started": "started",
-      "uploaded": "uploaded"
+      "uploaded": "uploaded",
+      "submitted": "submitted",
+      "edited": "corrected",
+      "requested": "requested",
+      "responded": "answered"
     },
     "entity": {
       "alert": "Alert",
@@ -268,7 +293,10 @@
       "contractor": "Contractor",
       "contract": "Contract",
       "contract_worker": "Contract worker",
-      "contractor_compliance_doc": "Contractor document"
+      "contractor_compliance_doc": "Contractor document",
+      "daily_production": "Production entry",
+      "production_edit_log": "Production correction",
+      "production_detail_request": "Detailed report request"
     },
     "system": "System",
     "changes": "Changes",
@@ -516,5 +544,130 @@
     "allTitle": "All contractors",
     "allHint": "Worst first; select one for its detail (read-only)",
     "scoreNote": "The contractor score is a demo value: 100 minus violations per active worker (x40, max 40), 2 per missing monthly document (max 30), 30 for an expired or 10 for an expiring licence, up to 15 for workers with expired training or overdue medicals, and 5 per contract over its worker limit."
+  },
+  "production": {
+    "tabLabel": "Production",
+    "loading": "Loading production...",
+    "demoNote": "Production figures are synthetic demo data calibrated to Ministry of Coal monthly figures.",
+    "field": {
+      "coal_target_t": "Coal target (t)",
+      "coal_actual_t": "Coal actual (t)",
+      "ob_target_m3": "OB target (m³)",
+      "ob_actual_m3": "OB actual (m³)",
+      "dispatch_t": "Dispatch (t)",
+      "closing_stock_t": "Closing stock (t)",
+      "breakdown_hours": "Breakdown (h)",
+      "manpower_present": "Manpower present",
+      "remarks": "Remarks",
+      "date": "Date",
+      "shift": "Shift"
+    },
+    "shiftName": "Shift {{shift}}",
+    "entry": {
+      "title": "Shift entry",
+      "hint": "Drafts can be changed freely. Once submitted, an entry is locked: a change needs a reason and goes to the edit log.",
+      "saveDraft": "Save draft",
+      "saved": "Draft saved",
+      "submit": "Submit",
+      "submitted": "Entry submitted and locked",
+      "delete": "Delete draft",
+      "deleted": "Draft deleted",
+      "existing": "This shift is already reported ({{status}}).",
+      "correct": "Correct with reason",
+      "correctTitle": "Correct a submitted entry",
+      "correctHint": "Every changed figure is recorded in the edit log with your reason, and in the audit trail.",
+      "reason": "Reason for the change",
+      "saveCorrection": "Save correction",
+      "corrected": "Correction saved and logged",
+      "new": "New entry",
+      "editDraft": "Edit draft"
+    },
+    "charts": {
+      "targetVsActual": "Target vs actual, per day",
+      "cumulative": "Month to date, cumulative",
+      "shiftSplit": "Output by shift",
+      "target": "Target",
+      "actual": "Actual",
+      "cumTarget": "Cumulative target",
+      "cumActual": "Cumulative actual",
+      "empty": "No production reported for this period.",
+      "anomalyDay": "Anomaly flagged"
+    },
+    "entries": {
+      "title": "Entries",
+      "month": "Month",
+      "empty": "No entries for this month.",
+      "achievement": "Achievement",
+      "edits_one": "{{count}} correction",
+      "edits_other": "{{count}} corrections"
+    },
+    "anomaly": {
+      "flag": "Anomaly",
+      "flagged": "Flagged",
+      "none": "-",
+      "OVER_TARGET": "{{date}}: output {{achievement_pct}} % of target (more than {{threshold_pct}} % above it)",
+      "ROLLING_MEAN_SPIKE": "{{date}}: output {{ratio}}x the {{days}}-day average ({{z}} standard deviations)",
+      "ROLLING_MEAN_DROP": "{{date}}: output {{ratio}}x the {{days}}-day average ({{z}} standard deviations)",
+      "rule": "A day is flagged when output is more than 50 % above its target, or far from the mine's 30-day average while its target is not (product settings in rules.yaml, not law)."
+    },
+    "gov": {
+      "title": "Production across mines",
+      "hint": "Numbers only. A mine's detailed records open once it has answered a Call for Detailed Report.",
+      "date": "Day",
+      "today": "Day",
+      "mtd": "Month to date",
+      "target": "Target (t)",
+      "actual": "Actual (t)",
+      "achievement": "Achievement",
+      "request": "Detailed report",
+      "callFor": "Call for detailed report",
+      "notReported": "not reported",
+      "flaggedCount": "{{count}} mine(s) with an anomaly this month",
+      "totals": "All mines in view",
+      "openDetail": "View detail",
+      "shifts": "{{count}}/3 shifts"
+    },
+    "detail": {
+      "title": "{{mine}}: detailed production",
+      "range": "{{from}} to {{to}}",
+      "response": "Response from the mine",
+      "responseFile": "Attached file",
+      "open": "Open",
+      "noFile": "No file attached",
+      "entriesTitle": "Shift entries",
+      "edits": "Edit log",
+      "editLine": "{{field}}: {{old}} → {{new}} - {{reason}} ({{who}}, {{when}})",
+      "ownMine": "Your mine's records",
+      "requiredTitle": "Detailed report required (403 DETAIL_REQUEST_REQUIRED)",
+      "requiredHint": "Numbers only until then. Use Call for detailed report to ask the mine for {{from}} to {{to}}; its detail opens here once it answers."
+    }
+  },
+  "detailRequest": {
+    "title": "Call for detailed report",
+    "hint": "A demand with a deadline: the mine must send its detailed production records for the period.",
+    "mine": "Mine",
+    "from": "From",
+    "to": "To",
+    "reason": "Reason",
+    "due": "Due by",
+    "send": "Send request",
+    "sent": "Request sent to the mine",
+    "listTitle": "Calls for detailed report",
+    "listHint": "Overdue requests escalate automatically, with an alert.",
+    "empty": "No calls for detailed report.",
+    "requestedBy": "Requested by {{name}}",
+    "dueAt": "Due {{when}}",
+    "respondedAt": "Answered {{when}} by {{name}}",
+    "period": "Period",
+    "inboxTitle": "Calls for detailed report",
+    "inboxHint": "From the regulator or your company: answer before the deadline. Overdue requests escalate.",
+    "respond": "Respond",
+    "respondTitle": "Answer the call for detailed report",
+    "note": "Response",
+    "file": "Attachment (optional)",
+    "responded": "Response sent",
+    "close": "Accept and close",
+    "closed": "Request closed",
+    "awaiting": "Awaiting the mine"
   }
 }

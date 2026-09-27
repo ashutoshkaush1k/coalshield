@@ -1,0 +1,128 @@
+{
+  "stats": {
+    "images": 213,
+    "violation_sets_agree": 172,
+    "violations_and_people_agree": 172,
+    "images_with_people": 126,
+    "violation_sets_agree_with_people": 92,
+    "truth_clean_with_people": 52,
+    "truth_with_violations": 74,
+    "policy": {
+      "required_ppe": [
+        "helmet",
+        "vest"
+      ],
+      "min_confidence": 0.45
+    }
+  },
+  "chosen": [
+    {
+      "demo_file": "heldout_01_clean.jpg",
+      "file": "00000383_jpg.rf.f19d5665fd1ea7a703d699ee6fc2ef7b.jpg",
+      "truth": {
+        "people": 2,
+        "violations": []
+      },
+      "predicted": {
+        "people": 2,
+        "violations": []
+      },
+      "violations_agree": true,
+      "agree": true
+    },
+    {
+      "demo_file": "heldout_02_clean.jpg",
+      "file": "Aitin0586_jpg.rf.e285b7b5848abec78c0f0f96802062e5.jpg",
+      "truth": {
+        "people": 1,
+        "violations": []
+      },
+      "predicted": {
+        "people": 1,
+        "violations": []
+      },
+      "violations_agree": true,
+      "agree": true
+    },
+    {
+      "demo_file": "heldout_03_clean.jpg",
+      "file": "Aitin2742_jpg.rf.f99afc520994a85e8a02f051b905c273.jpg",
+      "truth": {
+        "people": 1,
+        "violations": []
+      },
+      "predicted": {
+        "people": 1,
+        "violations": []
+      },
+      "violations_agree": true,
+      "agree": true
+    },
+    {
+      "demo_file": "heldout_04_violations.jpg",
+      "file": "AightOne0585_jpg.rf.930afe066dde3ff8169bfc6abf80b5b4.jpg",
+      "truth": {
+        "people": 2,
+        "violations": [
+          "no_helmet",
+          "no_helmet",
+          "no_safety_vest"
+        ]
+      },
+      "predicted": {
+        "people": 2,
+        "violations": [
+          "no_helmet",
+          "no_helmet",
+          "no_safety_vest"
+        ]
+      },
+      "violations_agree": true,
+      "agree": true
+    },
+    {
+      "demo_file": "heldout_05_violations.jpg",
+      "file": "AightOne0869_jpg.rf.0df88b0b49e4373b7ab5158d79cda296.jpg",
+      "truth": {
+        "people": 2,
+        "violations": [
+          "no_helmet",
+          "no_helmet",
+          "no_safety_vest"
+        ]
+      },
+      "predicted": {
+        "people": 2,
+        "violations": [
+          "no_helmet",
+          "no_helmet",
+          "no_safety_vest"
+        ]
+      },
+      "violations_agree": true,
+      "agree": true
+    },
+    {
+      "demo_file": "heldout_06_violations.jpg",
+      "file": "00020_jpg.rf.abe4d0d5d5829754ec268692af2e7307.jpg",
+      "truth": {
+        "people": 3,
+        "violations": [
+          "no_helmet",
+          "no_helmet",
+          "no_helmet"
+        ]
+      },
+      "predicted": {
+        "people": 3,
+        "violations": [
+          "no_helmet",
+          "no_helmet",
+          "no_helmet"
+        ]
+      },
+      "violations_agree": true,
+      "agree": true
+    }
+  ]
+}

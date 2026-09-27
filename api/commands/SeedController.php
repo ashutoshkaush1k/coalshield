@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\commands;
 
 use app\components\AuditChain;
+use app\components\CacheReset;
 use Yii;
 use yii\console\Controller;
 use yii\console\ExitCode;
@@ -114,6 +115,7 @@ class SeedController extends Controller
             $this->stderr('Seed failed, nothing was changed: ' . $e->getMessage() . "\n", Console::FG_RED);
             return ExitCode::DATAERR;
         }
+        CacheReset::flush();   // roles were re-assigned and new tables may have appeared
 
         $this->stdout(sprintf("Seeded preset '%s' (%d tables, %d role assignments, %d history entries in the audit chain) in %.1fs.\n",
             $preset, count($loaded), $assigned, $history, microtime(true) - $started), Console::FG_GREEN);
@@ -197,6 +199,30 @@ class SeedController extends Controller
                                        'file_id', d.file_id, 'verified', d.verified),
                     f.uploaded_by, f.created_at, c.mine_id, 2
                FROM contractor_compliance_doc d JOIN file f ON f.id = d.file_id JOIN contract c ON c.id = d.contract_id";
+        }
+        if ($has('daily_production')) {
+            $parts[] = "SELECT 'daily_production', p.id, 'submitted', jsonb_build_object('status', 'draft'),
+                    jsonb_build_object('status', 'submitted', 'date', p.date, 'shift', p.shift, 'coal_target_t', p.coal_target_t,
+                                       'coal_actual_t', p.coal_actual_t),
+                    p.submitted_by, p.submitted_at, p.mine_id, 1
+               FROM daily_production p WHERE p.submitted_at IS NOT NULL";
+        }
+        if ($has('production_edit_log', 'daily_production')) {
+            $parts[] = "SELECT 'daily_production', e.production_id, 'edited', jsonb_build_object(e.field, e.old_value),
+                    jsonb_build_object(e.field, e.new_value, 'reason', e.reason, 'edit_log_id', e.id),
+                    e.edited_by, e.edited_at, p.mine_id, 2
+               FROM production_edit_log e JOIN daily_production p ON p.id = e.production_id";
+        }
+        if ($has('production_detail_request')) {
+            $parts[] = "SELECT 'production_detail_request', r.id, 'requested', NULL::jsonb,
+                    jsonb_build_object('date_from', r.date_from, 'date_to', r.date_to, 'reason', r.reason,
+                                       'due_at', to_char(r.due_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'), 'status', 'pending'),
+                    r.requested_by, r.created_at, r.mine_id, 3
+               FROM production_detail_request r";
+            $parts[] = "SELECT 'production_detail_request', r.id, 'responded', jsonb_build_object('status', 'pending'),
+                    jsonb_build_object('status', 'submitted', 'response_note', r.response_note, 'response_file_id', r.response_file_id),
+                    r.responded_by, r.responded_at, r.mine_id, 4
+               FROM production_detail_request r WHERE r.responded_at IS NOT NULL";
         }
         if ($has('alert')) {
             $parts[] = "SELECT 'alert', a.id, 'raised', NULL::jsonb,

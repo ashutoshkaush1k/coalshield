@@ -50,66 +50,106 @@ final class ContractorService
             return [];
         }
         $today ??= gmdate('Y-m-d');
-        $ids = array_map(fn(Contractor $c) => (int) $c->id, $contractors);
+        $stats = self::collect(array_map(fn(Contractor $c) => (int) $c->id, $contractors), $mineIds, $today, false);
+        $out = [];
+        foreach ($contractors as $contractor) {
+            $out[(int) $contractor->id] = self::score($contractor, $stats[(int) $contractor->id], $today);
+        }
+        return $out;
+    }
+
+    /**
+     * Each contractor scored separately at each mine where it holds a contract, counting only its
+     * contracts and violations there - the same result as evaluate($contractors, [$mineId]) per
+     * mine, from one set of queries.
+     * @param array<int, Contractor> $contractors indexed by id
+     * @return array<int, array<int, array>> [mine id][contractor id] => evaluation
+     */
+    public static function evaluatePerMine(array $contractors, array $mineIds, ?string $today = null): array
+    {
+        if ($contractors === []) {
+            return [];
+        }
+        $today ??= gmdate('Y-m-d');
+        $out = [];
+        foreach (self::collect(array_keys($contractors), $mineIds, $today, true) as $key => $s) {
+            [$contractorId, $mineId] = array_map('intval', explode('|', (string) $key));
+            $out[$mineId][$contractorId] = self::score($contractors[$contractorId], $s, $today);
+        }
+        return $out;
+    }
+
+    /**
+     * The figures behind a score, per contractor id - or, with $perMine, per "contractor|mine".
+     * @param int[] $ids
+     */
+    private static function collect(array $ids, ?array $mineIds, string $today, bool $perMine): array
+    {
         $contracts = (new Query())->from('{{%contract}}')->where(['contractor_id' => $ids])
             ->andFilterWhere(['mine_id' => $mineIds])->orderBy('id')->all();
         $contractIds = array_column($contracts, 'id');
         $activeContracts = array_filter($contracts, fn($c) => $c['start_date'] <= $today && $c['end_date'] >= $today);
 
         $workers = $contractIds === [] ? [] : (new Query())->from('{{%contract_worker}}')->where(['contract_id' => $contractIds])->all();
-        $contractorOf = array_column($contracts, 'contractor_id', 'id');
+        $keyOf = [];   // contract id => stats key
+        foreach ($contracts as $c) {
+            $keyOf[$c['id']] = $perMine ? $c['contractor_id'] . '|' . $c['mine_id'] : (int) $c['contractor_id'];
+        }
         $medicalMonths = (int) Rules::value('legal', 'medical_exam_interval_months');
         $medicalCutoff = (new \DateTimeImmutable($today))->modify("-{$medicalMonths} months")->format('Y-m-d');
 
+        $empty = ['active_workers' => 0, 'vt_expired' => 0, 'medical_overdue' => 0, 'violations' => 0,
+            'missing_docs' => [], 'unverified_docs' => 0, 'over_cap' => [], 'contracts' => 0, 'active_contracts' => 0];
         $stats = [];
-        foreach ($ids as $id) {
-            $stats[$id] = ['active_workers' => 0, 'vt_expired' => 0, 'medical_overdue' => 0, 'violations' => 0,
-                'missing_docs' => [], 'unverified_docs' => 0, 'over_cap' => [], 'contracts' => 0, 'active_contracts' => 0];
+        if (!$perMine) {
+            foreach ($ids as $id) {
+                $stats[$id] = $empty;
+            }
         }
         foreach ($contracts as $c) {
-            $stats[$c['contractor_id']]['contracts']++;
+            $stats[$keyOf[$c['id']]] ??= $empty;
+            $stats[$keyOf[$c['id']]]['contracts']++;
         }
         $activeByContract = [];
         foreach ($workers as $w) {
             if (!$w['active']) {
                 continue;
             }
-            $cid = $contractorOf[$w['contract_id']];
-            $stats[$cid]['active_workers']++;
+            $key = $keyOf[$w['contract_id']];
+            $stats[$key]['active_workers']++;
             $activeByContract[$w['contract_id']] = ($activeByContract[$w['contract_id']] ?? 0) + 1;
             if ($w['vt_cert_valid_to'] < $today) {
-                $stats[$cid]['vt_expired']++;
+                $stats[$key]['vt_expired']++;
             }
             if ($w['medical_exam_date'] < $medicalCutoff) {
-                $stats[$cid]['medical_overdue']++;
+                $stats[$key]['medical_overdue']++;
             }
         }
         foreach ($activeContracts as $c) {
-            $stats[$c['contractor_id']]['active_contracts']++;
+            $key = $keyOf[$c['id']];
+            $stats[$key]['active_contracts']++;
             $active = $activeByContract[$c['id']] ?? 0;
             if ($active > (int) $c['max_workers']) {
-                $stats[$c['contractor_id']]['over_cap'][] = ['contract_id' => (int) $c['id'], 'active_workers' => $active, 'max_workers' => (int) $c['max_workers']];
+                $stats[$key]['over_cap'][] = ['contract_id' => (int) $c['id'], 'active_workers' => $active, 'max_workers' => (int) $c['max_workers']];
             }
         }
-        foreach ((new Query())->select(['contractor_id', 'n' => 'count(*)'])->from('{{%violation}}')
-            ->where(['contractor_id' => $ids])->andFilterWhere(['mine_id' => $mineIds])->groupBy('contractor_id')->all() as $row) {
-            $stats[$row['contractor_id']]['violations'] = (int) $row['n'];
+        foreach ((new Query())->select(['contractor_id', 'mine_id', 'n' => 'count(*)'])->from('{{%violation}}')
+            ->where(['contractor_id' => $ids])->andFilterWhere(['mine_id' => $mineIds])->groupBy(['contractor_id', 'mine_id'])->all() as $row) {
+            $key = $perMine ? $row['contractor_id'] . '|' . $row['mine_id'] : (int) $row['contractor_id'];
+            if (isset($stats[$key])) {   // per mine: a violation where the contractor holds no contract is not scored there
+                $stats[$key]['violations'] += (int) $row['n'];
+            }
         }
         foreach (self::missingDocuments($contracts, $today) as $missing) {
-            $stats[$contractorOf[$missing['contract_id']]]['missing_docs'][] = $missing;
+            $stats[$keyOf[$missing['contract_id']]]['missing_docs'][] = $missing;
         }
         if ($contractIds !== []) {
             foreach ((new Query())->select(['contract_id', 'n' => 'count(*)'])->from('{{%contractor_compliance_doc}}')
                 ->where(['contract_id' => $contractIds, 'verified' => false])->groupBy('contract_id')->all() as $row) {
-                $stats[$contractorOf[$row['contract_id']]]['unverified_docs'] += (int) $row['n'];
+                $stats[$keyOf[$row['contract_id']]]['unverified_docs'] += (int) $row['n'];
             }
         }
-
-        $out = [];
-        foreach ($contractors as $contractor) {
-            $out[(int) $contractor->id] = self::score($contractor, $stats[(int) $contractor->id], $today);
-        }
-        return $out;
+        return $stats;
     }
 
     /** The score, band and reasons ({code, params}) for one contractor's figures. */
@@ -244,9 +284,10 @@ final class ContractorService
         $mines = (new Query())->select(['id', 'code', 'name', 'state'])->from('{{%mine}}')->where(['id' => array_keys($byMine)])->indexBy('id')->all();
         $contractors = Contractor::find()->where(['id' => array_unique(array_column($pairs, 'contractor_id'))])->indexBy('id')->all();
 
+        $perMine = self::evaluatePerMine($contractors, array_keys($byMine), $today);
         $rows = [];
         foreach ($byMine as $mineId => $ids) {
-            $evals = self::evaluate(array_map(fn($id) => $contractors[$id], $ids), [$mineId], $today);
+            $evals = $perMine[$mineId];
             $bands = array_count_values(array_column($evals, 'band'));
             $rows[] = [
                 'mine_id' => $mineId, 'code' => $mines[$mineId]['code'], 'name' => $mines[$mineId]['name'], 'state' => $mines[$mineId]['state'],

@@ -1514,7 +1514,8 @@ sources:
   licence: CC BY 4.0 (stated in the dataset's own README.dataset.txt and data.yaml, Roboflow project ppe-detection-ozhfb
     v14)
   licence_source: https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11/blob/98085c8a901121d5ec0bf1194f7319a9b792b9cb/dataset/README.dataset.txt
-  redistribution: allowed with attribution; kept out of git (size)
+  redistribution: allowed with attribution; kept out of git (size), except a handful of held-out test images copied
+    unmodified to backend/data/samples/heldout/ for the PPE demo, with attribution in that folder's README.md
   pinned_commit: 98085c8a901121d5ec0bf1194f7319a9b792b9cb
   notes: '6 classes: Gloves, Hard_hat, Mask, Person, Safety_boots, Vest (read from data.yaml; the repo
     README''s summary omits vests). The dataset/ folder holds 1,619 images with 1,619 matching label files

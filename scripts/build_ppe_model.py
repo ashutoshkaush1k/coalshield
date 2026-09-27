@@ -14,8 +14,13 @@ and per-class precision, recall, mAP50 and mAP50-95 are written to docs/AI_EVALU
 
 Usage (from the repository root, with backend\\.venv, which has ultralytics and torch):
     backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --probe       # time one epoch
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --epochs 12   # train, evaluate, install
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --evaluate-only
+    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py               # train (defaults = the kept
+                                                                                  # model: 25 epochs, 640 px, nothing
+                                                                                  # frozen; about 2 h CPU), evaluate, install
+    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --epochs 10 --imgsz 512 --freeze 10 --warmup 1
+                                                                                  # the quicker first run (about 20 min)
+    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --candidate --name <run>   # train + test, do not install
+    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --evaluate-only --name ppe_e25_640
 """
 
 from __future__ import annotations
@@ -131,13 +136,16 @@ ultralytics {ultralytics.__version__}).
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--imgsz", type=int, default=512)
+    parser.add_argument("--epochs", type=int, default=25)
+    parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=16)
-    parser.add_argument("--freeze", type=int, default=10, help="freeze the first N layers (backbone)")
-    parser.add_argument("--warmup", type=float, default=1.0, help="warm-up epochs")
+    parser.add_argument("--freeze", type=int, default=0, help="freeze the first N layers (backbone)")
+    parser.add_argument("--warmup", type=float, default=3.0, help="warm-up epochs")
     parser.add_argument("--probe", action="store_true", help="train one epoch only, to time it")
     parser.add_argument("--evaluate-only", action="store_true", help="evaluate the installed weights")
+    parser.add_argument("--name", default="ppe", help="run name under backend/ml/runs")
+    parser.add_argument("--candidate", action="store_true",
+                        help="train and evaluate on the test split only; do not install or touch the report")
     args = parser.parse_args()
     WORK.mkdir(parents=True, exist_ok=True)
     os.chdir(WORK)   # Ultralytics downloads the base weights into the working directory
@@ -146,17 +154,27 @@ def main() -> int:
         if not WEIGHTS.exists():
             sys.exit(f"no weights at {WEIGHTS}")
         result = evaluate(WEIGHTS, args.imgsz)
-        write_report(result, args.epochs, args.imgsz, "n/a")
+        minutes_file = WORK / args.name / "train_minutes.txt"
+        minutes = minutes_file.read_text(encoding="utf-8").strip() if minutes_file.exists() else "n/a"
+        write_report(result, args.epochs, args.imgsz, minutes, args.freeze)
         return 0
     if args.probe:
         train(1, args.imgsz, args.batch, "probe", args.freeze, args.warmup)
         return 0
 
-    best = train(args.epochs, args.imgsz, args.batch, "ppe", args.freeze, args.warmup)
+    best = train(args.epochs, args.imgsz, args.batch, args.name, args.freeze, args.warmup)
+    if args.candidate:
+        result = evaluate(best, args.imgsz)
+        result["settings"] = {"epochs": args.epochs, "imgsz": args.imgsz, "freeze": args.freeze,
+                              "warmup": args.warmup, "batch": args.batch}
+        out = WORK / args.name / "test_metrics.json"
+        out.write_text(json.dumps(result, indent=2), encoding="utf-8")
+        print(f"candidate {best}: test mAP50 {result['all']['map50']:.3f} (not installed; {out})")
+        return 0
     WEIGHTS.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(best, WEIGHTS)
     print(f"installed {WEIGHTS}")
-    minutes = (WORK / "ppe" / "train_minutes.txt").read_text(encoding="utf-8").strip()
+    minutes = (WORK / args.name / "train_minutes.txt").read_text(encoding="utf-8").strip()
     write_report(evaluate(WEIGHTS, args.imgsz), args.epochs, args.imgsz, minutes, args.freeze)
     return 0
 

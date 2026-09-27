@@ -563,3 +563,19 @@ tr.is-flagged { background: var(--risk-high-bg); }
 .flagged-list li { margin: var(--space-2) 0; }
 
 .overlay-body td.mono { white-space: nowrap; }
+
+/* Production (Phase 4) */
+.chart-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4); }
+.chart-frame { min-width: 0; }
+.chart-frame .label { display: block; margin-bottom: var(--space-2); }
+.production-table td, .production-table th { white-space: nowrap; }
+.production-table td:first-child { white-space: normal; min-width: 180px; }
+.edit-log-row td { background: var(--sunk); padding-top: var(--space-2); padding-bottom: var(--space-2); }
+.entry-table td.mono { white-space: nowrap; }
+.panel-head.wrap { flex-wrap: wrap; }
+.panel-head.wrap > div:first-child { flex: 1 1 360px; }
+.head-controls { flex-wrap: wrap; }
+.head-controls input, .head-controls select { width: auto; }
+.head-controls .label { margin: 0; }
+.production-table td:last-child { white-space: normal; min-width: 190px; }
+.production-table td:last-child .row { flex-wrap: wrap; gap: var(--space-2); }

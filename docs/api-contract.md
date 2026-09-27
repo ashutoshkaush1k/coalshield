@@ -66,6 +66,20 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 | POST | `/contracts/{id}/documents` | `contractor.manage` | multipart `doc_type`, `period` (YYYY-MM), `file`; 422 `ALREADY_UPLOADED` per contract, type and month |
 | POST | `/contractor-docs/{id}/verify`, DELETE `/contractor-docs/{id}` | `contractor.manage` | verify or remove a document |
 | PATCH | `/violations/{id}/contractor` | `violation.linkContractor` | `{contractor_id: id|null}`; the contractor must hold a contract at the violation's mine |
+| GET | `/views/overview?state=` | `dashboard.view` | one request per overview poll: `{dashboard, contractor_summary}` - each part exactly its endpoint's response (`contractor_summary` null without `contractor.summary`) |
+| GET | `/views/mine/{id}` | `mine.view` (+ each part's own) | one request per mine-screen poll: `{mine, trend, violations, alerts, audit, corrective_actions, incidents}`; 404 out of scope |
+| GET | `/views/production?month=` | `production.manage` | mine head's production screen: `{month, today, entries, charts, requests}` |
+| GET | `/views/production-overview?state=&date=` | `production.summary` | `{summary, requests}` |
+| GET | `/production/summary?state=&date=` | `production.summary` | numbers only, per mine: day and month-to-date target / actual / achievement %, `anomaly {flagged, days[]}`, latest `request`; runs the deadline check |
+| GET | `/production?mine_id=&from=&to=`, `/production/detail?...` | detail rule (below) | entries (with edit log); `detail` adds `charts` and the covering `request`. Range at most 92 days; the current month by default |
+| GET | `/production/{id}` | detail rule | one entry with its edit log |
+| POST | `/production` | `production.manage` | a draft for the own mine: `{date, shift, coal_target_t, ..., remarks?}`; 422 `ALREADY_REPORTED` / `IN_FUTURE` |
+| PATCH | `/production/{id}` | `production.manage` | a draft freely; a submitted / locked entry only with `reason` (422 `REASON_REQUIRED`, `NOTHING_CHANGED`) - each changed field → `production_edit_log` |
+| POST | `/production/{id}/submit`, DELETE `/production/{id}` | `production.manage` | draft → submitted; delete a draft only (422 `ENTRY_LOCKED`) |
+| GET | `/detail-requests?mine_id=&status=`, `/detail-requests/{id}` | `detailRequest.view` | "Call for Detailed Report" in scope, newest first (detail with history); runs the deadline check |
+| POST | `/detail-requests` | `detailRequest.create` | `{mine_id, date_from, date_to, reason, due_at}` (range ≤ 92 days, ending by today; due in the future, ≤ 60 days) |
+| POST | `/detail-requests/{id}/respond` | `detailRequest.respond` | mine head: multipart `response_note`, `file?` - also late (overdue / escalated); resolves the overdue alert |
+| POST | `/detail-requests/{id}/close` | `detailRequest.create` | submitted → closed |
 | POST | `/vision/analyze` | `vision.analyze` | multipart `mine_id`, `file` → detections, violations, score before/after |
 | GET | `/files/{id}/content?expires=&signature=` | signed link | stored image (annotated frame, proof) |
 | GET | `/admin/baseline-check` | `admin.baselineCheck` | live scores vs seeded baseline |
@@ -91,6 +105,36 @@ s.48(3)), SAF-04 (OSH (Central) Rules 2026 r.159), HLT-01 (r.109(1)). The weight
 are product settings. Contractor alerts (`CONTRACTOR_LICENCE_EXPIRING`, `WORKER_VT_EXPIRED`,
 `WORKER_MEDICAL_EXPIRED`, `CONTRACTOR_DOC_MISSING`, `CONTRACT_WORKER_CAP_EXCEEDED`) are raised by
 `yii contractor/check` (idempotent; run by `run_all.bat`).
+
+## Production (Phase 4)
+
+**Entries.** `draft` (free to edit) → `submitted` (the mine head submits; closed to direct
+editing) → `locked` (the reporting period closed, `product.production_lock_after_days` = 7 after
+the date, by `yii production/check`). A submitted or locked entry changes only with a reason:
+every changed field gets a `production_edit_log` row (old, new, reason, who, when) in the same
+transaction, and the audit chain has the change.
+
+**Detail rule** (`api/components/AccessRule.php`): the mine must be in scope (404 otherwise). A
+mine head (`production.viewDetail`) sees its own mine in full. A multi-mine role
+(`production.viewRequested`) sees a mine's entries for `[from, to]` only when a detail request at
+that mine with status `submitted` or `closed` covers the whole range; otherwise **403
+`DETAIL_REQUEST_REQUIRED`** with `params {mine_id, from, to}`. The summary is numbers only.
+
+**Call for Detailed Report.** `pending → submitted → closed`; `pending → overdue` when `due_at`
+passes, raising `DETAIL_REQUEST_OVERDUE` (escalation level 1); `overdue → escalated` after
+`product.detail_request_escalate_after_hours` (72), the alert moving to level 2; overdue and
+escalated requests can still be answered, which resolves the alert. The deadline check runs on
+every read of the requests or the summary and in `yii production/check`, as a system action (no
+user in the history or the audit chain), and is idempotent.
+
+**Anomaly** (`ProductionService::anomalies`, PHP fallback until the ai-service in Phase 7), per
+mine and day on the day's total: `OVER_TARGET` (output more than `over_target_pct` = 50 % above
+target), `ROLLING_MEAN_SPIKE` / `ROLLING_MEAN_DROP` (output at least 1.5x - or at most 1/1.5x - the
+mean of the mine's producing days in the previous 30, and 4 standard deviations away, **and the same
+for output ÷ target**, so a move the target explains is not flagged; needs 14 producing days).
+Settings: `data/schema/rules.yaml` `product.production_anomaly` (product settings, not law). On the
+demo data it flags 5 of 6,142 mine-days: S2 (Gevra, 4 Sep, 2.0x, z 14.4) and four month-boundary
+steps; the decoys N1 and N3 are not flagged (`api/tests/unit/ProductionAnomalyTest.php`).
 
 ## Inspection ranking
 

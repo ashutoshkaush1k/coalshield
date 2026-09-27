@@ -9,7 +9,9 @@ REM    2. Starts PostgreSQL through scripts\db.bat if it is not running, and
 REM       waits until it accepts connections; stops with a clear message if not
 REM    3. First run only: migrations, RBAC and "yii seed demo" (about 30 s),
 REM       and an API key for the simulator
-REM    4. Opens windows: SIH-API on 8080 (Yii2), SIH-AI on 8001 (PPE vision),
+REM    4. Starts the API on 8080 through XAMPP's Apache, scripts\api_server.bat,
+REM       falling back to a SIH-API window with api\serve.bat; opens windows
+REM       SIH-AI on 8001 (PPE vision),
 REM       SIH-Frontend on 5173 (React), and SIH-Simulator with --sim
 REM    5. Waits until the API and the frontend listen, then opens the dashboard
 REM
@@ -97,17 +99,25 @@ echo  [ok] Database migrated and seeded
 REM Contractor alerts due today (licence, training, medicals, documents, worker limit) - idempotent.
 "%PHP%" "%ROOT%api\yii" contractor/check >nul
 echo  [ok] Contractor alerts checked
+REM Close past production periods and run the detailed-report deadlines - idempotent.
+"%PHP%" "%ROOT%api\yii" production/check >nul
+echo  [ok] Production periods and detailed-report deadlines checked
 
 REM --- port checks -------------------------------------------------------------
 REM netstat prints the state after the address, so the port comes first.
 netstat -ano | findstr /r /c:":8080 .*LISTENING" >nul 2>&1
-if not errorlevel 1 echo  [!] Port 8080 is already in use - close any old SIH-API window.
+if not errorlevel 1 echo  [!] Port 8080 is already in use - by the API from an earlier start, or an old SIH-API window.
 netstat -ano | findstr /r /c:":5173 .*LISTENING" >nul 2>&1
 if not errorlevel 1 echo  [!] Port 5173 is already in use - close any old SIH-Frontend window.
 
 REM --- launch ------------------------------------------------------------------
-echo  Starting API       - window SIH-API, port 8080...
+echo  Starting API       - Apache with mod_php and OPcache, port 8080...
+call "%ROOT%scripts\api_server.bat" start
+if not errorlevel 1 goto :apiup
+echo  [!] Apache did not start - falling back to PHP's built-in server, window SIH-API.
+echo  [!] It serves one request at a time, so dashboards will be slower. docs\PERFORMANCE.md
 start "SIH-API" /d "%ROOT%api" cmd /k "serve.bat"
+:apiup
 
 if exist "%ROOT%backend\.venv\Scripts\python.exe" goto :checkweights
 echo  [!] backend\.venv not found - PPE vision is off; uploads will answer 503.
@@ -179,6 +189,7 @@ exit /b 0
 :stop
 echo  Closing the SIH-* windows...
 for %%W in (SIH-Simulator SIH-Frontend SIH-AI SIH-API) do taskkill /fi "WINDOWTITLE eq %%W*" /t /f >nul 2>&1
+call "%ROOT%scripts\api_server.bat" stop
 call "%ROOT%scripts\db.bat" stop
 exit /b %ERRORLEVEL%
 

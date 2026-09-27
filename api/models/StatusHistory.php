@@ -44,9 +44,38 @@ class StatusHistory extends ActiveRecord
         return $row;
     }
 
+    /** @var array<string, self[]> histories fetched by preload(), each handed out once */
+    private static array $preloaded = [];
+
+    /**
+     * Fetch the histories of a whole list in one query, for the forEntity() calls that follow
+     * when the list is serialized (instead of one query per record).
+     * @param ActiveRecord[] $models of one class
+     */
+    public static function preload(array $models): void
+    {
+        if ($models === []) {
+            return;
+        }
+        $entity = trim(reset($models)::tableName(), '{}%');
+        $ids = array_map(fn(ActiveRecord $m) => $m->getPrimaryKey(), $models);
+        foreach ($ids as $id) {
+            self::$preloaded["$entity|$id"] = [];
+        }
+        foreach (self::find()->where(['entity' => $entity, 'entity_id' => $ids])->with('user')->orderBy(['id' => SORT_DESC])->all() as $row) {
+            self::$preloaded["$entity|{$row->entity_id}"][] = $row;
+        }
+    }
+
     /** @return self[] newest first */
     public static function forEntity(ActiveRecord $model): array
     {
+        $key = trim($model::tableName(), '{}%') . '|' . $model->getPrimaryKey();
+        if (array_key_exists($key, self::$preloaded)) {
+            $rows = self::$preloaded[$key];
+            unset(self::$preloaded[$key]);
+            return $rows;
+        }
         return self::find()
             ->where(['entity' => trim($model::tableName(), '{}%'), 'entity_id' => $model->getPrimaryKey()])
             ->with('user')

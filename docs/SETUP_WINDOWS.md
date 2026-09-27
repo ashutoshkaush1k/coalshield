@@ -129,7 +129,7 @@ yii.bat rbac/init
 yii.bat seed demo
 yii.bat audit/verify
 run_tests.bat
-serve.bat
+..\scripts\api_server.bat start
 ```
 
 - `yii.bat` / `yii_test.bat` run the console against the development / test database.
@@ -137,9 +137,31 @@ serve.bat
   `data\run_data.bat small|demo|full` (see `data/HANDOFF.md`). `run_tests.bat` seeds `demo` into
   the test database (about 25 s, so the demo-score test checks the real numbers) and generates it
   if it is missing.
-- `serve.bat` starts PHP's built-in server on <http://127.0.0.1:8080> (check `/v1/health`).
+- `scripts\api_server.bat start` serves the API through XAMPP's Apache on
+  <http://127.0.0.1:8080> (check `/v1/health`); see "6a" below. `serve.bat` (PHP's built-in
+  server) is the fallback - it handles one request at a time, so it is slow with a dashboard open.
 - Real environment variables win over `.env` (phpdotenv immutable mode); Docker uses this to point
   `DB_HOST` at the `db` container.
+
+### 6a. The API under Apache (mod_php, OPcache)
+
+`scripts\api_server.bat start | stop | restart | status | config` (a wrapper around
+`scripts\api_server.ps1`). No administrator rights and no change to XAMPP's own files:
+
+- `config` writes `api\runtime\apache\httpd.conf` - one virtual host for `api\web` on
+  127.0.0.1:8080 (every path that is not a file goes to `index.php`, like `serve.bat`), only the
+  modules the API needs, its own pid and `error.log` - and `api\runtime\apache\php.ini`, which is
+  XAMPP's `php.ini` plus OPcache and a larger realpath cache. `start` rewrites both first, so
+  moving the repository needs no manual step. XAMPP's `httpd.conf` and `php.ini` are untouched;
+  the XAMPP control panel's Apache (port 80) is unaffected.
+- Apache runs as a normal user process with a hidden console, like PostgreSQL; `stop` ends it.
+- Under Apache the API keeps its PostgreSQL connections open between requests
+  (`api/config/db.php`, persistent PDO; 24 threads, so at most 24 connections).
+- Schema and RBAC caching use `api\runtime\cache\`; `yii migrate`, `yii seed` and `yii rbac/init`
+  flush it, and `yii cache/flush-all` does it by hand.
+
+`run_all.bat` starts it and falls back to a `SIH-API` window with `serve.bat` if Apache does not
+come up; `run_all.bat --stop` stops it. Numbers: `docs/PERFORMANCE.md`.
 
 ## 7. Everyday start and stop: run_all.bat
 
@@ -158,10 +180,14 @@ run_all.bat --stop
    else.
 3. First run only: migrations, RBAC and `yii seed demo`, and an API key for the simulator
    (`scripts\.simulator.key`). Later runs only apply pending migrations.
-4. Opens `SIH-API` (8080), `SIH-AI` (8001, when `backend\.venv` exists), `SIH-Frontend` (5173)
-   and, with `--sim`, `SIH-Simulator`; waits for the ports and opens the dashboard.
+4. Runs `yii contractor/check` and `yii production/check` (idempotent: contractor alerts,
+   closing past production periods, detailed-report deadlines).
+5. Starts the API under Apache on 8080 (`scripts\api_server.bat`; a `SIH-API` window with
+   `serve.bat` if Apache fails), opens `SIH-AI` (8001, when `backend\.venv` exists; warns if the
+   PPE weights are missing), `SIH-Frontend` (5173) and, with `--sim`, `SIH-Simulator`; waits for
+   the ports and opens the dashboard.
 
-`run_all.bat --stop` closes the `SIH-*` windows and stops PostgreSQL.
+`run_all.bat --stop` closes the `SIH-*` windows, stops Apache and stops PostgreSQL.
 
 **Stopping never corrupts the database.** `db.bat start` launches PostgreSQL in its own hidden
 console, so closing any `SIH-*` window (or the window that ran `run_all.bat`) does not touch it.

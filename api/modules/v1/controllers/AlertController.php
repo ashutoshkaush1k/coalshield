@@ -48,6 +48,7 @@ class AlertController extends ApiController
         $query->addOrderBy(new Expression("CASE WHEN alert.code = 'INSPECTION_DIRECTIVE' AND alert.status <> 'resolved' THEN 0 WHEN alert.code = 'INSPECTION_DIRECTIVE' THEN 1 ELSE 2 END"));
         // ListingQuery keeps the directive-first ordering and appends the requested sort.
         $alerts = ListingQuery::apply($query, ['code', 'severity', 'status', 'entity_type'], ['created_at', 'id'], '-created_at');
+        \app\models\StatusHistory::preload($alerts);
         return array_map(fn(Alert $a) => $a->toArray([], ['history']), $alerts);
     }
 

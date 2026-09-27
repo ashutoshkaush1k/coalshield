@@ -2,6 +2,122 @@
 
 Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF.md`.
 
+## Phase 4: Production reporting, plus the PPE rerun and performance work (done, 2026-09-27)
+
+### PPE model: second training run
+
+- **Run 2:** 25 epochs, 640 px, nothing frozen. About 114 min of CPU time; the machine slept about
+  6 h during epoch 12, so the wall clock was longer.
+- **Held-out test results:** mAP50 0.878 vs 0.850, mAP50-95 0.595 vs 0.560, precision 0.818 vs
+  0.777, recall 0.889 vs 0.848. Vest was the only class to drop, slightly (0.950 → 0.932).
+- **Kept:** run 2, installed as `backend/ml/weights/ppe.pt`. `scripts/build_ppe_model.py` now
+  rebuilds it by default. `docs/AI_EVALUATION.md` records both runs.
+- **End to end** on the test split, with the product's own violation rule: the violation set is
+  exactly right on 92 of 126 images that show people (73 %).
+- **Demo images:** only held-out test images. `scripts/select_ppe_demo_images.py` copied three
+  clean frames and three with violations to `backend/data/samples/heldout/` (CC BY 4.0,
+  attributed; selected from the agreeing images, which the folder says).
+  - Through the product: `heldout_06` gives 3 × `no_helmet`, and Jayant goes 80 → 65.
+  - Fixture mode is removed from the demo script; it remains for automated tests only.
+
+### Performance
+
+- **Serving:** the API runs under XAMPP's Apache (mod_php, thread-safe build) on 8080.
+  - `scripts/api_server.bat` writes a self-contained config (vhost, `php.ini` with OPcache) into
+    `api/runtime/apache/`. XAMPP's own files are not touched.
+  - `run_all.bat` starts and stops it. `api/serve.bat` (`php -S`, now also with OPcache) remains the
+    fallback.
+- **Caching and connections:**
+  - persistent PostgreSQL connections under Apache;
+  - schema and RBAC file caches, flushed by `migrate`, `seed` and `rbac/init`.
+- **Fewer requests per poll:**
+  - one aggregated endpoint per screen (`/v1/views/overview`, `/v1/views/mine/{id}`,
+    `/v1/views/production`, `/v1/views/production-overview`), so at most two requests per screen
+    and cycle;
+  - polling every 10 s instead of 5.
+- **Query fixes:**
+  - `contractors/summary` computes its per-mine scores in one pass;
+  - the sensor trend is one LATERAL query instead of six;
+  - alert histories load in one query.
+- Numbers are in `docs/PERFORMANCE.md`:
+  - every screen now takes 18-45 ms median (p95 at most 52 ms) in one request per poll, the same
+    with two dashboards side by side;
+  - before, a cycle took 374-853 ms, and 1.2-1.4 s with two dashboards open.
+
+### Phase 4: production
+
+- **Migration** `m260930_000001`: `daily_production` (unique mine, date and shift),
+  `production_edit_log` and `production_detail_request`, with CHECKs, FKs and indexes.
+- **Seeding:** `yii seed` loads all three tables from `data/out`, and their history is written into
+  the audit chain (`seed_history`).
+- **Mine head:**
+  - daily entry: draft → submit (locked) → correct with a reason, each change going to the edit log;
+  - charts: target vs actual with anomaly days marked, month-to-date cumulative, shift split;
+  - an inbox of calls for detailed report, with a response form (note and file).
+- **Government, corporate and inspector:**
+  - a numbers-only table: day and month-to-date target, actual, achievement %, and the anomaly flag;
+  - a "Call for detailed report" button (date range, reason, due date) and request statuses;
+  - the detail view (charts, response note, entries with their corrections) only for answered
+    ranges, otherwise 403 `DETAIL_REQUEST_REQUIRED`.
+  - The rule lives in `api/components/AccessRule.php`, as a third access layer next to scoping and
+    RBAC.
+- **Escalation:** overdue requests escalate automatically. At the deadline the request becomes
+  overdue and raises `DETAIL_REQUEST_OVERDUE` at level 1; 72 h later it becomes escalated at
+  level 2.
+  - The check runs on every read of the requests or summary and in `yii production/check`.
+  - It is idempotent and recorded as a system action.
+- **Anomaly detection (PHP):** a day is flagged when output is more than 50 % over target, or when
+  both output and output ÷ target deviate strongly from the mine's 30-day rolling mean.
+  - Settings are in `rules.yaml` `product.production_anomaly`.
+  - On the demo data it flags 5 of 6,142 mine-days. S2 (Gevra, 4 September) is flagged at 2.0x
+    with z 14.4; the decoys N1 and N3 are not.
+  - `ProductionAnomalyTest` scores the detector against `scenario_expectations.json`: TP 1, FN 0,
+    FP 0, TN 2.
+- **i18n:** all new UI text is in `en.json` (`production.*`, `detailRequest.*`, new error and field
+  codes, statuses, audit labels).
+- **Tests:** 135 tests, 1,288 assertions, all passing.
+  - `ProductionCest` (7): entry, submit and correction; summary; the detail gate before, during and
+    after a request; out-of-scope 404; roles; escalation; the views.
+  - `ProductionAnomalyTest` (3).
+  - `ViewCest` (5).
+  - `ContractorServiceTest`: the one-pass per-mine scoring equals scoring each mine separately.
+- **Browser checks:** `node scripts/browser_check.mjs phase4` saves 15 screenshots in
+  `docs/screenshots/phase4/`. It covers the government numbers-only table, the 403
+  explained, the call for a report, then as the Gevra mine head: entry, submit, correction and the
+  edit log, and the answer. Back as government: the detail view and closing the request; then
+  corporate SECL.
+  - Phases 2, 3 and 4 were rerun with `--side-tabs`, with a government tab and a mine-head tab
+    polling alongside: all passed. The only browser errors logged are the expected 403 and 404.
+
+### Known issues (Phase 4)
+
+- **The PPE model is still out of distribution for mines.** It misses people on the repository's
+  own sample photos, and there is no coal-mine footage to train or test on. The AGPL-3.0 decision
+  is still open (unchanged from Phase 3).
+- **Four of the detector's five flags are real step changes, not scenarios.** Month-boundary
+  jumps in the synthetic data (1-2 August and 2 September, at four mines) are flagged alongside S2. They are defensible
+  deviations, but not planted ones.
+- **The deadline check runs on reads**, so a request turns overdue when someone next looks (or at
+  `yii production/check`). Scheduled jobs come in Phase 7.
+- **The escalation window (72 h), the lock window (7 days) and the anomaly thresholds** are product
+  settings in `rules.yaml`, not law.
+- **The first request after an Apache restart** opens each thread's database connection (about
+  120 ms, once per thread).
+
+### How to verify (Phase 4)
+
+```bat
+run_all.bat
+api\yii.bat seed demo
+api\yii.bat production/check
+api\yii.bat production/anomalies
+cd api && run_tests.bat
+node scripts\perf_check.mjs aggregated
+node scripts\browser_check.mjs phase4 --side-tabs
+```
+
+Re-seed after a browser check.
+
 ## Phase 3: Contractor management, plus two Phase 2 fixes (done, 2026-09-27)
 
 ### Fix 1: audit history backfill
@@ -83,18 +199,12 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 
 ### Known issues (Phase 3)
 
-- **The PPE model is weak out of distribution:**
-  - it reports a false `no_helmet` on `with_ppe.jpg`;
-  - it misses people on the metro-shaft photo.
-
-  For the scripted demo numbers, start the ai-service with `PPE_DETECTOR=fixture`
-  (demo-script.md). A longer run (25 epochs, 640 px, no freezing; about 1.5-2 h on CPU) is
-  proposed and needs owner approval.
+- ~~**The PPE model is weak out of distribution**~~: retrained in Phase 4 (see above). The demo
+  now uses held-out test images with the real model.
 - **AGPL-3.0:** any non-open deployment of the YOLO model needs an owner decision (an Ultralytics
   Enterprise licence or a different detector).
-- **The PHP built-in server (`php -S`) handles one request at a time.** A browser tab left
-  polling the dashboard slows every other client, including the headless check. Close other tabs
-  before `browser_check.mjs`.
+- ~~**The PHP built-in server handles one request at a time**~~: the API runs under Apache since
+  Phase 4 (`docs/PERFORMANCE.md`).
 - **The vision test skips itself while the ai-service is still loading the model.** Run the
   tests once the ai-service answers `/health`.
 - The document due day (10th of the following month) and the 30-day licence warning are
@@ -246,8 +356,10 @@ Commit `b026164`.
 
 ## TODO-VERIFY register
 
-No new regulatory facts were introduced in Phases 1-3 (Phase 3 cites LAB-02, SAF-04 and HLT-01
-from `rules.yaml`; its due day and warning window are product settings). Every limit, period and obligation code the
+No new regulatory facts were introduced in Phases 1-4 (Phase 3 cites LAB-02, SAF-04 and HLT-01
+from `rules.yaml`; its due day and warning window are product settings). Phase 4's lock window,
+escalation window and anomaly thresholds are product settings too, and production reporting cites
+no statutory return (the RPT-08 production return stays TODO-VERIFY below). Every limit, period and obligation code the
 API uses is read from `data/schema/rules.yaml` or the incident data, each tied to a verified row
 of `data/reference/obligations.csv`. The 48-hour reporting check is the rule the data's
 `reported_within_48h` column encodes.

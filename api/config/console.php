@@ -10,7 +10,7 @@ return yii\helpers\ArrayHelper::merge($common, [
     'controllerNamespace' => 'app\commands',
     'controllerMap' => [
         'migrate' => [
-            'class' => yii\console\controllers\MigrateController::class,
+            'class' => app\commands\MigrateController::class,
             'migrationPath' => ['@app/migrations', '@yii/rbac/migrations'],
             'migrationNamespaces' => ['yii\queue\db\migrations'],
             'templateFile' => '@yii/views/migration.php',

@@ -1,0 +1,90 @@
+[
+  {
+    "name": "01-gov-production-numbers",
+    "note": "government: numbers only per mine - day and month to date, anomaly flag (Gevra, S2, 4 Sep)",
+    "errors": []
+  },
+  {
+    "name": "02-gov-detail-required",
+    "note": "detail before any answered request: 403 DETAIL_REQUEST_REQUIRED, explained",
+    "errors": [
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ]
+  },
+  {
+    "name": "03-gov-call-for-report",
+    "note": "Call for Detailed Report: range around the flagged day, reason prefilled from the anomaly, deadline",
+    "errors": []
+  },
+  {
+    "name": "04-gov-request-pending",
+    "note": "the request, pending; overdue ones escalate automatically with an alert",
+    "errors": []
+  },
+  {
+    "name": "05-head-production",
+    "note": "mine head: inbox with the pending call, charts - target vs actual (anomaly marked), cumulative, shift split",
+    "errors": []
+  },
+  {
+    "name": "06-head-entry-form",
+    "note": "daily entry form: one shift's figures",
+    "errors": []
+  },
+  {
+    "name": "07-head-entry-submitted",
+    "note": "submitted: the entry is locked",
+    "errors": []
+  },
+  {
+    "name": "08-head-correction-form",
+    "note": "correcting a locked entry needs a reason",
+    "errors": []
+  },
+  {
+    "name": "09-head-edit-log",
+    "note": "the correction in the edit log: field, old -> new, reason, who, when",
+    "errors": []
+  },
+  {
+    "name": "10-head-respond",
+    "note": "answering the call: note and attachment",
+    "errors": []
+  },
+  {
+    "name": "11-head-request-answered",
+    "note": "answered: status submitted",
+    "errors": []
+  },
+  {
+    "name": "12-gov-detail-view",
+    "note": "detail view for the answered range: the mine's response, charts, every shift entry",
+    "errors": []
+  },
+  {
+    "name": "13-gov-request-closed",
+    "note": "accepted and closed",
+    "errors": []
+  },
+  {
+    "name": "14-corporate-production",
+    "note": "corporate SECL: the same numbers-only table for its 17 mines",
+    "errors": []
+  },
+  {
+    "name": "15-corporate-detail",
+    "note": "corporate: Gevra's detail, opened by the answered (closed) request",
+    "errors": []
+  },
+  {
+    "name": "side-tab gov@dgms.gov.in",
+    "note": "14 API requests in 71 s",
+    "errors": []
+  },
+  {
+    "name": "side-tab head.od-tlc-05@coalmine.in",
+    "note": "12 API requests in 65 s",
+    "errors": []
+  }
+]

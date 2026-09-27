@@ -1,7 +1,7 @@
 // Government / corporate: read-only contractor view - the per-mine summary (count, compliance %,
 // flagged, blacklisted), the flagged contractors worst first, and every contractor in scope.
 import { useState } from "react";
-import { getContractorSummary, listContractors } from "../../../api/contractors";
+import { listContractors } from "../../../api/contractors";
 import { DemoTag } from "../../../components/common/DemoTag";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
@@ -13,10 +13,9 @@ import { usePolling } from "../../../hooks/usePolling";
 import { contractorReason } from "../../../i18n/contractors";
 import { useT } from "../../../i18n/t";
 
-export function ContractorSummaryCard({ state, onOpen }) {
+/** `data` is GET /v1/contractors/summary, delivered with the overview (GET /v1/views/overview). */
+export function ContractorSummaryCard({ data, onOpen }) {
   const t = useT();
-  const { data, error } = usePolling(() => getContractorSummary(state), { deps: [state], interval: 30000 });
-  if (error) return <ErrorNotice error={error} />;
   if (!data) return null;
   return (
     <section className="panel-block">
@@ -50,18 +49,18 @@ export function ContractorSummaryCard({ state, onOpen }) {
   );
 }
 
-export function ContractorsPanel({ state, states, onStateChange }) {
+/** `summary` comes with the overview poll; only the contractor list is fetched here. */
+export function ContractorsPanel({ summary, state, states, onStateChange }) {
   const t = useT();
   const [selected, setSelected] = useState(null);
-  const summary = usePolling(() => getContractorSummary(state), { deps: [state], interval: 30000 });
   const list = usePolling(() => listContractors({ per_page: 200 }), { interval: 30000 });
-  if ((summary.loading && !summary.data) || (list.loading && !list.data)) return <Loader label={t("contractor.loading")} />;
-  const s = summary.data;
+  if (list.loading && !list.data) return <Loader label={t("contractor.loading")} />;
+  const s = summary;
 
   return (
     <div className="stack">
-      <ErrorNotice error={summary.error || list.error} />
-      <ContractorSummaryCard state={state} />
+      <ErrorNotice error={list.error} />
+      <ContractorSummaryCard data={summary} />
       <section className="panel-block">
         <div className="panel-head">
           <div>

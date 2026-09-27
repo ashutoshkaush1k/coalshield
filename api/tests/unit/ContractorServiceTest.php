@@ -18,6 +18,20 @@ class ContractorServiceTest extends Unit
         $this->assertSame(['2026-04', '2026-05', '2026-06', '2026-07'], ContractorService::duePeriods('2026-09-05'));
     }
 
+    /** The one-pass per-mine scoring (summary) must equal scoring each mine on its own. */
+    public function testPerMineEvaluationMatchesEvaluatingEachMine(): void
+    {
+        $contractors = Contractor::find()->indexBy('id')->all();
+        $mineIds = array_map('intval', (new \yii\db\Query())->select('mine_id')->distinct()->from('{{%contract}}')->column());
+        $this->assertNotEmpty($mineIds, 'needs seeded contracts');
+        $perMine = ContractorService::evaluatePerMine($contractors, $mineIds, '2026-09-27');
+        $this->assertSame(count($mineIds), count($perMine));
+        foreach ($perMine as $mineId => $evals) {
+            $one = ContractorService::evaluate(array_map(fn($id) => $contractors[$id], array_keys($evals)), [$mineId], '2026-09-27');
+            $this->assertEquals($one, $evals, "mine $mineId");
+        }
+    }
+
     public function testScoreAndBand(): void
     {
         $contractor = new Contractor(['id' => 1, 'status' => 'active', 'licence_valid_to' => '2030-01-01']);

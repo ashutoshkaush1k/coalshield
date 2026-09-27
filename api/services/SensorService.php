@@ -256,11 +256,26 @@ final class SensorService
     /** One series per sensor type the mine reports, oldest first, with the limit line. */
     public static function trend(int $mineId, int $points): array
     {
+        $sensors = Rules::sensors();
+        // One statement for every sensor type (LATERAL, each on the (mine_id, sensor_type,
+        // recorded_at) index): planning a query over the monthly partitions costs more than
+        // running it, so one plan instead of six (docs/PERFORMANCE.md).
+        $types = '{' . implode(',', array_keys($sensors)) . '}';
+        $byType = [];
+        foreach (Yii::$app->db->createCommand(
+            'SELECT r.id, r.sensor_type, r.value, r.unit, r.recorded_at, r.breached
+               FROM unnest(CAST(:types AS varchar[])) AS t(type)
+               CROSS JOIN LATERAL (
+                 SELECT id, sensor_type, value, unit, recorded_at, breached FROM {{%sensor_reading}}
+                  WHERE mine_id = :mine AND sensor_type = t.type
+                  ORDER BY recorded_at DESC, id DESC LIMIT :points) r',
+            [':types' => $types, ':mine' => $mineId, ':points' => $points],
+        )->queryAll() as $row) {
+            $byType[$row['sensor_type']][] = $row;
+        }
         $series = [];
-        foreach (Rules::sensors() as $type => $rule) {
-            $rows = (new Query())->select(['id', 'sensor_type', 'value', 'unit', 'recorded_at', 'breached'])
-                ->from('{{%sensor_reading}}')->where(['mine_id' => $mineId, 'sensor_type' => $type])
-                ->orderBy(['recorded_at' => SORT_DESC, 'id' => SORT_DESC])->limit($points)->all();
+        foreach ($sensors as $type => $rule) {
+            $rows = $byType[$type] ?? [];
             if ($rows === []) {
                 continue;
             }

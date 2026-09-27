@@ -15,6 +15,17 @@ return [
     'username' => (string) env('DB_USER', 'coalshield'),
     'password' => (string) env('DB_PASSWORD', ''),
     'charset' => 'utf8',
+    // Under Apache, keep the connection open between requests (docs/PERFORMANCE.md): on Windows,
+    // PostgreSQL starts a process per connection, about 40 ms, which was a third of a dashboard
+    // request. PDO rolls back a transaction left open when a request ends; the audit chain's
+    // lock is transaction-scoped. Console commands and tests connect per run as before.
+    // (null, not [ATTR_PERSISTENT => false], elsewhere: ArrayHelper::merge renumbers integer keys
+    // when config/test.php merges this file a second time.)
+    'attributes' => PHP_SAPI === 'apache2handler' ? [PDO::ATTR_PERSISTENT => true] : null,
+    // Table metadata is read once and kept until the next migrate / seed flushes the cache.
+    'enableSchemaCache' => true,
+    'schemaCacheDuration' => 0,
+    'schemaCache' => 'cache',
     'on afterOpen' => static function ($event): void {
         $event->sender->createCommand("SET TIME ZONE 'UTC'")->execute();
     },

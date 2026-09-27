@@ -82,3 +82,13 @@ product:
     land_compensation: 336
     other: 168
   contractor_doc_due_day: 10                      # brief Phase 3: "due day configurable"
+  production_lock_after_days: 7                   # brief Phase 4: a submitted entry's period closes (status locked) after this many days
+  production_anomaly:                             # brief Phase 4: "flags days where actual > target by a configurable % or deviates
+                                                  # strongly from the mine's 30-day rolling mean" (PHP fallback; ai-service in Phase 7)
+    over_target_pct: 50                           # a day's coal output above its target by more than this
+    rolling_days: 30                              # the rolling window
+    min_baseline_days: 14                         # producing days needed in the window before its mean is trusted
+    ratio: 1.5                                    # deviation: at least ratio x (or at most 1/ratio x) the rolling mean ...
+    z: 4.0                                        # ... and at least z standard deviations from it, for the output AND for the
+                                                  # output-to-target ratio (a move the target explains is not an anomaly)
+  detail_request_escalate_after_hours: 72         # brief Phase 4: an overdue "Call for Detailed Report" escalates after this

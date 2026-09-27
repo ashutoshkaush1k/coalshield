@@ -1,6 +1,6 @@
 // Government dashboard: one question per tab rather than one dense page.
 import { useState } from "react";
-import { getDashboard } from "../../api/dashboard";
+import { getOverviewView } from "../../api/views";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { TabPanel } from "../../components/common/Tabs";
@@ -13,6 +13,7 @@ import { PriorityPanel } from "./panels/PriorityPanel";
 import { SensorRiskPanel } from "./panels/SensorRiskPanel";
 import { TrendsPanel } from "./panels/TrendsPanel";
 import { ContractorsPanel } from "./panels/ContractorsPanel";
+import { ProductionPanel } from "./panels/ProductionPanel";
 import { t } from "../../i18n/t";
 
 const TABS = [
@@ -20,6 +21,7 @@ const TABS = [
   { id: "priority", label: "Priority Queue" },
   { id: "sensors", label: "Sensors" },
   { id: "trends", label: "Trends" },
+  { id: "production", label: t("production.tabLabel") },
   { id: "contractors", label: t("contractor.tabLabel") },
 ];
 
@@ -28,11 +30,13 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
   const { user } = useAuth();
   // Held here rather than in each panel so the selection survives tab switches.
   const [state, setState] = useState(null);
-  // Unchanged: the same poll that has always driven this screen. Tab state is
-  // local, so switching never refetches or re-enters the router.
-  const { data, error, loading } = usePolling(() => getDashboard(state), { deps: [state] });
+  // One request per polling cycle for the dashboard and the contractor summary
+  // (GET /v1/views/overview). Tab state is local, so switching never refetches.
+  const { data: view, error, loading } = usePolling(() => getOverviewView(state), { deps: [state] });
+  const data = view?.dashboard;
+  const contractorSummary = view?.contractor_summary ?? null;
 
-  if (loading && !data) return <Loader label="Loading mines..." />;
+  if (loading && !view) return <Loader label="Loading mines..." />;
 
   return (
     <>
@@ -52,7 +56,7 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
         <ErrorNotice error={error} />
 
         <TabPanel id="overview" active={tab}>
-          <OverviewPanel data={data} state={state} onStateChange={setState} onOpenContractors={() => setTab("contractors")} />
+          <OverviewPanel data={data} contractorSummary={contractorSummary} state={state} onStateChange={setState} onOpenContractors={() => setTab("contractors")} />
         </TabPanel>
 
         <TabPanel id="priority" active={tab}>
@@ -63,8 +67,12 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
           <SensorRiskPanel state={state} states={data?.states} onStateChange={setState} />
         </TabPanel>
 
+        <TabPanel id="production" active={tab}>
+          <ProductionPanel state={state} states={data?.states} onStateChange={setState} />
+        </TabPanel>
+
         <TabPanel id="contractors" active={tab}>
-          <ContractorsPanel state={state} states={data?.states} onStateChange={setState} />
+          <ContractorsPanel summary={contractorSummary} state={state} states={data?.states} onStateChange={setState} />
         </TabPanel>
 
         <TabPanel id="trends" active={tab}>

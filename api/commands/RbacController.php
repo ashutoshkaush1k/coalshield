@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\commands;
 
+use app\components\CacheReset;
 use Yii;
 use yii\console\Controller;
 use yii\console\ExitCode;
@@ -21,6 +22,7 @@ class RbacController extends Controller
     {
         self::install();
         $count = self::syncAssignments(Yii::$app->db);
+        CacheReset::flush();   // the item tree is cached (config/common.php)
         $this->stdout("RBAC installed; $count users assigned.\n");
         return ExitCode::OK;
     }

@@ -5,13 +5,7 @@
 // open on demand (components/records/MineRecords.jsx).
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ALERT_STATUS, isOpenDirective, listAlerts, reopenAlert } from "../../api/alerts";
-import { listAudit } from "../../api/audit";
-import { listCorrectiveActions } from "../../api/correctiveActions";
-import { listIncidents } from "../../api/incidents";
-import { getMine } from "../../api/mines";
-import { getTrend } from "../../api/sensors";
-import { listViolations } from "../../api/violations";
+import { ALERT_STATUS, isOpenDirective, reopenAlert } from "../../api/alerts";
 import { can } from "../../auth/permissions";
 import { AlertDetailDrawer } from "../../components/alerts/AlertDetailDrawer";
 import { AlertList } from "../../components/alerts/AlertList";
@@ -29,25 +23,16 @@ import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
 import { sensorLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
+import { getMineView } from "../../api/views";
 import { breachesLabel, fmtScore } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
 
 /**
- * One mine's full bundle. Exported so the Mine Head view composes exactly the same
- * request set instead of assembling its own - identical data, one definition.
+ * One mine's full bundle, in one request (GET /v1/views/mine/{id}). Exported so the Mine Head
+ * view uses exactly the same data - one definition.
  */
 export const loadMineBundle = (mineId) =>
-  Promise.all([
-    getMine(mineId),
-    getTrend(mineId),
-    listViolations({ mine_id: mineId, per_page: 50 }),
-    listAlerts({ mine_id: mineId, per_page: 30 }),
-    listAudit({ mine_id: mineId, per_page: 40 }),
-    listCorrectiveActions({ mine_id: mineId, per_page: 50 }),
-    listIncidents({ mine_id: mineId, per_page: 50 }),
-  ]).then(([mine, trend, violations, alerts, audit, correctiveActions, incidents]) => ({
-    mine, trend, violations, alerts, audit, correctiveActions, incidents,
-  }));
+  getMineView(mineId).then(({ corrective_actions: correctiveActions, ...parts }) => ({ ...parts, correctiveActions }));
 
 function Stat({ label, value, tone }) {
   return (

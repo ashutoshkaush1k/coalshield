@@ -58,7 +58,7 @@ simulator, so by step 4 the scores have legitimately drifted.
 
 ## Before the room
 
-- [ ] **`run_all.bat`** - starts PostgreSQL if needed, the API, the ai-service and the frontend,
+- [ ] **`run_all.bat`** - starts PostgreSQL if needed, the API (Apache on 8080), the ai-service and the frontend,
       waits for the ports and opens the dashboard. It stops with a clear message if the database
       will not start. (First run on a machine: it migrates and seeds by itself.)
 - [ ] **`api\yii.bat seed demo`** - the board must read **100 / 80 / 70 / 60 / 45** for the five
@@ -66,12 +66,15 @@ simulator, so by step 4 the scores have legitimately drifted.
 - [ ] `python scripts\run_simulator.py --check-only` - must print `Pre-flight : OK`.
 - [ ] `http://127.0.0.1:8080/v1/health` answers `{"status":"ok",...}`; `http://localhost:5173`
       shows the login page.
-- [ ] PPE vision: `backend/ml/weights/ppe.pt` is the model fine-tuned on S13 (docs/AI_EVALUATION.md;
-      rebuild with `backend\.venv\Scripts\python.exe scripts\build_ppe_model.py`, about 20 min).
-      It is strong on construction-style photos (test mAP50 0.85) but misses people and hard hats
-      on some of the repository's sample photos, so **for the scripted numbers start the ai-service
-      with `set PPE_DETECTOR=fixture`**: `ppe_sample.jpg` then gives two violations and `with_ppe.jpg`
-      a clean frame. Show the real model separately, as what it is.
+- [ ] PPE vision runs the **real model**: `http://127.0.0.1:8001/health` must say
+      `"backend":"yolo"` (`run_all.bat` warns if `backend/ml/weights/ppe.pt` is missing; rebuild
+      with `backend\.venv\Scripts\python.exe scripts\build_ppe_model.py`, about 2 h on CPU -
+      docs/AI_EVALUATION.md). Use **only the held-out test images** in
+      `backend\data\samples\heldout\` - images from the test split the model never saw in training
+      or model selection, and say so when you show them. `heldout_06_violations.jpg` is the scripted
+      one; `heldout_01_clean.jpg` the clean re-inspection. The folder's README gives the model's
+      agreement with the ground truth over the whole test split (73 % of images with people) - the
+      demo images are selected from the agreeing ones, and that is also what you say.
 - [ ] **Two browser tabs**, signed in - Government in one, Mine Head (Jayant,
       `head.mp-sgr-02@coalmine.in`) in the other. Sessions are per tab, so both stay signed in.
 - [ ] A photograph ready to attach as resolution proof (JPG, PNG or WEBP).
@@ -107,14 +110,21 @@ continuing.**
 2. **Priority Queue tab** → every mine ranked most urgent first, each with its reasoning and a
    trend. The ranking is urgency = (100 - score) + rising-event pressure.
 3. **PPE vision - in the product.** Switch to the **Mine Head tab** (Jayant) and press **Run PPE
-   detection**; choose the sample image (see *Before the room*). The panel shows the annotated
-   frame with violations boxed in red and the score move - **80 → 70, Low → Medium** with the
-   fixture's two violations (80 → 75 with real YOLO on the metro-shaft photo).
+   detection**; choose `backend\data\samples\heldout\heldout_06_violations.jpg` - **a held-out
+   test image: the model never saw it in training**. The real YOLO model finds three workers
+   without hard hats; the panel shows the annotated frame with the violations boxed in red and the
+   score move - **80 → 65, Low → Medium**.
 
    Switch back to the **Government tab without reloading**: Jayant has turned yellow and the
-   fleet counts have moved within about 5 seconds. Uploading `with_ppe.jpg` afterwards is a clean
-   re-inspection: it resolves every open PPE finding from vision at that mine (older seeded ones
-   too), so the score climbs back - possibly above 80.
+   fleet counts have moved - a tab refetches the moment it becomes visible (otherwise the
+   dashboards poll every 10 s, one request per screen). Uploading `heldout_01_clean.jpg` afterwards (also
+   held out: two workers with hard hats, vests and boots) is a clean re-inspection: it resolves
+   every open PPE finding from vision at that mine (older seeded ones too), so the score climbs
+   back - to **100** on the demo seed.
+
+   If a judge asks about out-of-distribution photos: the model misses people on some of the
+   repository's own sample photos (docs/AI_EVALUATION.md, "Limits") - that is why the demo uses
+   held-out test images, and why a clean frame counts only when it shows a person or worn PPE.
 4. **Live sensors** → `run_all.bat --sim` starts the simulator, or in a terminal:
    `python scripts\run_simulator.py --interval 2 --loop`. It replays the last 14 days of the demo
    data through `POST /v1/sensor-readings/ingest`, one data-hour per 2 s tick, judged against the
@@ -152,10 +162,25 @@ continuing.**
     repealed Contract Labour Act. On the Government overview, the **Contractor compliance** card
     lists it first among flagged contractors; the Contractors tab gives the read-only per-mine
     summary.
-11. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
+11. **Production and the Call for Detailed Report** (Production tab). Government sees **numbers
+    only** per mine - the day and the month to date, target, actual, achievement - with an anomaly
+    flag: **Gevra (CG-KRB-03) is flagged for 4 September**, output twice its 30-day average and
+    79 % over target the day before an inspection (scenario S2; Chasnalla's genuine increase with a
+    revised target, N1, is not flagged). **View detail** answers *Detailed report required (403
+    DETAIL_REQUEST_REQUIRED)* - the regulator cannot browse a mine's records at will.
+    **Call for detailed report** on Gevra: the range around the flagged day and the reason are
+    prefilled; set a deadline and send. Sign in as the Gevra mine head
+    (`head.cg-krb-03@coalmine.in`): the call is in the inbox; the charts show target vs actual with
+    the spike marked, the cumulative month and the shift split. Enter a shift, **Submit** (locked),
+    then **Correct with reason** - the edit log shows old → new, the reason, who and when. Answer the
+    call with a note and a file. Back as Government: the row says *Submitted*, **View detail** now
+    opens the entries, charts and the mine's response; **Accept and close**. A call nobody answers
+    turns *Overdue* at its deadline and *Escalated* 72 h later, each with a
+    `DETAIL_REQUEST_OVERDUE` alert - Nandira (OD-ANG-57)'s seeded call falls due during the day.
+12. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
     mines. Opening a mine of another company answers **404** - exactly like a mine that does not
     exist, so nothing leaks.
-12. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
+13. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
     click. Prove it from the tests or the API:
 
     ```bat

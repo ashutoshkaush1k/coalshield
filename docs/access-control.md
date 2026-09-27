@@ -17,7 +17,7 @@ A database CHECK keeps each role's scope columns consistent (`m260927_000005_cre
 read from the user row on every request, never from the token or a client-supplied parameter, so
 re-mapping an account takes effect immediately.
 
-## Two layers
+## Three layers
 
 1. **Scoping - what rows exist for you.** One place: `api/components/ScopedActiveQuery.php`.
    Every mine-owned model extends `ScopedActiveRecord` and declares its mine column
@@ -30,6 +30,14 @@ re-mapping an account takes effect immediately.
    (`api/config/rbac.php`, installed by `yii rbac/init`): e.g. `directive.create` (government),
    `correctiveAction.resolve` (mine head), `inspection.viewQueue` (multi-mine roles). A missing
    permission is **403 `FORBIDDEN`**.
+
+3. **Data-dependent rules - what the data allows you to see.** Declared once in
+   `api/components/AccessRule.php` and applied by the controllers, never re-implemented. The
+   first is the production detail rule (Phase 4): a multi-mine role sees a mine's production
+   entries for a period only when a "Call for Detailed Report" covering that period has been
+   answered (`submitted` or `closed`); otherwise **403 `DETAIL_REQUEST_REQUIRED`**. It applies
+   after scoping, so a mine out of scope is still a plain 404. A mine head sees its own mine in
+   full (`production.viewDetail`); the summary for multi-mine roles is numbers only.
 
 ## The 404 rule (owner decision, 2026-09-27)
 
@@ -53,6 +61,13 @@ permitted → 403; never silently empty.
 - Contractors (`ContractorCest.php`): a mine head sees only contractors with a contract at its
   mine (another mine's contractor or contract is 404), government and corporate read but cannot
   manage (403), and the per-mine summary is refused to a mine head (403).
+
+- Production (`ProductionCest.php`): 403 `DETAIL_REQUEST_REQUIRED` before a request, still 403
+  while it is unanswered and for any day outside the answered range, 200 after the answer for
+  government and for corporate of the same company; another company's mine is 404 before the rule
+  applies; the mine head cannot call for reports and government cannot enter production.
+- The view endpoints (`ViewCest.php`): each part of `/v1/views/*` equals its own endpoint for the
+  same account, and another mine's view is 404.
 
 ```bat
 cd api

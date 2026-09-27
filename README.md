@@ -101,12 +101,16 @@ run_all.bat
 ```
 
 It starts PostgreSQL if needed (and says clearly if it cannot), migrates and seeds on the first
-run, opens `SIH-API` (8080), `SIH-AI` (8001) and `SIH-Frontend` (5173), waits for the ports and
-opens the dashboard. `--sim` adds the live sensor replay; `run_all.bat --stop` shuts everything
-down cleanly. API health: `http://127.0.0.1:8080/v1/health`.
+run, serves the API through XAMPP's Apache on 8080 (`scripts\api_server.bat`, with OPcache and
+persistent database connections - `docs/PERFORMANCE.md`), opens `SIH-AI` (8001) and
+`SIH-Frontend` (5173), waits for the ports and opens the dashboard. `--sim` adds the live sensor
+replay; `run_all.bat --stop` shuts everything down cleanly. API health:
+`http://127.0.0.1:8080/v1/health`.
 
-Before a demo: `api\yii.bat seed demo` (about 25 s) - see `docs/demo-script.md`. Tests:
-`api\run_tests.bat` (rebuilds the test database, seeds demo, runs every suite).
+Before a demo: `api\yii.bat seed demo` (about 50 s) - see `docs/demo-script.md`. Tests:
+`api\run_tests.bat` (rebuilds the test database, seeds demo, runs every suite). PPE model
+weights (gitignored): `backend\.venv\Scripts\python.exe scripts\build_ppe_model.py` - see
+`docs/AI_EVALUATION.md`.
 
 ## Demo accounts
 
