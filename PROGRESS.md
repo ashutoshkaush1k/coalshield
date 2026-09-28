@@ -4,7 +4,7 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 
 ## Remaining phases, in order
 
-5 (grievances, done) → **5B** (done) → 6 (multilingual) → 7 (automation, ai-service) → **7B** → 8 (hardening).
+5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service) → **7B** → 8 (hardening).
 The full scope of each is in `PLAN.md` §6.
 
 - **Phase 5B - compliance obligation register and GIS map** (owner addition, 2026-09-27).
@@ -35,6 +35,125 @@ The full scope of each is in `PLAN.md` §6.
     existing services, so the audit chain and history stay intact.
   - Device time and out-of-boundary locations are flagged.
   - Tested by an offline → online browser run.
+
+## Phase 6: Multilingual (done, 2026-09-28)
+
+### What changed
+
+- **Languages:** en, hi, bn, or, te, mr (`frontend/src/i18n/locales/`). `en.json` is the source,
+  with 1,236 keys; the other five are complete translations of it (details below).
+- **Which language shows** (`docs/i18n.md`):
+  - Signed out (login, raise and track a grievance): a small switcher on each page, kept in the
+    browser until login.
+  - After login the account's saved `preferred_language` wins, and signing out returns to the
+    browser's choice.
+  - `<html lang>` follows the language.
+- **Profile page** (`/profile`, sidebar link "Profile and language", every role):
+  - shows name, email, role, company, area and mine;
+  - lists the six languages in their own scripts;
+  - choosing one saves it (`PATCH /v1/users/me`) and switches the whole interface at once, with no
+    reload.
+
+  `/v1/users/me` adds `mine_code`, `subsidiary_name` and `area_name` (`docs/API_CHANGES.md`).
+- **Every UI string through `t()`:** 146 hard-coded strings in 26 files were replaced, including:
+  - chart axes, legends and tooltips;
+  - map controls and credits;
+  - toasts, aria labels and the tab lists (now built at render, so they follow a switch);
+  - violation types, incident causes, obligation titles, evidence types, frequencies, audit field
+    names, and the field names in API errors.
+
+  Alerts and errors render from `{code, params}` in every language. **Stays as written:** legal
+  citations and quotes (the labels around them are translated); grievance texts (with their
+  language labelled), notes and reasons; names of mines, companies and people.
+- **Numbers and dates:** Intl in the UI language as `<lang>-IN` with Latin digits, so Indian
+  grouping (17,04,240) and localised month names apply everywhere (`utils/format.js`). Formatting
+  that was scattered (`toLocaleString([])`, `toFixed`, `en-IN`-only helpers) now goes through it.
+  - Chromium has no Odia locale data and silently printed English months. Such a language formats
+    as `en-IN` with the month names from the locale file; the browser check guards it.
+- **Fonts:** Noto Sans Devanagari, Bengali, Oriya and Telugu are bundled (`@fontsource`, 400-700),
+  as fallbacks after Inter in the text and mono stacks. There are no external font requests, and
+  the check confirms the faces load with the network blocked.
+- **Checks in the test run** (`api\run_tests.bat`, also `npm run i18n:check`):
+  - `scripts/check_locales.mjs` fails on a missing or extra key, a changed `{{placeholder}}`, or a
+    missing `_meta.reviewed`;
+  - `scripts/check_hardcoded_strings.mjs` parses the frontend and fails on hard-coded UI text.
+
+### Translations
+
+- Drafted with Claude by one agent per language, using `data/reference/glossary.csv` for the
+  agreed terms. They were then checked mechanically:
+  - all keys and placeholders present;
+  - codes, Act names, product names and licence names kept;
+  - demo mine names in Latin script, as the data shows them;
+  - "mine head" made consistent in Telugu.
+- Every file says `"_meta": {"reviewed": false}`, and the Profile page tells a non-English user the
+  texts are drafts.
+- Terms the drafts flagged for a native reviewer (per language; the same themes recur):
+  - "Inspector-cum-Facilitator" (RPT-05 evidence), "bound paged book", "depillaring districts",
+    "return air";
+  - `status.promoted`;
+  - "Core sample board";
+  - "Call for Detailed Report" (tone);
+  - how the two-part sentence `board.topN` + `board.ofMonitored` reads.
+
+### Browser check (`node scripts/browser_check.mjs phase6 --side-tabs --strict`)
+
+57 screenshots in `docs/screenshots/phase6/`, all steps passed:
+- the login switcher (Telugu, kept in the browser);
+- the saved preference winning after login (Gevra's head: browser Telugu, account Hindi, so
+  Hindi);
+- the Profile page switching to Odia at once and saving it;
+- in all six languages: login, government overview, mine detail, production, grievances,
+  obligations, an obligation task drawer, map, profile.
+
+Every screen is probed for clipped, spilling or cut-off text and anything past the window's edge
+(`overflow.json`). The probe proves itself first on three planted labels.
+
+**Overflow findings:**
+- First run: **0**, but only because the probe checked each element's own overflow. On review of
+  the screenshots, the board's "100" gridline label was visibly cut off in every language,
+  English included (an existing bug).
+- The probe was extended to catch text cut by a clipping container, and then reported exactly that
+  finding on 6 screens (`div.board-track > div.board-rule > span "100"`, cut by 9 px).
+- Fixed with top padding on `.board-scroll`. Final run: **0 findings on 54 screens at 1440x900,
+  and 0 at 1366x768** (`VIEWPORT=1366x768`).
+- Also fixed from the check: English month names in Odia (Chromium lacks the locale).
+- No request left the machine (network blocked), and the Noto faces loaded on every non-English
+  screen.
+
+The Phase 2, 3, 4, 5 and 5B browser checks were rerun on fresh seeds and all pass. `page.as()` now
+saves the account's language first (English by default), because most seeded mine heads prefer
+their state's language.
+
+### Tests and performance
+
+- API: 155 tests, 1,795 assertions, all passing, plus the two locale checks at the start of the run.
+  `UsersMeCest` covers the new profile fields.
+- Performance: every dashboard request under 150 ms, the slowest p95 85 ms (`docs/PERFORMANCE.md`).
+
+### Known issues (Phase 6)
+
+- **Translations are unreviewed drafts** (see above). Review, then set `_meta.reviewed` to `true`
+  per file.
+- **Data stays in its source language:** the obligation `due_rule` text, contractor and mine
+  names, and the account's own name ("DGMS Compliance Authority").
+- **Leaflet's own attribution prefix** and the OpenStreetMap credit stay in English. The OSM credit
+  is the wording OSM requires.
+- **Machine translation of user content** (grievances, notes) is roadmap (`docs/i18n.md`).
+- **The mine heads' seeded languages** change the demo: Bhubaneswari opens in Odia; Moonidih, Gevra
+  and Block-B in Hindi. `docs/demo-script.md` says how to switch to English for a step.
+
+### How to verify (Phase 6)
+
+```bat
+cd api && run_tests.bat
+cd frontend && npm run i18n:check
+node scripts\browser_check.mjs phase6 --side-tabs --strict
+set VIEWPORT=1366x768 && node scripts\browser_check.mjs phase6
+node scripts\perf_check.mjs
+```
+
+Re-seed after a browser check (the checks save the accounts' languages).
 
 ## Phase 5B follow-ups (done, 2026-09-28)
 

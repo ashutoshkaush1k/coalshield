@@ -10,10 +10,10 @@ import { can } from "../../auth/permissions";
 import { useAuth } from "../../hooks/useAuth";
 import {
   actionDescription, auditChanges, auditHeadline, categoryLabel, descriptionCodeLabel, incidentSeverityLabel,
-  incidentTypeLabel, reportingCheckText, sourceLabel, statusLabel,
+  incidentTypeLabel, reportingCheckText, sourceLabel, statusLabel, violationTypeLabel,
 } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
-import { fmtDateTime, fmtPercent, humanise } from "../../utils/format";
+import { fmtDateTime, fmtPercent } from "../../utils/format";
 import { EmptyState } from "../common/EmptyState";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Drawer, Modal } from "../overlay/Overlay";
@@ -68,7 +68,7 @@ export function MineRecords({ bundle, onChanged }) {
             <tbody>
               {violations.map((v) => (
                 <tr key={v.id} className="clickable" onClick={() => setSelected({ kind: "violation", id: v.id })}>
-                  <td><strong>{humanise(v.violation_type)}</strong><div className="faint small">{sourceLabel(v.source)}</div></td>
+                  <td><strong>{violationTypeLabel(v.violation_type)}</strong><div className="faint small">{sourceLabel(v.source)}</div></td>
                   <td>{categoryLabel(v.category)}</td>
                   <td><span className={`tag ${v.resolved ? "tag-resolved" : "tag-open"}`}>{statusLabel(v.resolved ? "resolved" : "open")}</span></td>
                   <td className="mono">{fmtDateTime(v.detected_at)}</td>
@@ -154,11 +154,11 @@ function ViolationDetail({ violation, actions, onClose, onChanged }) {
   const own = actions.filter((a) => a.violation_id === violation.id);
   const frame = violation.frame_ref;
   return (
-    <Drawer open onClose={onClose} title={t("records.violationDetail")} subtitle={humanise(violation.violation_type)}
+    <Drawer open onClose={onClose} title={t("records.violationDetail")} subtitle={violationTypeLabel(violation.violation_type)}
             footer={!violation.resolved && can(user, "correctiveAction.create")
               ? <RecordActionButton violation={violation} onSaved={onChanged} /> : null}>
       <div className="stack tight">
-        <Field label={t("violation.type")}>{humanise(violation.violation_type)}</Field>
+        <Field label={t("violation.type")}>{violationTypeLabel(violation.violation_type)}</Field>
         <Field label={t("violation.category")}>{categoryLabel(violation.category)}</Field>
         <Field label={t("violation.source")}>{sourceLabel(violation.source)}</Field>
         {violation.confidence != null && <Field label={t("violation.confidence")}>{fmtPercent(violation.confidence)}</Field>}
@@ -231,7 +231,7 @@ function RecordActionButton({ violation, onSaved }) {
     <>
       <button className="primary" type="button" onClick={() => setOpen(true)}>{t("correctiveAction.record")}</button>
       <Modal open={open} onClose={() => !busy && setOpen(false)} title={t("correctiveAction.recordTitle")}
-             subtitle={humanise(violation.violation_type)}
+             subtitle={violationTypeLabel(violation.violation_type)}
              footer={<>
                <button type="button" onClick={() => setOpen(false)} disabled={busy}>{t("records.cancel")}</button>
                <button className="primary" type="submit" form={`ca-new-${violation.id}`} disabled={busy || description.trim().length < 3}>
@@ -350,7 +350,7 @@ function IncidentDetail({ incident, violations, onClose }) {
         <Field label={t("records.obligation")}>{t(`incident.obligation.${incident.obligation_code}`)}</Field>
         <Field label={t("incident.linkedViolation")}>
           {incident.related_violation_id
-            ? `#${incident.related_violation_id}${linked ? ` · ${humanise(linked.violation_type)} (${categoryLabel(linked.category)})` : ""}`
+            ? `#${incident.related_violation_id}${linked ? ` · ${violationTypeLabel(linked.violation_type)} (${categoryLabel(linked.category)})` : ""}`
             : t("incident.none")}
         </Field>
       </div>

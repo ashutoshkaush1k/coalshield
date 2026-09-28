@@ -7,11 +7,13 @@ import { useState } from "react";
 import { raiseDirective } from "../../api/alerts";
 import { useToast } from "../overlay/ToastHost";
 import { alertText } from "../../i18n/labels";
+import { errorMessage, useT } from "../../i18n/t";
 
 export function FlagMineButton({ mineId, referenceId = null, onFlagged }) {
   const [busy, setBusy] = useState(false);
   const [flagged, setFlagged] = useState(false);
   const { notify } = useToast();
+  const t = useT();
 
   async function flag() {
     setBusy(true);
@@ -22,10 +24,10 @@ export function FlagMineButton({ mineId, referenceId = null, onFlagged }) {
       setFlagged(true);
       // Acknowledged in a toast rather than only a button state, so the action reads as
       // having produced a record somewhere rather than just toggling a control.
-      notify({ title: "Directive raised", body: alertText(alert) });
+      notify({ title: t("directive.raised"), body: alertText(alert) });
       onFlagged?.(alert);
     } catch (err) {
-      notify({ title: "Could not raise directive", body: err.message, tone: "error" });
+      notify({ title: t("directive.raiseFailed"), body: errorMessage(err), tone: "error" });
     } finally {
       setBusy(false);
     }
@@ -33,7 +35,7 @@ export function FlagMineButton({ mineId, referenceId = null, onFlagged }) {
 
   return (
     <button className="primary" type="button" onClick={flag} disabled={busy || flagged}>
-      {busy ? "Flagging..." : flagged ? "Flagged \u2713" : "Flag for inspection"}
+      {busy ? t("directive.flagging") : flagged ? t("directive.flagged") : t("directive.flag")}
     </button>
   );
 }

@@ -7,6 +7,7 @@ import { DemoFooter } from "../components/common/DemoFooter";
 import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
 import { useT } from "../i18n/t";
+import { LanguageSwitcher } from "../components/common/LanguageSwitcher";
 
 // One form for both roles: the account decides the scope, not the login screen. Quick-fill
 // buttons exist so nobody types a password on stage.
@@ -45,33 +46,34 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <div className="login-card stack">
+        <LanguageSwitcher id="login-language" />
         <div className="brandline">
           <h1>Smart Mine Governance</h1>
-          <span>AI compliance monitoring for coal mines</span>
+          <span>{t("login.tagline")}</span>
         </div>
 
         <Card>
           <form onSubmit={submit} className="stack">
             <div>
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t("login.email")}</label>
               <input id="email" type="email" value={email} autoComplete="username"
                      onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t("login.password")}</label>
               <input id="password" type="password" value={password} autoComplete="current-password"
                      onChange={(e) => setPassword(e.target.value)} required />
             </div>
 
-            <ErrorNotice error={error} context="Check the email and password." />
+            <ErrorNotice error={error} context={t("login.checkCredentials")} />
 
             <button className="primary" type="submit" disabled={busy}>
-              {busy ? "Signing in..." : "Sign in"}
+              {busy ? t("login.signingIn") : t("login.signIn")}
             </button>
           </form>
 
           <div className="demo-accounts">
-            <span className="label">Demo accounts, password demo123</span>
+            <span className="label">{t("login.demoAccounts", { password: "demo123" })}</span>
             {DEMO.map((account) => (
               <button key={account.email} type="button"
                       onClick={() => { setEmail(account.email); setPassword("demo123"); }}>

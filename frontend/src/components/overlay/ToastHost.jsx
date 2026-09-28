@@ -1,11 +1,13 @@
 // Small acknowledgement for actions that would otherwise complete silently.
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { useT } from "../../i18n/t";
 
 const ToastContext = createContext(null);
 const DEFAULT_MS = 6000;
 
 export function ToastHost({ children }) {
   const [toasts, setToasts] = useState([]);
+  const tr = useT();
 
   const dismiss = useCallback((id) => {
     setToasts((current) => current.filter((t) => t.id !== id));
@@ -36,7 +38,7 @@ export function ToastHost({ children }) {
               {toast.body && <div className="toast-body">{toast.body}</div>}
             </div>
             <button className="overlay-close" type="button"
-                    onClick={() => dismiss(toast.id)} aria-label="Dismiss">
+                    onClick={() => dismiss(toast.id)} aria-label={tr("common.dismiss")}>
               &times;
             </button>
           </div>

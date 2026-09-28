@@ -16,10 +16,12 @@ import Overview from "../pages/government/Overview";
 import MineHeadDashboard from "../pages/minehead/Dashboard";
 import RaiseGrievance from "../pages/public/RaiseGrievance";
 import TrackGrievance from "../pages/public/TrackGrievance";
+import Profile from "../pages/Profile";
+import { t } from "../i18n/t";
 
 function Home() {
   const { user, loading } = useAuth();
-  if (loading) return <div className="empty">Loading...</div>;
+  if (loading) return <div className="empty">{t("common.loading")}</div>;
   return <Navigate to={user ? homeFor(user) : "/login"} replace />;
 }
 
@@ -51,6 +53,7 @@ export function AppRoutes() {
           path="/gov/mines/:mineId"
           element={<ProtectedRoute allow={MULTI_MINE}><MineDetail /></ProtectedRoute>}
         />
+        <Route path="/profile" element={<Profile />} />
         <Route
           path="/mine"
           element={<ProtectedRoute allow={[ROLES.MINE_HEAD]}><MineHeadDashboard /></ProtectedRoute>}

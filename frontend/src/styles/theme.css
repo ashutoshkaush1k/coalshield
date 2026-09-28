@@ -53,8 +53,11 @@
   --chart-axis: #9ca3af;
 
   /* ---- Type --------------------------------------------------------------- */
-  --font: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  /* Indic fallbacks (Phase 6): Inter has no Devanagari, Bengali, Odia or Telugu glyphs, so those
+     characters fall through to the bundled Noto faces - in the mono stack too (dates in .mono). */
+  --font-indic: "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Sans Oriya", "Noto Sans Telugu";
+  --font: "Inter", var(--font-indic), -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", var(--font-indic), ui-monospace, Consolas, monospace;
 
   --text-hero: 44px;
   --text-display: 30px;

@@ -1,6 +1,7 @@
 // Mine head: the mine's statutory obligation register - statutory compliance (a separate measure;
 // the compliance score is unchanged), then due soon, overdue, open, submitted and recently accepted
 // tasks, each with its citation. One request per polling cycle (GET /v1/views/obligations).
+import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
 import { getObligationView } from "../../../api/obligations";
 import { DemoTag } from "../../../components/common/DemoTag";
@@ -36,10 +37,10 @@ export function ObligationsPanel() {
         </div>
         <div className="panel-body">
           <div className="tally-set">
-            <div><span className="label">{t("obligation.mine.compliance")}</span><span className="tally-v" id="statutory-pct">{s.compliance_pct ?? "-"} %</span></div>
-            <div><span className="label">{t("obligation.gov.onTime")}</span><span className="tally-v">{s.on_time} / {s.due}</span></div>
-            <div><span className="label">{t("obligation.gov.overdue")}</span><span className="tally-v risk-high">{data.overdue.length}</span></div>
-            <div><span className="label">{t("obligation.gov.awaiting")}</span><span className="tally-v">{data.submitted.length}</span></div>
+            <div><span className="label">{t("obligation.mine.compliance")}</span><span className="tally-v" id="statutory-pct">{fmtNumber(s.compliance_pct)} %</span></div>
+            <div><span className="label">{t("obligation.gov.onTime")}</span><span className="tally-v">{fmtNumber(s.on_time)} / {fmtNumber(s.due)}</span></div>
+            <div><span className="label">{t("obligation.gov.overdue")}</span><span className="tally-v risk-high">{fmtNumber(data.overdue.length)}</span></div>
+            <div><span className="label">{t("obligation.gov.awaiting")}</span><span className="tally-v">{fmtNumber(data.submitted.length)}</span></div>
           </div>
           <p className="note">{t("obligation.mine.complianceHint", { days: data.summary.window_days })}</p>
         </div>

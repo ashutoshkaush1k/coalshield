@@ -26,7 +26,8 @@ export function MineMap({ mines, states, districts, onOpen, height = 560 }) {
 
   // The map and its attribution, once.
   useEffect(() => {
-    const m = L.map(box.current, { zoomSnap: 0.5, minZoom: 4, maxZoom: 19, preferCanvas: false, attributionControl: true });
+    const m = L.map(box.current, { zoomSnap: 0.5, minZoom: 4, maxZoom: 19, preferCanvas: false, attributionControl: true, zoomControl: false });
+    L.control.zoom({ zoomInTitle: t("map.zoomIn"), zoomOutTitle: t("map.zoomOut") }).addTo(m);
     m.fitBounds(INDIA);
     m.attributionControl.addAttribution(esc(t("map.attributionGem")));
     m.attributionControl.addAttribution(esc(t("map.attributionDatameet")));

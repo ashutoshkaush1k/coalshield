@@ -1,0 +1,1129 @@
+{
+  "en-1-login": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "AI compliance monitoring for coal mines",
+      "Workers and the community can raise a grievance without an account."
+    ],
+    "latinCount": 3,
+    "englishMonths": []
+  },
+  "en-2-gov-overview": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "74 mines monitored nationwide",
+      "National average compliance",
+      "Mean score of 74 monitored mines nationwide.",
+      "Core sample board",
+      "Each core is filled to its compliance score, worst on the left",
+      "Top 5 highest-risk mines nationwide",
+      "of 74 monitored. Select a state to see every mine there.",
+      "Siduli Coal Mine"
+    ],
+    "latinCount": 21,
+    "englishMonths": []
+  },
+  "en-3-mine-detail": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "Bhubaneswari Coal Mine",
+      "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
+      "Back to overview",
+      "Flag for inspection",
+      "SAF-10 for 2026-06 is overdue (due 30 Jun, 11:59 pm; Coal Mines Regula",
+      "Violation recorded: No helmet (PPE, from PPE vision).",
+      "1 worker(s) on contract #10 are past their periodic medical examinatio",
+      "Corrective action for violation #1561 is 5 days overdue."
+    ],
+    "latinCount": 31,
+    "englishMonths": []
+  },
+  "en-4-production": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "74 mines monitored nationwide",
+      "Production across mines",
+      "Numbers only. A mine's detailed records open once it has answered a Ca",
+      "Month to date",
+      "2 mine(s) with an anomaly this month",
+      "A day is flagged when output is more than 50 % above its target, or fa",
+      "Call for detailed report",
+      "Gevra Coal Mine"
+    ],
+    "latinCount": 204,
+    "englishMonths": []
+  },
+  "en-5-grievances": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "74 mines monitored nationwide",
+      "All grievances in view, including the sensitive ones routed to the reg",
+      "Average time to resolution",
+      "Escalated and open",
+      "Kulda Coal Mine",
+      "8 breaches among grievances raised 2026-09-01 to 2026-09-09",
+      "A mine is flagged when at least 5 grievances raised within 10 days all",
+      "Moonidih Coal Mine"
+    ],
+    "latinCount": 421,
+    "englishMonths": []
+  },
+  "en-6-obligations": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "74 mines monitored nationwide",
+      "Tasks due in the last 90 days: evidence submitted on time and accepted",
+      "Mine effluent discharge limits",
+      "Bhatgaon Coal Mine",
+      "due date is a product setting, not law",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Mine noise limits"
+    ],
+    "latinCount": 273,
+    "englishMonths": []
+  },
+  "en-6b-obligation-task": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "74 mines monitored nationwide",
+      "Tasks due in the last 90 days: evidence submitted on time and accepted",
+      "Mine effluent discharge limits",
+      "Bhatgaon Coal Mine",
+      "due date is a product setting, not law",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Mine noise limits"
+    ],
+    "latinCount": 279,
+    "englishMonths": []
+  },
+  "en-7-map": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "74 mines monitored nationwide",
+      "Mines on the map",
+      "Real coordinates; colour and label show the risk band. State and distr",
+      "Show street map (OpenStreetMap, needs internet)",
+      "Street map off - outlines only",
+      "A dashed outline marks an approximate location."
+    ],
+    "latinCount": 10,
+    "englishMonths": []
+  },
+  "en-8-profile": {
+    "lang": "en",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "Problem statement SIH26024",
+      "DGMS Compliance Authority",
+      "Profile and language",
+      "The interface switches at once and the choice is saved to your account"
+    ],
+    "latinCount": 6,
+    "englishMonths": []
+  },
+  "hi-1-login": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance"
+    ],
+    "latinCount": 1,
+    "englishMonths": []
+  },
+  "hi-2-gov-overview": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Siduli Coal Mine",
+      "Tilaboni Coal Mine",
+      "Bhubaneswari Coal Mine",
+      "Prakash Infra Projects",
+      "Talcher UG Coal Mine, Block-B Coal Mine, JVR I & II Coal Mine, Sheetal",
+      "Dhankasa Coal Mine, North Urimari Birsa Coal Mine, Nigahi Coal Mine, P",
+      "Saoner Coal Mine, Jayant Coal Mine, Nandira Coal Mine, Haldibari Coal "
+    ],
+    "latinCount": 9,
+    "englishMonths": []
+  },
+  "hi-3-mine-detail": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhubaneswari Coal Mine",
+      "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
+      "2026-06 का SAF-10 विलंबित है (देय 30 जून, 11:59 pm; Coal Mines Regulat"
+    ],
+    "latinCount": 5,
+    "englishMonths": []
+  },
+  "hi-4-production": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Gevra Coal Mine",
+      "Bhatgaon Coal Mine",
+      "NCPH Coal Mine",
+      "Katkona Coal Mine",
+      "Behraband Coal Mine",
+      "Kusmunda Coal Mine",
+      "Churcha RO Coal Mine",
+      "Baroud Coal Mine",
+      "Haldibari Coal Mine",
+      "Balrampur Coal Mine"
+    ],
+    "latinCount": 112,
+    "englishMonths": []
+  },
+  "hi-5-grievances": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Kulda Coal Mine",
+      "Moonidih Coal Mine",
+      "Talcher UG Coal Mine",
+      "Vindhya Coal Mine",
+      "Katkona Coal Mine",
+      "Chhal Coal Mine",
+      "Niljai Coal Mine",
+      "Tilaboni Coal Mine",
+      "Ramagundam III Coal Mine",
+      "Nigahi Coal Mine"
+    ],
+    "latinCount": 409,
+    "englishMonths": []
+  },
+  "hi-6-obligations": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 83,
+    "englishMonths": []
+  },
+  "hi-6b-obligation-task": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 85,
+    "englishMonths": []
+  },
+  "hi-7-map": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 2,
+    "englishMonths": []
+  },
+  "hi-8-profile": {
+    "lang": "hi",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 3,
+    "englishMonths": []
+  },
+  "bn-1-login": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance"
+    ],
+    "latinCount": 1,
+    "englishMonths": []
+  },
+  "bn-2-gov-overview": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Siduli Coal Mine",
+      "Tilaboni Coal Mine",
+      "Bhubaneswari Coal Mine",
+      "Prakash Infra Projects",
+      "Talcher UG Coal Mine, Block-B Coal Mine, JVR I & II Coal Mine, Sheetal",
+      "Dhankasa Coal Mine, North Urimari Birsa Coal Mine, Nigahi Coal Mine, P",
+      "Saoner Coal Mine, Jayant Coal Mine, Nandira Coal Mine, Haldibari Coal "
+    ],
+    "latinCount": 9,
+    "englishMonths": []
+  },
+  "bn-3-mine-detail": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhubaneswari Coal Mine",
+      "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
+      "2026-06-এর SAF-10-এর সময়সীমা পেরিয়ে গেছে (নির্ধারিত 30 জুন, 11:59 PM"
+    ],
+    "latinCount": 5,
+    "englishMonths": []
+  },
+  "bn-4-production": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Gevra Coal Mine",
+      "Bhatgaon Coal Mine",
+      "NCPH Coal Mine",
+      "Katkona Coal Mine",
+      "Behraband Coal Mine",
+      "Kusmunda Coal Mine",
+      "Churcha RO Coal Mine",
+      "Baroud Coal Mine",
+      "Haldibari Coal Mine",
+      "Balrampur Coal Mine"
+    ],
+    "latinCount": 112,
+    "englishMonths": []
+  },
+  "bn-5-grievances": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Kulda Coal Mine",
+      "Moonidih Coal Mine",
+      "Talcher UG Coal Mine",
+      "Vindhya Coal Mine",
+      "Katkona Coal Mine",
+      "Chhal Coal Mine",
+      "Niljai Coal Mine",
+      "Tilaboni Coal Mine",
+      "Ramagundam III Coal Mine",
+      "Nigahi Coal Mine"
+    ],
+    "latinCount": 409,
+    "englishMonths": []
+  },
+  "bn-6-obligations": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 83,
+    "englishMonths": []
+  },
+  "bn-6b-obligation-task": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 85,
+    "englishMonths": []
+  },
+  "bn-7-map": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 2,
+    "englishMonths": []
+  },
+  "bn-8-profile": {
+    "lang": "bn",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 3,
+    "englishMonths": []
+  },
+  "or-1-login": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance"
+    ],
+    "latinCount": 1,
+    "englishMonths": []
+  },
+  "or-2-gov-overview": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Oriya"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Siduli Coal Mine",
+      "Tilaboni Coal Mine",
+      "Bhubaneswari Coal Mine",
+      "Prakash Infra Projects",
+      "Talcher UG Coal Mine, Block-B Coal Mine, JVR I & II Coal Mine, Sheetal",
+      "Dhankasa Coal Mine, North Urimari Birsa Coal Mine, Nigahi Coal Mine, P",
+      "Saoner Coal Mine, Jayant Coal Mine, Nandira Coal Mine, Haldibari Coal "
+    ],
+    "latinCount": 9,
+    "englishMonths": []
+  },
+  "or-3-mine-detail": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Oriya"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhubaneswari Coal Mine",
+      "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
+      "2026-06 ପାଇଁ SAF-10 ବିଳମ୍ବିତ (ଧାର୍ଯ୍ୟ 30 ଜୁନ, 11:59 pm; Coal Mines Reg"
+    ],
+    "latinCount": 5,
+    "englishMonths": []
+  },
+  "or-4-production": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Oriya"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Gevra Coal Mine",
+      "Bhatgaon Coal Mine",
+      "NCPH Coal Mine",
+      "Katkona Coal Mine",
+      "Behraband Coal Mine",
+      "Kusmunda Coal Mine",
+      "Churcha RO Coal Mine",
+      "Baroud Coal Mine",
+      "Haldibari Coal Mine",
+      "Balrampur Coal Mine"
+    ],
+    "latinCount": 112,
+    "englishMonths": []
+  },
+  "or-5-grievances": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Kulda Coal Mine",
+      "Moonidih Coal Mine",
+      "Talcher UG Coal Mine",
+      "Vindhya Coal Mine",
+      "Katkona Coal Mine",
+      "Chhal Coal Mine",
+      "Niljai Coal Mine",
+      "Tilaboni Coal Mine",
+      "Ramagundam III Coal Mine",
+      "Nigahi Coal Mine"
+    ],
+    "latinCount": 409,
+    "englishMonths": []
+  },
+  "or-6-obligations": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 83,
+    "englishMonths": []
+  },
+  "or-6b-obligation-task": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 85,
+    "englishMonths": []
+  },
+  "or-7-map": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 2,
+    "englishMonths": []
+  },
+  "or-8-profile": {
+    "lang": "or",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 3,
+    "englishMonths": []
+  },
+  "te-1-login": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance"
+    ],
+    "latinCount": 1,
+    "englishMonths": []
+  },
+  "te-2-gov-overview": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Siduli Coal Mine",
+      "Tilaboni Coal Mine",
+      "Bhubaneswari Coal Mine",
+      "Prakash Infra Projects",
+      "Talcher UG Coal Mine, Block-B Coal Mine, JVR I & II Coal Mine, Sheetal",
+      "Dhankasa Coal Mine, North Urimari Birsa Coal Mine, Nigahi Coal Mine, P",
+      "Saoner Coal Mine, Jayant Coal Mine, Nandira Coal Mine, Haldibari Coal "
+    ],
+    "latinCount": 9,
+    "englishMonths": []
+  },
+  "te-3-mine-detail": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhubaneswari Coal Mine",
+      "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
+      "2026-06కు SAF-10 గడువు మీరింది (గడువు 30 జూన్ 11:59 PM; Coal Mines Reg"
+    ],
+    "latinCount": 5,
+    "englishMonths": []
+  },
+  "te-4-production": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Gevra Coal Mine",
+      "Bhatgaon Coal Mine",
+      "NCPH Coal Mine",
+      "Katkona Coal Mine",
+      "Behraband Coal Mine",
+      "Kusmunda Coal Mine",
+      "Churcha RO Coal Mine",
+      "Baroud Coal Mine",
+      "Haldibari Coal Mine",
+      "Balrampur Coal Mine"
+    ],
+    "latinCount": 112,
+    "englishMonths": []
+  },
+  "te-5-grievances": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Kulda Coal Mine",
+      "Moonidih Coal Mine",
+      "Talcher UG Coal Mine",
+      "Vindhya Coal Mine",
+      "Katkona Coal Mine",
+      "Chhal Coal Mine",
+      "Niljai Coal Mine",
+      "Tilaboni Coal Mine",
+      "Ramagundam III Coal Mine",
+      "Nigahi Coal Mine"
+    ],
+    "latinCount": 409,
+    "englishMonths": []
+  },
+  "te-6-obligations": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 83,
+    "englishMonths": []
+  },
+  "te-6b-obligation-task": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 85,
+    "englishMonths": []
+  },
+  "te-7-map": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 2,
+    "englishMonths": []
+  },
+  "te-8-profile": {
+    "lang": "te",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 3,
+    "englishMonths": []
+  },
+  "mr-1-login": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance"
+    ],
+    "latinCount": 1,
+    "englishMonths": []
+  },
+  "mr-2-gov-overview": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Siduli Coal Mine",
+      "Tilaboni Coal Mine",
+      "Bhubaneswari Coal Mine",
+      "Prakash Infra Projects",
+      "Talcher UG Coal Mine, Block-B Coal Mine, JVR I & II Coal Mine, Sheetal",
+      "Dhankasa Coal Mine, North Urimari Birsa Coal Mine, Nigahi Coal Mine, P",
+      "Saoner Coal Mine, Jayant Coal Mine, Nandira Coal Mine, Haldibari Coal "
+    ],
+    "latinCount": 9,
+    "englishMonths": []
+  },
+  "mr-3-mine-detail": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhubaneswari Coal Mine",
+      "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
+      "2026-06 साठीची SAF-10 मुदतबाह्य आहे (मुदत 30 जून, 11:59 PM; Coal Mines"
+    ],
+    "latinCount": 5,
+    "englishMonths": []
+  },
+  "mr-4-production": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Gevra Coal Mine",
+      "Bhatgaon Coal Mine",
+      "NCPH Coal Mine",
+      "Katkona Coal Mine",
+      "Behraband Coal Mine",
+      "Kusmunda Coal Mine",
+      "Churcha RO Coal Mine",
+      "Baroud Coal Mine",
+      "Haldibari Coal Mine",
+      "Balrampur Coal Mine"
+    ],
+    "latinCount": 112,
+    "englishMonths": []
+  },
+  "mr-5-grievances": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Kulda Coal Mine",
+      "Moonidih Coal Mine",
+      "Talcher UG Coal Mine",
+      "Vindhya Coal Mine",
+      "Katkona Coal Mine",
+      "Chhal Coal Mine",
+      "Niljai Coal Mine",
+      "Tilaboni Coal Mine",
+      "Ramagundam III Coal Mine",
+      "Nigahi Coal Mine"
+    ],
+    "latinCount": 409,
+    "englishMonths": []
+  },
+  "mr-6-obligations": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 83,
+    "englishMonths": []
+  },
+  "mr-6b-obligation-task": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority",
+      "Bhatgaon Coal Mine",
+      "Gopalji Kaniha Coal Mine",
+      "Saoner Coal Mine",
+      "Chirimiri Coal Mine",
+      "Dabor Coal Mine",
+      "Churcha RO Coal Mine",
+      "Behraband Coal Mine",
+      "Bhurkunda Coal Mine",
+      "NCPH Coal Mine",
+      "Kusmunda Coal Mine"
+    ],
+    "latinCount": 85,
+    "englishMonths": []
+  },
+  "mr-7-map": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 2,
+    "englishMonths": []
+  },
+  "mr-8-profile": {
+    "lang": "mr",
+    "issues": [],
+    "fonts": [
+      "Noto Sans Devanagari",
+      "Noto Sans Bengali",
+      "Noto Sans Oriya",
+      "Noto Sans Telugu"
+    ],
+    "latinSample": [
+      "Smart Mine Governance",
+      "DGMS Compliance Authority"
+    ],
+    "latinCount": 3,
+    "englishMonths": []
+  }
+}

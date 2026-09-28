@@ -8,10 +8,11 @@ import { RiskMark } from "../compliance/RiskMark";
 import { fmtScore } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
 import { reasonText } from "../../i18n/labels";
+import { t } from "../../i18n/t";
 
 export function PriorityQueue({ candidates }) {
   const navigate = useNavigate();
-  if (!candidates?.length) return <EmptyState>Nothing queued for inspection.</EmptyState>;
+  if (!candidates?.length) return <EmptyState>{t("priority.empty")}</EmptyState>;
 
   return (
     <div className="queue">
@@ -21,7 +22,7 @@ export function PriorityQueue({ candidates }) {
           type="button"
           className={`queue-row${c.rank === 1 ? " is-top" : ""}`}
           onClick={() => navigate(`/gov/mines/${c.mine_id}`)}
-          aria-label={`Rank ${c.rank}, ${c.name}, score ${c.compliance.score}. Open drill-down.`}
+          aria-label={t("priority.rowAria", { rank: c.rank, name: c.name, score: fmtScore(c.compliance.score) })}
         >
           <span className="queue-rank">{c.rank}</span>
 

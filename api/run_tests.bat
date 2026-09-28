@@ -14,6 +14,10 @@ if not exist "..\data\out\%TEST_PRESET%\_manifest.json" (
   call "..\data\run_data.bat" %TEST_PRESET% || exit /b 1
 )
 
+echo === locales: every key in every language; no hard-coded UI text (Phase 6)
+node "..\scripts\check_locales.mjs" || exit /b 1
+node "..\scripts\check_hardcoded_strings.mjs" || exit /b 1
+
 echo === migrations down/up on the test database
 "%PHP%" yii_test migrate/down all --interactive=0 >nul || exit /b 1
 "%PHP%" yii_test migrate --interactive=0 >nul || exit /b 1

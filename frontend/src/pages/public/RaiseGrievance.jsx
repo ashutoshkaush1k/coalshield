@@ -8,6 +8,7 @@ import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { DemoFooter } from "../../components/common/DemoFooter";
 import { categoryLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
+import { LanguageSwitcher } from "../../components/common/LanguageSwitcher";
 import { fmtWhen } from "../../components/grievances/common";
 
 const blank = { mine_id: "", submitter_type: "contract_worker", is_anonymous: false, name: "", contact: "", category: "",
@@ -54,6 +55,7 @@ export default function RaiseGrievance() {
   return (
     <div className="login-wrap">
       <div className="public-card stack">
+        <LanguageSwitcher id="public-language" />
         <div className="brandline">
           <h1>{t("grievance.public.title")}</h1>
           <span>{t("grievance.public.hint")}</span>

@@ -167,3 +167,11 @@ dashboard open and polling in two more tabs for the whole run (`node scripts/bro
 - The API keeps up to 24 PostgreSQL connections open (one per Apache thread; `max_connections`
   is 100).
 - Measured on one development machine; not a load test.
+
+## After Phase 6 (languages)
+
+Same method, 2026-09-28, mains power, fresh demo seed: every dashboard request under 150 ms. Medians
+13-59 ms; the slowest p95 is the government overview at 85 ms (52 median). Side by side: 53 / 62
+and 45 / 57. The API changed only in `/v1/users/me` (three more fields). Language switching is
+client-side and makes no extra requests. The Noto font files are bundled, and a browser fetches
+only the scripts it renders.

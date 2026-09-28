@@ -1,0 +1,297 @@
+[
+  {
+    "name": "00a-login-switcher-te",
+    "note": "login page switched to Telugu with the switcher; kept in this browser until login",
+    "errors": []
+  },
+  {
+    "name": "00b-head-saved-hindi",
+    "note": "Gevra mine head: browser set to Telugu, account saved Hindi - Hindi wins after login",
+    "errors": []
+  },
+  {
+    "name": "00c-profile-switched-odia",
+    "note": "profile: choosing Odia saves it to the account and switches without a reload",
+    "errors": []
+  },
+  {
+    "name": "en-1-login",
+    "note": "en: login",
+    "errors": []
+  },
+  {
+    "name": "en-2-gov-overview",
+    "note": "en: government overview",
+    "errors": []
+  },
+  {
+    "name": "en-3-mine-detail",
+    "note": "en: mine detail (Bhubaneswari)",
+    "errors": []
+  },
+  {
+    "name": "en-4-production",
+    "note": "en: production",
+    "errors": []
+  },
+  {
+    "name": "en-5-grievances",
+    "note": "en: grievances",
+    "errors": []
+  },
+  {
+    "name": "en-6-obligations",
+    "note": "en: obligation register (titles translated; citations as written)",
+    "errors": []
+  },
+  {
+    "name": "en-6b-obligation-task",
+    "note": "en: an obligation task - labels translated, the citation and quote as written",
+    "errors": []
+  },
+  {
+    "name": "en-7-map",
+    "note": "en: map",
+    "errors": []
+  },
+  {
+    "name": "en-8-profile",
+    "note": "en: profile and language",
+    "errors": []
+  },
+  {
+    "name": "hi-1-login",
+    "note": "hi: login",
+    "errors": []
+  },
+  {
+    "name": "hi-2-gov-overview",
+    "note": "hi: government overview",
+    "errors": []
+  },
+  {
+    "name": "hi-3-mine-detail",
+    "note": "hi: mine detail (Bhubaneswari)",
+    "errors": []
+  },
+  {
+    "name": "hi-4-production",
+    "note": "hi: production",
+    "errors": []
+  },
+  {
+    "name": "hi-5-grievances",
+    "note": "hi: grievances",
+    "errors": []
+  },
+  {
+    "name": "hi-6-obligations",
+    "note": "hi: obligation register (titles translated; citations as written)",
+    "errors": []
+  },
+  {
+    "name": "hi-6b-obligation-task",
+    "note": "hi: an obligation task - labels translated, the citation and quote as written",
+    "errors": []
+  },
+  {
+    "name": "hi-7-map",
+    "note": "hi: map",
+    "errors": []
+  },
+  {
+    "name": "hi-8-profile",
+    "note": "hi: profile and language",
+    "errors": []
+  },
+  {
+    "name": "bn-1-login",
+    "note": "bn: login",
+    "errors": []
+  },
+  {
+    "name": "bn-2-gov-overview",
+    "note": "bn: government overview",
+    "errors": []
+  },
+  {
+    "name": "bn-3-mine-detail",
+    "note": "bn: mine detail (Bhubaneswari)",
+    "errors": []
+  },
+  {
+    "name": "bn-4-production",
+    "note": "bn: production",
+    "errors": []
+  },
+  {
+    "name": "bn-5-grievances",
+    "note": "bn: grievances",
+    "errors": []
+  },
+  {
+    "name": "bn-6-obligations",
+    "note": "bn: obligation register (titles translated; citations as written)",
+    "errors": []
+  },
+  {
+    "name": "bn-6b-obligation-task",
+    "note": "bn: an obligation task - labels translated, the citation and quote as written",
+    "errors": []
+  },
+  {
+    "name": "bn-7-map",
+    "note": "bn: map",
+    "errors": []
+  },
+  {
+    "name": "bn-8-profile",
+    "note": "bn: profile and language",
+    "errors": []
+  },
+  {
+    "name": "or-1-login",
+    "note": "or: login",
+    "errors": []
+  },
+  {
+    "name": "or-2-gov-overview",
+    "note": "or: government overview",
+    "errors": []
+  },
+  {
+    "name": "or-3-mine-detail",
+    "note": "or: mine detail (Bhubaneswari)",
+    "errors": []
+  },
+  {
+    "name": "or-4-production",
+    "note": "or: production",
+    "errors": []
+  },
+  {
+    "name": "or-5-grievances",
+    "note": "or: grievances",
+    "errors": []
+  },
+  {
+    "name": "or-6-obligations",
+    "note": "or: obligation register (titles translated; citations as written)",
+    "errors": []
+  },
+  {
+    "name": "or-6b-obligation-task",
+    "note": "or: an obligation task - labels translated, the citation and quote as written",
+    "errors": []
+  },
+  {
+    "name": "or-7-map",
+    "note": "or: map",
+    "errors": []
+  },
+  {
+    "name": "or-8-profile",
+    "note": "or: profile and language",
+    "errors": []
+  },
+  {
+    "name": "te-1-login",
+    "note": "te: login",
+    "errors": []
+  },
+  {
+    "name": "te-2-gov-overview",
+    "note": "te: government overview",
+    "errors": []
+  },
+  {
+    "name": "te-3-mine-detail",
+    "note": "te: mine detail (Bhubaneswari)",
+    "errors": []
+  },
+  {
+    "name": "te-4-production",
+    "note": "te: production",
+    "errors": []
+  },
+  {
+    "name": "te-5-grievances",
+    "note": "te: grievances",
+    "errors": []
+  },
+  {
+    "name": "te-6-obligations",
+    "note": "te: obligation register (titles translated; citations as written)",
+    "errors": []
+  },
+  {
+    "name": "te-6b-obligation-task",
+    "note": "te: an obligation task - labels translated, the citation and quote as written",
+    "errors": []
+  },
+  {
+    "name": "te-7-map",
+    "note": "te: map",
+    "errors": []
+  },
+  {
+    "name": "te-8-profile",
+    "note": "te: profile and language",
+    "errors": []
+  },
+  {
+    "name": "mr-1-login",
+    "note": "mr: login",
+    "errors": []
+  },
+  {
+    "name": "mr-2-gov-overview",
+    "note": "mr: government overview",
+    "errors": []
+  },
+  {
+    "name": "mr-3-mine-detail",
+    "note": "mr: mine detail (Bhubaneswari)",
+    "errors": []
+  },
+  {
+    "name": "mr-4-production",
+    "note": "mr: production",
+    "errors": []
+  },
+  {
+    "name": "mr-5-grievances",
+    "note": "mr: grievances",
+    "errors": []
+  },
+  {
+    "name": "mr-6-obligations",
+    "note": "mr: obligation register (titles translated; citations as written)",
+    "errors": []
+  },
+  {
+    "name": "mr-6b-obligation-task",
+    "note": "mr: an obligation task - labels translated, the citation and quote as written",
+    "errors": []
+  },
+  {
+    "name": "mr-7-map",
+    "note": "mr: map",
+    "errors": []
+  },
+  {
+    "name": "mr-8-profile",
+    "note": "mr: profile and language",
+    "errors": []
+  },
+  {
+    "name": "side-tab gov@dgms.gov.in",
+    "note": "26 API requests in 191 s",
+    "errors": []
+  },
+  {
+    "name": "side-tab head.od-tlc-05@coalmine.in",
+    "note": "24 API requests in 184 s",
+    "errors": []
+  }
+]

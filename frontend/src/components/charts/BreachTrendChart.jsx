@@ -4,6 +4,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { BREACH_CATEGORIES } from "../../api/sensors";
 import { EmptyState } from "../common/EmptyState";
 import { chartTokens, token } from "../../utils/tokens";
+import { fmtDayHour, fmtNumber } from "../../utils/format";
+import { useT } from "../../i18n/t";
 
 /**
  * Segment colours are the same per-sensor identities the line charts use, so gas means
@@ -18,20 +20,19 @@ const CATEGORY_TOKEN = {
   temperature: ["--sensor-temperature", "#f97316"],
 };
 
-const LABEL = { gas: "Gas", dust: "Dust", temperature: "Temperature" };
-
 export const categoryColour = (category) => {
   const [name, fallback] = CATEGORY_TOKEN[category] ?? ["--muted", "#6b7280"];
   return token(name, fallback);
 };
 
 export function BreachLegend() {
+  const t = useT();
   return (
     <div className="chart-legend">
       {BREACH_CATEGORIES.map((category) => (
         <span key={category} className="chart-legend-item">
           <span className="chart-legend-swatch" style={{ background: categoryColour(category) }} />
-          {LABEL[category]}
+          {t(`sensor.category.${category}`)}
         </span>
       ))}
     </div>
@@ -39,13 +40,14 @@ export function BreachLegend() {
 }
 
 /** Breakdown by category plus the total, so the parts and the bar height reconcile. */
-function CategoryTooltip({ active, payload, label }) {
+function CategoryTooltip({ active, payload }) {
+  const t = useT();
   if (!active || !payload?.length) return null;
   const bucket = payload[0].payload;
 
   return (
     <div className="chart-tooltip">
-      <div className="chart-tooltip-title">{label}</div>
+      <div className="chart-tooltip-title">{fmtDayHour(bucket.start)}</div>
       <table>
         <tbody>
           {BREACH_CATEGORIES.map((category) => (
@@ -53,16 +55,14 @@ function CategoryTooltip({ active, payload, label }) {
               <td>
                 <span className="chart-legend-swatch"
                       style={{ background: categoryColour(category) }} />
-                {LABEL[category]}
+                {t(`sensor.category.${category}`)}
               </td>
-              <td className="num">{bucket[category] ?? 0}</td>
+              <td className="num">{fmtNumber(bucket[category] ?? 0, 0)}</td>
             </tr>
           ))}
           <tr className="is-total">
-            <td>Total</td>
-            <td className="num">
-              {bucket.breaches} breach{bucket.breaches === 1 ? "" : "es"}
-            </td>
+            <td>{t("chart.totalBreaches")}</td>
+            <td className="num">{fmtNumber(bucket.breaches, 0)}</td>
           </tr>
         </tbody>
       </table>
@@ -71,7 +71,8 @@ function CategoryTooltip({ active, payload, label }) {
 }
 
 export function BreachTrendChart({ buckets, height = 260 }) {
-  if (!buckets?.length) return <EmptyState>No sensor readings in this window yet.</EmptyState>;
+  const t = useT();
+  if (!buckets?.length) return <EmptyState>{t("chart.noReadingsWindow")}</EmptyState>;
 
   const { ink, muted: faint, grid, surface } = chartTokens();
 
@@ -80,10 +81,10 @@ export function BreachTrendChart({ buckets, height = 260 }) {
       <ResponsiveContainer>
         <BarChart data={buckets} margin={{ top: 8, right: 8, bottom: 0, left: -20 }}>
           <CartesianGrid stroke={grid} vertical={false} />
-          <XAxis dataKey="label" tick={{ fontSize: 11, fill: faint }} tickLine={false}
+          <XAxis dataKey="start" tickFormatter={fmtDayHour} tick={{ fontSize: 11, fill: faint }} tickLine={false}
                  axisLine={false} minTickGap={16} />
           <YAxis tick={{ fontSize: 11, fill: faint }} tickLine={false} axisLine={false}
-                 width={44} allowDecimals={false} />
+                 width={44} allowDecimals={false} tickFormatter={(v) => fmtNumber(v, 0)} />
           <Tooltip
             cursor={{ fill: grid, fillOpacity: 0.5 }}
             wrapperStyle={{ outline: "none" }}

@@ -9,7 +9,7 @@ repository layout and how to run it.
 
 | Layer | Choice |
 |---|---|
-| Frontend | React 18 + Vite + Recharts, i18next (`frontend/`) |
+| Frontend | React 18 + Vite + Recharts + Leaflet, i18next in six languages: en, hi, bn, or, te, mr (`frontend/`, [docs/i18n.md](docs/i18n.md)) |
 | API | PHP 8.2 + Yii2 pure JSON API, module `v1` (`api/`) |
 | Database | PostgreSQL 16 + PostGIS (monthly-partitioned sensor readings, hash-chained audit log) |
 | AI | `ai-service/` (FastAPI, stateless): pretrained YOLO PPE detection |

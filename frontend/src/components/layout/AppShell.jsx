@@ -1,5 +1,5 @@
 // Page frame: sidebar, topbar, content outlet.
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES, normalizeRole } from "../../auth/roles";
 import { DemoFooter } from "../common/DemoFooter";
@@ -23,11 +23,12 @@ export function AppShell() {
       <aside className="sidebar">
         <div className="brand">
           <strong>Smart Mine Governance</strong>
-          <span>Problem statement SIH26024</span>
+          <span>{t("shell.problemStatement", { id: "SIH26024" })}</span>
         </div>
         <div className="foot">
           <div className="who">{user?.full_name || user?.email}</div>
           <div className="role">{scopeLabel(t, user)}</div>
+          <NavLink to="/profile" className="profile-link" id="profile-link">{t("shell.profile")}</NavLink>
           <button onClick={signOut}>{t("shell.signOut")}</button>
         </div>
       </aside>

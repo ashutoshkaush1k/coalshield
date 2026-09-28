@@ -4,6 +4,7 @@
 // Modal:  centres, for a single focused action.
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useT } from "../../i18n/t";
 
 function useOverlay(open, onClose) {
   useEffect(() => {
@@ -48,6 +49,7 @@ function Shell({ open, onClose, variant, className = "", children }) {
 }
 
 function Head({ title, subtitle, onClose, action }) {
+  const t = useT();
   return (
     <header className="overlay-head">
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -55,7 +57,7 @@ function Head({ title, subtitle, onClose, action }) {
         {subtitle && <div className="hint">{subtitle}</div>}
       </div>
       {action}
-      <button className="overlay-close" type="button" onClick={onClose} aria-label="Close">
+      <button className="overlay-close" type="button" onClick={onClose} aria-label={t("common.close")}>
         &times;
       </button>
     </header>

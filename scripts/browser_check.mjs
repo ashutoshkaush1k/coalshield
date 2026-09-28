@@ -1,6 +1,6 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b] [outDir] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
+//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b|phase6] [outDir] [--strict] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
 //   --side-tabs  also keep a government overview and a mine-head dashboard polling in two more tabs
 //
 // phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
@@ -14,6 +14,10 @@
 //         (reason required) then accepts, an overdue item escalates (yii obligation/check --at),
 //         the register for each role; the map for all three roles with every off-machine request
 //         blocked (no internet), and the street map failing gracefully.
+// phase6: languages - the login switcher (kept in the browser), the saved preference winning after
+//         login, the profile switching at once; then login, overview, mine detail, production,
+//         grievances, obligations, map and profile in en, hi, bn, or, te and mr with the network
+//         blocked, each screen probed for clipped or spilling text (overflow.json); --strict fails on any.
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -128,8 +132,15 @@ class Page {
     await this.send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
     await sleep(500);
   }
-  async as(email, path) {
+  /**
+   * Sign in as `email` and open `path`. Phase 6: the account's saved language wins after login, so
+   * this first saves `lang` to the account (PATCH /v1/users/me) - English unless a check asks for
+   * another. Most seeded mine heads prefer their state's language; reseed after a check.
+   */
+  async as(email, path, lang = "en") {
     const token = await login(email);
+    await fetch(`${API}/users/me`, { method: "PATCH", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ preferred_language: lang }) });
     await this.goto(`${APP}/login`, 1500);
     await this.eval(`sessionStorage.setItem("smg.token", ${JSON.stringify(token)})`);
     await this.goto(`${APP}${path}`, 4500);
@@ -733,6 +744,232 @@ async function phase5b(page) {
   await page.send("Fetch.disable");
 }
 
+// Phase 6: text that does not fit. Runs in the page; returns what a reader would see cut off or
+// spilling out: clipped text (overflow hidden / ellipsis), text wider than its own box, anything
+// past the right edge of the window outside a horizontal-scroll container, and a page that scrolls
+// sideways. Charts (SVG) and the map's own panes are left out - they draw, they do not wrap.
+const OVERFLOW_PROBE = `(() => {
+  const found = [];
+  const vw = document.documentElement.clientWidth;
+  const skip = (el) => el.closest("svg, .leaflet-pane, .leaflet-control-attribution, .sr-only, [aria-hidden='true']");
+  const scroller = (el) => {
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      const o = getComputedStyle(p).overflowX;
+      if (o === "auto" || o === "scroll") return p;
+    }
+    return null;
+  };
+  const path = (el) => {
+    const bits = [];
+    for (let e = el; e && e !== document.body && bits.length < 3; e = e.parentElement) {
+      bits.unshift(e.tagName.toLowerCase() + (e.id ? "#" + e.id : "") + (typeof e.className === "string" && e.className.trim() ? "." + e.className.trim().split(/\\s+/).slice(0, 2).join(".") : ""));
+    }
+    return bits.join(" > ");
+  };
+  const ownText = (el) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+  for (const el of document.querySelectorAll("body *")) {
+    if (skip(el)) continue;
+    const text = ownText(el);
+    if (!text) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === "hidden") continue;
+    const clipX = ["hidden", "clip"].includes(cs.overflowX) || cs.textOverflow === "ellipsis";
+    const clipY = ["hidden", "clip"].includes(cs.overflowY);
+    const add = (kind, px) => found.push({ kind, px: Math.round(px), where: path(el), text: text.slice(0, 60) });
+    if (clipX && el.scrollWidth > el.clientWidth + 1) add("clipped-x", el.scrollWidth - el.clientWidth);
+    else if (clipY && el.scrollHeight > el.clientHeight + 2) add("clipped-y", el.scrollHeight - el.clientHeight);
+    else if (!clipX && cs.display !== "inline" && el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 2 && cs.whiteSpace !== "pre") add("spills", el.scrollWidth - el.clientWidth);
+    if (r.right > vw + 1 && !scroller(el)) add("past-window", r.right - vw);
+    // Cut by a container: an ancestor with overflow hidden / clip hides part of this text's box.
+    for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+      const as = getComputedStyle(a);
+      const hx = ["hidden", "clip"].includes(as.overflowX), hy = ["hidden", "clip"].includes(as.overflowY);
+      if (!hx && !hy) continue;
+      const ar = a.getBoundingClientRect();
+      const cut = Math.max(hy ? ar.top - r.top : 0, hy ? r.bottom - ar.bottom : 0, hx ? ar.left - r.left : 0, hx ? r.right - ar.right : 0);
+      if (cut > 1) add("cut-by-container", cut);
+      break;
+    }
+  }
+  const page = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+  if (page > 1) found.push({ kind: "page-scrolls-sideways", px: page, where: "html", text: "" });
+  // Merge repeats (the same element kind in every row of a table).
+  const seen = new Map();
+  for (const f of found) {
+    const k = f.kind + "|" + f.where;
+    if (seen.has(k)) seen.get(k).count++; else seen.set(k, { ...f, count: 1 });
+  }
+  return [...seen.values()];
+})()`;
+
+// What the page is rendering with: the Noto faces loaded, and Latin-script text left on screen in
+// a non-English UI (data such as mine names is expected; a sentence is a missed string).
+const FONT_AND_TEXT_PROBE = `(() => {
+  const fonts = [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/"/g, "")).filter((f) => f.startsWith("Noto"));
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const latin = [];
+  while (walker.nextNode()) {
+    const s = walker.currentNode.textContent.trim();
+    const el = walker.currentNode.parentElement;
+    if (!s || !el || el.closest("script, style, svg, .mono, .leaflet-control-attribution, .demo-footer, .lang-switch, .citation-quote, .citation-head, blockquote, input, select option")) continue;
+    if (/[A-Za-z]{3,}(\\s+[A-Za-z]{2,}){2,}/.test(s)) latin.push(s.slice(0, 70));
+  }
+  return { fonts: [...new Set(fonts)], latin: [...new Set(latin)].slice(0, 12), latinCount: latin.length };
+})()`;
+
+async function phase6(page) {
+  const LANGS = ["en", "hi", "bn", "or", "te", "mr"];
+  const GOV = "gov@dgms.gov.in";
+  const HEAD = "head.cg-krb-03@coalmine.in";   // Gevra: the seed saves Hindi for this account
+  const tabBtn = (id) => page.eval(`document.querySelector('button[aria-controls="panel-${id}"]').click()`);
+  const waitFor = async (selector, timeout = 20000) => {
+    for (let waited = 0; waited < timeout; waited += 400) {
+      if (await page.eval(`!!document.querySelector(${JSON.stringify(selector)})`)) return true;
+      await sleep(400);
+    }
+    throw new Error(`waited ${timeout / 1000} s for ${selector}`);
+  };
+  const lang = () => page.eval("document.documentElement.lang");
+  const text = (selector) => page.eval(`document.querySelector(${JSON.stringify(selector)})?.textContent?.trim() ?? ""`);
+  const blocked = await blockInternet(page);
+  const findings = {};
+
+  // The probe must catch what it is for: two labels made not to fit, then removed.
+  await page.goto(`${APP}/login`, 1500);
+  const selfTest = await page.eval(`(() => {
+    const box = document.createElement("div");
+    box.innerHTML = '<div id="pt-clip" style="width:40px;overflow:hidden;white-space:nowrap">A label that cannot fit here</div>'
+      + '<button id="pt-spill" style="width:30px;white-space:nowrap">Longwordlabel</button>'
+      + '<div style="height:12px;overflow:hidden"><span id="pt-cut" style="display:block;margin-top:8px">Cut</span></div>';
+    document.body.appendChild(box);
+    const kinds = ${OVERFLOW_PROBE}.filter((f) => /pt-/.test(f.where)).map((f) => f.kind);
+    box.remove();
+    return kinds;
+  })()`);
+  expect(selfTest.includes("clipped-x") && selfTest.includes("spills") && selfTest.includes("cut-by-container"),
+    `the overflow probe detects clipped, spilling and cut text (${selfTest.join(", ")})`);
+  console.log(`  probe self-test: ${selfTest.join(", ")}`);
+  const probe = async (name, code) => {
+    await page.eval("document.fonts.ready.then(() => true)");
+    await sleep(500);
+    const issues = await page.eval(OVERFLOW_PROBE);
+    const render = await page.eval(FONT_AND_TEXT_PROBE);
+    findings[name] = { lang: code, issues, fonts: render.fonts, latinSample: render.latin, latinCount: render.latinCount,
+      // A date with an English month in another language: the browser lacked the locale data.
+      englishMonths: code === "en" ? [] : await page.eval(`[...new Set(document.body.innerText.match(/\\b\\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\b/g) ?? [])].slice(0, 5)`) };
+    return issues;
+  };
+  const shoot = async (name, note, code) => {
+    const issues = await probe(name, code);
+    await page.shot(name, `${note}${issues.length ? ` - ${issues.length} overflow finding(s)` : ""}`);
+  };
+
+  console.log("Switching language: signed out (browser choice), then the account's saved language wins");
+  await page.goto(`${APP}/login`, 1500);
+  await page.eval(`sessionStorage.removeItem("smg.token"); localStorage.setItem("smg.lang", "en")`);
+  await page.goto(`${APP}/login`, 2500);
+  const enButton = await text("form button[type=submit]");
+  await page.select("#login-language", "te");
+  await sleep(500);
+  expect(await lang() === "te" && (await text("form button[type=submit]")) !== enButton, "the login switcher switches at once");
+  expect(await page.eval(`localStorage.getItem("smg.lang")`) === "te", "the signed-out choice is kept in the browser");
+  await page.shot("00a-login-switcher-te", "login page switched to Telugu with the switcher; kept in this browser until login");
+  // Gevra's head saved Hindi: after login Hindi wins over the browser's Telugu.
+  const headToken = await login(HEAD);
+  await fetch(`${API}/users/me`, { method: "PATCH", headers: { Authorization: `Bearer ${headToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ preferred_language: "hi" }) });
+  await page.eval(`sessionStorage.setItem("smg.token", ${JSON.stringify(headToken)})`);
+  await page.goto(`${APP}/mine`, 4000);
+  await waitFor(".masthead h1");
+  expect(await lang() === "hi", `after login the saved preference wins (browser te, account hi; got ${await lang()})`);
+  await page.shot("00b-head-saved-hindi", "Gevra mine head: browser set to Telugu, account saved Hindi - Hindi wins after login");
+  // The profile page saves a new language and switches immediately.
+  await page.goto(`${APP}/profile`, 3000);
+  await waitFor("#profile-language");
+  const before = await text(".masthead h1");
+  await page.eval(`document.querySelector('#profile-language input[value="or"]').click()`);
+  for (let i = 0; i < 20 && (await lang()) !== "or"; i++) await sleep(250);
+  expect(await lang() === "or" && (await text(".masthead h1")) !== before, "the profile switches the language at once");
+  // The interface switches first; the save (PATCH /v1/users/me) completes a moment later.
+  let me = {};
+  for (let i = 0; i < 20 && me.preferred_language !== "or"; i++) {
+    await sleep(250);
+    me = await (await fetch(`${API}/users/me`, { headers: { Authorization: `Bearer ${headToken}` } })).json();
+  }
+  expect(me.preferred_language === "or", "the choice is saved to the account (PATCH /v1/users/me)");
+  await sleep(600);
+  await page.shot("00c-profile-switched-odia", "profile: choosing Odia saves it to the account and switches without a reload");
+
+  for (const code of LANGS) {
+    console.log(`Language ${code}: the main screens`);
+    await page.goto(`${APP}/login`, 1200);
+    await page.eval(`sessionStorage.removeItem("smg.token"); localStorage.setItem("smg.lang", ${JSON.stringify(code)})`);
+    await page.goto(`${APP}/login`, 2000);
+    await waitFor("#login-language");
+    expect(await lang() === code, `login page in ${code}`);
+    await shoot(`${code}-1-login`, `${code}: login`, code);
+
+    await page.as(GOV, "/gov", code);
+    await waitFor(".board-bars .core");
+    expect(await lang() === code, `government overview in ${code}`);
+    await shoot(`${code}-2-gov-overview`, `${code}: government overview`, code);
+
+    await page.goto(`${APP}/gov/mines/5`, 3500);
+    await waitFor(".tally-v");
+    await shoot(`${code}-3-mine-detail`, `${code}: mine detail (Bhubaneswari)`, code);
+
+    await page.goto(`${APP}/gov`, 3000);
+    await waitFor(".board-bars .core");
+    await tabBtn("production");
+    await waitFor("#panel-production table");
+    await shoot(`${code}-4-production`, `${code}: production`, code);
+
+    await tabBtn("grievances");
+    await waitFor("#grievance-by-mine");
+    await shoot(`${code}-5-grievances`, `${code}: grievances`, code);
+
+    await tabBtn("obligations");
+    await waitFor("#obligation-summary");
+    await shoot(`${code}-6-obligations`, `${code}: obligation register (titles translated; citations as written)`, code);
+    // A detail drawer: the longest labels in the narrowest column.
+    await page.eval(`document.querySelector("#obligation-most-overdue tbody tr strong").click()`);
+    await waitFor("#obligation-task .citation-block");
+    await page.eval(`document.querySelector("#obligation-task details.citation-quote")?.setAttribute("open", "")`);
+    await shoot(`${code}-6b-obligation-task`, `${code}: an obligation task - labels translated, the citation and quote as written`, code);
+    await page.escape();
+
+    await tabBtn("map");
+    await waitFor("#mine-map path.mine-marker");
+    await sleep(800);
+    await shoot(`${code}-7-map`, `${code}: map`, code);
+
+    await page.goto(`${APP}/profile`, 2500);
+    await waitFor("#profile-language");
+    await shoot(`${code}-8-profile`, `${code}: profile and language`, code);
+  }
+
+  // Reset the demo accounts' languages (the seed's values) and report.
+  await fetch(`${API}/users/me`, { method: "PATCH", headers: { Authorization: `Bearer ${await login(GOV)}`, "Content-Type": "application/json" }, body: JSON.stringify({ preferred_language: "en" }) });
+  await fetch(`${API}/users/me`, { method: "PATCH", headers: { Authorization: `Bearer ${headToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ preferred_language: "hi" }) });
+  await page.send("Fetch.disable");
+  writeFileSync(join(OUT, "overflow.json"), JSON.stringify(findings, null, 2));
+  const total = Object.values(findings).reduce((n, f) => n + f.issues.length, 0);
+  console.log(`\n  overflow findings: ${total} across ${Object.keys(findings).length} screens (overflow.json)`);
+  for (const [name, f] of Object.entries(findings)) {
+    for (const i of f.issues) console.log(`    ${name}: ${i.kind} ${i.px}px x${i.count} ${i.where} "${i.text}"`);
+  }
+  const indic = Object.entries(findings).filter(([, f]) => f.lang !== "en" && f.fonts.length === 0).map(([n]) => n);
+  console.log(`  Noto faces loaded on every non-English screen: ${indic.length ? "NO - " + indic.join(", ") : "yes"}`);
+  console.log(`  requests off this machine: ${blocked.length}${blocked.length ? " (" + [...new Set(blocked)].join(", ") + ")" : ""}`);
+  expect(blocked.length === 0, "no request leaves the machine (fonts and outlines are local)");
+  expect(!indic.length, "the Indic scripts render with the bundled Noto faces");
+  const months = Object.entries(findings).filter(([, f]) => f.englishMonths.length).map(([n, f]) => `${n}: ${f.englishMonths.join(", ")}`);
+  console.log(`  English month names on non-English screens: ${months.length ? months.join("; ") : "none"}`);
+  expect(!months.length, "dates use the language's month names");
+  if (process.argv.includes("--strict")) expect(total === 0, `no overflow findings (${total})`);
+}
+
 /** Two more tabs, a government overview and a mine-head dashboard, polling on their own. */
 async function openSideTabs() {
   const tabs = [];
@@ -782,7 +1019,9 @@ async function main() {
     await page.send("Runtime.enable");
     await page.send("Log.enable");
     await page.send("DOM.enable");
-    await page.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+    // VIEWPORT=1366x768 checks a common office-laptop size (default 1440x900).
+    const [vw, vh] = (process.env.VIEWPORT ?? "1440x900").split("x").map(Number);
+    await page.send("Emulation.setDeviceMetricsOverride", { width: vw, height: vh, deviceScaleFactor: 1, mobile: false });
 
     const side = SIDE_TABS ? await openSideTabs() : [];
     // A new tab takes the foreground, and a background tab's screenshot can wait forever:
@@ -790,7 +1029,7 @@ async function main() {
     if (side.length) await fetch(`http://127.0.0.1:${PORT}/json/activate/${target.id}`, { method: "PUT" }).catch(() => null);
 
     try {
-      await ({ phase2, phase3, phase4, phase5, phase5b }[PHASE] ?? phase2)(page);
+      await ({ phase2, phase3, phase4, phase5, phase5b, phase6 }[PHASE] ?? phase2)(page);
     } catch (e) {
       // Keep what the page showed when a check failed, for diagnosis.
       const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));

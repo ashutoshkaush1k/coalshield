@@ -11,6 +11,8 @@ import { EmptyState } from "../common/EmptyState";
 import { useLiveSeries, useSlidingDomain } from "../../hooks/useLiveSeries";
 import { chartTokens, sensorColour } from "../../utils/tokens";
 import { sensorLabel } from "../../i18n/labels";
+import { useT } from "../../i18n/t";
+import { fmtReading, fmtTime } from "../../utils/format";
 
 // Headroom above whatever is being plotted, so a reading sitting exactly on the limit still has
 // the line drawn clear of the top edge.
@@ -29,6 +31,7 @@ function niceCeil(value) {
 }
 
 export function SensorTrendChart({ series, mineId = null }) {
+  const tr = useT();
   // Accumulated across polls, not re-derived from the latest response.
   const data = useLiveSeries(series?.points, {
     resetKey: `${mineId ?? ""}:${series?.sensor_type ?? ""}`,
@@ -61,7 +64,7 @@ export function SensorTrendChart({ series, mineId = null }) {
         : { hour: "2-digit", minute: "2-digit" };
     return (x) => {
       const ts = clock.get(Math.round(x));
-      return ts ? new Date(ts).toLocaleTimeString([], opts) : "";
+      return ts ? fmtTime(ts, opts) : "";
     };
   }, [data, clock]);
 
@@ -73,7 +76,7 @@ export function SensorTrendChart({ series, mineId = null }) {
     return niceCeil(Math.max(peak, series?.threshold ?? 0) * HEADROOM);
   }, [data, series?.threshold]);
 
-  if (!data.length) return <EmptyState>No readings yet.</EmptyState>;
+  if (!data.length) return <EmptyState>{tr("chart.noReadings")}</EmptyState>;
 
   const t = chartTokens();
   const colour = sensorColour(series.sensor_type);
@@ -110,6 +113,7 @@ export function SensorTrendChart({ series, mineId = null }) {
             tickLine={false}
             axisLine={false}
             width={44}
+            tickFormatter={fmtReading}
           />
           <Tooltip
             contentStyle={{
@@ -118,7 +122,7 @@ export function SensorTrendChart({ series, mineId = null }) {
             }}
             labelFormatter={tickLabel}
             formatter={(v, _n, item) => [
-              `${v} ${series.unit}${item?.payload?.breached ? "  (breach)" : ""}`,
+              `${fmtReading(v)} ${series.unit}${item?.payload?.breached ? `  (${tr("chart.breachMark")})` : ""}`,
               sensorLabel(series.sensor_type),
             ]}
           />
@@ -131,7 +135,7 @@ export function SensorTrendChart({ series, mineId = null }) {
             stroke={t.riskHigh}
             strokeDasharray="4 4"
             label={{
-              value: `limit ${series.threshold}${series.unit}`,
+              value: tr("chart.limit", { value: fmtReading(series.threshold), unit: series.unit }),
               position: "insideTopRight", fontSize: 10, fill: t.riskHigh,
             }}
           />}

@@ -11,6 +11,7 @@ import { ErrorNotice } from "../common/ErrorNotice";
 import { Modal } from "../overlay/Overlay";
 import { useToast } from "../overlay/ToastHost";
 import { alertText } from "../../i18n/labels";
+import { useT } from "../../i18n/t";
 
 export function ResolveDirectiveForm({ alert, onResolved }) {
   const [open, setOpen] = useState(false);
@@ -20,13 +21,14 @@ export function ResolveDirectiveForm({ alert, onResolved }) {
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
   const { notify } = useToast();
+  const t = useT();
 
   function choose(selected) {
     setError(null);
     if (!selected) return setFile(null);
     // Same allowlist the vision upload uses, checked here for an instant message.
     if (!PROOF_TYPES.includes(selected.type)) {
-      setError({ message: "Attach a JPG, PNG or WEBP image as evidence." });
+      setError({ message: t("directive.proofType") });
       return;
     }
     setFile(selected);
@@ -48,7 +50,7 @@ export function ResolveDirectiveForm({ alert, onResolved }) {
       setProofText("");
       setFile(null);
       if (inputRef.current) inputRef.current.value = "";
-      notify({ title: "Directive resolved", body: "Your evidence is now visible to DGMS." });
+      notify({ title: t("directive.resolved"), body: t("directive.resolvedBody") });
       onResolved?.(updated);
     } catch (err) {
       setError(err);
@@ -59,33 +61,33 @@ export function ResolveDirectiveForm({ alert, onResolved }) {
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)}>Resolve with proof</button>
+      <button type="button" onClick={() => setOpen(true)}>{t("directive.resolveWithProof")}</button>
 
       <Modal
         open={open}
         onClose={close}
-        title="Resolve directive"
+        title={t("directive.resolveTitle")}
         subtitle={alertText(alert)}
         footer={
           <>
-            <button type="button" onClick={close} disabled={busy}>Cancel</button>
+            <button type="button" onClick={close} disabled={busy}>{t("common.cancel")}</button>
             <button className="primary" type="submit" form={`resolve-${alert.id}`}
                     disabled={busy || !proofText.trim()}>
-              {busy ? "Submitting..." : "Submit resolution"}
+              {busy ? t("common.submitting") : t("directive.submitResolution")}
             </button>
           </>
         }
       >
         <form id={`resolve-${alert.id}`} onSubmit={submit} className="stack tight">
           <div>
-            <label htmlFor={`proof-${alert.id}`}>Corrective action taken</label>
+            <label htmlFor={`proof-${alert.id}`}>{t("directive.actionTaken")}</label>
             <textarea id={`proof-${alert.id}`} rows={4} value={proofText} required
                       onChange={(e) => setProofText(e.target.value)}
-                      placeholder="Describe what was done to address this directive" />
+                      placeholder={t("directive.actionPlaceholder")} />
           </div>
 
           <div>
-            <label htmlFor={`proof-file-${alert.id}`}>Evidence photo (optional)</label>
+            <label htmlFor={`proof-file-${alert.id}`}>{t("directive.proofPhoto")}</label>
             <input id={`proof-file-${alert.id}`} ref={inputRef} type="file" accept={ACCEPT_ATTR}
                    onChange={(e) => choose(e.target.files?.[0])} />
           </div>

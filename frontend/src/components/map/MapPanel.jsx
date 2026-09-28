@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDistricts, getMapView, getStates } from "../../api/geo";
 import { usePolling } from "../../hooks/usePolling";
-import { useT } from "../../i18n/t";
+import { useTranslation } from "react-i18next";
 import { DemoTag } from "../common/DemoTag";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Loader } from "../common/Loader";
@@ -14,7 +14,7 @@ import { StateFilter } from "../common/StateFilter";
 import { MineMap } from "./MineMap";
 
 export function MapPanel({ state = null, states, onStateChange, onOpenMine = null }) {
-  const t = useT();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [outlines, setOutlines] = useState({ states: null, districts: null, error: null });
   const { data, error, loading } = usePolling(() => getMapView(state), { deps: [state] });
@@ -43,7 +43,8 @@ export function MapPanel({ state = null, states, onStateChange, onOpenMine = nul
       </div>
       <div className="panel-body">
         <ErrorNotice error={error ?? outlines.error} />
-        <MineMap mines={data?.mines} states={outlines.states} districts={outlines.districts}
+        {/* Keyed by language: the map's own controls, credits and tooltips are built when it mounts. */}
+        <MineMap key={i18n.language} mines={data?.mines} states={outlines.states} districts={outlines.districts}
                  onOpen={(p) => (onOpenMine ? onOpenMine(p) : navigate(`/gov/mines/${p.id}`))} />
         <p className="note">{t("map.qualityNote")}</p>
       </div>

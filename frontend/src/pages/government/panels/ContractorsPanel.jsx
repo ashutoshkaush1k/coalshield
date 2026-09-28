@@ -1,5 +1,6 @@
 // Government / corporate: read-only contractor view - the per-mine summary (count, compliance %,
 // flagged, blacklisted), the flagged contractors worst first, and every contractor in scope.
+import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
 import { listContractors } from "../../../api/contractors";
 import { DemoTag } from "../../../components/common/DemoTag";
@@ -29,8 +30,8 @@ export function ContractorSummaryCard({ data, onOpen }) {
       </div>
       <div className="panel-body">
         <div className="tally-set">
-          <div><span className="label">{t("contractor.flagged")}</span><span className="tally-v risk-high">{data.flagged}</span></div>
-          <div><span className="label">{t("contractor.blacklisted")}</span><span className="tally-v">{data.blacklisted}</span></div>
+          <div><span className="label">{t("contractor.flagged")}</span><span className="tally-v risk-high">{fmtNumber(data.flagged)}</span></div>
+          <div><span className="label">{t("contractor.blacklisted")}</span><span className="tally-v">{fmtNumber(data.blacklisted)}</span></div>
           <div><span className="label">{t("contractor.minesWithFlags")}</span><span className="tally-v">{data.mines.filter((m) => m.flagged).length}</span></div>
         </div>
         {data.flagged_contractors.length > 0 && (
@@ -79,10 +80,10 @@ export function ContractorsPanel({ summary, state, states, onStateChange }) {
                 {s.mines.map((m) => (
                   <tr key={m.mine_id} className={m.flagged ? "is-flagged" : ""}>
                     <td><strong>{m.name}</strong> <span className="mono faint">{m.code}</span><div className="faint small">{m.state}</div></td>
-                    <td className="num">{m.contractors}</td>
-                    <td className="num">{m.compliance_pct}%</td>
+                    <td className="num">{fmtNumber(m.contractors)}</td>
+                    <td className="num">{fmtNumber(m.compliance_pct)}%</td>
                     <td className={`num${m.flagged ? " risk-high" : ""}`}>{m.flagged}</td>
-                    <td className="num">{m.blacklisted}</td>
+                    <td className="num">{fmtNumber(m.blacklisted)}</td>
                   </tr>
                 ))}
               </tbody>

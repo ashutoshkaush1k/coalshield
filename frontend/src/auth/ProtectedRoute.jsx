@@ -8,7 +8,7 @@ export function ProtectedRoute({ children, allow }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) return <div className="empty">Loading...</div>;
+  if (loading) return <div className="empty">{t("common.loading")}</div>;
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
 
   // Hiding a route is presentation, not security: the same request made directly against the API

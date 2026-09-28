@@ -2,7 +2,8 @@
 import { assetUrl } from "../../api/client";
 import { RiskMark } from "../compliance/RiskMark";
 import { EmptyState } from "../common/EmptyState";
-import { fmtPercent, humanise } from "../../utils/format";
+import { fmtNumber, fmtPercent } from "../../utils/format";
+import { violationTypeLabel } from "../../i18n/labels";
 import { riskClass, riskLabel } from "../../utils/risk";
 import { t } from "../../i18n/t";
 
@@ -35,14 +36,14 @@ function ScoreMove({ before, after, delta, riskChanged, resolvedCount }) {
   return (
     <div className="score-move">
       <ChangeRow
-        label="Open violations"
-        before={before.violation_count}
-        after={after.violation_count}
+        label={t("vision.openViolations")}
+        before={fmtNumber(before.violation_count, 0)}
+        after={fmtNumber(after.violation_count, 0)}
         delta={violationDelta > 0 ? `+${violationDelta}` : violationDelta < 0 ? `${violationDelta}` : null}
       />
 
       <ChangeRow
-        label="Compliance score"
+        label={t("vision.complianceScore")}
         before={before.score}
         after={after.score}
         delta={delta > 0 ? `+${delta}` : delta < 0 ? `${delta}` : null}
@@ -50,7 +51,7 @@ function ScoreMove({ before, after, delta, riskChanged, resolvedCount }) {
       />
 
       <div className="change-row">
-        <span className="label">Risk band</span>
+        <span className="label">{t("vision.riskBand")}</span>
         <span className="change-values">
           <RiskMark level={before.risk_level} />
           <span className="move-arrow" aria-hidden="true">&rarr;</span>
@@ -60,16 +61,13 @@ function ScoreMove({ before, after, delta, riskChanged, resolvedCount }) {
 
       {riskChanged && (
         <div className="notice error" style={{ marginTop: "var(--space-3)" }}>
-          Risk band changed from {riskLabel(before.risk_level)} to {riskLabel(after.risk_level)}. This mine has moved
-          band on the authority dashboard.
+          {t("vision.bandChanged", { from: riskLabel(before.risk_level), to: riskLabel(after.risk_level) })}
         </div>
       )}
 
       {resolvedCount > 0 && (
         <div className="notice info" style={{ marginTop: "var(--space-3)" }}>
-          Clean re-inspection accepted. {resolvedCount} previously open violation
-          {resolvedCount === 1 ? " was" : "s were"} marked resolved and no longer count against
-          this score. They stay in the violation log and audit trail.
+          {t("vision.cleanReinspection", { n: fmtNumber(resolvedCount, 0) })}
         </div>
       )}
     </div>
@@ -103,38 +101,37 @@ export function DetectionPreview({ result }) {
         // Boxes are drawn server-side by the CV module, so what is shown here is exactly the
         // evidence stored against the violation - not a second rendering that could disagree.
         <figure className="annotated">
-          <img src={image} alt="Annotated frame with detected PPE violations" />
+          <img src={image} alt={t("vision.annotatedAlt")} />
           <figcaption className="small faint">
-            {detections.length} object{detections.length === 1 ? "" : "s"} detected, red boxes are
-            violations. Model backend <span className="mono">{result.backend}</span>
+            {t("vision.detectedCaption", { n: fmtNumber(detections.length, 0) })} <span className="mono">{result.backend}</span>
           </figcaption>
         </figure>
       ) : (
-        <EmptyState>No annotated frame returned for this input.</EmptyState>
+        <EmptyState>{t("vision.noFrame")}</EmptyState>
       )}
 
       <div>
         <h3 style={{ marginBottom: 6 }}>
-          Violations recorded ({violations.length})
+          {t("vision.recorded", { n: fmtNumber(violations.length, 0) })}
         </h3>
         {violations.length ? (
           <table>
             <thead>
-              <tr><th>Violation</th><th className="num">Confidence</th><th>Alerts</th></tr>
+              <tr><th>{t("vision.colViolation")}</th><th className="num">{t("vision.colConfidence")}</th><th>{t("vision.colSource")}</th></tr>
             </thead>
             <tbody>
               {violations.map((v) => (
                 <tr key={v.id}>
-                  <td><strong>{humanise(v.violation_type)}</strong></td>
+                  <td><strong>{violationTypeLabel(v.violation_type)}</strong></td>
                   <td className="num">{fmtPercent(v.confidence)}</td>
-                  <td className="small muted">{v.source}</td>
+                  <td className="small muted">{t(`violationSource.${v.source}`, { defaultValue: v.source })}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
           <div className="notice info">
-            No PPE violations detected in this frame. The compliance score is unchanged.
+            {t("vision.noViolations")}
           </div>
         )}
       </div>
@@ -142,17 +139,17 @@ export function DetectionPreview({ result }) {
       {detections.length > 0 && (
         <details>
           <summary className="small muted" style={{ cursor: "pointer" }}>
-            Raw model output ({detections.length} detections)
+            {t("vision.rawOutput", { n: fmtNumber(detections.length, 0) })}
           </summary>
           <table style={{ marginTop: 6 }}>
             <thead>
-              <tr><th>Class</th><th>Mapped to</th><th className="num">Confidence</th></tr>
+              <tr><th>{t("vision.colClass")}</th><th>{t("vision.colMapped")}</th><th className="num">{t("vision.colConfidence")}</th></tr>
             </thead>
             <tbody>
               {detections.map((d, i) => (
                 <tr key={i}>
                   <td className="mono">{d.raw_label}</td>
-                  <td className="small muted">{d.label || <span className="faint">ignored</span>}</td>
+                  <td className="small muted">{d.label ? violationTypeLabel(d.label) : <span className="faint">{t("vision.ignored")}</span>}</td>
                   <td className="num">{fmtPercent(d.confidence)}</td>
                 </tr>
               ))}

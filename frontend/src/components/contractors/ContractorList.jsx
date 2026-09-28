@@ -1,5 +1,6 @@
 // Contractors worst first (the API orders them): compliance badge, what drives it, and the
 // figures behind it. Flagged rows are marked so the worst contractor is impossible to miss.
+import { fmtNumber } from "../../utils/format";
 import { contractorReason } from "../../i18n/contractors";
 import { useT } from "../../i18n/t";
 import { EmptyState } from "../common/EmptyState";
@@ -34,9 +35,9 @@ export function ContractorList({ contractors, onSelect }) {
                 </td>
                 <td><ComplianceBadge compliance={m} /></td>
                 <td className="small">{m.reasons.slice(0, 2).map((r) => contractorReason(r)).join(" · ") || t("contractor.noIssues")}</td>
-                <td className="num">{m.active_workers}</td>
-                <td className="num">{m.violations_per_worker ?? "-"}</td>
-                <td className="num">{m.missing_documents.length}</td>
+                <td className="num">{fmtNumber(m.active_workers)}</td>
+                <td className="num">{fmtNumber(m.violations_per_worker)}</td>
+                <td className="num">{fmtNumber(m.missing_documents.length)}</td>
               </tr>
             );
           })}

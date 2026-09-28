@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getObligations } from "../../api/obligations";
 import { useT } from "../../i18n/t";
 import { Citation } from "./Citation";
+import { frequencyLabel, obligationTitle } from "../../i18n/labels";
 
 function kind(o) {
   if (o.monitored_by?.length) return "monitored";
@@ -44,14 +45,14 @@ export function OtherObligations() {
               {sorted.map((o) => (
                 <tr key={o.code} data-code={o.code}>
                   <td>
-                    <strong className="mono">{o.code}</strong> {o.title}
+                    <strong className="mono">{o.code}</strong> {obligationTitle(o)}
                     <div className="small"><Citation obligation={o} /></div>
                   </td>
                   <td className="small">
                     {t(`obligation.other.kind.${kind(o)}`, { sensors: (o.monitored_by ?? []).map((s) => t(`sensor.${s}`, { defaultValue: s })).join(", ") })}
-                    {o.applies_to !== "mine" && <div className="faint">{t("obligation.other.appliesTo", { who: o.applies_to })}</div>}
+                    {o.applies_to !== "mine" && <div className="faint">{t("obligation.other.appliesTo", { who: t(`obligation.appliesTo.${o.applies_to}`, { defaultValue: o.applies_to }) })}</div>}
                   </td>
-                  <td className="small">{o.frequency}</td>
+                  <td className="small">{frequencyLabel(o.frequency)}</td>
                 </tr>
               ))}
             </tbody>

@@ -15,3 +15,9 @@ export async function me() {
 export function logout() {
   clearToken();
 }
+
+/** PATCH /v1/users/me - only preferred_language may change. */
+export async function updateMe(changes) {
+  const { data } = await client.patch("/users/me", changes);
+  return data;
+}

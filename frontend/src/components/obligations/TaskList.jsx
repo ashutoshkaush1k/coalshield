@@ -4,6 +4,7 @@ import { useT } from "../../i18n/t";
 import { EmptyState } from "../common/EmptyState";
 import { fmtWhen } from "../grievances/common";
 import { Citation } from "./Citation";
+import { obligationTitle } from "../../i18n/labels";
 
 const TAG = { open: "tag-ack", submitted: "tag-directive", accepted: "tag-resolved", rejected: "tag-open", overdue: "tag-open", escalated: "tag-open", waived: "tag-ack" };
 
@@ -39,7 +40,7 @@ export function TaskList({ tasks, showMine = false, onSelect, empty }) {
                 className={task.status === "overdue" || task.status === "escalated" ? "is-flagged" : ""}
                 onClick={() => onSelect?.(task)} style={{ cursor: onSelect ? "pointer" : undefined }}>
               <td>
-                <strong className="mono">{task.obligation?.code}</strong> {task.obligation?.title}
+                <strong className="mono">{task.obligation?.code}</strong> {obligationTitle(task.obligation)}
                 <div className="small"><Citation obligation={task.obligation} compact /></div>
               </td>
               {showMine && <td>{task.mine_name} <span className="mono faint">{task.mine_code}</span></td>}

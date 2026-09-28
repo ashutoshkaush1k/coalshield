@@ -21,10 +21,11 @@ import { ObligationsPanel } from "./panels/ObligationsPanel";
 import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
 
-const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "sensors", label: "Sensors" },
-  { id: "trends", label: "Trends" },
+// Built at render, so the labels follow a language switch.
+const tabs = () => [
+  { id: "overview", label: t("tabs.overview") },
+  { id: "sensors", label: t("tabs.sensors") },
+  { id: "trends", label: t("tabs.trends") },
   { id: "production", label: t("production.tabLabel") },
   { id: "contractors", label: t("contractor.tabLabel") },
   { id: "grievances", label: t("grievance.tabLabel") },
@@ -49,17 +50,17 @@ export default function MineHeadDashboard() {
     return (
       <div className="content">
         <div className="notice error">
-          This account is not mapped to a mine. Contact the administrator.
+          {t("mineHead.notMapped")}
         </div>
       </div>
     );
   }
 
-  if (loading && !data) return <Loader label="Loading your mine..." />;
+  if (loading && !data) return <Loader label={t("mineHead.loading")} />;
   if (error && !data) {
     return (
       <>
-        <Masthead title="My mine" />
+        <Masthead title={t("mineHead.myMine")} />
         <div className="content"><ErrorNotice error={error} /></div>
       </>
     );
@@ -70,7 +71,7 @@ export default function MineHeadDashboard() {
       <Masthead
         title={data.mine.name}
         subtitle={mineSubtitle(data.mine)}
-        tabs={TABS}
+        tabs={tabs()}
         active={tab}
         onTabChange={setTab}
       />
@@ -114,8 +115,8 @@ export default function MineHeadDashboard() {
         <TabPanel id="trends" active={tab}>
           <TrendsPanel
             mineId={mineId}
-            title="Breach frequency at this site"
-            caption="This chart covers your mine only."
+            title={t("trends.titleMine")}
+            caption={t("trends.captionMine")}
           />
         </TabPanel>
       </div>

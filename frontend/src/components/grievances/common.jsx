@@ -29,5 +29,5 @@ export function GrievanceFlags({ g }) {
   );
 }
 
-export const fmtWhen = (iso) =>
-  iso ? new Date(iso).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
+// In the UI language (utils/format.js); re-exported here for the grievance and obligation screens.
+export { fmtWhen } from "../../utils/format";

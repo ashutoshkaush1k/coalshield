@@ -14,6 +14,7 @@ import { fmtWhen } from "../grievances/common";
 import { Drawer } from "../overlay/Overlay";
 import { useToast } from "../overlay/ToastHost";
 import { Citation } from "./Citation";
+import { frequencyLabel, obligationTitle } from "../../i18n/labels";
 import { TaskStatus } from "./TaskList";
 
 const AWAITING_EVIDENCE = ["open", "rejected", "overdue", "escalated"];
@@ -56,7 +57,7 @@ export function TaskDrawer({ taskId, onClose, onChanged }) {
   const waived = task?.status === "waived" ? task.history?.find((h) => h.to_status === "waived") : null;
   return (
     <Drawer open onClose={onClose} title={task ? t("obligation.task.title", { code: o.code, period: task.period }) : t("obligation.loading")}
-            subtitle={task ? `${task.mine_name} · ${o.title}` : ""}>
+            subtitle={task ? `${task.mine_name} · ${obligationTitle(o)}` : ""}>
       {!task && !error && <Loader label={t("obligation.loading")} />}
       <ErrorNotice error={error} />
       {task && (
@@ -67,8 +68,8 @@ export function TaskDrawer({ taskId, onClose, onChanged }) {
           </section>
           <dl className="detail-grid">
             <dt>{t("obligation.list.due")}</dt><dd>{fmtWhen(task.due_at)} <span className="faint small">({t(`obligation.dueBasis.${task.due_basis}`)})</span></dd>
-            <dt>{t("obligation.task.evidenceType")}</dt><dd>{o.evidence_type}</dd>
-            <dt>{t("obligation.task.frequency")}</dt><dd>{o.frequency}</dd>
+            <dt>{t("obligation.task.evidenceType")}</dt><dd>{t(`obligationEvidence.${o.code}`, { defaultValue: o.evidence_type })}</dd>
+            <dt>{t("obligation.task.frequency")}</dt><dd>{frequencyLabel(o.frequency)}</dd>
             {o.due_rule && <><dt>{t("obligation.task.dueRule")}</dt><dd className="small">{o.due_rule}</dd></>}
           </dl>
 

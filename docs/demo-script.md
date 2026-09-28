@@ -64,6 +64,10 @@ simulator, so by step 4 the scores have legitimately drifted.
 - [ ] **`api\yii.bat seed demo`** - the board must read **100 / 80 / 70 / 60 / 45** for the five
       demo mines and **83.2** national average.
 - [ ] `python scripts\run_simulator.py --check-only` - must print `Pre-flight : OK`.
+- [ ] **Languages.** Mine heads are seeded with their state's language and open in it after login
+      (Bhubaneswari: Odia; Moonidih, Gevra, Block-B: Hindi). That is the feature. To walk a step
+      in English, choose English on the Profile page (sidebar, one click, saved to the account), and
+      switch back for the language step. Government and corporate open in English.
 - [ ] `http://127.0.0.1:8080/v1/health` answers `{"status":"ok",...}`; `http://localhost:5173`
       shows the login page.
 - [ ] PPE vision runs the **real model**: `http://127.0.0.1:8001/health` must say
@@ -217,10 +221,18 @@ continuing.**
     Click a mine to open it. The street map (OpenStreetMap) is off by default; switching it on
     offline says the tiles are unavailable and the outlines stay. Global Energy Monitor (CC BY
     4.0) and DataMeet are credited on the map. As corporate SECL: 17 mines; as a mine head: one.
-15. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
+15. **Languages.** Sign out; on the login page choose **ଓଡ଼ିଆ** in the switcher at the top - the page
+    switches at once (the choice stays in this browser). Sign in as the Bhubaneswari mine head: the
+    account's saved language wins. Open **Profile and language** in the sidebar and pick **हिन्दी**:
+    the whole interface, charts and map included, switches without a reload, and the choice is saved
+    to the account. Show the obligation register in Hindi: titles and labels are translated, the
+    legal citation and quote stay as written; a grievance keeps the language it was written in.
+    Numbers keep Indian grouping (17,04,240) in every language. Say plainly that the five
+    translations are drafts marked for native-speaker review.
+16. **Corporate view** (quick-fill "Corporate - SECL") → the same screens, scoped to SECL's 17
     mines. Opening a mine of another company answers **404** - exactly like a mine that does not
     exist, so nothing leaks.
-16. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
+17. **If a judge asks about access control**, do not look for it in the UI - there is nothing to
     click. Prove it from the tests or the API:
 
     ```bat

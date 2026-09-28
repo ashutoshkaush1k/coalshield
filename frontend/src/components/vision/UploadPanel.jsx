@@ -4,6 +4,8 @@ import { ACCEPTED_IMAGE_TYPES, ACCEPT_ATTR, analyzeImage } from "../../api/visio
 import { Modal } from "../overlay/Overlay";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { DetectionPreview } from "./DetectionPreview";
+import { useT } from "../../i18n/t";
+import { fmtBytes, fmtNumber } from "../../utils/format";
 
 const MAX_BYTES = 12 * 1024 * 1024;
 
@@ -15,6 +17,7 @@ export function UploadPanel({ mineId, onAnalysed }) {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const inputRef = useRef(null);
+  const t = useT();
 
   function choose(selected) {
     setError(null);
@@ -24,11 +27,11 @@ export function UploadPanel({ mineId, onAnalysed }) {
     // Validated here as well as server-side: an instant message beats a round trip to a 422,
     // and on demo day nobody wants to debug a rejected upload in front of judges.
     if (!ACCEPTED_IMAGE_TYPES.includes(selected.type)) {
-      setError({ message: `${selected.type || "That file type"} is not supported. Use JPG, PNG, WEBP or BMP.` });
+      setError({ message: t("vision.badType", { type: selected.type || "?" }) });
       return;
     }
     if (selected.size > MAX_BYTES) {
-      setError({ message: `That file is ${(selected.size / 1e6).toFixed(1)} MB. Keep it under 12 MB.` });
+      setError({ message: t("vision.tooLarge", { size: fmtNumber(selected.size / 1e6, 1) }) });
       return;
     }
 
@@ -74,20 +77,20 @@ export function UploadPanel({ mineId, onAnalysed }) {
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)}>Run PPE detection</button>
+      <button type="button" onClick={() => setOpen(true)}>{t("vision.run")}</button>
 
       <Modal
         open={open}
         onClose={close}
         wide
-        title="PPE detection"
-        subtitle="Upload site footage - detections apply to this mine immediately"
+        title={t("vision.title")}
+        subtitle={t("vision.subtitle")}
         footer={
           <>
             {(file || result) && (
-              <button type="button" onClick={reset} disabled={busy}>Clear</button>
+              <button type="button" onClick={reset} disabled={busy}>{t("common.clear")}</button>
             )}
-            <button type="button" onClick={close} disabled={busy}>Close</button>
+            <button type="button" onClick={close} disabled={busy}>{t("common.close")}</button>
           </>
         }
       >
@@ -99,25 +102,25 @@ export function UploadPanel({ mineId, onAnalysed }) {
             accept={ACCEPT_ATTR}
             onChange={(e) => choose(e.target.files?.[0])}
             disabled={busy}
-            aria-label="Choose an image to analyse"
+            aria-label={t("vision.chooseImage")}
           />
           <button className="primary" onClick={submit} disabled={!file || busy}>
-            {busy ? "Analysing..." : "Run PPE detection"}
+            {busy ? t("vision.analysing") : t("vision.run")}
           </button>
         </div>
 
         {previewUrl && !result && (
           <figure className="annotated pending">
-            <img src={previewUrl} alt="Selected frame, not yet analysed" />
+            <img src={previewUrl} alt={t("vision.previewAlt")} />
             <figcaption className="small faint">
-              {file?.name}, {(file.size / 1e3).toFixed(0)} KB, not yet analysed
+              {t("vision.previewCaption", { name: file?.name, size: fmtBytes(file.size) })}
             </figcaption>
           </figure>
         )}
 
         <ErrorNotice
           error={error}
-          context="This account can only submit footage for its own mine."
+          context={t("vision.ownMineOnly")}
         />
 
         <DetectionPreview result={result} />

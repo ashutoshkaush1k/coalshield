@@ -18,12 +18,14 @@ import { GrievancesPanel } from "./panels/GrievancesPanel";
 import { ObligationsPanel } from "./panels/ObligationsPanel";
 import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
+import { fmtNumber } from "../../utils/format";
 
-const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "priority", label: "Priority Queue" },
-  { id: "sensors", label: "Sensors" },
-  { id: "trends", label: "Trends" },
+// Built at render, so the labels follow a language switch.
+const tabs = () => [
+  { id: "overview", label: t("tabs.overview") },
+  { id: "priority", label: t("tabs.priority") },
+  { id: "sensors", label: t("tabs.sensors") },
+  { id: "trends", label: t("tabs.trends") },
   { id: "production", label: t("production.tabLabel") },
   { id: "contractors", label: t("contractor.tabLabel") },
   { id: "grievances", label: t("grievance.tabLabel") },
@@ -42,18 +44,18 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
   const data = view?.dashboard;
   const contractorSummary = view?.contractor_summary ?? null;
 
-  if (loading && !view) return <Loader label="Loading mines..." />;
+  if (loading && !view) return <Loader label={t("overview.loading")} />;
 
   return (
     <>
       <Masthead
-        title="Multi-mine overview"
+        title={t("overview.title")}
         subtitle={
           state
-            ? `${data?.stats?.mine_count ?? 0} monitored mines in ${state}`
-            : `${data?.stats?.mine_count ?? 0} mines monitored ${scopeWhere(user)}`
+            ? t("overview.subtitleState", { n: fmtNumber(data?.stats?.mine_count ?? 0, 0), state })
+            : t("overview.subtitleScope", { n: fmtNumber(data?.stats?.mine_count ?? 0, 0), where: scopeWhere(user) })
         }
-        tabs={TABS}
+        tabs={tabs()}
         active={tab}
         onTabChange={setTab}
       />
@@ -96,12 +98,8 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
         <TabPanel id="trends" active={tab}>
           <TrendsPanel
             state={state}
-            title={state ? `${state} breach frequency` : `Breach frequency ${scopeWhere(user)}`}
-            caption={
-              state
-                ? `This chart covers every monitored mine in ${state}.`
-                : "This chart aggregates every monitored mine in the country."
-            }
+            title={state ? t("trends.titleState", { state }) : t("trends.titleScope", { where: scopeWhere(user) })}
+            caption={state ? t("trends.captionState", { state }) : t("trends.captionScope")}
           />
         </TabPanel>
       </div>

@@ -8,9 +8,9 @@ import { can } from "../../auth/permissions";
 import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
 import { contractorReason, docTypeLabel, workTypeLabel } from "../../i18n/contractors";
-import { categoryLabel, statusLabel } from "../../i18n/labels";
+import { categoryLabel, statusLabel, violationTypeLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
-import { fmtDateTime, humanise } from "../../utils/format";
+import { fmtDateTime } from "../../utils/format";
 import { AlertList } from "../alerts/AlertList";
 import { EmptyState } from "../common/EmptyState";
 import { ErrorNotice } from "../common/ErrorNotice";
@@ -218,7 +218,7 @@ function Violations({ data }) {
       <tbody>
         {data.violations.map((v) => (
           <tr key={v.id}>
-            <td><strong>{humanise(v.violation_type)}</strong></td>
+            <td><strong>{violationTypeLabel(v.violation_type)}</strong></td>
             <td>{categoryLabel(v.category)}</td>
             <td><span className={`tag ${v.resolved ? "tag-resolved" : "tag-open"}`}>{statusLabel(v.resolved ? "resolved" : "open")}</span></td>
             <td className="mono">{fmtDateTime(v.detected_at)}</td>

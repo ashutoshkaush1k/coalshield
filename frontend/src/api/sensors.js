@@ -35,12 +35,6 @@ export async function getBreachBuckets({ state = null, mineId = null } = {}) {
   if (mineId != null) params.mine_id = mineId;
 
   const { data } = await client.get("/sensors/breaches", { params });
-  return data.buckets.map((b) => {
-    const d = new Date(b.start_ms);
-    return {
-      ...b,
-      start: b.start_ms,
-      label: `${d.toLocaleDateString([], { day: "2-digit", month: "short" })} ${String(d.getHours()).padStart(2, "0")}h`,
-    };
-  });
+  // The window's label is formatted where it is shown (fmtDayHour), in the UI language.
+  return data.buckets.map((b) => ({ ...b, start: b.start_ms }));
 }

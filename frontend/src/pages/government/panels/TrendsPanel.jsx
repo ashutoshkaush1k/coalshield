@@ -4,8 +4,8 @@ import { BreachLegend, BreachTrendChart } from "../../../components/charts/Breac
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { usePolling } from "../../../hooks/usePolling";
-
-const LABEL = { gas: "gas", dust: "dust", temperature: "temperature" };
+import { useT } from "../../../i18n/t";
+import { fmtDayHour, fmtNumber } from "../../../utils/format";
 
 /**
  * The category behind a spike, when there is one.
@@ -25,13 +25,14 @@ export function dominantCategory(bucket) {
 }
 
 export function TrendsPanel({ state = null, mineId = null, title, caption }) {
+  const t = useT();
   // One request regardless of how many mines are in scope - the bucketing happens
   // server-side, so a national view is no more expensive than a single mine.
   const { data, error, loading } = usePolling(() => getBreachBuckets({ state, mineId }), {
     deps: [state, mineId],
   });
 
-  if (loading && !data) return <Loader label="Reading sensor history..." />;
+  if (loading && !data) return <Loader label={t("trends.loading")} />;
 
   const buckets = data ?? [];
   const recent = buckets.slice(-2);
@@ -47,7 +48,7 @@ export function TrendsPanel({ state = null, mineId = null, title, caption }) {
         <div className="panel-head">
           <div>
             <h2>{title}</h2>
-            <span className="hint">Threshold breaches per 6-hour window, by sensor</span>
+            <span className="hint">{t("trends.hint")}</span>
           </div>
           <div className="spacer" />
           <BreachLegend />
@@ -57,18 +58,13 @@ export function TrendsPanel({ state = null, mineId = null, title, caption }) {
           <BreachTrendChart buckets={buckets} />
 
           <p className="note" style={{ marginTop: "var(--space-4)" }}>
-            Each bar counts gas, dust and temperature readings that crossed their safe limit in
-            that window, stacked so the segments add up to the window total. {caption} A spike
-            means conditions deteriorated quickly rather than drifting, which is what separates an
-            incident from ordinary wear - it is the pattern worth sending an inspector for.
+            {t("trends.explainBars")} {caption} {t("trends.explainSpike")}
             {peak
-              ? driver
-                ? ` The worst window so far is ${peak.label} with ${peak.breaches} breaches, and it was ${LABEL[driver]}-driven.`
-                : ` The worst window so far is ${peak.label} with ${peak.breaches} breaches, spread across more than one sensor.`
+              ? " " + (driver
+                ? t("trends.peakDriven", { window: fmtDayHour(peak.start), count: fmtNumber(peak.breaches, 0), sensor: t(`sensor.category.${driver}`) })
+                : t("trends.peakSpread", { window: fmtDayHour(peak.start), count: fmtNumber(peak.breaches, 0) }))
               : ""}
-            {accelerating
-              ? " Breach frequency is currently rising window on window."
-              : " Breach frequency is not currently rising."}
+            {" "}{accelerating ? t("trends.rising") : t("trends.notRising")}
           </p>
         </div>
       </section>

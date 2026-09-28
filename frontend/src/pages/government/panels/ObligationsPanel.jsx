@@ -2,6 +2,7 @@
 // company and per mine (lowest first), by domain, the most overdue items with their citations, and
 // the evidence awaiting review (government and inspector accept or reject it in the drawer).
 // A separate metric: the compliance score does not change. One request per polling cycle.
+import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
 import { getObligationView } from "../../../api/obligations";
 import { DemoTag } from "../../../components/common/DemoTag";
@@ -18,13 +19,13 @@ function Row({ label, sub, r }) {
   return (
     <>
       <td><strong>{label}</strong>{sub && <span className="mono faint"> {sub}</span>}</td>
-      <td className="num">{r.compliance_pct ?? "-"} %</td>
-      <td className="num">{r.due}</td>
-      <td className="num">{r.on_time}</td>
-      <td className="num">{r.late_accepted}</td>
-      <td className="num">{r.awaiting_review}</td>
-      <td className="num">{r.overdue}</td>
-      <td className="num">{r.escalated}</td>
+      <td className="num">{fmtNumber(r.compliance_pct)} %</td>
+      <td className="num">{fmtNumber(r.due)}</td>
+      <td className="num">{fmtNumber(r.on_time)}</td>
+      <td className="num">{fmtNumber(r.late_accepted)}</td>
+      <td className="num">{fmtNumber(r.awaiting_review)}</td>
+      <td className="num">{fmtNumber(r.overdue)}</td>
+      <td className="num">{fmtNumber(r.escalated)}</td>
     </>
   );
 }
@@ -64,10 +65,10 @@ export function ObligationsPanel({ state, states, onStateChange }) {
         </div>
         <div className="panel-body">
           <div className="tally-set">
-            <div><span className="label">{t("obligation.gov.fleet")}</span><span className="tally-v" id="statutory-pct">{s.totals.compliance_pct ?? "-"} %</span></div>
-            <div><span className="label">{t("obligation.gov.onTime")}</span><span className="tally-v">{s.totals.on_time} / {s.totals.due}</span></div>
-            <div><span className="label">{t("obligation.gov.overdue")}</span><span className="tally-v risk-high">{s.open_overdue}</span></div>
-            <div><span className="label">{t("obligation.gov.awaiting")}</span><span className="tally-v">{s.pending_review}</span></div>
+            <div><span className="label">{t("obligation.gov.fleet")}</span><span className="tally-v" id="statutory-pct">{fmtNumber(s.totals.compliance_pct)} %</span></div>
+            <div><span className="label">{t("obligation.gov.onTime")}</span><span className="tally-v">{fmtNumber(s.totals.on_time)} / {fmtNumber(s.totals.due)}</span></div>
+            <div><span className="label">{t("obligation.gov.overdue")}</span><span className="tally-v risk-high">{fmtNumber(s.open_overdue)}</span></div>
+            <div><span className="label">{t("obligation.gov.awaiting")}</span><span className="tally-v">{fmtNumber(s.pending_review)}</span></div>
           </div>
         </div>
         <div className="panel-body flush scroll-x" id="obligation-by-company">

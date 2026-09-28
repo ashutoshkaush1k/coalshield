@@ -1,7 +1,7 @@
 // Mine Head sensor view, framed as performance: how is my site doing right now.
 import { SensorTrendChart } from "../charts/SensorTrendChart";
 import { EmptyState } from "../common/EmptyState";
-import { fmtDateTime } from "../../utils/format";
+import { fmtDateTime, fmtNumber, fmtReading } from "../../utils/format";
 import { sensorColour } from "../../utils/tokens";
 import { sensorLabel } from "../../i18n/labels";
 import { t } from "../../i18n/t";
@@ -19,7 +19,7 @@ function statusOf(series) {
 }
 
 export function SensorPerformance({ trend }) {
-  if (!trend?.series?.length) return <EmptyState>No sensor readings yet.</EmptyState>;
+  if (!trend?.series?.length) return <EmptyState>{t("sensor.perf.noReadings")}</EmptyState>;
 
   return (
     <div className="stack">
@@ -31,7 +31,7 @@ export function SensorPerformance({ trend }) {
               <h2>{sensorLabel(series.sensor_type)}</h2>
               <span className="hint">
                 {series.threshold != null
-                  ? t("sensor.limit", { limit: series.threshold, unit: series.unit, obligation: series.obligation })
+                  ? t("sensor.limit", { limit: fmtReading(series.threshold), unit: series.unit, obligation: series.obligation })
                   : t("sensor.noLimit")}
                 {series.compare === "rolling_8h_mean" ? ` · ${t("sensor.compare.rolling_8h_mean")}` : ""}
               </span>
@@ -42,21 +42,21 @@ export function SensorPerformance({ trend }) {
             <div className="panel-body">
               <div className="reading-row">
                 <div>
-                  <span className="label">Current reading</span>
+                  <span className="label">{t("sensor.perf.current")}</span>
                   <div className="reading-value" style={{ color: sensorColour(series.sensor_type) }}>
-                    {status.value ? `${status.value.value}` : "-"}
+                    {status.value ? fmtReading(status.value.value) : "-"}
                     <span className="reading-unit">{series.unit}</span>
                   </div>
                   {status.value && (
-                    <div className="faint small">as of {fmtDateTime(status.value.recorded_at)}</div>
+                    <div className="faint small">{t("sensor.perf.asOf", { when: fmtDateTime(status.value.recorded_at) })}</div>
                   )}
                 </div>
 
                 <div className="spacer" />
 
                 <div>
-                  <span className="label">Breaches in this window</span>
-                  <div className="reading-secondary">{series.breach_count}</div>
+                  <span className="label">{t("sensor.perf.breachesWindow")}</span>
+                  <div className="reading-secondary">{fmtNumber(series.breach_count, 0)}</div>
                 </div>
               </div>
 

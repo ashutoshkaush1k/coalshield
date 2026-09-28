@@ -11,6 +11,10 @@ export function useT() {
   return useTranslation().t;
 }
 
+/** The name of a field an API error points at: its label, else the production form's, else the name. */
+const fieldName = (field) =>
+  t(`fieldName.${field}`, { defaultValue: t(`production.field.${field}`, { defaultValue: field.replace(/_/g, " ") }) });
+
 /** Text for an error from api/client.js: {code, params, fields} from the API's error envelope. */
 export function errorMessage(error) {
   if (!error) return "";
@@ -20,7 +24,7 @@ export function errorMessage(error) {
   const fields = error.fields ? Object.entries(error.fields) : [];
   if (fields.length) {
     text += " " + fields
-      .map(([field, codes]) => `${field.replace(/_/g, " ")}: ${codes.map((c) => t(`fields.${c}`, { defaultValue: c })).join(", ")}`)
+      .map(([field, codes]) => `${fieldName(field)}: ${codes.map((c) => t(`fields.${c}`, { defaultValue: c })).join(", ")}`)
       .join("; ");
   }
   return text;

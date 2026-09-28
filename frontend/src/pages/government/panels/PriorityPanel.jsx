@@ -8,6 +8,8 @@ import { PriorityQueue } from "../../../components/inspections/PriorityQueue";
 import { usePolling } from "../../../hooks/usePolling";
 import { useAuth } from "../../../hooks/useAuth";
 import { scopeWhere } from "../../../i18n/labels";
+import { t } from "../../../i18n/t";
+import { fmtNumber } from "../../../utils/format";
 
 export function PriorityPanel({ state, states, onStateChange }) {
   const { user } = useAuth();
@@ -15,22 +17,23 @@ export function PriorityPanel({ state, states, onStateChange }) {
     deps: [state],
   });
 
-  if (loading && !data) return <Loader label="Ranking mines..." />;
+  if (loading && !data) return <Loader label={t("priority.loading")} />;
 
   return (
     <div className="stack">
-      <ErrorNotice error={error} context="The inspection queue compares mines, so it is not available to a single-mine account." />
+      <ErrorNotice error={error} context={t("priority.singleMine")} />
 
       {data && (
         <section className="panel-block">
           <div className="panel-head">
             <div>
               <h2>
-                {data.mine_count} mines ranked{state ? ` in ${state}` : ` ${scopeWhere(user)}`} <DemoTag />
+                {state
+                  ? t("priority.rankedState", { n: fmtNumber(data.mine_count, 0), state })
+                  : t("priority.rankedScope", { n: fmtNumber(data.mine_count, 0), where: scopeWhere(user) })} <DemoTag />
               </h2>
               <span className="hint">
-                Urgency combines current score with the rise in events over the last{" "}
-                {data.trend_window_hours} hours
+                {t("priority.hint", { hours: fmtNumber(data.trend_window_hours, 0) })}
               </span>
             </div>
             <div className="spacer" />

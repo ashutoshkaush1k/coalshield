@@ -2,6 +2,7 @@
 // average time to resolution, SLA breaches, breach clusters (flagged mines first), by category,
 // by mine and by language - the escalated queue, and every grievance with filters. One request
 // per polling cycle (GET /v1/views/grievances).
+import { fmtNumber } from "../../../utils/format";
 import { useMemo, useState } from "react";
 import { getGrievanceView } from "../../../api/grievances";
 import { DemoTag } from "../../../components/common/DemoTag";
@@ -30,7 +31,7 @@ export function GrievancesPanel({ state, states, onStateChange }) {
   if (loading && !data) return <Loader label={t("grievance.loading")} />;
   if (!data?.stats) return <ErrorNotice error={error} />;
   const s = data.stats;
-  const hours = (h) => (h === null ? "-" : h >= 48 ? t("grievance.stats.days", { value: (h / 24).toFixed(1) }) : t("grievance.stats.hours", { value: h.toFixed(0) }));
+  const hours = (h) => (h === null ? "-" : h >= 48 ? t("grievance.stats.days", { value: fmtNumber(h / 24, 1) }) : t("grievance.stats.hours", { value: fmtNumber(h, 0) }));
 
   return (
     <div className="stack">
@@ -47,12 +48,12 @@ export function GrievancesPanel({ state, states, onStateChange }) {
         </div>
         <div className="panel-body">
           <div className="tally-set">
-            <div><span className="label">{t("grievance.stats.total")}</span><span className="tally-v">{s.totals.total}</span></div>
-            <div><span className="label">{t("grievance.stats.open")}</span><span className="tally-v">{s.totals.open}</span></div>
-            <div><span className="label">{t("grievance.stats.breaches")}</span><span className="tally-v risk-high">{s.totals.sla_breaches}</span></div>
-            <div><span className="label">{t("grievance.stats.breachRate")}</span><span className="tally-v">{s.totals.breach_rate_pct ?? "-"} %</span></div>
+            <div><span className="label">{t("grievance.stats.total")}</span><span className="tally-v">{fmtNumber(s.totals.total)}</span></div>
+            <div><span className="label">{t("grievance.stats.open")}</span><span className="tally-v">{fmtNumber(s.totals.open)}</span></div>
+            <div><span className="label">{t("grievance.stats.breaches")}</span><span className="tally-v risk-high">{fmtNumber(s.totals.sla_breaches)}</span></div>
+            <div><span className="label">{t("grievance.stats.breachRate")}</span><span className="tally-v">{fmtNumber(s.totals.breach_rate_pct)} %</span></div>
             <div><span className="label">{t("grievance.stats.avgResolution")}</span><span className="tally-v">{hours(s.totals.avg_resolution_hours)}</span></div>
-            <div><span className="label">{t("grievance.stats.escalatedOpen")}</span><span className="tally-v risk-high">{s.totals.escalated_open}</span></div>
+            <div><span className="label">{t("grievance.stats.escalatedOpen")}</span><span className="tally-v risk-high">{fmtNumber(s.totals.escalated_open)}</span></div>
           </div>
         </div>
         <div className="panel-body" id="grievance-clusters">
@@ -80,8 +81,8 @@ export function GrievancesPanel({ state, states, onStateChange }) {
                 <th className="num">{t("grievance.stats.breaches")}</th><th className="num">{t("grievance.stats.avgResolution")}</th></tr></thead>
               <tbody>
                 {s.by_category.map((c) => (
-                  <tr key={c.category}><td>{t(`grievance.category.${c.category}`)}</td><td className="num">{c.total}</td><td className="num">{c.open}</td>
-                    <td className="num">{c.sla_breaches}</td><td className="num">{hours(c.avg_resolution_hours)}</td></tr>
+                  <tr key={c.category}><td>{t(`grievance.category.${c.category}`)}</td><td className="num">{fmtNumber(c.total)}</td><td className="num">{fmtNumber(c.open)}</td>
+                    <td className="num">{fmtNumber(c.sla_breaches)}</td><td className="num">{hours(c.avg_resolution_hours)}</td></tr>
                 ))}
               </tbody>
             </table>
@@ -93,7 +94,7 @@ export function GrievancesPanel({ state, states, onStateChange }) {
             <table>
               <tbody>
                 {Object.entries(s.by_language).sort((a, b) => b[1] - a[1]).map(([lang, n]) => (
-                  <tr key={lang}><td>{t(`grievance.language.${lang}`)}</td><td className="num">{n}</td></tr>
+                  <tr key={lang}><td>{t(`grievance.language.${lang}`)}</td><td className="num">{fmtNumber(n)}</td></tr>
                 ))}
               </tbody>
             </table>
@@ -112,8 +113,8 @@ export function GrievancesPanel({ state, states, onStateChange }) {
               {s.by_mine.slice(0, 25).map((m) => (
                 <tr key={m.mine_id} data-mine={m.code} className={m.cluster ? "is-flagged" : ""}>
                   <td><strong>{m.name}</strong> <span className="mono faint">{m.code}</span><div className="faint small">{m.state}</div></td>
-                  <td className="num">{m.total}</td><td className="num">{m.open}</td><td className="num">{m.sla_breaches}</td>
-                  <td className="num">{m.escalated_open}</td><td className="num">{hours(m.avg_resolution_hours)}</td>
+                  <td className="num">{fmtNumber(m.total)}</td><td className="num">{fmtNumber(m.open)}</td><td className="num">{fmtNumber(m.sla_breaches)}</td>
+                  <td className="num">{fmtNumber(m.escalated_open)}</td><td className="num">{hours(m.avg_resolution_hours)}</td>
                   <td>{m.cluster ? <span className="risk-mark risk-high"><span className="chip" aria-hidden="true" />{t("grievance.stats.clusterLine", { count: m.cluster.breaches, from: m.cluster.from, to: m.cluster.to })}</span> : <span className="faint">-</span>}</td>
                 </tr>
               ))}

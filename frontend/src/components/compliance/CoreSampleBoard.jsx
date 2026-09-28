@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { EmptyState } from "../common/EmptyState";
 import { fmtScore } from "../../utils/format";
 import { riskClass, riskLabel } from "../../utils/risk";
+import { t } from "../../i18n/t";
 
 // Below roughly a quarter depth a core cannot hold its own readout, so the number moves
 // above the fill and switches to ink. It never disappears.
@@ -38,7 +39,7 @@ function Readout({ score, level, inside }) {
 
 export function CoreSampleBoard({ mines }) {
   const navigate = useNavigate();
-  if (!mines?.length) return <EmptyState>No mines match this selection.</EmptyState>;
+  if (!mines?.length) return <EmptyState>{t("board.noMines")}</EmptyState>;
 
   // Worst first. The API already sorts this way; sorting here keeps the board correct
   // regardless of the order it arrives in.
@@ -70,7 +71,7 @@ export function CoreSampleBoard({ mines }) {
                     type="button"
                     className="core"
                     onClick={open}
-                    aria-label={`${mine.name}, ${mine.district}, ${mine.state}. Score ${score}, ${riskLabel(level)}. Open drill-down.`}
+                    aria-label={t("board.coreAria", { name: mine.name, district: mine.district, state: mine.state, score: fmtScore(score), band: riskLabel(level) })}
                   >
                     {!inside && (
                       <div className="core-readout-above">

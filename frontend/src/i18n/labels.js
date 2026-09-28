@@ -13,7 +13,12 @@ export const statusLabel = (key) => label("status.", key);
 export const severityLabel = (key) => label("severity.", String(key || "").toLowerCase());
 export const incidentTypeLabel = (key) => label("incident.type.", key);
 export const incidentSeverityLabel = (key) => label("incident.severity.", key);
-export const descriptionCodeLabel = (code) => humanise(String(code || "").toLowerCase());
+export const descriptionCodeLabel = (code) => (code ? t(`incidentCause.${code}`, { defaultValue: humanise(String(code).toLowerCase()) }) : "");
+export const violationTypeLabel = (type) => label("violationType.", type);
+/** "every 6 months" -> the UI language (frequency values of the obligation catalogue). */
+export const frequencyLabel = (f) => (f ? t(`frequency.${f.replace(/[^a-z0-9]+/gi, "_").replace(/^_|_$/g, "")}`, { defaultValue: f }) : "");
+/** An obligation's title in the UI language (the citation and quote stay as written). */
+export const obligationTitle = (o) => (o ? t(`obligationTitle.${o.code}`, { defaultValue: o.title ?? o.code }) : "");
 export const riskText = (level) => label("risk.", String(level || "").toLowerCase());
 
 /** One alert as a sentence. */
@@ -23,11 +28,11 @@ export function alertText(alert) {
   const params = {
     ...p,
     sensor: sensorLabel(p.sensor_type),
-    type: humanise(p.violation_type),
+    type: violationTypeLabel(p.violation_type),
     category: categoryLabel(p.category),
     source: sourceLabel(p.source),
     risk: riskText(p.risk_level),
-    doc_types: Array.isArray(p.doc_types) ? p.doc_types.map(humanise).join(", ") : p.doc_types,
+    doc_types: Array.isArray(p.doc_types) ? p.doc_types.map((d) => t(`contractor.docType.${d}`, { defaultValue: humanise(d) })).join(", ") : p.doc_types,
     obligation: p.obligation ?? p.obligation_code ?? "",
     due_at: p.due_at ? fmtDateTime(p.due_at) : p.due_at,
     licence_valid_to: p.licence_valid_to,
@@ -80,14 +85,17 @@ export function auditChanges(entry) {
   const oldV = entry.old_values || {};
   const newV = entry.new_values || {};
   if (entry.action === "update") {
-    return Object.keys(newV).map((k) => `${humanise(k)}: ${fmtValue(oldV[k])} → ${fmtValue(newV[k])}`);
+    return Object.keys(newV).map((k) => `${fieldLabel(k)}: ${fmtValue(oldV[k])} → ${fmtValue(newV[k])}`);
   }
   const values = entry.action === "delete" ? oldV : newV;
   return Object.entries(values)
     .filter(([k, v]) => v !== null && v !== "" && !["id", "params", "context"].includes(k))
     .slice(0, 8)
-    .map(([k, v]) => `${humanise(k)}: ${fmtValue(v)}`);
+    .map(([k, v]) => `${fieldLabel(k)}: ${fmtValue(v)}`);
 }
+
+/** A record field's name in an audit diff (common fields translated, others humanised). */
+const fieldLabel = (k) => t(`audit.field.${k}`, { defaultValue: humanise(k) });
 
 function fmtValue(v) {
   if (v === null || v === undefined || v === "") return "-";

@@ -23,6 +23,9 @@ class UsersMeCest
         $I->sendGet('/v1/users/me');
         $I->seeResponseCodeIs(200);
         $I->seeResponseContainsJson(['email' => Auth::CORPORATE_SECL, 'role' => 'corporate', 'mine_id' => null]);
+        // The Profile page (Phase 6): company name, area, mine code.
+        $I->seeResponseContainsJson(['subsidiary_code' => 'SECL', 'subsidiary_name' => 'South Eastern Coalfields Ltd', 'mine_code' => null]);
+        $I->seeResponseJsonMatchesJsonPath('$.area_name');
         $I->seeResponseMatchesJsonType(['subsidiary_id' => 'integer', 'created_at' => 'string:regex(~^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$~)']);
         $I->dontSeeResponseJsonMatchesJsonPath('$.password_hash');
     }

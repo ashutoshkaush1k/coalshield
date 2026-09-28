@@ -100,7 +100,11 @@ class User extends ActiveRecord implements IdentityInterface
             'preferred_language',
             'status',
             'mine_name' => fn() => $this->mine?->name,
+            'mine_code' => fn() => $this->mine?->code,
             'subsidiary_code' => fn() => $this->subsidiary?->code,
+            'subsidiary_name' => fn() => $this->subsidiary?->name,
+            // The area of the account, or of its mine (the Profile page shows where it sits).
+            'area_name' => fn() => ($this->area ?? $this->mine?->area)?->name,
             // What the account may do, so the frontend can hide actions the API would refuse.
             'permissions' => fn() => $this->id === null ? [] : array_values(array_map('strval',
                 array_keys(Yii::$app->authManager->getPermissionsByUser($this->id)))),
@@ -112,6 +116,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function getMine()
     {
         return $this->hasOne(Mine::class, ['id' => 'mine_id']);
+    }
+
+    public function getArea()
+    {
+        return $this->hasOne(Area::class, ['id' => 'area_id']);
     }
 
     public function getSubsidiary()

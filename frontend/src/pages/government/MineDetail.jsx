@@ -24,7 +24,7 @@ import { usePolling } from "../../hooks/usePolling";
 import { sensorLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
 import { getMineView } from "../../api/views";
-import { breachesLabel, fmtScore } from "../../utils/format";
+import { breachesLabel, fmtScore, fmtNumber } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
 
 /**
@@ -38,7 +38,7 @@ function Stat({ label, value, tone }) {
   return (
     <div>
       <span className="label">{label}</span>
-      <span className={`tally-v${tone ? ` ${tone}` : ""}`}>{value}</span>
+      <span className={`tally-v${tone ? ` ${tone}` : ""}`}>{typeof value === "number" ? fmtNumber(value) : value}</span>
     </div>
   );
 }

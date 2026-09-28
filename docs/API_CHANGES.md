@@ -115,3 +115,11 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | audit | seeded submissions and reviews in the chain as `seed_history` |
 | console | `yii obligation/check [--at=ISO]`, `yii obligation/summary` |
 | incidents on the register (after 5B) | `obligation_task.incident_id` (migration `m261004_000001`); `POST /v1/incidents` also creates the incident's reporting task (RPT-03/04/05), due 48 h after it occurred (product setting), `accepted` at `reported_at`. Tasks add `incident_id` and `reported_late`, and the task detail adds `incident`; the catalogue adds `from_incidents`. Statutory compliance counts them on time or late by `reported_at` |
+
+## Phase 6 (multilingual)
+
+| Changed | Notes |
+|---|---|
+| `GET /v1/users/me` (and `/auth/me`, the login response's `user`) | adds `mine_code`, `subsidiary_name`, `area_name` (the account's area, or its mine's) for the Profile page |
+| `PATCH /v1/users/me` | unchanged: `preferred_language` only (`en`, `hi`, `bn`, `or`, `te`, `mr`); the frontend now uses it and applies the saved language after login |
+| errors and alerts | unchanged `{code, params}`; every code now has text in all six languages |

@@ -7,6 +7,7 @@ import { DemoFooter } from "../../components/common/DemoFooter";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { GrievanceStatus, fmtWhen } from "../../components/grievances/common";
 import { useT } from "../../i18n/t";
+import { LanguageSwitcher } from "../../components/common/LanguageSwitcher";
 
 export default function TrackGrievance() {
   const t = useT();
@@ -36,6 +37,7 @@ export default function TrackGrievance() {
   return (
     <div className="login-wrap">
       <div className="public-card stack">
+        <LanguageSwitcher id="public-language" />
         <div className="brandline">
           <h1>{t("grievance.track.title")}</h1>
           <span>{t("grievance.track.hint")}</span>
@@ -45,7 +47,7 @@ export default function TrackGrievance() {
             <div className="form-grid">
               <div>
                 <label htmlFor="track-ticket">{t("grievance.track.ticket")}</label>
-                <input id="track-ticket" className="mono" value={ticket} onChange={(e) => setTicket(e.target.value)} placeholder="GRV-2026-000123" required />
+                <input id="track-ticket" className="mono" value={ticket} onChange={(e) => setTicket(e.target.value)} placeholder={t("grievance.track.ticketExample")} required />
               </div>
               <div>
                 <label htmlFor="track-code">{t("grievance.track.code")}</label>
