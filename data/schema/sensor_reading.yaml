@@ -1,7 +1,7 @@
 table: sensor_reading
 description: Mine sensor readings. Underground and mixed mines get the gas set; opencast mines a reduced set. Thresholds from schema/rules.yaml (obligation-cited) only.
 defined_by:
-  - "backend/app/models/sensor_reading.py: mine_id, sensor_type, value, unit, recorded_at, breached, resolved, resolved_at (kept)"
+  - "prototype app/models/sensor_reading.py: mine_id, sensor_type, value, unit, recorded_at, breached, resolved, resolved_at (kept)"
   - "CLAUDE_CODE_TASK.md rule 10 / PLAN.md: sensor_reading partitioned by month on recorded_at, PK (id, recorded_at)"
   - "CLAUDE_CODE_DATASETS.md D4: CH4, CO, dust, temperature, humidity; 15-minute intervals for underground mines, reduced set for opencast"
 generator: gen_sensors.py

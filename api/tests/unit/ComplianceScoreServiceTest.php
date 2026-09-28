@@ -9,7 +9,7 @@ use app\services\ComplianceScoreService;
 use Codeception\Test\Unit;
 use Yii;
 
-/** The formula must give the prototype's numbers (backend/tests/test_scoring.py). */
+/** The formula must give the prototype's numbers (its tests/test_scoring.py, removed with backend/ in Phase 8). */
 class ComplianceScoreServiceTest extends Unit
 {
     public function testFormulaAndBands(): void

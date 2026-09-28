@@ -19,10 +19,10 @@ node "..\scripts\check_locales.mjs" || exit /b 1
 node "..\scripts\check_hardcoded_strings.mjs" || exit /b 1
 
 echo === ai-service: detectors and the risk model against the shared fixtures (Phase 7)
-if exist "..\backend\.venv\Scripts\python.exe" (
-  "..\backend\.venv\Scripts\python.exe" -m pytest "..\ai-service\tests" -q || exit /b 1
+if exist "..\ai-service\.venv\Scripts\python.exe" (
+  "..\ai-service\.venv\Scripts\python.exe" -m pytest "..\ai-service\tests" -q || exit /b 1
 ) else (
-  echo backend\.venv not found - skipping the ai-service tests
+  echo ai-service\.venv not found - skipping the ai-service tests
 )
 
 echo === migrations down/up on the test database

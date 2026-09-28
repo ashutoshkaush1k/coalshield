@@ -1,4 +1,6 @@
-# API contract changes (FastAPI `backend/` → Yii2 `api/`)
+# API contract changes (FastAPI prototype `backend/` → Yii2 `api/`)
+
+The prototype was removed in Phase 8 (it is in git history); the table below is the record of what changed.
 
 Brief rule 12: every difference between the prototype API and the new one is listed here. Since
 Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
@@ -53,7 +55,7 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | `PATCH /v1/violations/{id}/contractor`; `contractor_id` on `POST /v1/corrective-actions` | link findings to the contractor responsible |
 | alert code `CONTRACT_WORKER_CAP_EXCEEDED` | new; the other contractor codes existed in the data and are now also raised by `yii contractor/check` |
 | `GET /v1/audit` `source` field and filter | `seed_history` entries: the seeded records' history, backfilled with original timestamps and actors |
-| `/v1/vision/analyze` `backend` | now `yolo` when `backend/ml/weights/ppe.pt` exists (fine-tuned model, docs/AI_EVALUATION.md), `fixture` otherwise |
+| `/v1/vision/analyze` `backend` | now `yolo` when `ai-service/ml/weights/ppe.pt` exists (fine-tuned model, docs/AI_EVALUATION.md), `fixture` otherwise |
 
 ## Performance (before Phase 4, docs/PERFORMANCE.md)
 

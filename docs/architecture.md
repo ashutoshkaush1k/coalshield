@@ -1,154 +1,128 @@
 # Architecture
 
-## Current stack (from Phase 2)
+## The pieces
 
 ```
-React (frontend/, :5173) --HTTP /v1--> Yii2 API (api/, :8080) --> PostgreSQL 16 + PostGIS
-                                            |   (scoping, RBAC, audit chain, workflows, scores)
-                                            +--HTTP--> ai-service (ai-service/, :8001) - PPE vision only
-scripts/run_simulator.py --API key--> POST /v1/sensor-readings/ingest
+ Browsers (dashboards)            Phones (field app, /field)
+   React + Vite :5173               installable PWA, offline queue in IndexedDB
+        |                                     |
+        |  HTTP /v1 (JSON)                    |  HTTPS :5443 (LAN) or http://localhost:5180 (USB)
+        |                          scripts/field_server.mjs - serves frontend/dist, proxies /v1
+        v                                     v
+ Yii2 API  (api/, Apache + mod_php on 127.0.0.1:8080)  <----  scripts/run_simulator.py (API key,
+   scoping, RBAC, audit chain, workflows, scores,              POST /v1/sensor-readings/ingest)
+   alerts, jobs (yii jobs/*), demo check
+        |                    \
+        |  SQL                \  HTTP, short timeouts, PHP fallback when down
+        v                      v
+ PostgreSQL 16 + PostGIS    ai-service (ai-service/, FastAPI :8001, stateless)
+   partitioned sensor data     PPE vision (YOLO), 7 anomaly detectors, predictive model
+   hash-chained audit log
+
+ scripts/supervisor.ps1 (window SIH-Supervisor): every 30 s checks the API, the ai-service, the
+ frontend and the field server, restarts one that stops answering, logs it.
+ Windows Task Scheduler (scripts/register_tasks.ps1): yii jobs/* on a clock.
+ data/ (Python): builds the reference data and the demo data that `yii seed` loads.
 ```
 
-- **api/** - controllers are thin (`modules/v1/controllers`); logic lives in `services/`
-  (`ComplianceScoreService`, `InspectionPriorityService`, `SensorService`, `AlertService`,
-  `CorrectiveActionService`, `InspectionService`, `VisionService`, `BaselineService`).
-  Scoping in one place (`components/ScopedActiveQuery.php`), permissions via RBAC, every model
-  change in the hash-chained `audit_log`, workflows through `components/StatusTransition.php`.
-  Legal sensor limits are read from `data/schema/rules.yaml`, never typed into code.
-- **ai-service/** - stateless; it never sees users or the database. Down or slow → the API
-  answers 503 `AI_SERVICE_UNAVAILABLE`, records a low alert, and nothing else changes.
-- **Data** - `yii seed <preset>` loads `data/out/<preset>/*.csv` (built by `data/`) with COPY.
-- Contract: [api-contract.md](api-contract.md); access model: [access-control.md](access-control.md);
-  setup: [SETUP_WINDOWS.md](SETUP_WINDOWS.md); plan and decisions: `PLAN.md`.
+| Port | What | Listens on |
+|---|---|---|
+| 5432 | PostgreSQL (`scripts\db.bat`) | 127.0.0.1 |
+| 8080 | API (`scripts\api_server.bat`: Apache + OPcache; fallback `api\serve.bat`) | 127.0.0.1 |
+| 8001 | ai-service (`ai-service\run_ai_service.bat`) | 127.0.0.1 |
+| 5173 | dashboards, Vite dev server (`npm run dev`) | localhost |
+| 5180 | field app over HTTP, for this PC and USB forwarding | 127.0.0.1 |
+| 5443 / 5080 | field app over HTTPS for phones / the CA certificate download | LAN |
 
-The rest of this document describes the **FastAPI prototype** in `backend/`, which stays in the
-repository until Phase 8 confirms parity (fallback: `SETUP_WINDOWS.md`, "Falling back to the
-FastAPI prototype"). Its scoring, windowing and ranking rules were ported unchanged.
+Only the field server listens on the network; it serves static files and passes `/v1` to the API.
+Everything else answers on this machine only.
 
-## Prototype layering
+## The API (`api/`)
 
-```
-   React pages ──► src/api/*  ──HTTP──►  api/v1/endpoints/*
-                                              │
-                                         api/deps.py        (identity + mine scope)
-                                              │
-                                         services/*         (all business logic)
-                                              │
-                                         models/*  ──►  SQLite
-```
+- **Thin controllers, services for logic** (`modules/v1/controllers` -> `services/`): e.g.
+  `ComplianceScoreService`, `InspectionPriorityService`, `GovernanceRiskService`, `ContractorService`,
+  `ProductionService`, `GrievanceService`, `ObligationService`, `AlertService`, `AnomalyService`,
+  `RiskModelService`, `FieldSyncService`. Console jobs (`commands/`) call the same services.
+- **One scoping rule** (`components/ScopedActiveQuery.php`): government and inspector see every mine,
+  corporate its company's, a mine head its own; out of scope is 404, never an empty list. Rules that
+  depend on the data (production detail only after a fulfilled "Call for Detailed Report", sensitive
+  grievances hidden from the mine head) are declared once in `components/AccessRule.php`.
+  See [access-control.md](access-control.md).
+- **Permissions** per action through RBAC (`config/rbac.php`, `yii rbac/init`).
+- **Audit** (`components/AuditBehavior.php`, `AuditChain.php`): every insert, update and delete of
+  an audited model is a row in `audit_log`, SHA-256 chained; `yii audit/verify` proves the chain.
+- **Workflows** through `components/StatusTransition.php`: allowed transitions per model, 422 for
+  others, each transition in the status history and the audit log.
+- **No display text**: errors, alerts and history carry `{code, params}`; the frontend words them in
+  six languages.
+- **Rules from data, not code**: legal limits and deadlines in `data/schema/rules.yaml` (`legal:`,
+  each tied to a cited obligation) and product settings beside them (`product:`, labelled as such).
+- Contract: [api-contract.md](api-contract.md), every endpoint: [API.md](API.md), changes from the
+  prototype: [API_CHANGES.md](API_CHANGES.md).
 
-Rules that keep this honest:
+## The ai-service (`ai-service/`)
 
-1. **Endpoints hold no business logic.** They validate input, call one service, and shape the response.
-2. **Services never import FastAPI.** That makes scoring, thresholds, and access rules unit-testable
-   without spinning up the app.
-3. **Every read of mine-owned data goes through the scope guard.** No endpoint queries a mine table
-   directly with a client-supplied `mine_id`.
+Stateless: it never sees users, permissions or the database. The API sends the data, stores what
+comes back, and keeps working when the service is down:
 
-## Data flow (PRD Section 6)
+| Capability | Endpoint | When the service is down |
+|---|---|---|
+| PPE photo analysis (YOLO11n fine-tuned, `ml/weights/ppe.pt`) | `POST /vision/ppe` | the upload answers 503 `AI_SERVICE_UNAVAILABLE` and raises a low alert |
+| Seven anomaly detectors | `POST /anomaly/{name}` | identical PHP twins in `api/services/detectors/` run instead |
+| Predicted risk (gradient boosting on US MSHA data) | `POST /risk/predict` | the same exported trees are evaluated in PHP |
 
-1. `POST /vision/analyze` receives an image or video →
-   `services/vision/detector` runs the pretrained YOLO model →
-   `ppe_rules` maps classes to violation types → `Violation` rows written,
-   annotated frame saved to `storage/annotated/`.
-2. `services/iot/simulator` replays `data/seed/sensor_readings.csv` on a timer →
-   `thresholds` classifies each reading → breaches become `SensorReading` rows with `breached=True`.
-3. Both paths call `services/alerts/engine`, which creates an `Alert` and calls
-   `services/audit/recorder` so nothing enters the system unlogged.
-4. `services/compliance/scoring` recomputes the mine's score and writes a `ComplianceScore`
-   row, preserving the trend line.
-5. Dashboards read the current score, risk band, alerts, and trends — Government across all
-   mines, Mine Head for one.
+The dashboards' footer says when detection is on the PHP fallback (`GET /v1/system/status`).
+Parity of the twins is tested on shared fixtures; the evaluation is in
+[AI_EVALUATION.md](AI_EVALUATION.md).
 
-## Why the score is recomputed, not incremented
+## Data
 
-Storing a running score would make it impossible to explain a number to a judge or to retune
-`weight_ppe` / `weight_env` mid-demo. Recomputing from the violation and breach counts means a
-weight change takes effect on the next tick and the arithmetic stays inspectable.
+- `data/` (its own Python venv) builds `data/reference/` (real, cited, committed) and
+  `data/out/<preset>/` (synthetic demo operations, gitignored, deterministic by seed).
+- `yii seed <preset>` loads `data/out/<preset>/*.csv` with `COPY` in foreign-key order and backfills
+  the audit chain; `scripts\demo_reset.bat` restores a snapshot of "seed demo + jobs/all" in seconds.
+- `sensor_reading` is partitioned by month; composite indexes on (`mine_id`, date) and
+  (`mine_id`, `status`) and on every foreign key.
 
-## Scores recover: violations through a clean re-inspection, breaches by ageing out
+## Automation
 
-`compute_compliance_score` counts **open** violations and **open, in-window** breaches. A record is
-never deleted; a resolved violation sets `resolved` plus `resolved_at`, and an aged-out breach simply
-falls outside the window, so both stop counting against the score while staying visible in the logs,
-the charts and the audit trail.
+`yii jobs/<name>` - reminders, SLAs, alert escalation, the daily score and risk history, the anomaly
+detectors, contractor / obligation / production / grievance checks. Each is idempotent, holds an
+advisory lock and is logged in `job_run`. `run_all.bat` runs them once at start; Task Scheduler runs
+them on a clock (`scripts/register_tasks.ps1`, [SETUP_WINDOWS.md](SETUP_WINDOWS.md) 7a).
 
-This partially lifts the limitation previously recorded here, that a score could only ever fall
-and a mine that fixed a problem carried it forever.
+## The field app (Phase 7B)
 
-### What can resolve a violation
-
-Exactly one thing today: a **clean vision re-run** on that mine.
-`services/compliance/resolution.py` accepts a detection run as evidence of compliance when it
-produced zero violations **and** the model actually saw a workforce - at least one `person` or one
-worn PPE item. Every open violation for the mine is then marked resolved, each gets a
-`corrective_actions` row naming the evidence frame, and an `VIOLATIONS_RESOLVED` audit entry is
-written. The score is recomputed in the same request.
-
-The workforce check is not incidental. Zero violations on its own is not evidence of anything - a
-photograph of an empty corridor also contains zero violations. Without that guard, any image at all
-would clear a mine's history.
-
-### How environmental penalties recover: the rolling breach window
-
-**Breaches are not resolved, they age out.** `_breach_counts` counts only breaches recorded inside
-the window (`BREACH_WINDOW_HOURS`), measured against the wall clock the readings are stamped with.
-This is the "sustained clean window" this section used to say was missing: one clean reading clears
-nothing, because the penalty only falls as each breach in the window expires. A mine whose sensors
-have run clean for the whole window has no environmental penalty left, and its score is back where
-its open PPE violations put it - with no resolve action and nothing deleted.
-
-**Violations are deliberately not windowed.** A PPE violation is a finding about how people were
-working, not a passing condition, so it still counts until a clean re-inspection resolves it.
-
-**Every simulator tick re-scores every mine**, breaching or not, and writes a history point on any
-movement, so recoveries reach the trend line and band changes are audited in both directions. The
-dashboards recompute on every poll, so they show a recovery even between ticks and after the feed
-stops. `--loop` no longer grinds mines to zero: the environmental penalty is capped at one window's
-worth of breaches.
-
-**The default is 0.0033 h (12 s), tuned for the demo.** The simulator stamps readings with real time
-and replays one 6-hour seed slot per tick, so there is no "simulated hour" to measure in: two
-replayed hours would be a fraction of a tick. 12 s is six ticks at the default 2-second interval -
-half a replay pass, which maximises the visible rise-and-fall while looping (a window of a whole
-pass holds an almost constant count). Keep it at about six ticks if `--interval` changes:
-6s -> 0.01, 2s -> 0.0033, 1s -> 0.0017. Production would use hours; `BREACH_WINDOW_HOURS=0`
-restores all-time counting.
-
-**The seed was retuned in the same change**, as this note always said it would need to be. Every
-seeded reading is days old, so under any short window the opening board is set by violations alone,
-which left no red on it (avg 91.8, 0 High / 6 Medium / 68 Low). `scripts/generate_sensor_data.py`
-now re-expresses the historical breach penalty of every mine below the Low band as extra open
-violations, putting each back within 2 points of its old score: 6 High / 21 Medium / 47 Low as
-before, avg 83.2. The five named mines are set by hand; Jharia (now Moonidih, JH-DHN-01) keeps zero violations as
-the sensor-only mine whose score moves purely with its air.
-
-**The replayed feed is thinner than the record.** A mine's seeded breach count describes its
-three-day record and sets that baseline; the telemetry the simulator replays is thinned to roughly a
-quarter of it, capped at three (`live_breach_count`). A site that breached a dozen times over three
-days is not breaching every few seconds, and a feed where nearly every tick is red both reads as a
-broken sensor and buries the recovery - a mine never gets a clean stretch long enough for its
-breaches to age out. Thinned, a mine dips once or twice per 12-tick pass and sits at baseline in
-between.
-
-`SensorReading.resolved` stays, so an explicit inspector sign-off can be added later without the two
-penalties drifting apart.
-
-### The simplification worth knowing about
-
-**A mine head can raise their own score by uploading a compliant photograph.** The evidence guard
-stops an empty frame from working, but it does not verify that the image is recent, is of that
-mine, or is of the same area where the violation was found. Someone could photograph a compliant
-crew and clear a genuine finding.
-
-That is acceptable for Round 3 - it makes the recovery path demonstrable, and the full history
-stays in the audit trail for an authority to review - but it is a real gap, not an oversight.
-Closing it properly means tying evidence to the violation it claims to answer: capture location and
-timestamp metadata, require the resolving frame to post-date the finding, and put resolution behind
-an inspector role rather than the mine operator's own upload.
+Offline-first: the service worker keeps the app, IndexedDB keeps the reference data and the queue.
+Each visit, finding and photo carries an id made on the phone; `POST /v1/field/sync` acts once per
+id and returns the stored result on a retry, through the same services, scoping and audit as the
+dashboards. See [FIELD_APP_SETUP.md](FIELD_APP_SETUP.md).
 
 ## Real-time
 
-`realtime/ws.py` pushes new alerts and sensor ticks to open dashboards. `hooks/usePolling.js`
-exists as the fallback — if the websocket is flaky at the venue, dashboards still refresh on an
-interval, so the demo degrades rather than breaks.
+Dashboards poll every 10 s, one request per screen (`GET /v1/views/...`), plus the footer's status
+every 30 s; every dashboard request answers in well under 150 ms ([PERFORMANCE.md](PERFORMANCE.md)).
+There is no websocket: polling survives flaky venue networks and needs no extra server.
+
+## The compliance score
+
+`score = 100 - (open violations x WEIGHT_PPE) - (breaches in the window x WEIGHT_ENV)`, clamped to
+0-100 and rounded to 0.1, bands low from 80, medium from 50, else high (ported unchanged from the prototype; weights in
+`api/.env`). It is recomputed on every read, never stored as a running total, so a weight change
+takes effect at once and every number can be explained.
+
+**Violations count until they are resolved**: by a corrective action closed with proof, or - for PPE
+findings from vision - by a clean re-inspection frame that shows workers with their PPE (a frame
+with nobody in it is not evidence). **Breaches age out**: a breach counts only inside
+`BREACH_WINDOW_HOURS` (12 s by default, six ticks of the simulator's replay, so a live demo shows
+scores falling and recovering). Nothing is deleted; history, charts and the audit trail keep it all.
+
+The Governance Risk Index (Phase 7) is a separate measure beside the score, built from overdue
+obligations, contractor documents, grievances past their deadline and ageing corrective actions
+([api-contract.md](api-contract.md)); it orders the inspection queue and changes nothing in the score.
+
+### A known simplification
+
+A mine head can clear PPE findings from vision with a compliant photograph. The evidence check stops
+an empty frame, but not a photo of another place or time. The field app's findings carry time and
+location, and resolution by an inspector is the way to close this gap (roadmap).

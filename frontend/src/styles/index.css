@@ -725,3 +725,7 @@ fieldset.field-card { border: 1px solid var(--line); }
 .field-foot { display: grid; gap: 8px; padding-top: 8px; }
 .field-foot .lang-switch select { min-height: 36px; width: auto; }
 .link-button { background: none; border: 0; padding: 0; color: var(--accent-ink); text-decoration: underline; min-height: 0; }
+
+/* Phase 8: the footer's warning when detection runs on the PHP fallback */
+.system-warning { margin-bottom: 8px; padding: 8px 12px; border-radius: var(--radius-sm); background: var(--risk-medium-bg);
+  color: var(--risk-medium); border: 1px solid currentColor; font-size: var(--text-sm); }

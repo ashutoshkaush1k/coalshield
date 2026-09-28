@@ -16,21 +16,20 @@ env/
 *.db
 *.sqlite3
 
-# Model weights (fetched, not committed - see backend/ml/README.md)
-backend/ml/weights/*
-!backend/ml/weights/.gitkeep
+# Model weights (built, not committed - see ai-service/ml/README.md)
+ai-service/ml/weights/*
+!ai-service/ml/weights/.gitkeep
 # Training runs and downloaded base weights (scripts/build_ppe_model.py)
-backend/ml/runs/
+ai-service/ml/runs/
 yolo*.pt
+*.pt
+*.joblib
 
 # Runtime artefacts
-backend/data/uploads/*
-!backend/data/uploads/.gitkeep
-backend/storage/annotated/*
-!backend/storage/annotated/.gitkeep
+ai-service/storage/
 
 # Large demo media (keep one small sample if needed)
-backend/data/samples/videos/*.mp4
+ai-service/samples/videos/*.mp4
 
 # Node
 node_modules/

@@ -11,9 +11,13 @@ REM    3. First run only: migrations, RBAC and "yii seed demo" (about 30 s),
 REM       and an API key for the simulator
 REM    4. Starts the API on 8080 through XAMPP's Apache, scripts\api_server.bat,
 REM       falling back to a SIH-API window with api\serve.bat; opens windows
-REM       SIH-AI on 8001 (PPE vision),
-REM       SIH-Frontend on 5173 (React), and SIH-Simulator with --sim
-REM    5. Waits until the API and the frontend listen, then opens the dashboard
+REM       SIH-AI on 8001 (PPE vision, detectors, predicted risk),
+REM       SIH-Frontend on 5173 (React), SIH-Field on 5180 / 5443 when the field
+REM       app is built (run_field.bat), and SIH-Simulator with --sim
+REM    5. Starts SIH-Supervisor (scripts\supervisor.ps1): every 30 s it checks the
+REM       API, the ai-service, the frontend and the field server and restarts one
+REM       that stopped answering; restarts go to api\runtime\logs\supervisor.log
+REM    6. Waits until the API and the frontend listen, then opens the dashboard
 REM
 REM  Usage:
 REM    run_all.bat           start the stack
@@ -24,8 +28,7 @@ REM
 REM  Stopping: closing the SIH-* windows never touches the database - PostgreSQL
 REM  runs in its own hidden console. It stops only through run_all.bat --stop or
 REM  scripts\db.bat stop, a "fast" shutdown that writes a checkpoint first.
-REM  The old FastAPI stack is no longer started here; see docs\SETUP_WINDOWS.md
-REM  ("Falling back to the FastAPI prototype").
+REM  The FastAPI prototype (backend\) was removed in Phase 8; it is in git history.
 REM
 REM  Note for editors: no "(", ")" or "&" inside IF blocks - cmd ends a block at
 REM  the first bare ")", so an innocent echo breaks the whole block.
@@ -100,7 +103,8 @@ REM Every scheduled job once (Phase 7): reminders, SLAs, alert escalation, the d
 REM Governance Risk Index, the anomaly detectors, contractor / obligation / production / grievance
 REM checks. Idempotent, logged in job_run and api\runtime\logs\jobs.log. The ai-service is not up
 REM yet at this point, so the detectors run on their PHP fallback; the scheduled runs use the
-REM service (scripts\register_tasks.ps1 registers them in Task Scheduler).
+REM service (scripts\register_tasks.ps1 registers them in Task Scheduler). A demo board restored by
+REM scripts\demo_reset.bat already has them.
 "%PHP%" "%ROOT%api\yii" jobs/all >nul
 if errorlevel 1 (echo  [!] A startup job failed - see: api\yii.bat jobs/status) else (echo  [ok] Scheduled jobs run once: api\yii.bat jobs/status)
 
@@ -120,17 +124,18 @@ echo  [!] It serves one request at a time, so dashboards will be slower. docs\PE
 start "SIH-API" /d "%ROOT%api" cmd /k "serve.bat"
 :apiup
 
-if exist "%ROOT%backend\.venv\Scripts\python.exe" goto :checkweights
-echo  [!] backend\.venv not found - PPE vision is off; uploads will answer 503.
+if exist "%ROOT%ai-service\.venv\Scripts\python.exe" goto :checkweights
+echo  [!] ai-service\.venv not found - PPE vision is off; uploads will answer 503.
+echo  [!] Detection runs on the PHP fallback. Set it up: docs\SETUP_WINDOWS.md 6b.
 goto :startfrontend
 :checkweights
-if exist "%ROOT%backend\ml\weights\ppe.pt" goto :startai
+if exist "%ROOT%ai-service\ml\weights\ppe.pt" goto :startai
 echo.
 echo  [!] ================================================================
-echo  [!]  PPE model weights missing: backend\ml\weights\ppe.pt
+echo  [!]  PPE model weights missing: ai-service\ml\weights\ppe.pt
 echo  [!]  PPE detection falls back to the test fixture - real photos
 echo  [!]  will show no detections. Rebuild the weights, about 25 min:
-echo  [!]    backend\.venv\Scripts\python.exe scripts\build_ppe_model.py
+echo  [!]    ai-service\.venv\Scripts\python.exe scripts\build_ppe_model.py
 echo  [!]  See docs\AI_EVALUATION.md.
 echo  [!] ================================================================
 echo.
@@ -142,9 +147,20 @@ start "SIH-AI" /d "%ROOT%" cmd /k "ai-service\run_ai_service.bat"
 echo  Starting frontend  - window SIH-Frontend, port 5173...
 start "SIH-Frontend" /d "%ROOT%frontend" cmd /k "npm run dev"
 
+REM The field app for phones, when it has been built (run_field.bat builds it).
+if not exist "%ROOT%frontend\dist\index.html" goto :nofield
+echo  Starting field app - window SIH-Field, ports 5180 and 5443 - docs\FIELD_APP_SETUP.md
+start "SIH-Field" /min /d "%ROOT%" cmd /k "node scripts\field_server.mjs"
+goto :supervise
+:nofield
+echo  [i] Field app for phones not built - run_field.bat when you need it.
+:supervise
+echo  Starting supervisor - window SIH-Supervisor, checks every 30 s...
+start "SIH-Supervisor" /min /d "%ROOT%" powershell -NoProfile -ExecutionPolicy Bypass -File scripts\supervisor.ps1
+
 if not defined WITH_SIM goto :waitstart
 set "SIMPY=python"
-if exist "%ROOT%backend\.venv\Scripts\python.exe" set "SIMPY=%ROOT%backend\.venv\Scripts\python.exe"
+if exist "%ROOT%ai-service\.venv\Scripts\python.exe" set "SIMPY=%ROOT%ai-service\.venv\Scripts\python.exe"
 echo  Starting simulator - window SIH-Simulator, 2 s ticks, looping...
 start "SIH-Simulator" /d "%ROOT%" cmd /k ""%SIMPY%" scripts\run_simulator.py --interval 2 --loop"
 
@@ -188,15 +204,16 @@ ping -n 6 127.0.0.1 >nul
 exit /b 0
 
 :stop
-echo  Closing the SIH-* windows...
-for %%W in (SIH-Simulator SIH-Frontend SIH-AI SIH-API) do taskkill /fi "WINDOWTITLE eq %%W*" /t /f >nul 2>&1
+echo  Closing the SIH-* windows - the supervisor first, so it restarts nothing...
+for %%W in (SIH-Supervisor SIH-Simulator SIH-Field SIH-Frontend SIH-AI SIH-API) do taskkill /fi "WINDOWTITLE eq %%W*" /t /f >nul 2>&1
 call "%ROOT%scripts\api_server.bat" stop
 call "%ROOT%scripts\db.bat" stop
 exit /b %ERRORLEVEL%
 
 :usage
 echo.
-echo  run_all.bat           start PostgreSQL if needed, the API, the AI service and the frontend
+echo  run_all.bat           start PostgreSQL if needed, the API, the AI service, the frontend,
+echo                        the field server when built, and the supervisor
 echo  run_all.bat --sim     also replay live sensor data through the API
 echo  run_all.bat --stop    close the SIH-* windows and stop PostgreSQL cleanly
 echo  run_all.bat --help    show this message

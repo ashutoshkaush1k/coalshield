@@ -52,9 +52,18 @@ function proxy(req, res) {
   req.pipe(upstream);
 }
 
+// Phase 8 security pass (docs/SECURITY.md): the app loads only from this origin (plus map tiles),
+// is never framed, and sends no referrer. Inline style attributes are allowed (React, Leaflet).
+const CSP = [
+  "default-src 'self'", "script-src 'self'", "style-src 'self' 'unsafe-inline'", "font-src 'self' data:",
+  "img-src 'self' data: blob: https://*.tile.openstreetmap.org", "connect-src 'self'", "worker-src 'self'",
+  "manifest-src 'self'", "frame-ancestors 'none'", "base-uri 'self'", "form-action 'self'", "object-src 'none'",
+].join("; ");
+
 function serveFile(res, path, cache) {
   res.writeHead(200, { "content-type": TYPES[extname(path)] ?? "application/octet-stream", "cache-control": cache,
-    "x-content-type-options": "nosniff" });
+    "x-content-type-options": "nosniff", "x-frame-options": "DENY", "referrer-policy": "no-referrer",
+    "content-security-policy": CSP });
   createReadStream(path).pipe(res);
 }
 

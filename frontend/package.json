@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --mode field",
     "preview": "vite preview",
     "i18n:check": "node ../scripts/check_locales.mjs && node ../scripts/check_hardcoded_strings.mjs",
     "build:field": "vite build --mode field",
@@ -31,6 +31,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.0",
-    "vite": "^5.4.0"
+    "vite": "^7.3.6"
   }
 }

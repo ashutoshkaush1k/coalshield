@@ -37,9 +37,33 @@ final class RateLimiter
         }
     }
 
-    /** The caller's address for bucketing (the API is served directly, not behind a proxy). */
+    /** Whether the bucket is already over its limit in the current window (does not count a hit). */
+    public static function exceeded(string $bucket, int $limit, int $windowSeconds): bool
+    {
+        $now = time();
+        $hits = (int) Yii::$app->db->createCommand(
+            'SELECT hits FROM {{%rate_limit}} WHERE bucket = :b AND window_start = to_timestamp(:w)',
+            [':b' => mb_substr($bucket, 0, 96), ':w' => $now - ($now % $windowSeconds)],
+        )->queryScalar();
+        return $hits >= $limit;
+    }
+
+    /**
+     * The caller's address for bucketing. Apache listens on 127.0.0.1 only, so a request from
+     * elsewhere comes through the field server (scripts/field_server.mjs, a proxy on this machine):
+     * from a loopback peer, the first X-Forwarded-For address is the phone's. From any other peer
+     * the header is ignored, so it cannot be forged to dodge a limit.
+     */
     public static function clientKey(): string
     {
-        return (string) (Yii::$app->request->userIP ?? 'unknown');
+        $request = Yii::$app->request;
+        $peer = (string) ($request->remoteIP ?? '');
+        if (in_array($peer, ['127.0.0.1', '::1'], true)) {
+            $forwarded = trim(explode(',', (string) $request->headers->get('X-Forwarded-For', ''))[0]);
+            if ($forwarded !== '' && filter_var($forwarded, FILTER_VALIDATE_IP)) {
+                return $forwarded;
+            }
+        }
+        return $peer !== '' ? $peer : 'unknown';
     }
 }

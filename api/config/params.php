@@ -45,6 +45,12 @@ return [
     'files.linkTtlSeconds' => 3600,
     // Public grievance endpoints (no login): fixed-window limits per client IP, and the upload
     // limits for a grievance attachment (stricter than the general file store).
+    // Phase 8: failed sign-ins allowed per account and per address in each window
+    'auth.failuresPerAccount' => (int) env('AUTH_FAILURES_PER_ACCOUNT', 10),
+    'auth.failuresPerAddress' => (int) env('AUTH_FAILURES_PER_ADDRESS', 50),
+    'auth.failureWindowSeconds' => 900,
+    // Phase 8: exception details in error answers ("debug"), only when asked for (never on a demo LAN)
+    'api.debugErrors' => (bool) env('API_DEBUG_ERRORS', false),
     'grievance.submitPerHour' => (int) env('GRIEVANCE_SUBMIT_PER_HOUR', 5),
     'grievance.trackPerMinute' => (int) env('GRIEVANCE_TRACK_PER_MINUTE', 20),
     'grievance.maxFileBytes' => 5 * 1024 * 1024,

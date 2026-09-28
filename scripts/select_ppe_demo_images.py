@@ -1,20 +1,20 @@
 """Pick the demo images for PPE vision from the HELD-OUT test split of S13 (docs/AI_EVALUATION.md).
 
 The demo must show the real model on images it never saw in training or model selection. This
-script runs the installed model (backend/ml/weights/ppe.pt) over every image of the test split
-and applies the ai-service's own violation rule (backend/app/services/vision/ppe_rules.py:
+script runs the installed model (ai-service/ml/weights/ppe.pt) over every image of the test split
+and applies the ai-service's own violation rule (ai-service/vision/ppe_rules.py:
 a person without a contained hard hat or vest is a violation) to
 
   * the model's detections, and
   * the ground-truth labels of the same image (as detections with confidence 1),
 
 then reports how often the two agree across the whole split - the end-to-end number, beyond mAP -
-and copies a few images where they agree to backend/data/samples/heldout/: some clean frames and
+and copies a few images where they agree to ai-service/samples/heldout/: some clean frames and
 some with violations, so the demo shows both outcomes. The selection is deliberate and says so in
 the folder's README; the unselected rate is the honest measure.
 
 Usage (repository root):
-    backend\\.venv\\Scripts\\python.exe scripts\\select_ppe_demo_images.py [--clean 3] [--violations 3]
+    ai-service\\.venv\\Scripts\\python.exe scripts\\select_ppe_demo_images.py [--clean 3] [--violations 3]
 """
 
 from __future__ import annotations
@@ -27,14 +27,14 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "backend"))
+sys.path.insert(0, str(ROOT / "ai-service"))
 
-from app.services.vision.detector import Detection, YoloDetector  # noqa: E402
-from app.services.vision.ppe_rules import PpePolicy, normalise_label, violations_from_detections  # noqa: E402
+from vision.detector import Detection, YoloDetector  # noqa: E402
+from vision.ppe_rules import PpePolicy, normalise_label, violations_from_detections  # noqa: E402
 
 TEST = ROOT / "data" / "raw" / "ppe" / "dataset" / "test"
-WEIGHTS = ROOT / "backend" / "ml" / "weights" / "ppe.pt"
-OUT = ROOT / "backend" / "data" / "samples" / "heldout"
+WEIGHTS = ROOT / "ai-service" / "ml" / "weights" / "ppe.pt"
+OUT = ROOT / "ai-service" / "samples" / "heldout"
 NAMES = ["Gloves", "Hard_hat", "Mask", "Person", "Safety_boots", "Vest"]   # S13 data.yaml order
 
 

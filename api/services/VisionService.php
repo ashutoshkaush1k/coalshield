@@ -17,7 +17,7 @@ use Yii;
 use yii\web\UploadedFile;
 
 /**
- * One PPE vision run, ported from backend/app/services/vision/ingest.py: ai-service detects,
+ * One PPE vision run, ported from the FastAPI prototype's app/services/vision/ingest.py: ai-service detects,
  * this service persists violations and alerts, rescores the mine and returns the score either side.
  *
  * A clean frame that shows workers or worn PPE is evidence of compliance and resolves the mine's

@@ -10,7 +10,7 @@ use Yii;
 use yii\db\Query;
 
 /**
- * Compliance score (PRD 6.1), ported from backend/app/services/compliance/scoring.py with the same
+ * Compliance score (PRD 6.1), ported from the FastAPI prototype's app/services/compliance/scoring.py with the same
  * numbers:
  *
  *   score = 100 - (open violations x WEIGHT_PPE + in-window breaches x WEIGHT_ENV), clamped 0..100,

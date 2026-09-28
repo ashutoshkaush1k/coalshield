@@ -1672,5 +1672,10 @@
     "clockFlag": "Phone clock off by {{minutes}} min",
     "noFix": "No location",
     "photoLink": "Photo {{n}}"
+  },
+  "system": {
+    "fallbackTitle": "Automated detection is running on the built-in checks.",
+    "fallbackDown": "The AI service is not answering, so the same detectors run in the API instead and PPE photo analysis is unavailable. It restarts on its own; findings are unchanged.",
+    "fallbackConfigured": "The AI service is switched off in the settings (AI_ENGINE=php), so the same detectors run in the API and PPE photo analysis is unavailable."
   }
 }

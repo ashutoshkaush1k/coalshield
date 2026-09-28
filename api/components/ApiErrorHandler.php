@@ -12,7 +12,7 @@ use yii\web\Response;
 /**
  * One error format everywhere (brief rule 7):
  *   {"error": {"code": "VALIDATION_FAILED", "fields": {"coal_actual_t": ["REQUIRED"]}}}
- * Codes only; the frontend translates them. With YII_DEBUG a "debug" object carries the exception
+ * Codes only; the frontend translates them. With YII_DEBUG and API_DEBUG_ERRORS=1 a "debug" object carries the exception
  * class and message for developers - never shown to users.
  */
 class ApiErrorHandler extends ErrorHandler
@@ -55,7 +55,9 @@ class ApiErrorHandler extends ErrorHandler
             $error = ['code' => 'INTERNAL_ERROR'];
             Yii::error((string) $exception, __METHOD__);
         }
-        if (YII_DEBUG) {
+        // Exception details only when explicitly enabled (API_DEBUG_ERRORS=1 in api\.env): a database
+        // error's message can quote SQL, and the field server puts the API on the LAN. Never a trace.
+        if (YII_DEBUG && (Yii::$app->params['api.debugErrors'] ?? false)) {
             $error['debug'] = ['exception' => get_class($exception), 'message' => $exception->getMessage()];
         }
         return ['error' => $error];

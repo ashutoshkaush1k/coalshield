@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
-from vision.config import BACKEND_DIR
+from vision.config import SERVICE_DIR
 
-ANNOTATED_DIR = BACKEND_DIR / "storage" / "annotated"
+ANNOTATED_DIR = SERVICE_DIR / "storage" / "annotated"
 
 # BGR, because OpenCV. Violations red, compliant PPE green, people amber.
 COLOUR_VIOLATION = (0, 0, 220)

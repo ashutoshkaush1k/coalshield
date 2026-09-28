@@ -16,7 +16,7 @@ use Yii;
  */
 class VisionCest
 {
-    private const SAMPLE = __DIR__ . '/../../../backend/data/samples/images/ppe_sample.jpg';
+    private const SAMPLE = __DIR__ . '/../../../ai-service/samples/images/ppe_sample.jpg';
 
     public function aiServiceDownDegradesTo503AndAnAlert(ApiTester $I): void
     {

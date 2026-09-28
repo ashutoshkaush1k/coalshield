@@ -1,7 +1,7 @@
 table: corrective_action
 description: Corrective actions for violations; resolved ones close their violation, open ones may be overdue.
 defined_by:
-  - "backend/app/models/corrective_action.py: mine_id, violation_id, alert_id, description, status, created_by, proof_image_path, created_at, resolved_at (kept)"
+  - "prototype app/models/corrective_action.py: mine_id, violation_id, alert_id, description, status, created_by, proof_image_path, created_at, resolved_at (kept)"
   - "CLAUDE_CODE_TASK.md Phase 3: nullable contractor_id on corrective_action"
   - "CLAUDE_CODE_DATASETS.md D4: realistic closure times, some overdue (needs due_at)"
 generator: gen_inspections.py

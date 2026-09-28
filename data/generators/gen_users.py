@@ -1,6 +1,6 @@
 """user - the existing demo accounts, one corporate account per company, and inspectors.
 
-Existing accounts are kept exactly (backend/data/seed/users.json): gov@dgms.gov.in and
+Existing accounts are kept exactly (data/reference/prototype_seed/users.json): gov@dgms.gov.in and
 head.<code>@coalmine.in per mine, password demo123. The brief adds corporate.secl@coalmine.in;
 the same pattern is used for every company. Inspectors are fictitious people on the reserved
 .example domain (RFC 2606), so no real address is implied.
@@ -13,7 +13,7 @@ from faker import Faker
 
 from common import Ctx
 
-DEMO_PASSWORD = "demo123"   # the repo's demo password (backend/data/seed/users.json); demo only
+DEMO_PASSWORD = "demo123"   # the repo's demo password (data/reference/prototype_seed/users.json); demo only
 
 
 def run(ctx: Ctx) -> None:

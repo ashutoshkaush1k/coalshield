@@ -21,7 +21,7 @@ use app\tests\Support\Helper\Auth;
 class FieldCest
 {
     private const INSPECTOR = 'inspector.07@dgms.example';
-    private const PHOTO = __DIR__ . '/../../../backend/data/samples/images/ppe_sample.jpg';
+    private const PHOTO = __DIR__ . '/../../../ai-service/samples/images/ppe_sample.jpg';
 
     private static function uuid(): string
     {

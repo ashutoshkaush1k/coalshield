@@ -1,4 +1,4 @@
-"""Rebuild the PPE detection weights used by ai-service (backend/ml/weights/ppe.pt).
+"""Rebuild the PPE detection weights used by ai-service (ai-service/ml/weights/ppe.pt).
 
 No openly licensed pretrained PPE model with a traceable training-data licence was found
 (docs/AI_EVALUATION.md, "Model choice"), so the model is fine-tuned here:
@@ -12,15 +12,15 @@ No openly licensed pretrained PPE model with a traceable training-data licence w
 The test split is never used for training or model selection; it is only evaluated at the end,
 and per-class precision, recall, mAP50 and mAP50-95 are written to docs/AI_EVALUATION.md.
 
-Usage (from the repository root, with backend\\.venv, which has ultralytics and torch):
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --probe       # time one epoch
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py               # train (defaults = the kept
+Usage (from the repository root, with ai-service\\.venv, which has ultralytics and torch):
+    ai-service\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --probe       # time one epoch
+    ai-service\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py               # train (defaults = the kept
                                                                                   # model: 25 epochs, 640 px, nothing
                                                                                   # frozen; about 2 h CPU), evaluate, install
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --epochs 10 --imgsz 512 --freeze 10 --warmup 1
+    ai-service\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --epochs 10 --imgsz 512 --freeze 10 --warmup 1
                                                                                   # the quicker first run (about 20 min)
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --candidate --name <run>   # train + test, do not install
-    backend\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --evaluate-only --name ppe_e25_640
+    ai-service\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --candidate --name <run>   # train + test, do not install
+    ai-service\\.venv\\Scripts\\python.exe scripts\\build_ppe_model.py --evaluate-only --name ppe_e25_640
 """
 
 from __future__ import annotations
@@ -37,8 +37,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "data" / "raw" / "ppe" / "dataset"
-WORK = ROOT / "backend" / "ml" / "runs"                 # gitignored with the weights
-WEIGHTS = ROOT / "backend" / "ml" / "weights" / "ppe.pt"
+WORK = ROOT / "ai-service" / "ml" / "runs"                 # gitignored with the weights
+WEIGHTS = ROOT / "ai-service" / "ml" / "weights" / "ppe.pt"
 REPORT = ROOT / "docs" / "AI_EVALUATION.md"
 BASE_MODEL = "yolo11n.pt"
 SEED = 2026
@@ -143,7 +143,7 @@ def main() -> int:
     parser.add_argument("--warmup", type=float, default=3.0, help="warm-up epochs")
     parser.add_argument("--probe", action="store_true", help="train one epoch only, to time it")
     parser.add_argument("--evaluate-only", action="store_true", help="evaluate the installed weights")
-    parser.add_argument("--name", default="ppe", help="run name under backend/ml/runs")
+    parser.add_argument("--name", default="ppe", help="run name under ai-service/ml/runs")
     parser.add_argument("--candidate", action="store_true",
                         help="train and evaluate on the test split only; do not install or touch the report")
     args = parser.parse_args()

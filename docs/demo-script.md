@@ -74,10 +74,10 @@ simulator, so by step 4 the scores have legitimately drifted.
 - [ ] `http://127.0.0.1:8080/v1/health` answers `{"status":"ok",...}`; `http://localhost:5173`
       shows the login page.
 - [ ] PPE vision runs the **real model**: `http://127.0.0.1:8001/health` must say
-      `"backend":"yolo"` (`run_all.bat` warns if `backend/ml/weights/ppe.pt` is missing; rebuild
-      with `backend\.venv\Scripts\python.exe scripts\build_ppe_model.py`, about 2 h on CPU -
+      `"backend":"yolo"` (`run_all.bat` warns if `ai-service/ml/weights/ppe.pt` is missing; rebuild
+      with `ai-service\.venv\Scripts\python.exe scripts\build_ppe_model.py`, about 2 h on CPU -
       docs/AI_EVALUATION.md). Use **only the held-out test images** in
-      `backend\data\samples\heldout\` - images from the test split the model never saw in training
+      `ai-service\samples\heldout\` - images from the test split the model never saw in training
       or model selection, and say so when you show them. `heldout_06_violations.jpg` is the scripted
       one; `heldout_01_clean.jpg` the clean re-inspection. The folder's README gives the model's
       agreement with the ground truth over the whole test split (73 % of images with people) - the
@@ -117,7 +117,7 @@ continuing.**
 2. **Priority Queue tab** → every mine ranked most urgent first, each with its reasoning and a
    trend. The ranking is urgency = (100 - score) + rising-event pressure.
 3. **PPE vision - in the product.** Switch to the **Mine Head tab** (Jayant) and press **Run PPE
-   detection**; choose `backend\data\samples\heldout\heldout_06_violations.jpg` - **a held-out
+   detection**; choose `ai-service\samples\heldout\heldout_06_violations.jpg` - **a held-out
    test image: the model never saw it in training**. The real YOLO model finds three workers
    without hard hats; the panel shows the annotated frame with the violations boxed in red and the
    score move - **80 → 65, Low → Medium**.

@@ -1,12 +1,16 @@
-# Portable fallback for the native Windows setup (docs/SETUP_WINDOWS.md).
-# NOT YET VERIFIED: Docker is not installed on the development machine (see PROGRESS.md).
+# ============================================================================================
+#  UNTESTED - this file has never been run: Docker is not installed on the development machine.
+#  The supported setup is native Windows (docs/SETUP_WINDOWS.md). Kept as a starting point.
+# ============================================================================================
+#
+# Covers the database and the API only; the ai-service, the frontend and the field server run on
+# the host. Generate data/out/<preset> on the host first (data\run_data.bat generate demo).
 #
 #   docker compose up -d db api          database + API on http://localhost:8080
 #   docker compose exec api php yii seed demo
 #   docker compose exec api php yii_test seed small && docker compose exec api php vendor/bin/codecept run
 #
 # api/.env is read for secrets (JWT_SECRET, DB_PASSWORD); the values below override its host names.
-# ai-service joins in Phase 7; the frontend keeps using `npm run dev` on the host until Phase 2.
 
 services:
   db:

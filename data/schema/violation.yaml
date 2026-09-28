@@ -1,7 +1,7 @@
 table: violation
 description: Violations from PPE vision and from inspections. The backend score counts every unresolved row (5 points each), so open rows per mine equal the roster's seed_violations.
 defined_by:
-  - "backend/app/models/violation.py: mine_id, violation_type, confidence, source, frame_ref, detected_at, resolved, resolved_at (kept)"
+  - "prototype app/models/violation.py: mine_id, violation_type, confidence, source, frame_ref, detected_at, resolved, resolved_at (kept)"
   - "CLAUDE_CODE_TASK.md Phase 3: nullable contractor_id on violation"
   - "PLAN.md Q11: observations promoted to violations"
 generator: gen_inspections.py

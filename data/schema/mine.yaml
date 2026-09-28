@@ -2,7 +2,7 @@ table: mine
 description: The mine roster selected by config.yaml mine_roster (real = reference/mines_real.csv, seed = reference/mines.csv).
 defined_by:
   - "CLAUDE_CODE_TASK.md Phase 1: mine (code, name, type opencast/underground, location geometry(Point,4326), boundary geometry(Polygon,4326) nullable, status)"
-  - "backend/app/models/mine.py: district, state, region (kept - the region filter and dashboards use them)"
+  - "prototype app/models/mine.py: district, state, region (kept - the region filter and dashboards use them)"
   - "PLAN.md Q8 (location nullable) - superseded: the adopted real roster has exact GEM points"
 generator: gen_org.py
 primary_key: id

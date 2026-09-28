@@ -54,6 +54,31 @@ class AuthCest
         $I->seeApiError(401, 'INVALID_CREDENTIALS');
     }
 
+    /** Phase 8: ten failures lock the account for the window - even the right password - and only that account. */
+    public function repeatedFailuresAreRateLimited(ApiTester $I): void
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $I->sendPost('/v1/auth/login', ['email' => Auth::CORPORATE_SECL, 'password' => 'wrong']);
+            $I->seeApiError(401, 'INVALID_CREDENTIALS');
+        }
+        $I->sendPost('/v1/auth/login', ['email' => Auth::CORPORATE_SECL, 'password' => Auth::PASSWORD]);
+        $I->seeApiError(429, 'RATE_LIMITED');
+        $I->seeHttpHeader('Retry-After');
+        $I->sendPost('/v1/auth/login', ['email' => Auth::GOVERNMENT, 'password' => Auth::PASSWORD]);
+        $I->seeResponseCodeIs(200);
+    }
+
+    /** Phase 8: security headers on every answer, no PHP version, no exception details. */
+    public function answersCarrySecurityHeadersAndNoInternals(ApiTester $I): void
+    {
+        $I->sendGet('/v1/mines/999999');
+        $I->seeHttpHeader('X-Content-Type-Options', 'nosniff');
+        $I->seeHttpHeader('X-Frame-Options', 'DENY');
+        $I->seeHttpHeader('Cache-Control', 'no-store');
+        $I->dontSeeHttpHeader('X-Powered-By');
+        $I->dontSeeResponseJsonMatchesJsonPath('$.error.debug');
+    }
+
     public function unknownEmailIsTheSame401(ApiTester $I): void
     {
         $I->sendPost('/v1/auth/login', ['email' => 'nobody@example.org', 'password' => Auth::PASSWORD]);

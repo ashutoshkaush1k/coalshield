@@ -10,11 +10,11 @@ GET  /health              liveness, the PPE backend, the model version
 
 It never touches users, permissions or the database: the Yii2 API sends the data, then stores
 violations, alerts, flags and predictions itself - and runs the PHP twins of the detectors and
-of the model when this service is down (Phase 7). With backend/ml/weights/ppe.pt (built by
+of the model when this service is down (Phase 7). With ai-service/ml/weights/ppe.pt (built by
 scripts/build_ppe_model.py, docs/AI_EVALUATION.md) the real YOLO model runs; without it - or with
 PPE_DETECTOR=fixture - the FixtureDetector answers from sidecar files next to the sample images.
 
-Run:  backend\.venv\Scripts\python -m uvicorn main:app --app-dir ai-service --port 8001
+Run:  ai-service\.venv\Scripts\python -m uvicorn main:app --app-dir ai-service --port 8001
       (ai-service\run_ai_service.bat)
 """
 
@@ -52,7 +52,7 @@ app = FastAPI(title="CoalShield ai-service", version="0.4.0")
 
 
 def detector():
-    """YOLO when backend/ml/weights/ppe.pt exists (scripts/build_ppe_model.py), else the fixture.
+    """YOLO when ai-service/ml/weights/ppe.pt exists (scripts/build_ppe_model.py), else the fixture.
 
     PPE_DETECTOR=fixture forces the fixture backend - the API tests use it for exact numbers.
     """

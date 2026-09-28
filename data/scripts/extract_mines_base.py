@@ -1,6 +1,7 @@
 """Stage D0 / source S01: extract the repo's 74 seeded mines into reference/mines_base.csv.
 
-Reads the backend seed files and never writes to backend/ (brief rule 1). Every field the seed
+Reads the prototype seed files, kept in data/reference/prototype_seed/ since the FastAPI prototype
+(backend/) was removed in Phase 8 - same files, same SHA-256 as recorded in DATASETS.md. Every field the seed
 holds for a mine is carried over, plus the mine head's login and the mine's standing on the
 current demo board (open PPE violations, readings, breaches, score, risk band).
 
@@ -25,7 +26,7 @@ import yaml
 
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "data"
-SEED = REPO / "backend" / "data" / "seed"
+SEED = DATA / "reference" / "prototype_seed"
 OUT = DATA / "reference" / "mines_base.csv"
 
 COLUMNS = [
@@ -143,7 +144,7 @@ def main() -> int:
           + " / ".join(f"{got['named_scores'][c]:g}" for c in base["named_mines"]))
     print("Input checksums (sha256):")
     for name, path in inputs.items():
-        print(f"  {sha256(path)}  backend/data/seed/{name}")
+        print(f"  {sha256(path)}  data/reference/prototype_seed/{name}")
     print(f"Output checksum: {sha256(OUT)}")
     return 0
 

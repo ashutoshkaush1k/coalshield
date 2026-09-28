@@ -49,7 +49,7 @@ Each status was read from the notification itself on 2026-09-25.
 ## S01 - Existing repo seed (74 mines)
 
 - **Publisher:** this repository
-- **Landing page:** backend/data/seed/
+- **Landing page:** data/reference/prototype_seed/
 - **Saved to:** `data/reference/`
 - **Purpose:** The 74 mines, their mine-head logins and current demo standing.
 - **Access:** In the repo
@@ -313,10 +313,10 @@ Skipped as the brief directs: on both coalindiatenders.nic.in and eprocure.gov.i
 - **Publisher:** Roboflow Universe user "sdp-lfigk", mirrored in GitHub repo vyasdeepti/PPE-Object-Detection-using-YOLO11
 - **Landing page:** https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11
 - **Saved to:** `data/raw/ppe/`
-- **Purpose:** Training and held-out evaluation data for the PPE model (scripts/build_ppe_model.py, from 2026-09-27): the 213-image test split is used only for docs/AI_EVALUATION.md. The trained weights (backend/ml/weights/ppe.pt, gitignored) start from Ultralytics YOLO11n COCO weights (yolo11n.pt, Ultralytics GitHub release assets, AGPL-3.0; Ultralytics states that models trained with its code are AGPL-3.0 too - see docs/AI_EVALUATION.md). No openly licensed pretrained PPE model with a traceable training-data licence was found.
+- **Purpose:** Training and held-out evaluation data for the PPE model (scripts/build_ppe_model.py, from 2026-09-27): the 213-image test split is used only for docs/AI_EVALUATION.md. The trained weights (ai-service/ml/weights/ppe.pt, gitignored) start from Ultralytics YOLO11n COCO weights (yolo11n.pt, Ultralytics GitHub release assets, AGPL-3.0; Ultralytics states that models trained with its code are AGPL-3.0 too - see docs/AI_EVALUATION.md). No openly licensed pretrained PPE model with a traceable training-data licence was found.
 - **Access:** Automatic (optional)
 - **Licence:** CC BY 4.0 (stated in the dataset's own README.dataset.txt and data.yaml, Roboflow project ppe-detection-ozhfb v14) (https://github.com/vyasdeepti/PPE-Object-Detection-using-YOLO11/blob/98085c8a901121d5ec0bf1194f7319a9b792b9cb/dataset/README.dataset.txt)
-- **Redistribution:** allowed with attribution; kept out of git (size), except a handful of held-out test images copied unmodified to backend/data/samples/heldout/ for the PPE demo, with attribution in that folder's README.md
+- **Redistribution:** allowed with attribution; kept out of git (size), except a handful of held-out test images copied unmodified to ai-service/samples/heldout/ for the PPE demo, with attribution in that folder's README.md
 - **Pinned commit:** `98085c8a901121d5ec0bf1194f7319a9b792b9cb`
 
 6 classes: Gloves, Hard_hat, Mask, Person, Safety_boots, Vest (read from data.yaml; the repo README's summary omits vests). The dataset/ folder holds 1,619 images with 1,619 matching label files (counted after extraction in D2; the 2,294 images / 1,832 labels reported in D1 counted the whole repository, including training-run output outside dataset/). The archive also contains a video and model weights; D2 keeps only dataset/. The repository itself has no licence file - the CC BY 4.0 grant comes from the dataset export. Alternative, manual and optional: SH17 (8,099 images) - its GitHub release holds only model weights; the images are on Kaggle, which needs an account key.

@@ -48,7 +48,7 @@ export function useLiveSeries(points, { window: windowSize = DEFAULT_WINDOW, res
   }
   const s = store.current;
 
-  // Reseed detection. `seed_db.py --reset` restarts reading ids at 1, and the ledger would then
+  // Reseed detection. `yii seed demo` restarts reading ids at 1, and the ledger would then
   // recognise every fresh reading as one it had already filed - so the chart sits frozen until
   // the new ids climb past the old maximum, which on a reseeded demo database is thousands of
   // readings away. Against a live database ids only ever increase, so a batch whose highest id

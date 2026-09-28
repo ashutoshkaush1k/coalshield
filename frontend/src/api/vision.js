@@ -18,7 +18,7 @@ export async function analyzeImage(mineId, file) {
   return data;
 }
 
-// Mirrors backend/app/utils/files.py IMAGE_SUFFIXES. Kept in sync deliberately: rejecting a bad
+// Mirrors the prototype's IMAGE_SUFFIXES (app/utils/files.py, removed in Phase 8). Kept in sync deliberately: rejecting a bad
 // file here gives an instant message instead of a round trip to a 422.
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/bmp"];
 export const ACCEPT_ATTR = ".jpg,.jpeg,.png,.webp,.bmp";

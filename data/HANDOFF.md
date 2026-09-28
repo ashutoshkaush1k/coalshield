@@ -1,7 +1,7 @@
 # Data track handoff
 
 **Ownership (2026-09-26).** One owner: Yug Pancholi, the only person on this project. All
-implementation is done by Claude Code, which owns `backend/`, `api/`, `ai-service/`, `frontend/`
+implementation is done by Claude Code, which owns `api/`, `ai-service/`, `frontend/`
 and `data/`. Earlier "pending team approval" or "owned by another track" notes are resolved. This
 file records what the data track hands to the backend and frontend work, the decisions taken, and
 what is still open.
@@ -17,7 +17,7 @@ locations) stays as the fallback, selected with `mine_roster: seed` in `data/con
 
 **What the backend does in Phase 1**
 
-1. Load mines from `data/reference/mines_real.csv` instead of `backend/data/seed/mines.json`.
+1. Load mines from `data/reference/mines_real.csv` instead of `data/reference/prototype_seed/mines.json`.
    `id`, `code`, `name`, `state`, `district` and `region` map one-to-one. The operator comes from
    `company_id` via `data/reference/companies.csv`, and `location` is "district, state". Also
    available: `lat`, `lon`, `type`, `capacity_mtpa`, `area_id`, `gem_id`.

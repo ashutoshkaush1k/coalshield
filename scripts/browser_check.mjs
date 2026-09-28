@@ -273,7 +273,7 @@ async function phase3(page) {
 
   await page.click("Documents", "button[role=tab]");
   await page.click("Upload", "td button");
-  await page.setFile(".modal input[type=file]", resolve(ROOT, "backend/data/samples/images/with_ppe.jpg"));
+  await page.setFile(".modal input[type=file]", resolve(ROOT, "ai-service/samples/images/with_ppe.jpg"));
   await page.shot("07-head-upload-document", "uploading a missing month's document (preset from the missing row)");
   await page.click("Upload", ".modal .overlay-foot button");
   await sleep(2500);
@@ -382,7 +382,7 @@ async function phase4(page) {
   await page.scrollTo("Calls for detailed report");
   await page.click("Respond", "#production-inbox button");
   await page.type("#dr-note", "Shift-wise registers, weighbridge slips and the dragline log for 1-7 September attached. The 4 September figure includes a backlog of 2 days' dispatch.");
-  await page.setFile("#dr-file", resolve(ROOT, "backend/data/samples/images/with_ppe.jpg"));
+  await page.setFile("#dr-file", resolve(ROOT, "ai-service/samples/images/with_ppe.jpg"));
   await page.shot("10-head-respond", "answering the call: note and attachment");
   await page.click("Respond", ".modal .overlay-foot button");
   await page.until((t) => t.includes("Response sent"));
@@ -1014,7 +1014,7 @@ async function phase7b(page) {
   const FPORT = 5181;
   const FIELD = `http://localhost:${FPORT}`;
   const INSPECTOR = "inspector.07@dgms.example";
-  const PHOTO = resolve(ROOT, "backend/data/samples/images/metro_shaft_workers.jpg");
+  const PHOTO = resolve(ROOT, "ai-service/samples/images/metro_shaft_workers.jpg");
   const idb = (body) => page.eval(`new Promise((done, fail) => { const r = indexedDB.open("smg-field"); r.onerror = () => fail(r.error);
     r.onsuccess = async () => { const db = r.result; try { done(await (async (db) => { ${body} })(db)); } catch (e) { fail(e); } finally { db.close(); } }; })`);
   const req = (x) => `new Promise((ok, no) => { const q = ${x}; q.onsuccess = () => ok(q.result); q.onerror = () => no(q.error); })`;

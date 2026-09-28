@@ -1,9 +1,21 @@
-# Native Windows setup (API track)
+# Native Windows setup
 
-How the development machine was set up for `api/` (Yii2 + PostgreSQL 16 + PostGIS), and how to
-repeat it. Everything here runs **without administrator rights**: no installer, no Windows service,
-no UAC prompt. Docker is the portable alternative (see the end), but it is not installed on the
-reference machine, so the Docker path is **not verified yet**.
+How the development machine was set up, and how to repeat it from a fresh clone. Everything here
+runs **without administrator rights**: no installer, no Windows service, no UAC prompt. Docker is
+described at the end but has **never been run** (Docker is not installed on the reference machine).
+
+## From a fresh clone, in order
+
+| Step | What | Section |
+|---|---|---|
+| 1 | Tools once per machine: PostgreSQL 16 + PostGIS, XAMPP PHP 8.2 with four extensions, Composer, Node.js 20.19+ (or 22.12+), Python 3.12+ (the `py` launcher), Git | 1-5 |
+| 2 | Database role, the two databases and their extensions (superuser, once) | 3 |
+| 3 | `powershell -ExecutionPolicy Bypass -File scripts\setup.ps1` - Composer packages, `api\.env` with a new JWT secret, npm packages, `frontend\.env`, the ai-service's Python environment | 6, 6b |
+| 4 | Put the database password into `api\.env` (`DB_PASSWORD`) | 6 |
+| 5 | The demo data: `data\run_data.bat setup`, then `data\run_data.bat generate demo` | 6c |
+| 6 | `run_all.bat` - migrates, seeds, runs the jobs, starts everything | 7 |
+| 7 | Optional: PPE weights (about 25 min), the field app for phones, scheduled tasks | 11, 7b, 7a |
+| 8 | Before a demo: `scripts\demo_reset.bat`, then `scripts\predemo_check.bat` | 7c |
 
 Reference machine, 2026-09-27: Windows 11, XAMPP PHP 8.2.12 (`C:\xampp\php`), no Docker.
 
@@ -98,7 +110,8 @@ extension=sodium
 ```
 
 Check with `C:\xampp\php\php.exe -m` (the list must include `pdo_pgsql`, `pgsql`, `intl`,
-`sodium`). To undo, copy the backup back over `php.ini`. Apache is not used by the API.
+`sodium`). To undo, copy the backup back over `php.ini`. The API runs under XAMPP's Apache with its
+own configuration (6a); XAMPP's `httpd.conf` and `php.ini` stay untouched.
 
 ## 5. Composer
 
@@ -117,6 +130,8 @@ Set-Content D:\tools\composer\composer.bat @('@echo off', '"C:\xampp\php\php.exe
 Use `D:\tools\composer\composer.bat` (or add `D:\tools\composer` to your user `PATH`).
 
 ## 6. The API
+
+`scripts\setup.ps1` does the first three lines below (and writes a random `JWT_SECRET`); by hand:
 
 ```bat
 cd api
@@ -161,7 +176,37 @@ run_tests.bat
   flush it, and `yii cache/flush-all` does it by hand.
 
 `run_all.bat` starts it and falls back to a `SIH-API` window with `serve.bat` if Apache does not
-come up; `run_all.bat --stop` stops it. Numbers: `docs/PERFORMANCE.md`.
+come up; `run_all.bat --stop` stops it. Numbers: `docs/PERFORMANCE.md`. The generated `php.ini` also
+turns off `expose_php` and `display_errors` and caps uploads at 12 MB (`docs/SECURITY.md`).
+
+### 6b. The ai-service's Python environment
+
+PPE vision, the anomaly detectors and the predictive model run in `ai-service\.venv`
+(`scripts\setup.ps1` creates it; torch makes the first install large, about 1.3 GB on disk):
+
+```bat
+py -3 -m venv ai-service\.venv
+ai-service\.venv\Scripts\python.exe -m pip install -r ai-service\requirements.txt
+ai-service\.venv\Scripts\python.exe -m pytest ai-service\tests -q
+```
+
+Without it everything still works except PPE photo analysis: detection runs on the API's PHP
+fallback, and the dashboards' footer says so.
+
+### 6c. The demo data
+
+`yii seed demo` loads `data\out\demo\*.csv`, which is generated, not committed. The data track has
+its own Python environment (`data\.venv`):
+
+```bat
+data\run_data.bat setup
+data\run_data.bat generate demo
+data\run_data.bat validate demo
+```
+
+`setup` creates `data\.venv` from `data\requirements.txt`; `generate demo` writes 74 mines x 90 days
+from the committed reference data in about a minute. `download` and `clean` rebuild that reference
+data from the original sources and are not needed for the demo (`data\MANUAL_STEPS.md`).
 
 ## 7. Everyday start and stop: run_all.bat
 
@@ -183,11 +228,17 @@ run_all.bat --stop
 4. Runs every scheduled job once, `yii jobs/all` (about 2 s; see 7a). They are idempotent, so
    a restart never raises an alert twice.
 5. Starts the API under Apache on 8080 (`scripts\api_server.bat`; a `SIH-API` window with
-   `serve.bat` if Apache fails), opens `SIH-AI` (8001, when `backend\.venv` exists; warns if the
-   PPE weights are missing), `SIH-Frontend` (5173) and, with `--sim`, `SIH-Simulator`; waits for
-   the ports and opens the dashboard.
+   `serve.bat` if Apache fails), opens `SIH-AI` (8001, when `ai-service\.venv` exists; warns if the
+   PPE weights are missing), `SIH-Frontend` (5173), `SIH-Field` (5180 / 5443, when the field app
+   has been built with `run_field.bat`) and, with `--sim`, `SIH-Simulator`.
+6. Starts `SIH-Supervisor` (`scripts\supervisor.ps1`): every 30 s it checks the API, the
+   ai-service, the frontend and the field server; one that fails two checks in a row is restarted,
+   and every restart is written to `api\runtime\logs\supervisor.log`. While the ai-service is down
+   the dashboards' footer warns that detection runs on the built-in (PHP) checks.
+7. Waits for the ports and opens the dashboard.
 
-`run_all.bat --stop` closes the `SIH-*` windows, stops Apache and stops PostgreSQL.
+`run_all.bat --stop` closes the supervisor first (so it restarts nothing), then the other `SIH-*`
+windows, stops Apache and stops PostgreSQL.
 
 **Stopping never corrupts the database.** `db.bat start` launches PostgreSQL in its own hidden
 console, so closing any `SIH-*` window (or the window that ran `run_all.bat`) does not touch it.
@@ -251,6 +302,24 @@ by `node scripts\make_cert.mjs` (no admin rights; `certs\` is git-ignored), and 
 `localhost:5180` for this PC and for phones over USB port forwarding. Phone setup, click by click:
 `docs/FIELD_APP_SETUP.md`. No scheduled task is needed: the phones sync when their users tap **Sync**.
 
+## 7c. Before a demo: reset and check
+
+```bat
+scripts\demo_reset.bat
+scripts\predemo_check.bat
+```
+
+- **`demo_reset.bat`** restores the database to "seed demo + jobs/all" in about 6 seconds from a
+  snapshot (`pg_dump` / `pg_restore`, `api\runtime\snapshots\demo.dump`), then checks the five demo
+  mines' scores, the fleet average and the audit chain (`yii demo/check`). The first run, and any run
+  after the seed's inputs changed (the generated data, a migration, the seeder, the rules), rebuilds
+  the snapshot first (about 40 s). `-Rebuild` forces it; `-Status` shows the snapshot. It runs as the
+  application role and leaves PostGIS alone; other sessions of the API are ended first.
+- **`predemo_check.bat`** changes nothing. It checks every service, the model files, the certificate
+  for this PC's current address, the supervisor, that fonts are bundled, Windows sleep on mains
+  power, free disk space, the demo scores and the audit chain, and prints **READY** or a numbered
+  list of what to fix.
+
 ## 8. Where the secrets live, and how to regenerate them
 
 Nothing secret is in the repository. The files, all outside git:
@@ -262,6 +331,7 @@ Nothing secret is in the repository. The files, all outside git:
 | `api\.env` (git-ignored) | `DB_PASSWORD` (= `pg_app.txt`), `JWT_SECRET` (signs tokens and file links) | the API and its console |
 | `scripts\.simulator.key` (git-ignored) | the simulator's API key; the database stores only its SHA-256 | `scripts\run_simulator.py` |
 | `frontend\.env` (git-ignored) | no secret, only `VITE_API_URL` | Vite |
+| `certs\ca.key`, `certs\server.key` (git-ignored) | the field server's local CA and HTTPS keys (`node scripts\make_cert.mjs`) | `scripts\field_server.mjs` |
 
 Regenerate them (PowerShell, from the repository root; `api\.env` is edited by hand):
 
@@ -290,19 +360,20 @@ git ls-files | findstr /r /i "\.env$ \.key$ secret pg_app pg_superuser"
 ```
 
 ```bat
-git check-ignore -v api/.env frontend/.env backend/.env scripts/.simulator.key
+git check-ignore -v api/.env frontend/.env scripts/.simulator.key certs/ca.key
 ```
 
 The first must print nothing; the second must list all four files with the `.gitignore` rule
-that ignores them. Result on 2026-09-27: no secret file tracked, none anywhere in the git history
+that ignores them. `docs/SECURITY.md` has the full pre-push check. Result on 2026-09-27: no secret file tracked, none anywhere in the git history
 (`git log --all --diff-filter=A --name-only`), and all four ignored (`api/.gitignore` for
 `api/.env`, the root `.gitignore` for the others).
 
-## 9. Falling back to the FastAPI prototype
+## 9. The FastAPI prototype (removed)
 
-The old stack is still in `backend/` (kept until Phase 8 confirms parity), but `run_all.bat` no
-longer starts it and the frontend now speaks the new contract. To run the prototype as it was,
-use a separate worktree at the last commit before the switch (Phase 1, `b026164`):
+The prototype in `backend/` was removed in Phase 8, after the parity check (`PROGRESS.md`, Phase 8):
+its vision code, sample images and demo seed moved to `ai-service/` and `data/reference/`, and
+everything else lives in `api/`. To run the prototype as it was, use a separate worktree at the last
+commit before the switch (Phase 1, `b026164`):
 
 ```bat
 git worktree add ..\SIH_prototype b026164
@@ -313,7 +384,7 @@ run_all.bat
 
 That tree's `run_all.bat` starts FastAPI on 8000 and its own frontend on 5173; stop the new stack
 first (`run_all.bat --stop`) or the ports collide. Remove it afterwards with
-`git worktree remove ..\SIH_prototype`. The prototype's own tests still run in this tree:
+`git worktree remove ..\SIH_prototype`. Its own tests run inside that worktree:
 `backend\.venv\Scripts\python.exe -m pytest backend/tests`.
 
 ## 10. Terminal pitfalls
@@ -326,12 +397,12 @@ first (`run_all.bat --stop`) or the ports collide. Remove it afterwards with
 
 ## 11. PPE detection weights
 
-The ai-service uses `backend\ml\weights\ppe.pt`, a YOLO11n model fine-tuned on the S13 PPE dataset.
+The ai-service uses `ai-service\ml\weights\ppe.pt`, a YOLO11n model fine-tuned on the S13 PPE dataset.
 The weights are not in git (Ultralytics AGPL-3.0 and size); rebuild them once per machine:
 
 ```bat
 data\run_data.bat download
-backend\.venv\Scripts\python.exe scripts\build_ppe_model.py
+ai-service\.venv\Scripts\python.exe scripts\build_ppe_model.py
 ```
 
 The first line fetches S13 if `data\raw\ppe\dataset` is missing. The second trains on the CPU
@@ -340,15 +411,19 @@ results in `docs/AI_EVALUATION.md`. Without the weights `run_all.bat` prints a w
 ai-service answers with its test fixture. `set PPE_DETECTOR=fixture` before starting it forces
 the fixture even when the weights exist.
 
-## Docker alternative (not verified)
+## Docker alternative (UNTESTED)
 
-`docker-compose.yml` at the repository root starts `postgis/postgis:16-3.4` (with the test
-database and extensions from `docker/postgres/init/`) and the API on port 8080:
+**Never run**: Docker is not installed on the reference machine. `docker-compose.yml` is kept as a
+starting point and marked UNTESTED in its first lines. It covers the database and the API only; the
+ai-service, the frontend and the field server run on the host as above.
+
+It starts `postgis/postgis:16-3.4` (with the test database and extensions from
+`docker/postgres/init/`) and the API on port 8080:
 
 ```bash
 docker compose up -d db api
 docker compose exec api php yii seed demo
 ```
 
-Docker Desktop is not installed on the reference machine, so this path has not been run yet
-(tracked in `PROGRESS.md`).
+Known gaps if you try it: the API image does not run the jobs or the supervisor, and `DATA_OUT_DIR`
+expects `data/out/<preset>` to be generated on the host first (6c).

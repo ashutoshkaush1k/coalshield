@@ -17,6 +17,19 @@ final class AiClient
      * POST a JSON payload (the detectors, the risk model); the decoded JSON response. Retries once on
      * a connection failure (the service may be starting), then gives up with AiUnavailableException.
      */
+    /** GET /health, once, with a short timeout: the service's answer, or [] when it does not answer. */
+    public static function health(float $timeout = 1.5): array
+    {
+        try {
+            $response = (new Client(['baseUrl' => rtrim(Yii::$app->params['ai.baseUrl'], '/'),
+                'responseConfig' => ['format' => Client::FORMAT_JSON]]))
+                ->get('health')->setOptions(['timeout' => $timeout, 'connectTimeout' => 1])->send();
+            return $response->isOk && is_array($response->data) ? $response->data : [];
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
     public static function postJson(string $path, array $payload, ?float $timeout = null): array
     {
         $params = Yii::$app->params;

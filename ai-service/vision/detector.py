@@ -18,12 +18,12 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-from vision.config import BACKEND_DIR, settings
+from vision.config import SERVICE_DIR, settings
 from vision.ppe_rules import BBox, normalise_label
 
 # The id an upload rename appends: "ppe_sample.jpg" -> "ppe_sample_a1b2c3d4.jpg".
 UPLOAD_ID_PATTERN = re.compile(r"_[0-9a-f]{8}$")
-SAMPLES_IMAGE_DIR = BACKEND_DIR / "data" / "samples" / "images"
+SAMPLES_IMAGE_DIR = SERVICE_DIR / "samples" / "images"
 
 
 class WeightsNotFoundError(FileNotFoundError):
@@ -42,9 +42,9 @@ class Detection:
 
 
 def resolve_weights_path(path: str | None = None) -> Path:
-    """Absolute path to the weights, resolved against the backend directory when relative."""
+    """Absolute path to the weights, resolved against the ai-service directory when relative."""
     candidate = Path(path or settings.yolo_weights_path)
-    return candidate if candidate.is_absolute() else (BACKEND_DIR / candidate)
+    return candidate if candidate.is_absolute() else (SERVICE_DIR / candidate)
 
 
 class YoloDetector:
@@ -57,7 +57,7 @@ class YoloDetector:
         if not self.weights_path.exists():
             raise WeightsNotFoundError(
                 f"YOLO weights not found at {self.weights_path}. "
-                "Set YOLO_WEIGHTS_PATH in backend/.env, or see backend/ml/README.md."
+                "Build them (scripts/build_ppe_model.py), set YOLO_WEIGHTS_PATH, or see ai-service/ml/README.md."
             )
         self.confidence = settings.detection_confidence if confidence is None else confidence
         # Imported lazily: ultralytics pulls in torch, which is slow to import and not needed by

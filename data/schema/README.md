@@ -8,7 +8,7 @@ Where the columns come from, in order of precedence (dataset brief D4, owner dec
 
 1. `CLAUDE_CODE_TASK.md`, including its "Legal update (verified in D1)" section.
 2. `PLAN.md` (branch `feat/governance-backend`), where the brief is silent.
-3. The current FastAPI models in `backend/app/models/` (existing columns the brief keeps).
+3. The FastAPI prototype's models (`app/models/`, removed in Phase 8, in git history) (existing columns the brief keeps).
 4. The dataset brief itself (for `env_reading`, which no backend document defines).
 
 Each file lists its sources under `defined_by`. Every conflict between these documents, and the

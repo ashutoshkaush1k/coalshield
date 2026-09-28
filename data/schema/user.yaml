@@ -3,8 +3,8 @@ description: Demo accounts - government, one corporate user per company, one min
 defined_by:
   - "CLAUDE_CODE_TASK.md Phase 1: user (email, password_hash, role, subsidiary_id, area_id, mine_id, preferred_language default en, status, timestamps); roles government, corporate, mine_head (+ inspector)"
   - "CLAUDE_CODE_TASK.md Phase 1 seed: keep existing demo accounts and add corporate.secl@coalmine.in / demo123"
-  - "backend/app/models/user.py: full_name (kept)"
-  - "backend/data/seed/users.json: seed files carry the demo password in plain text; the loader hashes it"
+  - "prototype app/models/user.py: full_name (kept)"
+  - "data/reference/prototype_seed/users.json: seed files carry the demo password in plain text; the loader hashes it"
 generator: gen_users.py
 primary_key: id
 columns:

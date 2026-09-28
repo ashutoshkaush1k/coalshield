@@ -25,6 +25,8 @@ return yii\helpers\ArrayHelper::merge($common, [
         'response' => [
             'format' => yii\web\Response::FORMAT_JSON,
             'charset' => 'UTF-8',
+            // Phase 8: nosniff, no framing, no referrer, CSP and no-store on JSON (docs/SECURITY.md)
+            'on beforeSend' => [app\components\SecurityHeaders::class, 'apply'],
             'formatters' => [
                 yii\web\Response::FORMAT_JSON => [
                     'class' => yii\web\JsonResponseFormatter::class,

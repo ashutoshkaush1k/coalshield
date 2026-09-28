@@ -6,7 +6,7 @@ The pytest suite (ai-service/tests) then checks the Python side still produces t
 suite (DetectorParityTest, RiskModelParityTest) checks the PHP twins produce the same thing - so
 the fallback engine and the service answer alike.
 
-    backend\\.venv\\Scripts\\python ai-service\\tests\\make_expected.py
+    ai-service\\.venv\\Scripts\\python ai-service\\tests\\make_expected.py
 """
 
 import json

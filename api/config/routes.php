@@ -10,6 +10,7 @@ declare(strict_types=1);
 return [
     'OPTIONS v1/<path:.*>' => 'v1/default/options',
     'GET v1/health' => 'v1/default/health',
+    'GET v1/system/status' => 'v1/default/status',   // Phase 8: detection engine for the dashboards' footer
 
     // Auth and profile
     'POST v1/auth/login' => 'v1/auth/login',

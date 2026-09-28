@@ -101,7 +101,7 @@ no real counterpart (`is_demo_mine = true`).
 | | |
 |---|---|
 | **Kind** | Repo seed — the prototype's own **synthetic** demo data, copied as-is |
-| **Source** | S01, the existing repo seed (`backend/data/seed/`), read-only |
+| **Source** | S01, the existing repo seed (`data/reference/prototype_seed/`), read-only |
 | **Produced by** | `data/scripts/extract_mines_base.py` (stage D0; `run_data.bat setup`) |
 | **Rows** | 74 — one per seeded mine |
 | **Checksum** | `9ac697e189e00847d267be3401801b0cac48b6a7293ad2261bbd06c7cae3de51` (SHA-256) |
@@ -110,10 +110,10 @@ no real counterpart (`is_demo_mine = true`).
 
 | File | SHA-256 |
 |---|---|
-| `backend/data/seed/mines.json` | `951ce401c70a25fbcfe5c976514241997846f9f5cfeb2fb115738b9beb3d113e` |
-| `backend/data/seed/users.json` | `3a74a2328805ae26667f6c24ebe4895da0c11136aa5d5a80a49ea8ff3e309723` |
-| `backend/data/seed/violations.json` | `ce6f2c9775025c2446deead7bd6d9d6896230bae8bd44adc93335e279feaabe4` |
-| `backend/data/seed/sensor_readings.csv` | `49f58cfe9e3ab5e3a5dd146e1614da53c561bb619b5b8eecab6e53da6b1df2c0` |
+| `data/reference/prototype_seed/mines.json` | `951ce401c70a25fbcfe5c976514241997846f9f5cfeb2fb115738b9beb3d113e` |
+| `data/reference/prototype_seed/users.json` | `3a74a2328805ae26667f6c24ebe4895da0c11136aa5d5a80a49ea8ff3e309723` |
+| `data/reference/prototype_seed/violations.json` | `ce6f2c9775025c2446deead7bd6d9d6896230bae8bd44adc93335e279feaabe4` |
+| `data/reference/prototype_seed/sensor_readings.csv` | `49f58cfe9e3ab5e3a5dd146e1614da53c561bb619b5b8eecab6e53da6b1df2c0` |
 
 **Columns**
 
@@ -131,7 +131,7 @@ no real counterpart (`is_demo_mine = true`).
 **How it was checked.** The extraction refuses to write unless its result matches the baseline
 in `docs/demo-script.md`: 74 mines, average 83.2, 6 High / 21 Medium / 47 Low, and the named mines
 at 100 / 80 / 70 / 60 / 45. It was also compared field by field against the backend's database
-(`backend/smartmine.db`, opened read-only, pre-flight clean): all 74 mines match on every column,
+(the prototype's `backend/smartmine.db`, opened read-only, pre-flight clean; the prototype was removed in Phase 8): all 74 mines match on every column,
 the head login, the open-violation count, the score and the band. Two runs produce byte-identical
 files.
 

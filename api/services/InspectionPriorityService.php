@@ -11,7 +11,7 @@ use Yii;
 use yii\db\Query;
 
 /**
- * Auto-ranked inspection queue, ported from backend/app/services/risk/prioritisation.py and
+ * Auto-ranked inspection queue, ported from the FastAPI prototype's app/services/risk/prioritisation.py and
  * trend.py with the same arithmetic:
  *
  *   urgency = (100 - score) + max(0, recent events - previous events) x WEIGHT_TREND

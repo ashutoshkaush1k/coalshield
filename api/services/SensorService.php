@@ -16,7 +16,7 @@ use yii\db\Query;
 
 /**
  * Sensor readings: ingest, fleet standing, breach buckets and trend series. Ported from
- * backend/app/services/iot/*, with the prototype's 50 / 10 / 45 thresholds replaced by the legal
+ * the prototype's app/services/iot/*, with the prototype's 50 / 10 / 45 thresholds replaced by the legal
  * limits in data/schema/rules.yaml (HANDOFF item 6):
  *   ch4 > 1.25 %, ch4_return_air > 0.75 % (SAF-11), wet-bulb temperature > 33.5 degC (HLT-05):
  *   instantaneous; dust > 2.0 mg/m3 as an 8-hour rolling mean (HLT-04);

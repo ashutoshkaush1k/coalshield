@@ -1,5 +1,5 @@
 """The few settings the PPE code reads, from the environment (the same names and defaults as the
-prototype's backend/.env): YOLO_WEIGHTS_PATH, DETECTION_CONFIDENCE, REQUIRED_PPE."""
+removed FastAPI prototype): YOLO_WEIGHTS_PATH, DETECTION_CONFIDENCE, REQUIRED_PPE."""
 
 from __future__ import annotations
 
@@ -7,8 +7,9 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-# The weights and sample images were built under backend/ (scripts/build_ppe_model.py) and stay there.
-BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
+# The service's own folder: the weights (ml/weights, gitignored, scripts/build_ppe_model.py), the sample
+# images (samples/) and the annotated frames (storage/annotated, gitignored) live under it.
+SERVICE_DIR = Path(__file__).resolve().parents[1]
 
 
 @dataclass(frozen=True)

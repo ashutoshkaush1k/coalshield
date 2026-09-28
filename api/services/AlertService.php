@@ -15,7 +15,7 @@ use yii\web\UploadedFile;
 use Yii;
 
 /**
- * Alerts, ported from backend/app/services/alerts/{engine,directives}.py. Every alert is
+ * Alerts, ported from the FastAPI prototype's app/services/alerts/{engine,directives}.py. Every alert is
  * {code, params}; the frontend composes the sentence (brief rule 7).
  *
  * Directives (INSPECTION_DIRECTIVE) are a government user telling a mine to act. The mine closes

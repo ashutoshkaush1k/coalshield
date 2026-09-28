@@ -51,6 +51,13 @@ opcache.validate_timestamps=1
 opcache.revalidate_freq=2
 realpath_cache_size=4096K
 realpath_cache_ttl=600
+; Phase 8 security pass (docs\SECURITY.md): no PHP version in headers, errors to the log only,
+; uploads capped just above the API's own limit (FILE_MAX_BYTES, 10 MB).
+expose_php=Off
+display_errors=Off
+log_errors=On
+upload_max_filesize=12M
+post_max_size=14M
 "@
     Set-Content -Path (Join-Path $Dir "php.ini") -Value $ini -Encoding ascii
 

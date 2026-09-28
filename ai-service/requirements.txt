@@ -1,6 +1,7 @@
 # The ai-service: PPE vision (vision/), the anomaly detectors (detectors/) and the predictive
-# model (risk/). It runs in backend/.venv, which has all of these: torch alone is over 1 GB, so a
-# second environment would only duplicate it. Serving the model needs nothing beyond the standard
+# model (risk/). Its environment is ai-service/.venv (docs/SETUP_WINDOWS.md):
+#   py -3 -m venv ai-service\.venv
+#   ai-service\.venv\Scripts\python -m pip install -r ai-service\requirements.txt Serving the model needs nothing beyond the standard
 # library (risk/model.json); scikit-learn and pandas are for training it (risk/train.py).
 fastapi
 uvicorn[standard]

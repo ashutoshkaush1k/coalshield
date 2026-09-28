@@ -1,6 +1,6 @@
 """Train the predictive model on real US mine-years (Phase 7).
 
-    backend\\.venv\\Scripts\\python ai-service\\risk\\train.py
+    ai-service\\.venv\\Scripts\\python ai-service\\risk\\train.py
 
 Data: data/reference/msha_rates.csv - MSHA's public mine-year records (2017-2025): workers,
 inspections, violations by category (mapped to the Indian categories), accidents. Question: from
