@@ -263,6 +263,29 @@ continuing.**
     To show the fallback, close the `SIH-AI` window and run `api\yii.bat jobs/anomaly`: the same
     findings, labelled "built-in check".
 
+19. **Field app, offline to dashboard (2 minutes, Phase 7B).** Before the room: `run_field.bat`
+    running; the phone set up once (`docs/FIELD_APP_SETUP.md`: CA installed, or USB forwarding),
+    the app installed from `/field`, **signed in once as `inspector.07@dgms.example`**, Location and
+    Camera allowed. On the laptop, the government dashboard open on **Talabira II & III** (the mine of
+    inspector 07's scheduled inspection) next to the phone. Say the open-violations count out loud.
+
+    | Time | Phone | Say |
+    |---|---|---|
+    | 0:00 | Turn on **aeroplane mode**. Open the app from its icon: it opens, marked **Offline**. | "No signal, as underground. The app, the checklist and this inspector's assignments are on the phone." |
+    | 0:15 | Tap **Talabira II & III** (scheduled). Open **Roof and strata**, tap **Roof and sides...** | "Every item is tied to a category and, where one applies, the obligation it checks - SAF-08 here, with its regulation." |
+    | 0:30 | **High**, take a photo, see **Located (within ... m)**, keep **Record as a violation**, tick **Ask the mine for a corrective action**, type one line, **Save finding**. | "Photo compressed on the phone; GPS with its accuracy; the phone's own time. We are hundreds of km from Talabira, so it warns this will be **flagged** - saved, not refused: the geo-check." |
+    | 0:55 | Second finding: **PPE > Every worker has helmet...**, **Medium**, photo, **Save**. Back: two findings **waiting**. | "Two findings queued. Nothing has left the phone." |
+    | 1:10 | Turn aeroplane mode **off**. Tap **Sync now**. "Sent: 5 new". | "Visit, two findings, two photos. Each carries an id made on the phone." |
+    | 1:25 | Point at the laptop: within 10 s the open-violations count rises by 2 with no reload. Open **Violations**, then the new one: **Field capture**, phone time and receipt time, GPS and distance, the photo. | "Through the same rules as any violation: scope, alert, audit chain. The mine head sees it too." |
+    | 1:45 | Tap **Sync now** again (or: "if the answer had been lost and the phone sent it again..."). | "Every item is idempotent: a resent queue is answered 'already on the server' and nothing doubles." |
+
+    If asked: a capture more than 5 km from the mine's recorded point (as in this room), or from a
+    phone with a wrong clock, is **flagged, not refused**; an expired login keeps the queue and asks for the password
+    before syncing; nothing queued is ever deleted until it has synced. The captures change the live
+    score of Talabira - re-seed afterwards. Fallback if the phone misbehaves: the same sequence runs
+    in a desktop browser at `http://localhost:5180/field` with DevTools set to a phone and **Offline**
+    (the screenshots in `docs/screenshots/phase7b/` show every step).
+
 **After the run - and before the next one - re-seed.** (`run_all.bat` runs the jobs again on the next start.)
 
 ---

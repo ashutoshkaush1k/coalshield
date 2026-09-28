@@ -17,6 +17,7 @@ import MineHeadDashboard from "../pages/minehead/Dashboard";
 import RaiseGrievance from "../pages/public/RaiseGrievance";
 import TrackGrievance from "../pages/public/TrackGrievance";
 import Profile from "../pages/Profile";
+import FieldApp from "../field/FieldApp";
 import { t } from "../i18n/t";
 
 function Home() {
@@ -32,6 +33,8 @@ export function AppRoutes() {
       {/* Public, no login (brief Phase 5) */}
       <Route path="/grievance" element={<RaiseGrievance />} />
       <Route path="/grievance/track" element={<TrackGrievance />} />
+      {/* Phase 7B: the offline field app - its own sign-in, works with no network after the first */}
+      <Route path="/field/*" element={<FieldApp />} />
       <Route path="/" element={<Home />} />
 
       <Route

@@ -57,6 +57,10 @@ return [
     'GET v1/anomalies' => 'v1/risk/anomalies',
     'GET v1/mines/<id:\d+>/risk' => 'v1/risk/mine',
     'GET v1/risk/model' => 'v1/risk/model',
+    // Phase 7B: the offline field app
+    'GET v1/field/bootstrap' => 'v1/field/bootstrap',
+    'POST v1/field/sync' => 'v1/field/sync',
+    'POST v1/field/photos' => 'v1/field/photo',
 
     // Production reporting (Phase 4)
     'GET v1/production' => 'v1/production/index',

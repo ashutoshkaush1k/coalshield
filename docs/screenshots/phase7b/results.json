@@ -1,0 +1,69 @@
+[
+  {
+    "name": "01-signed-in-online",
+    "note": "Signed in with signal; 89 files kept offline by the service worker",
+    "errors": []
+  },
+  {
+    "name": "02-offline-app-opens",
+    "note": "No network and no server: the app opens from the phone, with the assigned inspections",
+    "errors": [
+      "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+    ]
+  },
+  {
+    "name": "03-capture-offline",
+    "note": "Recording a finding offline: checklist item, severity, obligation, compressed photo, GPS with accuracy",
+    "errors": []
+  },
+  {
+    "name": "04-geo-check-far",
+    "note": "A finding far from the mine's recorded location: warned, saved, flagged - not blocked",
+    "errors": []
+  },
+  {
+    "name": "05-offline-queue",
+    "note": "Two findings and their photos queued offline (photos 278 and 278 KB; the camera file was 497 KB)",
+    "errors": []
+  },
+  {
+    "name": "06-sign-in-to-sync",
+    "note": "Online again with an expired login: sign in (same account) before the queue is sent",
+    "errors": []
+  },
+  {
+    "name": "07-synced",
+    "note": "Synced: the visit, two findings and two photos",
+    "errors": []
+  },
+  {
+    "name": "08-gov-new-findings",
+    "note": "Government, no reload: open violations 0 -> 2 within 7 s of the sync; the field captures listed with their flag",
+    "errors": []
+  },
+  {
+    "name": "09-gov-capture-detail",
+    "note": "The capture on the dashboard: phone time and receipt time, location and accuracy, distance, note, photo",
+    "errors": []
+  },
+  {
+    "name": "10-mine-head-sees-it",
+    "note": "Mine head, no reload: open violations 0 -> 2",
+    "errors": []
+  },
+  {
+    "name": "11-resent-no-duplicates",
+    "note": "Resent the same queue: all 5 answered \"already on the server\"; the mine still has 19 violations (17 before the visit)",
+    "errors": []
+  },
+  {
+    "name": "12-capture-hi",
+    "note": "The capture screen in Hindi at 360 px",
+    "errors": []
+  },
+  {
+    "name": "12-capture-te",
+    "note": "The capture screen in Telugu at 360 px",
+    "errors": []
+  }
+]

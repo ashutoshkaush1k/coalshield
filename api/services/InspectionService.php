@@ -77,7 +77,8 @@ final class InspectionService
         return $inspection;
     }
 
-    public static function addObservation(Inspection $inspection, array $body): Observation
+    /** $extra: attributes a field capture adds (Phase 7B: client id, note, device time, location, flags). */
+    public static function addObservation(Inspection $inspection, array $body, array $extra = []): Observation
     {
         if ($inspection->status !== 'visited') {
             throw new ApiException(422, 'INSPECTION_NOT_IN_PROGRESS', ['status' => $inspection->status]);
@@ -90,6 +91,7 @@ final class InspectionService
             'status' => 'open',
             'observed_at' => Format::sql(Format::now()),
         ]);
+        $observation->setAttributes($extra, false);
         $transaction = Yii::$app->db->beginTransaction();
         try {
             if (!$observation->save()) {
@@ -105,7 +107,7 @@ final class InspectionService
     }
 
     /** open -> promoted: creates the violation (source inspection) and links both ways. */
-    public static function promote(Observation $observation, array $body): Violation
+    public static function promote(Observation $observation, array $body, ?string $detectedAt = null): Violation
     {
         if (!StatusTransition::canTransition($observation, 'promoted')) {
             throw new ApiException(422, 'INVALID_TRANSITION', ['from' => $observation->status, 'to' => 'promoted']);
@@ -121,7 +123,7 @@ final class InspectionService
                 'inspection_id' => $observation->inspection_id,
                 'observation_id' => $observation->id,
                 'contractor_id' => $observation->contractor_id,
-                'detected_at' => Format::sql(Format::now()),
+                'detected_at' => $detectedAt ?? Format::sql(Format::now()),
                 'resolved' => false,
             ]);
             if (!$violation->save()) {

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "i18n:check": "node ../scripts/check_locales.mjs && node ../scripts/check_hardcoded_strings.mjs"
+    "i18n:check": "node ../scripts/check_locales.mjs && node ../scripts/check_hardcoded_strings.mjs",
+    "build:field": "vite build --mode field",
+    "field": "vite build --mode field && node ../scripts/field_server.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

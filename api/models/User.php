@@ -139,10 +139,11 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /** A signed token for this user: sub = id, plus role for clients that want it. */
-    public function issueToken(): string
+    /** $issuedAt: tests only (an expired token is one issued more than jwt.ttlHours ago). */
+    public function issueToken(?DateTimeImmutable $issuedAt = null): string
     {
         $jwt = Yii::$app->jwt;
-        $now = new DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $now = $issuedAt ?? new DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $hours = (int) Yii::$app->params['jwt.ttlHours'];
         return $jwt->getBuilder()
             ->issuedBy(Yii::$app->params['jwt.issuer'])

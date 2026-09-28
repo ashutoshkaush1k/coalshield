@@ -26,7 +26,7 @@ use app\components\ScopedActiveRecord;
  */
 class Inspection extends ScopedActiveRecord implements HasStatusTransitions
 {
-    public const TYPES = ['regular', 'spot', 'complaint'];
+    public const TYPES = ['regular', 'spot', 'complaint', 'self'];   // self: a mine head's own, from the field app (Phase 7B)
     /** Fields that may be edited through PATCH (with a reason once locked). */
     public const EDITABLE = ['inspection_type', 'scheduled_for'];
 

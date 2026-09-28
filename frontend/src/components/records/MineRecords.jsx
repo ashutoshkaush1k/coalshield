@@ -13,7 +13,8 @@ import {
   incidentTypeLabel, reportingCheckText, sourceLabel, statusLabel, violationTypeLabel,
 } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
-import { fmtDateTime, fmtPercent } from "../../utils/format";
+import { fmtDateTime, fmtNumber, fmtPercent } from "../../utils/format";
+import { assetUrl } from "../../api/client";
 import { EmptyState } from "../common/EmptyState";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Drawer, Modal } from "../overlay/Overlay";
@@ -68,7 +69,8 @@ export function MineRecords({ bundle, onChanged }) {
             <tbody>
               {violations.map((v) => (
                 <tr key={v.id} className="clickable" onClick={() => setSelected({ kind: "violation", id: v.id })}>
-                  <td><strong>{violationTypeLabel(v.violation_type)}</strong><div className="faint small">{sourceLabel(v.source)}</div></td>
+                  <td><strong>{violationTypeLabel(v.violation_type)}</strong><div className="faint small">{sourceLabel(v.source)}</div>
+                    {v.field && <FieldTags field={v.field} />}</td>
                   <td>{categoryLabel(v.category)}</td>
                   <td><span className={`tag ${v.resolved ? "tag-resolved" : "tag-open"}`}>{statusLabel(v.resolved ? "resolved" : "open")}</span></td>
                   <td className="mono">{fmtDateTime(v.detected_at)}</td>
@@ -147,6 +149,46 @@ export function MineRecords({ bundle, onChanged }) {
   );
 }
 
+/** Phase 7B: a violation recorded with the field app - tags for the list. */
+function FieldTags({ field, kind = true }) {
+  const t = useT();
+  return (
+    <div className="row wrap-row" style={{ marginTop: 4 }}>
+      {kind && <span className="tag tag-ack">{t("field.captured")}</span>}
+      {field.geo_flag && <span className="tag tag-open">{t("field.geoFlag", { km: fmtNumber(field.distance_m / 1000, 1) })}</span>}
+      {field.clock_flag && <span className="tag tag-open">{t("field.clockFlag", { minutes: fmtNumber(Math.abs(field.clock_skew_s) / 60, 0) })}</span>}
+    </div>
+  );
+}
+
+/** Phase 7B: what the phone recorded - times, place, flags, note, photos. */
+function FieldCaptureDetail({ field }) {
+  const t = useT();
+  return (
+    <div className="stack tight" id="field-capture-detail">
+      <span className="label">{t("field.captured")}</span>
+      <FieldTags field={field} kind={false} />
+      <p className="small">{t("field.capturedDetail", { recorded: fmtDateTime(field.recorded_at), received: fmtDateTime(field.received_at), by: field.recorded_by ?? "-" })}</p>
+      {field.checklist_item && <p className="small">{field.checklist_item} · {t(`field.check.${field.checklist_item}`, { defaultValue: field.checklist_item })}{field.obligation_code ? ` · ${field.obligation_code}` : ""}</p>}
+      <p className="small mono">
+        {field.location
+          ? `${fmtNumber(field.location.lat, 5)}, ${fmtNumber(field.location.lon, 5)}${field.location.accuracy_m != null ? ` ±${fmtNumber(field.location.accuracy_m, 0)} m` : ""}${field.distance_m != null ? ` · ${t("field.fromMine", { km: fmtNumber(field.distance_m / 1000, 1) })}` : ""}`
+          : field.location_status === "unknown_underground" ? t("field.location_unknown_underground") : t("field.noFix")}
+      </p>
+      {field.note && <p className="proof-text">{field.note}</p>}
+      {field.photos.length > 0 && (
+        <div className="field-thumbs">
+          {field.photos.map((p, i) => (
+            <a key={p.id} href={assetUrl(p.url)} target="_blank" rel="noreferrer">
+              <img src={assetUrl(p.url)} alt={t("field.photoLink", { n: i + 1 })} loading="lazy" />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ViolationDetail({ violation, actions, onClose, onChanged }) {
   const t = useT();
   const { user } = useAuth();
@@ -168,6 +210,7 @@ function ViolationDetail({ violation, actions, onClose, onChanged }) {
         </Field>
         {frame && <Field label={t("violation.frame")} mono>{frame}</Field>}
         {violation.inspection_id && <Field label={t("records.inspection")} mono>#{violation.inspection_id}</Field>}
+        {violation.field && <FieldCaptureDetail field={violation.field} />}
         {can(user, "violation.linkContractor")
           ? <LinkContractor violation={violation} onChanged={onChanged} />
           : violation.contractor_id && <Field label={t("contractor.responsible")} mono>#{violation.contractor_id}</Field>}

@@ -151,3 +151,21 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | alerts | `escalation_level` is now raised by `jobs/escalate-alerts` (1 after 24 h open, 2 after 72 h) |
 | compliance score | **unchanged**; the demo scores (100/80/70/60/45, fleet 83.2) and `DemoScoreCest` are as before |
 | RBAC | `risk.view` for every role (scoped as usual; a mine head's index leaves out the sensitive grievances it cannot see) |
+
+## Phase 7B: the offline field app
+
+| New | Notes |
+|---|---|
+| `GET /v1/field/bootstrap` | what the phone keeps offline: `{server_now, user, settings, categories: [{key, types}], checklist: {version, items: [{code, category, obligations}]}, obligations: [{code, title, instrument, clause}], mines: [{id, code, name, district, state, lat, lon, assigned}], inspections: [{id, mine_id, inspection_type, status, scheduled_for}]}` - the mines in scope (an inspector's assigned ones first), open inspections assigned to this inspector (none for a mine head) |
+| `POST /v1/field/sync` | `{device_now, items: [...]}` (1-200 items, in order). `visit` `{client_id, mine_id, inspection_id?, recorded_at}`: puts the inspection in progress (the inspector's scheduled one, or a new one: inspector `spot`, mine head `self`). `capture` `{client_id, visit_client_id, category, severity, checklist_item?, obligation_code?, note?, recorded_at, location_status: gps\|unknown_underground\|denied\|unavailable, location?: {lat, lon, accuracy_m}, violation_type?, corrective_action?: {description, due_days}}`: an observation, and with a violation type the violation (with its alert) and optionally a corrective action. Answers 200 `{server_now, clock_skew_s, results: [{client_id, kind, status: created\|replayed\|failed, result?, error?: {code, params?, fields?, http_status}}]}` |
+| `POST /v1/field/photos` | multipart `{client_id, capture_client_id, file}` (JPEG, PNG or WebP, at most 5 MB, at most 4 per capture): 201 `created`, 200 `replayed`; 409 `CAPTURE_NOT_SYNCED`, 422 `TOO_MANY_PHOTOS` |
+| error codes | `VISIT_NOT_SYNCED` (409), `CAPTURE_NOT_SYNCED` (409), `CLIENT_ID_CONFLICT` (409, the id belongs to another account or kind), `INSPECTION_NOT_ASSIGNED` (422), `TOO_MANY_PHOTOS` (422) |
+| RBAC | `field.capture`: inspector, mine head |
+
+| Changed | Notes |
+|---|---|
+| idempotency | every visit, capture and photo carries the phone's UUID; the first sync stores its result (`field_sync`), a retry returns it with `status: replayed` and changes nothing. `observation.client_uuid` and `inspection.client_uuid` are unique as well |
+| violations and observations | add `field` (null unless made with the field app): `{client_id, checklist_item, obligation_code, note, recorded_at, received_at, location: {lat, lon, accuracy_m}\|null, location_status, distance_m, geo_flag, clock_skew_s, clock_flag, recorded_by, photos: [{id, url}]}` (signed photo links) |
+| flags | `geo_flag`: more than `product.field_capture.geo_radius_m` (5 km) from the mine's recorded point; `clock_flag`: the phone's clock off by more than `clock_skew_s` (300 s) at sync, and then the observation's time is the receipt time. Flagged captures are stored like any other |
+| inspection types | adds `self` (a mine head's inspection from the field app) |
+| migration | `m261006_000001_field_capture` (reversible): observation capture columns, `inspection.client_uuid`, `field_sync` |

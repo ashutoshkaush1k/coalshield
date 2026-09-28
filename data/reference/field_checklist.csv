@@ -1,0 +1,24 @@
+item_code,category,obligation_codes,prompt
+RS-01,roof_strata,SAF-08,Roof and sides of the working place examined and supported
+RS-02,roof_strata,SAF-06,Benches and highwall stable; plans show the current workings
+VG-01,ventilation_gas,SAF-11;SAF-12,Inflammable gas tested where people work and where electricity is used
+VG-02,ventilation_gas,SAF-09,Air reaches the working face; depillaring district tested for carbon monoxide
+VG-03,ventilation_gas,,Coal dust not accumulated on roadways and belts
+EL-01,electrical,SAF-12,Cables and apparatus undamaged and earthed
+EL-02,electrical,,Only approved electrical apparatus in use
+TH-01,transport_haulage,SAF-07,Winding ropes examined and recorded
+TH-02,transport_haulage,,Haul roads safe; conveyor guards in place
+EX-01,explosives,,Explosives stored and carried as required
+EX-02,explosives,,Shotfiring procedure followed
+PP-01,ppe,SAF-13,Every worker has helmet and safety footwear
+PP-02,ppe,,Vests and dust masks worn where required
+FI-01,fire,SAF-10,Fire-fighting equipment examined this month
+FI-02,fire,SAF-03,Escape routes clear; self-rescuers available
+EN-01,environment,HLT-03;HLT-04,Respirable dust sampled and within the limit
+EN-02,environment,HLT-05;ENV-07,Heat and noise controlled
+WE-01,welfare,HLT-01,Workers' medical examinations up to date
+WE-02,welfare,,"Drinking water, first aid and sanitation provided"
+DO-01,documentation,LAB-01;HLT-02,Registers kept and available
+DO-02,documentation,SAF-06,Mine plans and sections up to date
+MA-01,machinery,,Machine guards in place
+MA-02,machinery,,Machinery maintained and operated safely

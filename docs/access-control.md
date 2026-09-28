@@ -47,6 +47,10 @@ re-mapping an account takes effect immediately.
    The same rule reaches the Governance Risk Index (Phase 7): a mine head's `grievances_past_sla`
    leaves out the sensitive grievances, so its index can be lower than the regulator's for the
    same mine (`RiskCest`).
+   The field app (Phase 7B, `field.capture`: inspector and mine head) syncs through the same scope:
+   a visit at another mine fails with 404 in its item result, an inspector cannot use another
+   inspector's inspection (`INSPECTION_NOT_ASSIGNED`), and a phone id belongs to the account that
+   first used it (`CLIENT_ID_CONFLICT`) (`FieldCest`).
 
 ## The 404 rule (owner decision, 2026-09-27)
 

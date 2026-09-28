@@ -62,3 +62,6 @@ data/reference/env_daily.csv
 # Simulator API key (issued by `yii api-key/issue`) and its replay cache
 scripts/.simulator.key
 scripts/.cache/
+
+# Phase 7B: local HTTPS certificates for the field server (the CA key must never leave this PC)
+certs/

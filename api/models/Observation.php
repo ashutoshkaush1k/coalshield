@@ -8,6 +8,7 @@ use app\components\Format;
 use app\components\HasStatusTransitions;
 use app\components\Rules;
 use app\components\ScopedActiveRecord;
+use app\services\FieldCapture;
 
 /**
  * A candidate finding from an inspection (or, from Phase 5, a safety grievance);
@@ -64,6 +65,8 @@ class Observation extends ScopedActiveRecord implements HasStatusTransitions
             'id', 'inspection_id', 'grievance_id', 'mine_id', 'category', 'severity', 'status',
             'violation_id', 'contractor_id',
             'observed_at' => fn() => Format::utc($this->observed_at),
+            // Phase 7B: a field-app capture (else null)
+            'field' => fn() => FieldCapture::forObservation($this->id === null ? null : (int) $this->id),
         ];
     }
 

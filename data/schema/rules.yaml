@@ -163,3 +163,12 @@ product:
     after_hours: [24, 72]                         # level 1 (area / corporate) after 24 h, level 2 (government) after 72 h
   production_entry_reminder:                      # Phase 7 jobs/reminders: yesterday's shifts not reported (or still draft)
     shifts: [A, B, C]
+  field_capture:                                  # Phase 7B: the offline field app. Product settings, not law.
+    geo_radius_m: 5000                            # a capture farther than this from the mine's recorded point is flagged
+                                                  # (not refused): the points are single coordinates for leases several km wide
+    clock_skew_s: 300                             # the phone's clock differs from the server's by more than this at sync: flagged
+    photos_per_capture: 4
+    photo_max_bytes: 5000000                      # after compression on the phone (longest side 1600 px, JPEG)
+    photo_max_px: 1600
+    photo_quality: 0.72
+    unscheduled_type: spot                        # an inspector's visit with no scheduled inspection; a mine head's is `self`

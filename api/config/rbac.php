@@ -61,6 +61,8 @@ $permissions = [
     'obligation.summary' => 'Statutory compliance across the mines in scope',
     // Phase 7
     'risk.view' => 'The Governance Risk Index, the predicted risk and the anomaly findings of the mines in scope',
+    // Phase 7B
+    'field.capture' => 'Use the offline field app: record visits and captures at mines in scope and sync them',
 ];
 
 $read = ['user.viewOwn', 'user.updateOwnLanguage', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
@@ -79,8 +81,8 @@ return [
         'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'contractor.summary', ...$productionOversight, 'detailRequest.create', 'grievance.stats', 'obligation.summary']),
         'mine_head' => array_merge($read, ['correctiveAction.create', 'correctiveAction.resolve', 'alert.resolve',
             'incident.create', 'incident.linkViolation', 'vision.analyze', 'contractor.manage', 'violation.linkContractor',
-            'production.manage', 'production.viewDetail', 'detailRequest.respond', 'grievance.manage', 'obligation.submit']),
+            'production.manage', 'production.viewDetail', 'detailRequest.respond', 'grievance.manage', 'obligation.submit', 'field.capture']),
         // Scoped like government for reading; carries out inspections.
-        'inspector' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage', 'contractor.summary', ...$productionOversight, 'grievance.stats', 'obligation.review', 'obligation.summary']),
+        'inspector' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage', 'contractor.summary', ...$productionOversight, 'grievance.stats', 'obligation.review', 'obligation.summary', 'field.capture']),
     ],
 ];

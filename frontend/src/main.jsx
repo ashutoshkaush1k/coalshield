@@ -11,3 +11,9 @@ createRoot(document.getElementById("root")).render(
     <App />
   </React.StrictMode>,
 );
+
+// Phase 7B: the service worker (built by vite.config.js) keeps the app shell, translations and
+// fonts on the device, so the field app opens with no network. Development builds have none.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+}

@@ -1,6 +1,6 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b|phase6|phase7] [outDir] [--strict] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
+//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b|phase6|phase7|phase7b] [outDir] [--strict] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
 //   --side-tabs  also keep a government overview and a mine-head dashboard polling in two more tabs
 //
 // phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
@@ -23,6 +23,11 @@
 //         with its factors and the US-data statement, the detectors' findings with their engine,
 //         the priority queue ordered by the index, ANOMALY_DETECTED and escalated alerts, the mine
 //         head's view, and the panel in Hindi. Needs the ai-service running (run_all.bat).
+// phase7b: the field app on a 360 px phone - sign in, go truly offline (its own field server is
+//         stopped and the network emulated off), record two findings with photos and GPS (one far
+//         from the mine), lose the login, come back online, sign in and sync, watch the government
+//         and mine-head dashboards pick the findings up within one polling cycle, then resend the
+//         same queue (as after a lost answer) and confirm nothing is duplicated.
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -976,6 +981,244 @@ async function phase6(page) {
 }
 
 /** Two more tabs, a government overview and a mine-head dashboard, polling on their own. */
+/** Open another tab (desktop size) and sign it in as `email` on `path` of the dashboard. */
+async function dashboardTab(email, path) {
+  const target = await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: "PUT" }).then((r) => r.json());
+  const ws = new WebSocket(target.webSocketDebuggerUrl);
+  await new Promise((r) => ws.addEventListener("open", r, { once: true }));
+  const tab = new Page(ws);
+  await tab.send("Page.enable");
+  await tab.send("Runtime.enable");
+  await tab.send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+  await tab.as(email, path);
+  return { tab, target };
+}
+
+/** The field server (scripts/field_server.mjs) on its own port, so the check can switch it off. */
+function fieldServer(port) {
+  const p = spawn(process.execPath, [join(ROOT, "scripts", "field_server.mjs"), "--no-https"],
+    { env: { ...process.env, FIELD_HTTP_PORT: String(port) }, stdio: "ignore" });
+  return p;
+}
+
+async function waitUrl(url, up = true, timeout = 15000) {
+  for (let waited = 0; waited < timeout; waited += 250) {
+    const ok = await fetch(url).then((r) => r.ok).catch(() => false);
+    if (ok === up) return;
+    await sleep(250);
+  }
+  throw new Error(`${url} did not come ${up ? "up" : "down"}`);
+}
+
+async function phase7b(page) {
+  const FPORT = 5181;
+  const FIELD = `http://localhost:${FPORT}`;
+  const INSPECTOR = "inspector.07@dgms.example";
+  const PHOTO = resolve(ROOT, "backend/data/samples/images/metro_shaft_workers.jpg");
+  const idb = (body) => page.eval(`new Promise((done, fail) => { const r = indexedDB.open("smg-field"); r.onerror = () => fail(r.error);
+    r.onsuccess = async () => { const db = r.result; try { done(await (async (db) => { ${body} })(db)); } catch (e) { fail(e); } finally { db.close(); } }; })`);
+  const req = (x) => `new Promise((ok, no) => { const q = ${x}; q.onsuccess = () => ok(q.result); q.onerror = () => no(q.error); })`;
+  const waitFor = async (selector, timeout = 20000) => {
+    for (let waited = 0; waited < timeout; waited += 300) {
+      if (await page.eval(`!!document.querySelector(${JSON.stringify(selector)})`)) return;
+      await sleep(300);
+    }
+    throw new Error(`waited for ${selector}`);
+  };
+  const clickSel = (selector) => page.eval(`document.querySelector(${JSON.stringify(selector)}).click()`);
+  const setOffline = (offline) => page.send("Network.emulateNetworkConditions", { offline, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
+  const api = async (email, path) => {
+    const token = await login(email);
+    return fetch(`${API}${path}`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json());
+  };
+
+  // A phone: 360 px wide, touch, Android, GPS allowed.
+  await page.send("Emulation.setDeviceMetricsOverride", { width: 360, height: 780, deviceScaleFactor: 2, mobile: true });
+  await page.send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36" });
+  await page.send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
+  await page.send("Network.enable");
+  await page.send("Browser.grantPermissions", { origin: FIELD, permissions: ["geolocation"] });
+
+  let server = fieldServer(FPORT);
+  await waitUrl(`${FIELD}/field`);
+  try {
+    console.log("Online: sign in once, the service worker keeps the app");
+    await page.goto(`${FIELD}/field`, 3000);
+    await waitFor("#field-email");
+    await page.type("#field-email", INSPECTOR);
+    await page.type("#field-password", "demo123");   // demo-only account
+    await page.eval(`document.getElementById("field-sign-in").requestSubmit()`);
+    await waitFor("#field-sync");
+    const sw = await page.eval(`navigator.serviceWorker.ready.then(() => new Promise((r) => setTimeout(r, 1500))).then(async () => ({ caches: (await caches.keys()).length }))`);
+    expect(sw.caches === 1, "the service worker installed its cache");
+    await page.goto(`${FIELD}/field`, 2500);
+    expect(await page.eval("!!navigator.serviceWorker.controller"), "the page is served by the service worker");
+    const cached = await page.eval(`caches.keys().then((k) => caches.open(k[0])).then((c) => c.keys()).then((r) => r.length)`);
+    await page.shot("01-signed-in-online", `Signed in with signal; ${cached} files kept offline by the service worker`);
+
+    const session = await idb(`return await ${req('db.transaction("kv").objectStore("kv").get("session")')};`);
+    const assigned = session.bootstrap.inspections.find((i) => i.status === "scheduled") ?? session.bootstrap.inspections[0];
+    const mine = session.bootstrap.mines.find((m) => m.id === assigned.mine_id);
+    expect(mine?.lat, "the assigned mine and its location are on the phone");
+    const mineCode = mine.code;
+    const head = `head.${mineCode.toLowerCase()}@coalmine.in`;
+    const before = await api("gov@dgms.gov.in", `/violations?mine_id=${mine.id}&per_page=200`);
+
+    console.log("Offline: field server stopped, network off");
+    server.kill();
+    await waitUrl(`${FIELD}/field`, false);
+    await setOffline(true);
+    await page.goto(`${FIELD}/field`, 2500);
+    await waitFor("#field-sync");
+    let text = await page.text();
+    expect(text.includes("Offline"), "the app opens with no network and says it is offline");
+    await page.shot("02-offline-app-opens", "No network and no server: the app opens from the phone, with the assigned inspections");
+
+    await page.eval(`[...document.querySelectorAll("#field-assigned button")].find((b) => b.textContent.includes(${JSON.stringify(mine.name)})).click()`);
+    await waitFor("[data-item='RS-01']");
+
+    // Finding 1: near the mine, high, a violation with a corrective action, one photo.
+    await page.send("Emulation.setGeolocationOverride", { latitude: mine.lat + 0.004, longitude: mine.lon + 0.003, accuracy: 9 });
+    await clickSel("[data-item='RS-01']");
+    await waitFor("#field-capture-form");
+    await clickSel("[data-severity='high']");
+    await page.setFile("#field-photo-input", PHOTO);
+    await waitFor(".field-thumbs img");
+    await page.until((t) => t.includes("Located"));
+    await page.type("#field-note", "Two props missing at the face; roof unsupported for about 2 m.");
+    await clickSel("#field-with-action");
+    await sleep(200);
+    await page.type("#field-action", "Set props to the support plan before work resumes.");
+    await page.type("#field-due", "3");
+    await page.shot("03-capture-offline", "Recording a finding offline: checklist item, severity, obligation, compressed photo, GPS with accuracy");
+    await clickSel("#field-save");
+    await waitFor("#field-captures");
+
+    // The login is lost while offline (expired): capturing goes on, sync will ask to sign in.
+    await idb(`const tx = db.transaction("kv", "readwrite"); const s = await ${req('tx.objectStore("kv").get("session")')};
+      s.token = null; await ${req('tx.objectStore("kv").put(s, "session")')}; return true;`);
+    await page.goto(`${FIELD}/field`, 2000);
+    await waitFor("#field-sync");
+    text = await page.text();
+    expect(text.includes("Sign-in expired"), "an expired login is shown, and recording goes on");
+    await page.eval(`document.querySelector("#field-visits a").click()`);
+    await waitFor("[data-item='PP-01']");
+
+    // Finding 2: 200 km from the mine - flagged on the phone and by the server, not refused.
+    await page.send("Emulation.setGeolocationOverride", { latitude: mine.lat + 1.8, longitude: mine.lon, accuracy: 25 });
+    await clickSel("[data-item='PP-01']");
+    await waitFor("#field-capture-form");
+    await page.setFile("#field-photo-input", PHOTO);
+    await waitFor(".field-thumbs img");
+    await waitFor("#field-geo-warning");
+    await page.shot("04-geo-check-far", "A finding far from the mine's recorded location: warned, saved, flagged - not blocked");
+    await clickSel("#field-save");
+    await page.until((t) => (t.match(/waiting/g) ?? []).length >= 3);
+    const photos = await idb(`return (await ${req('db.transaction("photos").objectStore("photos").getAll()')}).map((p) => p.bytes);`);
+    const original = (await import("node:fs")).statSync(PHOTO).size;
+    expect(photos.length === 2 && photos.every((b) => b > 0), "two photos queued");
+    await page.shot("05-offline-queue", `Two findings and their photos queued offline (photos ${photos.map((b) => Math.round(b / 1024)).join(" and ")} KB; the camera file was ${Math.round(original / 1024)} KB)`);
+
+    console.log("Back online: sign in again, then sync");
+    const gov = await dashboardTab("gov@dgms.gov.in", `/gov/mines/${mine.id}`);
+    const headTab = await dashboardTab(head, "/mine");
+    await fetch(`http://127.0.0.1:${PORT}/json/activate/${page.targetId}`, { method: "PUT" }).catch(() => null);
+    const openViolations = async (tab) => Number((await tab.eval(`[...document.querySelectorAll(".tally-set > div")].find((d) => /Open violations/.test(d.textContent))?.querySelector(".tally-v")?.textContent ?? "-1"`)).replace(/\D/g, ""));
+    const govBefore = await openViolations(gov.tab);
+    const headBefore = await openViolations(headTab.tab);
+
+    server = fieldServer(FPORT);
+    await waitUrl(`${FIELD}/field`);
+    await setOffline(false);
+    await page.goto(`${FIELD}/field`, 2500);
+    await waitFor("#field-sync-button");
+    await clickSel("#field-sync-button");
+    await waitFor("#field-password");
+    text = await page.text();
+    expect(text.includes("expired"), "sync asks to sign in first; the queue is untouched");
+    await page.shot("06-sign-in-to-sync", "Online again with an expired login: sign in (same account) before the queue is sent");
+    await page.type("#field-password", "demo123");
+    const syncedAt = Date.now();
+    await page.eval(`document.getElementById("field-sign-in").requestSubmit()`);
+    text = await page.until((t) => /Sent: \d+ new/.test(t), 30000);
+    expect(/Sent: 5 new, 0 already on the server, 0 failed/.test(text), `visit, two findings and two photos sent (${text.match(/Sent:[^.]*/)?.[0]})`);
+    await page.shot("07-synced", "Synced: the visit, two findings and two photos");
+
+    // The dashboards poll every 10 s: both pick the findings up within one cycle, no reload.
+    let govAfter = govBefore, headAfter = headBefore, seconds = 0;
+    for (; seconds < 15 && (govAfter !== govBefore + 2 || headAfter !== headBefore + 2); seconds++) {
+      await sleep(1000);
+      govAfter = await openViolations(gov.tab);
+      headAfter = await openViolations(headTab.tab);
+    }
+    const elapsed = Math.round((Date.now() - syncedAt) / 1000);
+    expect(govAfter === govBefore + 2 && headAfter === headBefore + 2,
+      `government ${govBefore} -> ${govAfter}, mine head ${headBefore} -> ${headAfter} open violations`);
+    await gov.tab.click("Violations (");
+    await gov.tab.shot("08-gov-new-findings", `Government, no reload: open violations ${govBefore} -> ${govAfter} within ${elapsed} s of the sync; the field captures listed with their flag`);
+    await gov.tab.eval(`[...document.querySelectorAll("tr.clickable")].find((r) => r.textContent.includes("Field capture")).click()`);
+    await sleep(1500);
+    await gov.tab.eval(`document.getElementById("field-capture-detail")?.scrollIntoView({ block: "start" })`);
+    await sleep(800);
+    await gov.tab.shot("09-gov-capture-detail", "The capture on the dashboard: phone time and receipt time, location and accuracy, distance, note, photo");
+    await headTab.tab.shot("10-mine-head-sees-it", `Mine head, no reload: open violations ${headBefore} -> ${headAfter}`);
+
+    console.log("The same sync again (as if every answer had been lost): nothing is duplicated");
+    const after = await api("gov@dgms.gov.in", `/violations?mine_id=${mine.id}&per_page=200`);
+    await idb(`for (const name of ["visits", "captures", "photos"]) { const tx = db.transaction(name, "readwrite"); const st = tx.objectStore(name);
+      for (const item of await ${req("st.getAll()")}) { item.status = "pending"; item.result = null; await ${req("st.put(item)")}; } } return true;`);
+    await page.goto(`${FIELD}/field`, 2500);
+    await waitFor("#field-sync-button");
+    await clickSel("#field-sync-button");
+    text = await page.until((t) => /Sent: \d+ new/.test(t), 30000);
+    expect(/Sent: 0 new, 5 already on the server, 0 failed/.test(text), `resent queue answered from the first sync (${text.match(/Sent:[^.]*/)?.[0]})`);
+    const again = await api("gov@dgms.gov.in", `/violations?mine_id=${mine.id}&per_page=200`);
+    expect(after.length === before.length + 2 && again.length === after.length, `violations ${before.length} -> ${after.length} -> ${again.length}`);
+    const inspection = await api("gov@dgms.gov.in", `/inspections/${assigned.id}?expand=observations`);
+    await page.shot("11-resent-no-duplicates", `Resent the same queue: all 5 answered "already on the server"; the mine still has ${again.length} violations (${before.length} before the visit)`);
+    writeFileSync(join(OUT, "sync.json"), JSON.stringify({ mine: mineCode, inspection: assigned.id, violations: { before: before.length, after: after.length, afterResend: again.length },
+      inspection_status: inspection.status, dashboards: { government: [govBefore, govAfter], mine_head: [headBefore, headAfter], seconds_after_sync: elapsed } }, null, 2));
+    gov.tab.ws.close();
+    headTab.tab.ws.close();
+
+    // Six languages at 360 px: the home, visit and capture screens probed for clipped or spilling text.
+    console.log("Languages at 360 px");
+    const findings = {};
+    for (const code of ["en", "hi", "bn", "or", "te", "mr"]) {
+      await page.goto(`${FIELD}/field`, 2500);
+      await waitFor("#field-lang-home");
+      await page.select("#field-lang-home", code);
+      await sleep(600);
+      const probe = async (name) => {
+        await page.eval("document.fonts.ready.then(() => true)");
+        await sleep(400);
+        findings[`${code}-${name}`] = { lang: code, issues: await page.eval(OVERFLOW_PROBE) };
+      };
+      await probe("home");
+      await page.eval(`document.querySelector("#field-visits a").click()`);
+      await waitFor("[data-item='RS-01']");
+      await page.eval(`document.querySelectorAll(".field-cat").forEach((d) => { d.open = true; })`);
+      await probe("visit");
+      await clickSel("[data-item='VG-02']");
+      await waitFor("#field-capture-form");
+      await probe("capture");
+      if (code === "hi" || code === "te") await page.shot(`12-capture-${code}`, `The capture screen in ${code === "hi" ? "Hindi" : "Telugu"} at 360 px`);
+      await page.goto(`${FIELD}/field/queue`, 2000);
+      await waitFor("#field-queue");
+      await probe("queue");
+    }
+    await page.select("#field-lang-home", "en").catch(() => null);
+    writeFileSync(join(OUT, "overflow.json"), JSON.stringify(findings, null, 2));
+    const total = Object.values(findings).reduce((n, f) => n + f.issues.length, 0);
+    console.log(`  overflow findings: ${total} across ${Object.keys(findings).length} screens (overflow.json)`);
+    for (const [name, f] of Object.entries(findings)) for (const i of f.issues) console.log(`    ${name}: ${i.kind} ${i.px}px ${i.where} "${i.text}"`);
+    if (process.argv.includes("--strict")) expect(total === 0, "no clipped or spilling text in any language at 360 px");
+  } finally {
+    server.kill();
+    await setOffline(false).catch(() => null);
+  }
+}
+
 /** `yii <args>` with extra environment (e.g. an unreachable ai-service); resolves with its output. */
 function yii(args, env = {}) {
   const php = process.env.PHP ?? "C:/xampp/php/php.exe";
@@ -1131,7 +1374,8 @@ async function main() {
     if (side.length) await fetch(`http://127.0.0.1:${PORT}/json/activate/${target.id}`, { method: "PUT" }).catch(() => null);
 
     try {
-      await ({ phase2, phase3, phase4, phase5, phase5b, phase6, phase7 }[PHASE] ?? phase2)(page);
+      page.targetId = target.id;
+      await ({ phase2, phase3, phase4, phase5, phase5b, phase6, phase7, phase7b }[PHASE] ?? phase2)(page);
     } catch (e) {
       // Keep what the page showed when a check failed, for diagnosis.
       const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));

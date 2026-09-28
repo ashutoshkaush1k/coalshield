@@ -282,3 +282,27 @@ medium >= 0.25. `factors` are the features that raise it most: `points` = percen
 compared with a typical mine; `fleet_percentile` = the mine's rank in our fleet on that violation
 rate (`typical` instead, for features not transferred). Stored by `yii jobs/score`; the screens
 never run the model.
+
+## Field sync (Phase 7B)
+
+The field app works offline and sends its queue later: `POST /v1/field/sync` with the items in the
+order they were made, then `POST /v1/field/photos` for the photos of synced captures.
+
+- **Idempotent by the phone's id.** Each item's `client_id` (a UUID made on the phone) is processed
+  once: its result is stored with it, and a retry - a lost answer, a second tap - returns that result
+  (`replayed`) without acting again. An id already used by another account is refused
+  (`CLIENT_ID_CONFLICT`).
+- **One transaction per item.** A failing item (validation, scope, a closed inspection) is reported with
+  its `{code, params, fields}` and leaves nothing behind; the other items of the batch go through. A
+  capture whose visit has not synced fails with `VISIT_NOT_SYNCED` and syncs once the visit has.
+- **The normal rules.** Mines and inspections are read through the caller's scope (another mine: 404
+  `NOT_FOUND` in the item's result); the inspection moves scheduled -> visited through its status
+  transitions; the violation, its `VIOLATION_RECORDED` alert and the corrective action come from the
+  same services as the dashboards'; everything is in the audit chain and the status history.
+- **An expired login** refuses the whole batch with 401 and writes nothing; the phone keeps the queue
+  and sends it after the next sign-in.
+- **Times.** `recorded_at` is the phone's time as reported, `received_at` the server's. `device_now`
+  (the phone's clock at sending) against the server's clock gives `clock_skew_s`; beyond 300 s the
+  capture is flagged and its observation time is the receipt time.
+- **Place.** The distance from the mine's recorded point (PostGIS, geography) is stored; beyond 5 km the
+  capture is flagged, not refused. The mines have points, not boundaries, so a radius is the check.

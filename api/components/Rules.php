@@ -57,6 +57,13 @@ final class Rules
         return self::$categories;
     }
 
+    /** @return array<string, string[]> category key => its violation types (violation_categories.yaml example_types) */
+    public static function violationTypes(): array
+    {
+        $data = Yaml::parseFile(self::path('violation_categories.yaml'));
+        return array_column(array_map(fn($c) => [$c['key'], $c['example_types'] ?? []], $data['categories']), 1, 0);
+    }
+
     /** A value under `legal:` or `product:` (e.g. legal.dangerous_occurrence_notice_hours). */
     public static function value(string $section, string $key): mixed
     {

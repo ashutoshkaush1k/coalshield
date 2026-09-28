@@ -1,0 +1,98 @@
+{
+  "en-home": {
+    "lang": "en",
+    "issues": []
+  },
+  "en-visit": {
+    "lang": "en",
+    "issues": []
+  },
+  "en-capture": {
+    "lang": "en",
+    "issues": []
+  },
+  "en-queue": {
+    "lang": "en",
+    "issues": []
+  },
+  "hi-home": {
+    "lang": "hi",
+    "issues": []
+  },
+  "hi-visit": {
+    "lang": "hi",
+    "issues": []
+  },
+  "hi-capture": {
+    "lang": "hi",
+    "issues": []
+  },
+  "hi-queue": {
+    "lang": "hi",
+    "issues": []
+  },
+  "bn-home": {
+    "lang": "bn",
+    "issues": []
+  },
+  "bn-visit": {
+    "lang": "bn",
+    "issues": []
+  },
+  "bn-capture": {
+    "lang": "bn",
+    "issues": []
+  },
+  "bn-queue": {
+    "lang": "bn",
+    "issues": []
+  },
+  "or-home": {
+    "lang": "or",
+    "issues": []
+  },
+  "or-visit": {
+    "lang": "or",
+    "issues": []
+  },
+  "or-capture": {
+    "lang": "or",
+    "issues": []
+  },
+  "or-queue": {
+    "lang": "or",
+    "issues": []
+  },
+  "te-home": {
+    "lang": "te",
+    "issues": []
+  },
+  "te-visit": {
+    "lang": "te",
+    "issues": []
+  },
+  "te-capture": {
+    "lang": "te",
+    "issues": []
+  },
+  "te-queue": {
+    "lang": "te",
+    "issues": []
+  },
+  "mr-home": {
+    "lang": "mr",
+    "issues": []
+  },
+  "mr-visit": {
+    "lang": "mr",
+    "issues": []
+  },
+  "mr-capture": {
+    "lang": "mr",
+    "issues": []
+  },
+  "mr-queue": {
+    "lang": "mr",
+    "issues": []
+  }
+}

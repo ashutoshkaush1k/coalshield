@@ -46,6 +46,16 @@ class SeedController extends Controller
     /** CSV column => table column, where they differ (HANDOFF conflict C11). */
     private const RENAMED = ['user' => ['password' => 'password_hash'], 'grievance' => ['tracking_code' => 'tracking_code_hash']];
 
+    /**
+     * Columns only the app writes (nullable or defaulted), which the data track does not generate:
+     * the field app's capture details (Phase 7B). Every other table column must be in the CSV.
+     */
+    private const APP_ONLY = [
+        'inspection' => ['client_uuid'],
+        'observation' => ['client_uuid', 'checklist_item', 'checklist_version', 'obligation_code', 'note', 'recorded_at', 'received_at',
+            'location', 'location_accuracy_m', 'location_status', 'distance_m', 'geo_flag', 'clock_skew_s', 'clock_flag', 'recorded_by'],
+    ];
+
     private const CHUNK = 5000;
 
     /** Allow seeding when YII_ENV is prod. */
@@ -83,7 +93,7 @@ class SeedController extends Controller
             // Runtime state of the public grievance endpoints: rate-limit windows and ticket
             // counters (the counter never goes below the highest ticket loaded). Phase 7: what the
             // jobs derived from the data (findings, daily snapshots, predictions); job_run is kept.
-            foreach (['rate_limit', 'grievance_ticket_counter', 'anomaly_flag', 'mine_risk_snapshot', 'mine_risk_prediction'] as $runtime) {
+            foreach (['rate_limit', 'grievance_ticket_counter', 'anomaly_flag', 'mine_risk_snapshot', 'mine_risk_prediction', 'field_sync'] as $runtime) {
                 if ($db->getTableSchema($runtime, true) !== null) {
                     $truncate[] = $runtime;
                 }
@@ -306,7 +316,7 @@ class SeedController extends Controller
 
             $schema = $db->getTableSchema($table, true);
             $dbColumns = $schema->columnNames;
-            $missing = array_diff($dbColumns, $columns);
+            $missing = array_diff($dbColumns, $columns, self::APP_ONLY[$table] ?? []);
             $extra = array_diff($columns, $dbColumns);
             if ($missing || $extra || count($columns) !== count(array_unique($columns))) {
                 throw new \RuntimeException(sprintf('%s: CSV columns do not match the table (missing in CSV: [%s]; not in table: [%s])',

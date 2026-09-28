@@ -4,7 +4,7 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 
 ## Remaining phases, in order
 
-5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service, done) → **7B** → 8 (hardening).
+5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service, done) → **7B** (field app, done) → 8 (hardening).
 The full scope of each is in `PLAN.md` §6.
 
 - **Phase 5B - compliance obligation register and GIS map** (owner addition, 2026-09-27).
@@ -25,7 +25,7 @@ The full scope of each is in `PLAN.md` §6.
       district boundaries.
     - The state filter and click-through to mine detail work as elsewhere.
     - Scoped per role like `/v1/mines`, and approximate locations are marked.
-- **Phase 7B - offline-capable PWA for field inspection** (owner addition, 2026-09-27).
+- **Phase 7B - offline-capable PWA for field inspection** (owner addition, 2026-09-27; done 2026-09-28, see below).
   - Installable PWA with an offline shell and cached reference data.
   - A checklist-driven field inspection: geo-tagged (with accuracy), time-stamped observations
     with camera photos, in an IndexedDB outbox with per-item status.
@@ -35,6 +35,138 @@ The full scope of each is in `PLAN.md` §6.
     existing services, so the audit chain and history stay intact.
   - Device time and out-of-boundary locations are flagged.
   - Tested by an offline → online browser run.
+
+## Phase 7B: Offline field app (done, 2026-09-28)
+
+An inspector or a mine head records an inspection where there is no signal, and syncs later.
+
+### Secure context: HTTPS on the LAN, or USB forwarding
+
+- `run_field.bat` builds the app for phones and starts `scripts/field_server.mjs`. The build
+  (`npm run build:field`, `.env.field`) reaches the API through the same origin.
+- The server uses Node only, no packages. It serves `frontend/dist` and proxies `/v1` to the API,
+  so there is no CORS and no mixed content:
+  - HTTPS on the LAN, `:5443`.
+  - HTTP on `localhost:5180`, for this PC and for USB port forwarding.
+  - The CA certificate for phones at `http://<LAN>:5080/ca.crt` (nothing else).
+- `scripts/make_cert.mjs` makes a local CA and a server certificate, with no admin rights and
+  nothing installed on the PC.
+  - It uses mkcert when it is on the PATH, otherwise Git's OpenSSL.
+  - The server certificate covers `localhost`, the PC's name and its LAN addresses, and is valid
+    for 397 days.
+  - `certs/` is git-ignored. The server warns when the LAN address is no longer covered.
+- Checked with strict verification: Node's TLS client accepts `https://<LAN>:5443` with
+  `certs/ca.crt`.
+- `docs/FIELD_APP_SETUP.md` gives click-by-click steps for Pixel, Samsung and older Android, the USB
+  forwarding fallback (`chrome://inspect`) and troubleshooting.
+- I did not install the CA on this PC or change the firewall.
+
+### Field app (`/field`, inspector and mine head, `field.capture`)
+
+- **Installable PWA.** It has a manifest with icons (192, 512, maskable).
+- **Service worker, no new dependency.** A small build plugin writes `sw.js` with a precache list of
+  89 files (about 3.1 MB): the app shell, scripts, CSS, `.woff2` fonts for every script, and the
+  icons. It serves them cache-first. API calls are never cached by the service worker.
+- **Offline data.** After the first sign-in, `/v1/field/bootstrap` is kept in IndexedDB: the account,
+  the mines in scope (assigned ones first, with their coordinates), open assigned inspections, the
+  versioned checklist, the categories with their violation types, the relevant obligations and the
+  product settings.
+- **Token.** The token is kept encrypted at rest (AES-GCM, with a non-extractable key).
+- **Capture.** A checklist of 23 items across the 11 categories (`data/reference/field_checklist.csv`),
+  each linked to verified obligations where one clearly applies. For each finding:
+  - severity and the obligation;
+  - a note;
+  - up to 4 photos from the camera, compressed on the phone (longest side 1600 px, JPEG 0.72; the
+    497 KB test photo was stored at 278 KB);
+  - GPS with its accuracy, or "underground - no fix";
+  - optionally a violation of a listed type, and a corrective action with a due date.
+- **Geo-check.** A finding more than 5 km from the mine's recorded point is warned on the phone and
+  flagged by the server, not blocked. The phone's clock is compared with the server's at sync:
+  a difference over 5 min is flagged.
+- **Queue.** Visits, captures and photos sit in IndexedDB with their status: waiting, syncing,
+  synced, failed (with the reason), or "already on the server".
+  - Sync sends one ordered batch, then the photos.
+  - Nothing is deleted until it has synced.
+  - An expired login keeps the queue and asks for the same account's password before syncing.
+  - Items of another account on the same phone wait for that account.
+- **Screen sizes.** Built for 360 px. The dashboards show a synced violation as **Field capture**,
+  with flags, device and receipt times, location, distance, note and photos.
+
+### Sync API (`FieldController`, `FieldSyncService`)
+
+- `GET /v1/field/bootstrap`, `POST /v1/field/sync`, `POST /v1/field/photos`
+  (`docs/API_CHANGES.md`, `docs/api-contract.md`).
+- **Idempotent by the phone's UUID.** The first sync stores its result in `field_sync`, and a retry
+  returns it as `replayed`. `observation.client_uuid` and `inspection.client_uuid` are unique too.
+  A concurrent duplicate loses the insert race and returns the winner's result. An id belonging to
+  another account is refused.
+- **One transaction per item.** A failed item leaves nothing behind and does not stop the batch.
+- **Through the existing services.** Scoping (404 for another mine), inspection transitions
+  (scheduled -> visited; `INVALID_TRANSITION` when it was closed meanwhile), and
+  `InspectionService` (observation, promotion to violation with its alert) all apply.
+  `CorrectiveActionService` creates the corrective actions. Audit and status history are kept; the
+  GPS point is written with the insert, so it is in the audit record.
+- Unscheduled visits create a `spot` inspection (inspector) or a new `self` inspection (mine head).
+- Migration `m261006_000001_field_capture` is reversible (down and up tested). The seeder accepts
+  the new app-only columns, which are listed explicitly.
+
+### Tests, performance, browser check
+
+- `run_tests.bat`: locale checks clean (1,415 keys in each of the six languages). ai-service: 19
+  pytest. API: 183 tests, 3,487 assertions, all passing; the vision detection test needs the
+  ai-service running. New: `FieldCest`, with 5 scenarios and 91 assertions:
+  - idempotent sync and photos, including the photo limit and another account's id;
+  - scoping: a mine head's self-inspection, another mine is 404, another inspector's inspection is
+    refused, government and corporate get 403;
+  - geo and clock flags, and a bad item failing alone;
+  - an expired token with a queued capture: 401, nothing written, then one clean sync;
+  - a closed inspection.
+- `node scripts/browser_check.mjs phase7b` runs at 360 px (Android user agent, touch, GPS emulated).
+  Its own field server is stopped and the network is set to offline. 13 screenshots are in
+  `docs/screenshots/phase7b/`, plus `sync.json` and `overflow.json`. The run covers:
+  - sign in, then the app opens with no server and no network;
+  - two findings with photos recorded offline, one 200 km away (flagged);
+  - the login dropped while offline, and recording goes on;
+  - back online, sign in to sync: "5 new";
+  - the government mine page and the mine head dashboard show +2 open violations within about 7 s,
+    with no reload;
+  - the same queue resent: "5 already on the server", and the violations stay at 17 -> 19 -> 19;
+  - home, visit, capture and queue probed in all six languages at 360 px: 0 overflow findings
+    (`--strict`).
+- Performance: every dashboard request under 150 ms, the slowest p95 70 ms; field bootstrap 17 ms
+  (`docs/PERFORMANCE.md`).
+
+### Known issues (Phase 7B)
+
+- **Not tested on a physical phone here.** Offline mode, the camera input, GPS and 360 px were
+  exercised in headless Edge with mobile emulation. The Android certificate steps follow the
+  Android and Samsung settings menus as documented; menu names vary by vendor.
+- **No new scheduled task.** Phones sync when their users tap Sync, and nothing server-side runs on
+  a clock.
+- **Photos upload whole** (at most 5 MB each after compression). There is no chunked or resumable
+  upload: a failed photo is retried from the start and is idempotent by its id.
+- **Checklist items record findings only.** An item checked and found fine is not stored.
+- **Visits are not closed from the phone.** They stay "visited"; closing, with its lock, is done
+  on the dashboard.
+- The token at rest is encrypted with a key the browser will not export. That protects a copied
+  storage folder, not a phone that is unlocked in someone else's hands. Sign-out removes it.
+- `FieldCapture` loads the details of every field capture once per request (two queries). That is
+  fine for thousands of captures; Phase 8 should load them only for the violations on the page.
+- The 113 new strings in hi, bn, or, te and mr are unreviewed drafts, like the rest.
+- The browser check logs one expected `ERR_INTERNET_DISCONNECTED`: the dashboard's session check
+  while offline.
+
+### How to verify (Phase 7B)
+
+```bat
+cd api && run_tests.bat
+run_field.bat
+node scripts\browser_check.mjs phase7b
+node scripts\perf_check.mjs
+```
+
+Re-seed afterwards (`api\yii.bat seed demo`, then `api\yii.bat jobs/all`): captures made during a
+demo or a check change the live scores. The demo scores come back identical after a re-seed.
 
 ## Phase 7: Automation, anomaly detectors and predicted risk (done, 2026-09-28)
 

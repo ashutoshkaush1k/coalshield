@@ -7,6 +7,7 @@ namespace app\models;
 use app\components\Format;
 use app\components\Rules;
 use app\components\ScopedActiveRecord;
+use app\services\FieldCapture;
 
 /**
  * A violation from PPE vision, an inspection or a grievance; data/schema/violation.yaml.
@@ -58,6 +59,8 @@ class Violation extends ScopedActiveRecord
             'detected_at' => fn() => Format::utc($this->detected_at),
             'resolved' => fn() => (bool) $this->resolved,
             'resolved_at' => fn() => Format::utc($this->resolved_at),
+            // Phase 7B: made from a field-app capture - device time, location, flags, photos (else null)
+            'field' => fn() => $this->source === 'inspection' ? FieldCapture::forObservation($this->observation_id === null ? null : (int) $this->observation_id) : null,
         ];
     }
 

@@ -243,6 +243,14 @@ registering to change it).
 On a server the same commands run from cron or a service account instead, e.g.
 `*/15 * * * * cd /srv/api && php yii jobs/sla`.
 
+## 7b. The field app for phones (Phase 7B)
+
+`run_field.bat` builds the app for phones (`npm run build:field`: the API through the same origin) and
+serves it with `scripts\field_server.mjs`: HTTPS on the LAN (port 5443) with a local certificate made
+by `node scripts\make_cert.mjs` (no admin rights; `certs\` is git-ignored), and plain HTTP on
+`localhost:5180` for this PC and for phones over USB port forwarding. Phone setup, click by click:
+`docs/FIELD_APP_SETUP.md`. No scheduled task is needed: the phones sync when their users tap **Sync**.
+
 ## 8. Where the secrets live, and how to regenerate them
 
 Nothing secret is in the repository. The files, all outside git:

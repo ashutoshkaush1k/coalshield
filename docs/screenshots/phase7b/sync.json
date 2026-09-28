@@ -1,0 +1,21 @@
+{
+  "mine": "OD-SAM-23",
+  "inspection": 66,
+  "violations": {
+    "before": 17,
+    "after": 19,
+    "afterResend": 19
+  },
+  "inspection_status": "visited",
+  "dashboards": {
+    "government": [
+      0,
+      2
+    ],
+    "mine_head": [
+      0,
+      2
+    ],
+    "seconds_after_sync": 7
+  }
+}

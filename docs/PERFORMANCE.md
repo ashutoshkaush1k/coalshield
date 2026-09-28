@@ -199,3 +199,22 @@ when a screen needs it; `/v1/risk/model` alone answers in about 8 ms.
 
 Note for anyone repeating this with curl on Windows: use `127.0.0.1`, not `localhost` - resolving
 `localhost` tries IPv6 first and adds about 200 ms to every request outside the server.
+
+## After Phase 7B (field app)
+
+Same method, 2026-09-29, mains power, after the phase 7B browser check: every dashboard request under
+150 ms, the slowest p95 70 ms (government mine detail, 54 median).
+
+| screen | median | p95 (ms) |
+|---|---|---|
+| government overview | 64 | 68 |
+| government mine detail | 54 | 70 |
+| mine head dashboard | 58 | 67 |
+| government priority | 36 | 39 |
+| side by side: overview / mine head | 60 / 55 | 68 / 64 |
+
+Medians are 10-15 ms higher than after Phase 7 on every screen, including those Phase 7B did not
+touch (production 47 -> 60, map 12 -> 14), so the machine's state explains most of it. The one
+change on dashboard requests: a violation list now attaches its field-capture details, loaded once
+per request in two queries (`FieldCapture`). The field app's own requests are not polled:
+`GET /v1/field/bootstrap` takes about 17 ms.
