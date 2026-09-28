@@ -1,0 +1,35 @@
+{
+ "flags": [
+  {
+   "detector": "grievance_cluster",
+   "mine_id": 7,
+   "subject": "sla",
+   "from": "2026-09-01T02:23:59Z",
+   "to": "2026-09-09T16:35:40Z",
+   "score": 8.0,
+   "reasons": [
+    {
+     "code": "GRIEVANCE_SLA_CLUSTER",
+     "params": {
+      "breaches": 8,
+      "window_days": 10,
+      "from": "2026-09-01",
+      "to": "2026-09-09"
+     }
+    }
+   ],
+   "entities": {
+    "grievance_ids": [
+     364,
+     362,
+     365,
+     366,
+     368,
+     363,
+     367,
+     40
+    ]
+   }
+  }
+ ]
+}

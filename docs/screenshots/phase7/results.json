@@ -1,0 +1,52 @@
+[
+  {
+    "name": "01-gov-mine-score-and-index",
+    "note": "Government mine detail: compliance score (unchanged) with the Governance Risk Index beside it",
+    "errors": []
+  },
+  {
+    "name": "02-gov-risk-panel-fallback",
+    "note": "Risk panel: index components, predicted risk with factors and the US-data statement, findings from the PHP fallback",
+    "errors": []
+  },
+  {
+    "name": "03-gov-risk-panel-ai-service",
+    "note": "The same panel after the jobs ran on the ai-service: same findings, engine label changed",
+    "errors": []
+  },
+  {
+    "name": "04-priority-by-index",
+    "note": "Priority queue ordered by the Governance Risk Index (compliance score still shown)",
+    "errors": []
+  },
+  {
+    "name": "05-priority-fleet-findings",
+    "note": "All seven detectors' findings across the fleet, each with its reasons",
+    "errors": []
+  },
+  {
+    "name": "06-anomaly-and-escalated-alerts",
+    "note": "Alerts: a flatlined-sensor finding (ANOMALY_DETECTED) and alerts escalated by jobs/escalate-alerts",
+    "errors": []
+  },
+  {
+    "name": "07-mine-head-risk-panel",
+    "note": "Mine head: the same panel for their own mine, sensitive grievances left out",
+    "errors": []
+  },
+  {
+    "name": "08-risk-panel-hindi",
+    "note": "The risk panel in Hindi",
+    "errors": []
+  },
+  {
+    "name": "side-tab gov@dgms.gov.in",
+    "note": "14 API requests in 70 s",
+    "errors": []
+  },
+  {
+    "name": "side-tab head.od-tlc-05@coalmine.in",
+    "note": "12 API requests in 64 s",
+    "errors": []
+  }
+]

@@ -96,18 +96,13 @@ if errorlevel 1 goto :dbfail
 if errorlevel 1 goto :dbfail
 if not exist "%ROOT%scripts\.simulator.key" "%PHP%" "%ROOT%api\yii" api-key/issue simulator --out="%ROOT%scripts\.simulator.key" >nul
 echo  [ok] Database migrated and seeded
-REM Contractor alerts due today (licence, training, medicals, documents, worker limit) - idempotent.
-"%PHP%" "%ROOT%api\yii" contractor/check >nul
-echo  [ok] Contractor alerts checked
-REM Close past production periods and run the detailed-report deadlines - idempotent.
-"%PHP%" "%ROOT%api\yii" production/check >nul
-echo  [ok] Production periods and detailed-report deadlines checked
-REM Grievance SLA breaches and escalations - idempotent.
-"%PHP%" "%ROOT%api\yii" grievance/check >nul
-echo  [ok] Grievance SLAs checked
-REM Obligation register: new periods, reminders, overdue and escalation - idempotent.
-"%PHP%" "%ROOT%api\yii" obligation/check >nul
-echo  [ok] Obligation register checked
+REM Every scheduled job once (Phase 7): reminders, SLAs, alert escalation, the day's scores and
+REM Governance Risk Index, the anomaly detectors, contractor / obligation / production / grievance
+REM checks. Idempotent, logged in job_run and api\runtime\logs\jobs.log. The ai-service is not up
+REM yet at this point, so the detectors run on their PHP fallback; the scheduled runs use the
+REM service (scripts\register_tasks.ps1 registers them in Task Scheduler).
+"%PHP%" "%ROOT%api\yii" jobs/all >nul
+if errorlevel 1 (echo  [!] A startup job failed - see: api\yii.bat jobs/status) else (echo  [ok] Scheduled jobs run once: api\yii.bat jobs/status)
 
 REM --- port checks -------------------------------------------------------------
 REM netstat prints the state after the address, so the port comes first.

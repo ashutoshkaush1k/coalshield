@@ -1,0 +1,48 @@
+{
+ "flags": [
+  {
+   "detector": "night_shift",
+   "mine_id": 69,
+   "subject": "night",
+   "from": "2026-06-27T23:59:59Z",
+   "to": "2026-09-25T23:59:59Z",
+   "score": 0.87,
+   "reasons": [
+    {
+     "code": "NIGHT_CONCENTRATION",
+     "params": {
+      "night": 20,
+      "total": 23,
+      "share_pct": 87.0,
+      "expected_pct": 33.3,
+      "p": 1.62e-07
+     }
+    }
+   ],
+   "entities": {
+    "violation_ids": [
+     63,
+     235,
+     307,
+     327,
+     640,
+     757,
+     1039,
+     1140,
+     1206,
+     1315,
+     1481,
+     1706,
+     2112,
+     2113,
+     2114,
+     2115,
+     2116,
+     2117,
+     2118,
+     2119
+    ]
+   }
+  }
+ ]
+}

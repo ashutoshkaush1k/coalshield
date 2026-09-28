@@ -373,33 +373,19 @@ final class GrievanceService
      */
     public static function clusters(User $user, array $mineIds): array
     {
-        $rule = Rules::value('product', 'grievance_breach_cluster');
-        $window = (int) $rule['window_days'] * 86400;
-        $min = (int) $rule['min_breaches'];
-        $byMine = [];
+        // One algorithm, twice: detectors\GrievanceCluster here (only the grievances this user may
+        // see), ai-service/detectors/grievance_cluster.py for the scheduled detection.
+        $breaches = [];
         foreach (Grievance::find()->forUser($user)->andWhere(['{{%grievance}}.mine_id' => $mineIds])
             ->andWhere(['>=', '{{%grievance}}.escalation_level', 1])->select(['{{%grievance}}.id', '{{%grievance}}.mine_id', '{{%grievance}}.created_at'])
             ->orderBy(['{{%grievance}}.created_at' => SORT_ASC])->asArray()->all() as $g) {
-            $byMine[(int) $g['mine_id']][] = ['id' => (int) $g['id'], 't' => strtotime($g['created_at'])];
+            $breaches[] = ['id' => (int) $g['id'], 'mine_id' => (int) $g['mine_id'], 't' => strtotime($g['created_at'])];
         }
         $out = [];
-        foreach ($byMine as $mineId => $breaches) {
-            $best = [];
-            foreach ($breaches as $i => $start) {
-                $in = array_values(array_filter($breaches, fn($b) => $b['t'] >= $start['t'] && $b['t'] < $start['t'] + $window));
-                if (count($in) > count($best)) {
-                    $best = $in;
-                }
-            }
-            if (count($best) >= $min) {
-                $out[$mineId] = [
-                    'breaches' => count($best),
-                    'from' => gmdate('Y-m-d', $best[0]['t']),
-                    'to' => gmdate('Y-m-d', end($best)['t']),
-                    'grievance_ids' => array_column($best, 'id'),
-                    'window_days' => (int) $rule['window_days'],
-                ];
-            }
+        foreach (\app\services\detectors\GrievanceCluster::clusters(['settings' => Rules::value('product', 'grievance_breach_cluster'),
+            'breaches' => $breaches]) as $mineId => $c) {
+            unset($c['t0'], $c['t1']);
+            $out[$mineId] = $c;
         }
         return $out;
     }

@@ -132,3 +132,22 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | incident fields | add `reported_late`; `reported_within_48h` stays as recorded data |
 | `GET /v1/incidents?late=1` | late by the obligation's deadline, not 48 h |
 | incident reporting tasks | due at the law's time (`due_basis` law), RPT-03 forthwith + 1 h grace (`due_basis` product) |
+
+## Phase 7: automation, Governance Risk Index, predicted risk
+
+| New | Notes |
+|---|---|
+| `GET /v1/views/priority[?state=]` | the priority tab in one request: `{queue, patterns}` - the inspection queue (as `/v1/inspections/priority`) and the active detector findings in scope (as `/v1/anomalies`); multi-mine roles (`inspection.viewQueue`) |
+| `GET /v1/anomalies?status=active\|cleared\|all&detector=&mine_id=&per_page=` | the detectors' findings in scope: `{id, detector, mine_id, mine_name, mine_code, subject, from, to, score, reasons: [{code, params}], entities, engine, status, first_detected_at, last_seen_at}`; permission `risk.view` |
+| `GET /v1/mines/{id}/risk` | `{mine_id, governance_risk, prediction, patterns}`; `governance_risk` = `{gri, band, raw, multiplier, repeat_categories, components: [{key, count, points, cap, value}]}`; `prediction` = `{probability, band, fleet_percentile, factors: [{feature, value, fleet_percentile, typical, points}], predicted_at, model_version, engine, target, test_auc, baseline_auc}` or null before the first `jobs/score`; 404 out of scope |
+| `GET /v1/risk/model` | the model card: training data, split, test metrics against the baseline, reliability, transfer statement |
+| alert codes | `ANOMALY_DETECTED` (params `detector, subject, reason, reason_params, from, to`; entity `anomaly_flag`), `PRODUCTION_ENTRY_PENDING` (params `date, missing_shifts, draft_shifts`) |
+| ai-service | `GET /anomaly` (detector list and version), `POST /anomaly/{detector}` (payload -> `{flags}`; 404 `UNKNOWN_DETECTOR`, 422 `INVALID_PAYLOAD`), `GET /risk/model`, `POST /risk/predict` (`{mines: [{mine_id, features}]}` -> predictions; 503 `MODEL_MISSING`); the vision code now lives in `ai-service/vision/` |
+
+| Changed | Notes |
+|---|---|
+| `GET /v1/inspections/priority` | candidates add `governance_risk`; the queue is **ordered by the Governance Risk Index** (then urgency, severity, recent events, mine id); the first reason is `PRIORITY_GRI` `{gri, band, component, count, multiplier}`. `urgency` and the compliance score are still returned and unchanged |
+| `GET /v1/views/mine/{id}` | adds `risk` (the `/v1/mines/{id}/risk` body; null without `risk.view`) |
+| alerts | `escalation_level` is now raised by `jobs/escalate-alerts` (1 after 24 h open, 2 after 72 h) |
+| compliance score | **unchanged**; the demo scores (100/80/70/60/45, fleet 83.2) and `DemoScoreCest` are as before |
+| RBAC | `risk.view` for every role (scoped as usual; a mine head's index leaves out the sensitive grievances it cannot see) |

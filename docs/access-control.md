@@ -44,6 +44,9 @@ re-mapping an account takes effect immediately.
    count exclude it too. A complainant's name and contact are serialised only to government and
    inspector (and corporate, for grievances that are not sensitive); a mine head's payloads do not
    even carry the keys.
+   The same rule reaches the Governance Risk Index (Phase 7): a mine head's `grievances_past_sla`
+   leaves out the sensitive grievances, so its index can be lower than the regulator's for the
+   same mine (`RiskCest`).
 
 ## The 404 rule (owner decision, 2026-09-27)
 

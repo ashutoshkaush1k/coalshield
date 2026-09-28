@@ -9,6 +9,7 @@ import { AlertDetailDrawer } from "../../../components/alerts/AlertDetailDrawer"
 import { AlertList } from "../../../components/alerts/AlertList";
 import { ResolveDirectiveForm } from "../../../components/alerts/ResolveDirectiveForm";
 import { MineRecords } from "../../../components/records/MineRecords";
+import { RiskPanel } from "../../../components/risk/RiskPanel";
 import { UploadPanel } from "../../../components/vision/UploadPanel";
 import { useAuth } from "../../../hooks/useAuth";
 import { useT } from "../../../i18n/t";
@@ -29,7 +30,7 @@ export function MineOverviewPanel({ bundle, mineId, onAnalysed, onChanged }) {
       <div className="grid split">
         <section className="panel-block">
           <div className="panel-body">
-            <ComplianceSummary mine={mine} />
+            <ComplianceSummary mine={mine} gri={bundle.risk?.governance_risk} />
             <div className="row wrap" style={{ marginTop: "var(--space-5)" }}>
               <div className="spacer" />
               {can(user, "vision.analyze") && <UploadPanel mineId={mineId} onAnalysed={onAnalysed} />}
@@ -58,6 +59,8 @@ export function MineOverviewPanel({ bundle, mineId, onAnalysed, onChanged }) {
           </div>
         </section>
       </div>
+
+      <RiskPanel risk={bundle.risk} />
 
       <AlertDetailDrawer alert={liveAlert} onClose={() => setSelectedAlert(null)} />
     </div>

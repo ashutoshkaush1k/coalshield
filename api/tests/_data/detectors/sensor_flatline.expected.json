@@ -1,0 +1,30 @@
+{
+ "flags": [
+  {
+   "detector": "sensor_flatline",
+   "mine_id": 6,
+   "subject": "ch4|2026-08-26T00:00:00Z",
+   "from": "2026-08-26T00:00:00Z",
+   "to": "2026-08-29T00:00:00Z",
+   "score": 72.0,
+   "reasons": [
+    {
+     "code": "FLATLINE",
+     "params": {
+      "sensor_type": "ch4",
+      "hours": 72,
+      "value": 0.22,
+      "readings": 288
+     }
+    }
+   ],
+   "entities": {
+    "sensor_type": "ch4",
+    "value_range": [
+     0.22,
+     0.22
+    ]
+   }
+  }
+ ]
+}

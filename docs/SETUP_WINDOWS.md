@@ -180,8 +180,8 @@ run_all.bat --stop
    else.
 3. First run only: migrations, RBAC and `yii seed demo`, and an API key for the simulator
    (`scripts\.simulator.key`). Later runs only apply pending migrations.
-4. Runs `yii contractor/check` and `yii production/check` (idempotent: contractor alerts,
-   closing past production periods, detailed-report deadlines).
+4. Runs every scheduled job once, `yii jobs/all` (about 2 s; see 7a). They are idempotent, so
+   a restart never raises an alert twice.
 5. Starts the API under Apache on 8080 (`scripts\api_server.bat`; a `SIH-API` window with
    `serve.bat` if Apache fails), opens `SIH-AI` (8001, when `backend\.venv` exists; warns if the
    PPE weights are missing), `SIH-Frontend` (5173) and, with `--sim`, `SIH-Simulator`; waits for
@@ -198,6 +198,50 @@ write-ahead log on the next start. The one thing to avoid is deleting `postmaste
 `postgres.exe` is still running.
 
 `scripts\db.bat status | start | stop | wait | psql` also work on their own.
+
+## 7a. Scheduled jobs (Phase 7)
+
+The work that happens by the clock - reminders, deadlines, escalations, the daily scores, the
+anomaly detectors - is a set of console commands, `api\yii.bat jobs/<name>`:
+
+| Job | What it does | Registered schedule |
+|---|---|---|
+| `reminders` | expiring contractor documents, obligations due soon, yesterday's production not submitted (`PRODUCTION_ENTRY_PENDING`) | daily 07:00 |
+| `sla` | grievance response times and detailed-report deadlines | every 15 min |
+| `escalate-alerts` | an open, unacknowledged alert goes to level 1 after 24 h and level 2 after 72 h (`rules.yaml` product.alert_escalation) | every 15 min |
+| `score` | the day's compliance score and Governance Risk Index per mine (history), and the predicted risk | daily 06:30 |
+| `anomaly` | the seven detectors (ai-service, PHP fallback): new findings raise `ANOMALY_DETECTED`, findings no longer made are cleared | hourly |
+| `contractor` | contractor alerts | hourly |
+| `obligation` | the obligation register: new tasks, overdue, escalation | hourly |
+| `production` | locks past periods, detailed-report deadlines | hourly |
+| `grievance` | grievance deadlines | hourly |
+
+`yii jobs/all` runs them all in that order; `yii jobs/status` shows each one's last run.
+
+- **Idempotent.** Run twice, the second run finds nothing to do (`JobsTest` checks it).
+- **Logged.** Every run is a row in `job_run` (status, summary, duration, error) and a line in
+  `api\runtime\logs\jobs.log`.
+- **Never twice at once.** Each job holds a PostgreSQL advisory lock; a copy started while another
+  runs records `skipped` and exits.
+- **A system action.** Status history and the audit trail show no user for what a job did.
+
+**Registering them in Windows Task Scheduler** (current user, no administrator rights):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\register_tasks.ps1 -DryRun      # show what it would register
+powershell -ExecutionPolicy Bypass -File scripts\register_tasks.ps1              # register (or update)
+Get-ScheduledTask -TaskName 'SmartMineGovernance - jobs-*'                       # check
+powershell -ExecutionPolicy Bypass -File scripts\register_tasks.ps1 -Unregister  # remove them all
+```
+
+The tasks are named `SmartMineGovernance - jobs-<name>` and run as you, only while you are logged
+on (logon type Interactive - no stored password). They need PostgreSQL running, so on a laptop
+start it with `run_all.bat` first; a job that cannot reach the database is logged as `failed` and
+the next run tries again. The PHP path defaults to `C:\xampp\php\php.exe` (set `$env:PHP` before
+registering to change it).
+
+On a server the same commands run from cron or a service account instead, e.g.
+`*/15 * * * * cd /srv/api && php yii jobs/sla`.
 
 ## 8. Where the secrets live, and how to regenerate them
 

@@ -201,7 +201,8 @@
       "system": "सिस्टम",
       "directive": "DGMS से",
       "action": "सुधारात्मक कार्रवाई",
-      "production": "उत्पादन"
+      "production": "उत्पादन",
+      "anomaly": "पैटर्न"
     },
     "directiveNote": "टिप्पणी: {{note}}",
     "raisedBy": "जारीकर्ता",
@@ -210,7 +211,10 @@
     "reopenedBecause": "फिर से खोला गया: {{reason}}",
     "CONTRACT_WORKER_CAP_EXCEEDED": "ठेका #{{contract_id}} में {{active_workers}} सक्रिय श्रमिक हैं, जो इसकी सीमा {{max_workers}} से अधिक है।",
     "OBLIGATION_DUE_SOON": "{{count}} वैधानिक दायित्व {{due_at}} को देय: {{obligations}}।",
-    "OBLIGATION_OVERDUE": "{{period}} का {{obligation}} विलंबित है (देय {{due_at}}; {{instrument}} {{clause}})।"
+    "OBLIGATION_OVERDUE": "{{period}} का {{obligation}} विलंबित है (देय {{due_at}}; {{instrument}} {{clause}})।",
+    "ANOMALY_DETECTED": "पैटर्न मिला ({{detector}}): {{summary}}",
+    "PRODUCTION_ENTRY_PENDING": "{{date}} का उत्पादन जमा नहीं हुआ - अनुपलब्ध पालियाँ: {{missing}}; ड्राफ्ट: {{drafts}}",
+    "level": "एस्केलेट किया गया L{{level}}"
   },
   "category": {
     "roof_strata": "छत और स्ट्रेटा",
@@ -238,12 +242,13 @@
     "PRIORITY_RECENT_BREACHES": "पिछले {{hours}} h में {{count}} सीमा-पार",
     "PRIORITY_NO_RECENT_EVENTS": "पिछले {{hours}} h में कोई नया मामला नहीं",
     "empty": "निरीक्षण के लिए कतार में कुछ नहीं।",
-    "rowAria": "क्रम {{rank}}, {{name}}, स्कोर {{score}}। विस्तृत दृश्य खोलें।",
+    "rowAria": "क्रम {{rank}}, {{name}}, जोखिम सूचकांक {{gri}}, स्कोर {{score}}। विस्तृत दृश्य खोलें।",
     "loading": "खदानों की रैंकिंग हो रही है...",
     "singleMine": "निरीक्षण कतार खदानों की तुलना करती है, इसलिए यह एकल-खदान खाते के लिए उपलब्ध नहीं है।",
     "rankedState": "{{state}} में {{n}} खदानें क्रमबद्ध",
     "rankedScope": "{{where}} {{n}} खदानें क्रमबद्ध",
-    "hint": "तात्कालिकता वर्तमान स्कोर और पिछले {{hours}} घंटों में मामलों की वृद्धि को मिलाकर तय होती है"
+    "hint": "गवर्नेंस जोखिम सूचकांक (GRI) के अनुसार क्रमबद्ध; प्रत्येक खदान के लिए अनुपालन स्कोर और पिछले {{hours}} घंटों में मामलों की वृद्धि दिखाई गई है",
+    "PRIORITY_GRI": "गवर्नेंस जोखिम सूचकांक {{gri}} ({{band}}) - सबसे बड़ा हिस्सा: {{component}} ({{count}})"
   },
   "incident": {
     "title": "घटनाएँ",
@@ -493,7 +498,8 @@
     "reopenReason": "प्रमाण पर्याप्त नहीं",
     "reopened": "निर्देश फिर से खोला गया",
     "reopenedBody": "खदान प्रमुख से दोबारा जमा करने को कहा गया है।",
-    "reopenFailed": "फिर से नहीं खोला जा सका"
+    "reopenFailed": "फिर से नहीं खोला जा सका",
+    "scoreShort": "स्कोर"
   },
   "records": {
     "latest_one": "{{count}} सबसे हालिया",
@@ -1466,5 +1472,80 @@
     "contractor_id": "ठेकेदार",
     "user_id": "व्यक्ति",
     "to": "नई स्थिति"
+  },
+  "gri": {
+    "title": "गवर्नेंस जोखिम सूचकांक",
+    "short": "जोखिम सूचकांक",
+    "hint": "0-100, जितना अधिक उतना बुरा। यह एक अलग माप है: अनुपालन स्कोर नहीं बदलता। अंक और सीमाएँ उत्पाद सेटिंग हैं।",
+    "explain": "यह किससे बनता है",
+    "componentLine": "{{count}} × {{points}} = {{value}} (अधिकतम {{cap}})",
+    "component": {
+      "open_violations": "खुले उल्लंघन",
+      "sensor_breaches": "सेंसर सीमा-पार",
+      "overdue_obligations": "विलंबित वैधानिक दायित्व",
+      "overdue_contractor_docs": "अनुपलब्ध या समाप्त ठेकेदार दस्तावेज़",
+      "grievances_past_sla": "उत्तर-समय निकल चुकी शिकायतें",
+      "ageing_corrective_actions": "विलंबित सुधारात्मक कार्रवाइयाँ"
+    },
+    "multiplier": "बार-बार होने वाले उल्लंघन ({{categories}}) कुल को बढ़ाते हैं",
+    "noRepeat": "बार-बार उल्लंघन नहीं - कोई गुणक नहीं",
+    "viewerNote": "संवेदनशील शिकायतें आपके दृश्य में नहीं गिनी जातीं; नियामक के सूचकांक में ये शामिल हैं, इसलिए वह अधिक हो सकता है।"
+  },
+  "prediction": {
+    "title": "अनुमानित जोखिम",
+    "target": "आगामी वर्ष में उच्च-दुर्घटना वर्ष की संभावना: प्रति 100 श्रमिकों पर 3 या अधिक कार्य-हानि और घातक दुर्घटनाएँ",
+    "none": "अभी कोई अनुमान नहीं। यह दैनिक स्कोर जॉब द्वारा गणना की जाती है।",
+    "fleet": "निगरानी की गई {{pct}} % खदानों से अधिक",
+    "factors": "इसे क्या बढ़ाता है",
+    "factorViolation": "{{label}}: प्रति वर्ष प्रति 100 श्रमिक {{value}}, निगरानी की गई {{pct}} % खदानों से अधिक (+{{points}} अंक)",
+    "factorOther": "{{label}}: {{value}}, सामान्यतः {{typical}} (+{{points}} अंक)",
+    "noFactors": "कोई भी कारक इसे सामान्य खदान से अधिक नहीं बढ़ाता।",
+    "disclaimer": "US नियामक डेटा (MSHA कोयला खदान-वर्ष) पर प्रशिक्षित और उल्लंघन श्रेणियों के मिलान से इन खदानों पर लागू किया गया - भारतीय खदानों पर प्रशिक्षित नहीं। बाद के US वर्षों में इसने पिछले वर्ष की अकेली दुर्घटना दर से बेहतर खदानों की रैंकिंग की (AUC {{auc}}, {{baseline}} की तुलना में)। यह ध्यान से देखने का संकेत है, निष्कर्ष नहीं।",
+    "computed": "{{when}} को गणना की गई ({{engine}})",
+    "feature": {
+      "log_workers": "कार्यबल का आकार",
+      "underground": "भूमिगत कार्य",
+      "violations_per_100": "सभी उल्लंघन",
+      "roof_strata_per_100": "छत और स्ट्रेटा उल्लंघन",
+      "ventilation_gas_per_100": "संवातन और गैस उल्लंघन",
+      "electrical_per_100": "विद्युत उल्लंघन",
+      "machinery_per_100": "मशीनरी उल्लंघन",
+      "transport_haulage_per_100": "परिवहन और ढुलाई उल्लंघन",
+      "fire_per_100": "आग संबंधी उल्लंघन",
+      "ppe_per_100": "PPE उल्लंघन",
+      "accidents_per_100": "प्रति 100 श्रमिक दुर्घटनाएँ",
+      "lost_time_per_100": "प्रति 100 श्रमिक कार्य-हानि दुर्घटनाएँ",
+      "had_lost_time": "इस वर्ष एक कार्य-हानि दुर्घटना"
+    }
+  },
+  "anomaly": {
+    "title": "मिले पैटर्न",
+    "hint": "स्वचालित जाँच हर घंटे चलती है; हर निष्कर्ष अपना कारण बताता है। यह ध्यान से देखने का संकेत है, उल्लंघन नहीं।",
+    "none": "कोई पैटर्न नहीं मिला।",
+    "since": "पहली बार {{when}} को देखा गया",
+    "window": "{{from}} - {{to}}",
+    "engine": {
+      "php": "अंतर्निहित जाँच",
+      "ai-service": "AI सेवा"
+    },
+    "detector": {
+      "production_anomaly": "उत्पादन असामान्यता",
+      "sensor_flatline": "अटका हुआ सेंसर",
+      "night_shift": "रात की पाली में सघनता",
+      "repeat_violations": "बार-बार होने वाले उल्लंघन",
+      "late_actions": "विलंबित सुधारात्मक कार्रवाइयाँ",
+      "contractor_outlier": "असामान्य ठेकेदार",
+      "grievance_cluster": "शिकायतों का समूह"
+    },
+    "reason": {
+      "FLATLINE": "{{sensor}} ने {{hours}} h तक ठीक {{value}} रीडिंग दी ({{readings}} रीडिंग) - क्या सेंसर अटका या डिस्कनेक्ट हो गया है?",
+      "NIGHT_CONCENTRATION": "{{total}} में से {{night}} उल्लंघन रात की पाली में ({{share}} %, अपेक्षित लगभग {{expected}} %; संभावना {{p}})",
+      "REPEAT_IMPROBABLE": "{{days}} दिनों में {{of}} में से {{count}} {{category}} उल्लंघन (लगभग {{expected}} अपेक्षित; संभावना {{p}})",
+      "REPEAT_THEN_INCIDENT": "{{count}} {{category}} उल्लंघन, फिर {{days}} दिनों के भीतर {{date}} को संबंधित घटना #{{id}}",
+      "LATE_CLOSURES": "{{resolved}} में से {{late}} सुधारात्मक कार्रवाइयाँ देर से बंद हुईं ({{share}} %, सभी खदानों में {{fleet}} %; संभावना {{p}})",
+      "CONTRACTOR_MISSING_DOCS": "ठेकेदार #{{id}}: {{missing}} दस्तावेज़ अनुपलब्ध या समाप्त (सामान्यतः {{median}})",
+      "CONTRACTOR_VIOLATION_RATE": "ठेकेदार #{{id}}: प्रति श्रमिक {{rate}} उल्लंघन (सामान्यतः {{median}})",
+      "GRIEVANCE_SLA_CLUSTER": "{{days}} दिनों के भीतर {{breaches}} शिकायतों का उत्तर-समय निकला ({{from}} - {{to}})"
+    }
   }
 }

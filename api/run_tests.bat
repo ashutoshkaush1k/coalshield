@@ -18,6 +18,13 @@ echo === locales: every key in every language; no hard-coded UI text (Phase 6)
 node "..\scripts\check_locales.mjs" || exit /b 1
 node "..\scripts\check_hardcoded_strings.mjs" || exit /b 1
 
+echo === ai-service: detectors and the risk model against the shared fixtures (Phase 7)
+if exist "..\backend\.venv\Scripts\python.exe" (
+  "..\backend\.venv\Scripts\python.exe" -m pytest "..\ai-service\tests" -q || exit /b 1
+) else (
+  echo backend\.venv not found - skipping the ai-service tests
+)
+
 echo === migrations down/up on the test database
 "%PHP%" yii_test migrate/down all --interactive=0 >nul || exit /b 1
 "%PHP%" yii_test migrate --interactive=0 >nul || exit /b 1

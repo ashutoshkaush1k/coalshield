@@ -1,5 +1,7 @@
-# Phase 2: the vision code is imported from backend/app/services/vision, so this runs in
-# backend/.venv, which already has these (PLAN Q13). Phase 7 gives ai-service its own venv.
+# The ai-service: PPE vision (vision/), the anomaly detectors (detectors/) and the predictive
+# model (risk/). It runs in backend/.venv, which has all of these: torch alone is over 1 GB, so a
+# second environment would only duplicate it. Serving the model needs nothing beyond the standard
+# library (risk/model.json); scikit-learn and pandas are for training it (risk/train.py).
 fastapi
 uvicorn[standard]
 python-multipart
@@ -7,3 +9,6 @@ ultralytics
 opencv-python
 numpy
 pydantic-settings
+scikit-learn
+pandas
+pytest

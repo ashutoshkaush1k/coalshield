@@ -59,11 +59,13 @@ $permissions = [
     'obligation.review' => 'Accept or reject obligation evidence (with a reason)',
     'obligation.waive' => 'Waive an obligation task for a period (with a reason)',
     'obligation.summary' => 'Statutory compliance across the mines in scope',
+    // Phase 7
+    'risk.view' => 'The Governance Risk Index, the predicted risk and the anomaly findings of the mines in scope',
 ];
 
 $read = ['user.viewOwn', 'user.updateOwnLanguage', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
     'correctiveAction.view', 'inspection.view', 'alert.view', 'alert.acknowledge', 'audit.view', 'compliance.view',
-    'incident.view', 'contractor.view', 'detailRequest.view', 'grievance.view', 'obligation.view'];
+    'incident.view', 'contractor.view', 'detailRequest.view', 'grievance.view', 'obligation.view', 'risk.view'];
 $productionOversight = ['production.summary', 'production.viewRequested'];
 
 return [

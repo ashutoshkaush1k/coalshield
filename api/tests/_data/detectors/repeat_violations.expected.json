@@ -1,0 +1,196 @@
+{
+ "flags": [
+  {
+   "detector": "repeat_violations",
+   "mine_id": 5,
+   "subject": "roof_strata",
+   "from": "2026-08-06T06:30:00Z",
+   "to": "2026-09-19T06:30:00Z",
+   "score": 6.0,
+   "reasons": [
+    {
+     "code": "REPEAT_THEN_INCIDENT",
+     "params": {
+      "category": "roof_strata",
+      "count": 6,
+      "days": 45,
+      "incident_id": 83,
+      "incident_date": "2026-09-18"
+     }
+    }
+   ],
+   "entities": {
+    "category": "roof_strata",
+    "violation_ids": [
+     2053,
+     2054,
+     2055,
+     2056,
+     2057,
+     2058
+    ],
+    "incident_ids": [
+     83
+    ]
+   }
+  },
+  {
+   "detector": "repeat_violations",
+   "mine_id": 6,
+   "subject": "transport_haulage",
+   "from": "2026-07-20T08:15:09Z",
+   "to": "2026-08-07T08:37:35Z",
+   "score": 11.0,
+   "reasons": [
+    {
+     "code": "REPEAT_THEN_INCIDENT",
+     "params": {
+      "category": "transport_haulage",
+      "count": 11,
+      "days": 19,
+      "incident_id": 80,
+      "incident_date": "2026-09-20"
+     }
+    }
+   ],
+   "entities": {
+    "category": "transport_haulage",
+    "violation_ids": [
+     439,
+     440,
+     463,
+     465,
+     497,
+     498,
+     725,
+     737,
+     742,
+     744,
+     843
+    ],
+    "incident_ids": [
+     80
+    ]
+   }
+  },
+  {
+   "detector": "repeat_violations",
+   "mine_id": 30,
+   "subject": "transport_haulage",
+   "from": "2026-07-03T11:12:00Z",
+   "to": "2026-08-04T09:15:37Z",
+   "score": 7.0,
+   "reasons": [
+    {
+     "code": "REPEAT_THEN_INCIDENT",
+     "params": {
+      "category": "transport_haulage",
+      "count": 7,
+      "days": 32,
+      "incident_id": 74,
+      "incident_date": "2026-09-14"
+     }
+    }
+   ],
+   "entities": {
+    "category": "transport_haulage",
+    "violation_ids": [
+     103,
+     108,
+     775,
+     777,
+     783,
+     784,
+     787
+    ],
+    "incident_ids": [
+     74
+    ]
+   }
+  },
+  {
+   "detector": "repeat_violations",
+   "mine_id": 37,
+   "subject": "roof_strata",
+   "from": "2026-07-12T07:28:37Z",
+   "to": "2026-07-29T11:33:58Z",
+   "score": 12.0,
+   "reasons": [
+    {
+     "code": "REPEAT_IMPROBABLE",
+     "params": {
+      "category": "roof_strata",
+      "count": 12,
+      "of": 33,
+      "days": 45,
+      "expected": 2.5,
+      "p": 2.85e-06
+     }
+    },
+    {
+     "code": "REPEAT_THEN_INCIDENT",
+     "params": {
+      "category": "roof_strata",
+      "count": 12,
+      "days": 18,
+      "incident_id": 33,
+      "incident_date": "2026-08-03"
+     }
+    }
+   ],
+   "entities": {
+    "category": "roof_strata",
+    "violation_ids": [
+     276,
+     278,
+     281,
+     396,
+     397,
+     398,
+     400,
+     401,
+     600,
+     608,
+     620,
+     622
+    ],
+    "incident_ids": [
+     33
+    ]
+   }
+  },
+  {
+   "detector": "repeat_violations",
+   "mine_id": 73,
+   "subject": "roof_strata",
+   "from": "2026-07-24T10:44:17Z",
+   "to": "2026-09-03T10:30:41Z",
+   "score": 5.0,
+   "reasons": [
+    {
+     "code": "REPEAT_THEN_INCIDENT",
+     "params": {
+      "category": "roof_strata",
+      "count": 5,
+      "days": 41,
+      "incident_id": 44,
+      "incident_date": "2026-08-14"
+     }
+    }
+   ],
+   "entities": {
+    "category": "roof_strata",
+    "violation_ids": [
+     536,
+     895,
+     1151,
+     1401,
+     1408
+    ],
+    "incident_ids": [
+     44
+    ]
+   }
+  }
+ ]
+}

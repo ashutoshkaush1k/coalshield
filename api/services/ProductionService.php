@@ -255,57 +255,19 @@ final class ProductionService
         if ($mineIds === []) {
             return [];
         }
+        // One algorithm, twice: detectors\ProductionAnomaly here, ai-service/detectors/production.py
+        // for the scheduled detection (AnomalyService); the parity test keeps them identical.
         $cfg = Rules::value('product', 'production_anomaly');
-        $overTarget = (float) $cfg['over_target_pct'] / 100;
-        $window = (int) $cfg['rolling_days'];
-        $minBase = (int) $cfg['min_baseline_days'];
-        $ratio = (float) $cfg['ratio'];
-        $z = (float) $cfg['z'];
-        $start = (new \DateTimeImmutable($from))->modify("-{$window} days")->format('Y-m-d');
-
-        $out = [];
-        foreach (self::dailyTotals($mineIds, $start, $to) as $mineId => $days) {
-            ksort($days);
-            $dates = array_keys($days);
-            foreach ($dates as $i => $date) {
-                if ($date < $from || $days[$date]['target'] <= 0) {
-                    continue;
-                }
-                $actual = $days[$date]['actual'];
-                $target = $days[$date]['target'];
-                $reasons = [];
-                $direction = null;
-                if ($actual > $target * (1 + $overTarget)) {
-                    $direction = 'spike';
-                    $reasons[] = ['code' => 'OVER_TARGET', 'params' => ['actual_t' => round($actual, 1), 'target_t' => round($target, 1),
-                        'achievement_pct' => self::pct($actual, $target), 'threshold_pct' => (int) $cfg['over_target_pct']]];
-                }
-                // The window: producing days (output and target above zero) in the previous $window days.
-                $windowStart = (new \DateTimeImmutable($date))->modify("-{$window} days")->format('Y-m-d');
-                $base = [];
-                for ($j = $i - 1; $j >= 0 && $dates[$j] >= $windowStart; $j--) {
-                    $d = $days[$dates[$j]];
-                    if ($d['actual'] > 0 && $d['target'] > 0) {
-                        $base[] = $d;
-                    }
-                }
-                if (count($base) >= $minBase) {
-                    [$r1, $z1, $mean] = self::deviation($actual, array_column($base, 'actual'));
-                    [$r2, $z2] = self::deviation($actual / $target, array_map(fn($d) => $d['actual'] / $d['target'], $base));
-                    $params = ['actual_t' => round($actual, 1), 'rolling_mean_t' => round($mean, 1), 'ratio' => round($r1, 2),
-                        'z' => round($z1, 1), 'days' => count($base)];
-                    if ($r1 >= $ratio && $z1 >= $z && $r2 >= $ratio && $z2 >= $z) {
-                        $direction = 'spike';
-                        $reasons[] = ['code' => 'ROLLING_MEAN_SPIKE', 'params' => $params];
-                    } elseif ($r1 <= 1 / $ratio && $z1 <= -$z && $r2 <= 1 / $ratio && $z2 <= -$z) {
-                        $direction ??= 'drop';
-                        $reasons[] = ['code' => 'ROLLING_MEAN_DROP', 'params' => $params];
-                    }
-                }
-                if ($reasons !== []) {
-                    $out[$mineId][$date] = ['direction' => $direction, 'reasons' => $reasons];
-                }
+        $start = (new \DateTimeImmutable($from))->modify('-' . (int) $cfg['rolling_days'] . ' days')->format('Y-m-d');
+        $days = [];
+        foreach (self::dailyTotals($mineIds, $start, $to) as $mineId => $byDate) {
+            foreach ($byDate as $date => $d) {
+                $days[] = ['mine_id' => $mineId, 'date' => $date, 'target' => $d['target'], 'actual' => $d['actual']];
             }
+        }
+        $out = [];
+        foreach (\app\services\detectors\ProductionAnomaly::detect(['settings' => $cfg, 'from' => $from, 'to' => $to, 'days' => $days]) as $f) {
+            $out[$f['mine_id']][$f['entities']['date']] = ['direction' => $f['entities']['direction'], 'reasons' => $f['reasons']];
         }
         return $out;
     }
@@ -331,15 +293,6 @@ final class ProductionService
     public static function today(): string
     {
         return Format::now()->format('Y-m-d');
-    }
-
-    /** @return array{0: float, 1: float, 2: float} ratio to the mean, z-score, mean */
-    private static function deviation(float $value, array $base): array
-    {
-        $mean = array_sum($base) / count($base);
-        $variance = array_sum(array_map(fn($v) => ($v - $mean) ** 2, $base)) / count($base);
-        $sd = sqrt($variance);
-        return [$mean > 0 ? $value / $mean : INF, $sd > 0 ? ($value - $mean) / $sd : ($value == $mean ? 0.0 : INF * ($value <=> $mean)), $mean];
     }
 
     private static function pct(float $actual, float $target): ?float

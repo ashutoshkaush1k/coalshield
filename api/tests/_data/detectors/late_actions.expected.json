@@ -1,0 +1,38 @@
+{
+ "flags": [
+  {
+   "detector": "late_actions",
+   "mine_id": 5,
+   "subject": "closures",
+   "from": "2026-08-25T00:47:24Z",
+   "to": "2026-09-25T23:54:59Z",
+   "score": 1.0,
+   "reasons": [
+    {
+     "code": "LATE_CLOSURES",
+     "params": {
+      "late": 10,
+      "resolved": 10,
+      "share_pct": 100.0,
+      "fleet_pct": 25.0,
+      "p": 9.54e-07
+     }
+    }
+   ],
+   "entities": {
+    "corrective_action_ids": [
+     1221,
+     1544,
+     1554,
+     1618,
+     1711,
+     2053,
+     2054,
+     2055,
+     2056,
+     2057
+    ]
+   }
+  }
+ ]
+}

@@ -26,7 +26,7 @@ class ViewController extends ApiController
 {
     protected function verbs(): array
     {
-        return ['overview' => ['GET'], 'mine' => ['GET'], 'production' => ['GET'], 'production-overview' => ['GET'], 'grievances' => ['GET'], 'obligations' => ['GET'], 'map' => ['GET']];
+        return ['overview' => ['GET'], 'priority' => ['GET'], 'mine' => ['GET'], 'production' => ['GET'], 'production-overview' => ['GET'], 'grievances' => ['GET'], 'obligations' => ['GET'], 'map' => ['GET']];
     }
 
     public function actionOverview(): array
@@ -51,6 +51,8 @@ class ViewController extends ApiController
             'audit' => $this->part('v1/audit/index', $mine + ['per_page' => 40]),
             'corrective_actions' => $this->part('v1/corrective-action/index', $mine + ['per_page' => 50]),
             'incidents' => $this->part('v1/incident/index', $mine + ['per_page' => 50]),
+            // Phase 7: the Governance Risk Index, the predicted risk, the active findings
+            'risk' => Yii::$app->user->can('risk.view') ? $this->part('v1/risk/mine', [], ['id' => $id]) : null,
         ];
     }
 
@@ -166,6 +168,23 @@ class ViewController extends ApiController
         }
         return ['summary' => ObligationService::summary($mineId === null ? [] : [(int) $mineId])] + $lists
             + ['accepted' => array_map(fn(ObligationTask $t) => $t->toArray(), $accepted)];
+    }
+
+    /**
+     * The priority tab in one request (Phase 7): the inspection queue ordered by the Governance Risk
+     * Index, and the detectors' active findings across the mines in scope.
+     */
+    public function actionPriority(): array
+    {
+        $this->requirePermission('inspection.viewQueue');
+        $state = Yii::$app->request->get('state');
+        $query = $state !== null && $state !== '' ? ['state' => $state] : [];
+        $patterns = $this->part('v1/risk/anomalies', ['per_page' => 50]);
+        if ($query !== []) {
+            $inState = array_map(fn($m) => (int) $m->id, $this->visibleMines((string) $state));
+            $patterns = array_values(array_filter($patterns, fn($f) => in_array((int) $f['mine_id'], $inState, true)));
+        }
+        return ['queue' => $this->part('v1/inspection/priority', $query), 'patterns' => $patterns];
     }
 
     /** The map: the mines in scope with their score and band (outlines come from /v1/geo/*, once). */

@@ -1,17 +1,21 @@
-"""CoalShield ai-service: stateless AI only (brief section 2). Phase 2 scope: PPE vision.
+"""CoalShield ai-service: stateless AI only (brief section 2).
 
-POST /vision/ppe   one image (or a short video) -> detections, PPE violation candidates, whether
-                   the frame is usable evidence of compliance, and the annotated frame.
-GET  /health       liveness.
+POST /vision/ppe          one image (or a short video) -> detections, PPE violation candidates, whether
+                          the frame is usable evidence of compliance, and the annotated frame
+POST /anomaly/{detector}  one of the seven anomaly detectors (detectors/): payload -> flags
+GET  /anomaly             the detectors and their version
+POST /risk/predict        the predictive model (risk/): features per mine -> probability and top factors
+GET  /risk/model          the model card: training data, split, metrics
+GET  /health              liveness, the PPE backend, the model version
 
-It never touches users, permissions or the database: the Yii2 API sends the bytes, then stores
-violations, alerts and scores itself. The detection code is imported in place from
-backend/app/services/vision (PLAN Q13); Phase 7 moves it here and adds the other endpoints.
-With backend/ml/weights/ppe.pt (built by scripts/build_ppe_model.py, docs/AI_EVALUATION.md) the
-real YOLO model runs. Without it - or with PPE_DETECTOR=fixture - the FixtureDetector answers from
-sidecar files next to the sample images, so tests and a weightless machine still work.
+It never touches users, permissions or the database: the Yii2 API sends the data, then stores
+violations, alerts, flags and predictions itself - and runs the PHP twins of the detectors and
+of the model when this service is down (Phase 7). With backend/ml/weights/ppe.pt (built by
+scripts/build_ppe_model.py, docs/AI_EVALUATION.md) the real YOLO model runs; without it - or with
+PPE_DETECTOR=fixture - the FixtureDetector answers from sidecar files next to the sample images.
 
-Run:  backend\\.venv\\Scripts\\python -m uvicorn main:app --app-dir ai-service --port 8001
+Run:  backend\.venv\Scripts\python -m uvicorn main:app --app-dir ai-service --port 8001
+      (ai-service\run_ai_service.bat)
 """
 
 from __future__ import annotations
@@ -19,31 +23,32 @@ from __future__ import annotations
 import base64
 import os
 import re
-import sys
 import tempfile
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 
-BACKEND_DIR = Path(__file__).resolve().parents[1] / "backend"
-sys.path.insert(0, str(BACKEND_DIR))
-
-from app.services.compliance.resolution import EVIDENCE_LABELS  # noqa: E402
-from app.services.vision.annotate import annotate_image  # noqa: E402
-from app.services.vision.detector import FixtureDetector, get_detector  # noqa: E402
-from app.services.vision.ppe_rules import (  # noqa: E402
+from detectors import DETECTORS, VERSION as DETECTORS_VERSION
+from risk import model as risk_model
+from vision.annotate import annotate_image
+from vision.detector import FixtureDetector, get_detector
+from vision.ppe_rules import (
+    VIOLATION_FOR_ABSENT_PPE,
     PpePolicy,
     model_names_have_negatives,
     violations_from_detections,
 )
+
+# What counts as evidence that the frame shows people at work (was compliance/resolution.py).
+EVIDENCE_LABELS = {"person", *VIOLATION_FOR_ABSENT_PPE.keys()}
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 VIDEO_SUFFIXES = {".mp4", ".avi", ".mov", ".mkv"}
 MAX_BYTES = 50 * 1024 * 1024
 _UNSAFE = re.compile(r"[^A-Za-z0-9._-]+")
 
-app = FastAPI(title="CoalShield ai-service", version="0.3.0")
+app = FastAPI(title="CoalShield ai-service", version="0.4.0")
 
 
 def detector():
@@ -61,7 +66,37 @@ _FIXTURE = FixtureDetector()
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "backend": detector().backend}
+    return {"status": "ok", "backend": detector().backend, "detectors": DETECTORS_VERSION,
+            "risk_model": risk_model.version()}
+
+
+@app.get("/anomaly")
+def anomaly_list() -> dict:
+    return {"version": DETECTORS_VERSION, "detectors": sorted(DETECTORS)}
+
+
+@app.post("/anomaly/{name}")
+def anomaly(name: str, payload: dict = Body(...)) -> dict:
+    if name not in DETECTORS:
+        raise HTTPException(404, {"code": "UNKNOWN_DETECTOR", "params": {"name": name}})
+    try:
+        flags = DETECTORS[name](payload)
+    except (KeyError, TypeError, ValueError) as e:
+        raise HTTPException(422, {"code": "INVALID_PAYLOAD", "params": {"detail": str(e)[:200]}}) from e
+    return {"detector": name, "engine": "ai-service", "version": DETECTORS_VERSION, "flags": flags}
+
+
+@app.get("/risk/model")
+def risk_card() -> dict:
+    return risk_model.card()
+
+
+@app.post("/risk/predict")
+def risk_predict(payload: dict = Body(...)) -> dict:
+    try:
+        return risk_model.predict(payload.get("mines", []))
+    except FileNotFoundError as e:
+        raise HTTPException(503, {"code": "MODEL_MISSING", "params": {}}) from e
 
 
 def _evidence(detections, candidates) -> dict:
@@ -96,7 +131,7 @@ async def vision_ppe(file: UploadFile = File(...), filename: str = Form(default=
         path.write_bytes(data)
 
         if suffix in VIDEO_SUFFIXES:
-            from app.services.vision.video_pipeline import deduplicate, sample_frames
+            from vision.video_pipeline import deduplicate, sample_frames
 
             detections, candidates, frames = [], [], 0
             for index, frame in sample_frames(path, 15, 20):

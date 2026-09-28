@@ -52,6 +52,11 @@ return [
     'GET v1/geo/<kind:states|districts>' => 'v1/geo/boundaries',
     'GET v1/views/obligations' => 'v1/view/obligations',
     'GET v1/views/map' => 'v1/view/map',
+    // Phase 7: automation findings, the Governance Risk Index, the predictive model
+    'GET v1/views/priority' => 'v1/view/priority',
+    'GET v1/anomalies' => 'v1/risk/anomalies',
+    'GET v1/mines/<id:\d+>/risk' => 'v1/risk/mine',
+    'GET v1/risk/model' => 'v1/risk/model',
 
     // Production reporting (Phase 4)
     'GET v1/production' => 'v1/production/index',

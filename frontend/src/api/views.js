@@ -8,3 +8,7 @@ export const getOverviewView = (state = null) =>
 
 /** { mine, trend, violations, alerts, audit, corrective_actions, incidents } for one mine. */
 export const getMineView = (mineId) => client.get(`/views/mine/${mineId}`).then((r) => r.data);
+
+/** { queue, patterns }: the inspection queue ordered by the Governance Risk Index, and the detectors' findings (Phase 7). */
+export const getPriorityView = (state = null) =>
+  client.get("/views/priority", { params: state ? { state } : {} }).then((r) => r.data);

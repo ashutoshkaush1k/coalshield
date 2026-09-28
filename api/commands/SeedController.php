@@ -81,8 +81,9 @@ class SeedController extends Controller
             $present = array_values(array_filter(array_keys(self::LOAD_ORDER), fn($t) => $db->getTableSchema($t, true) !== null));
             $truncate = array_merge($present, ['audit_log', $this->authManager()->assignmentTable]);
             // Runtime state of the public grievance endpoints: rate-limit windows and ticket
-            // counters (the counter never goes below the highest ticket loaded).
-            foreach (['rate_limit', 'grievance_ticket_counter'] as $runtime) {
+            // counters (the counter never goes below the highest ticket loaded). Phase 7: what the
+            // jobs derived from the data (findings, daily snapshots, predictions); job_run is kept.
+            foreach (['rate_limit', 'grievance_ticket_counter', 'anomaly_flag', 'mine_risk_snapshot', 'mine_risk_prediction'] as $runtime) {
                 if ($db->getTableSchema($runtime, true) !== null) {
                     $truncate[] = $runtime;
                 }

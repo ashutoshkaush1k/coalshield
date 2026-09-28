@@ -1,5 +1,5 @@
 @echo off
-rem ai-service (PPE vision) on http://127.0.0.1:8001. Uses backend\.venv until Phase 7 (PLAN Q13).
+rem ai-service (PPE vision, anomaly detectors, predicted risk) on http://127.0.0.1:8001. Uses backend\.venv (see requirements.txt).
 setlocal
 cd /d "%~dp0.."
 if not exist "backend\.venv\Scripts\python.exe" (

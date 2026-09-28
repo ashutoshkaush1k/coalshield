@@ -247,7 +247,38 @@ only loads the tiles in view. GEM (CC BY 4.0) and DataMeet are credited on the m
 
 ## Inspection ranking
 
-`urgency = (100 - score) + max(0, recent events - previous events) x WEIGHT_TREND`, events being
-violations plus breaches in the last `TREND_WINDOW_HOURS` (24) against the 24 hours before.
+Since Phase 7 the queue is ordered by the **Governance Risk Index** (below), highest first.
 Ties: urgency, severity, recent events, mine id - so the queue never reorders between identical
-requests. `GET /dashboard` embeds the top 3 for multi-mine roles; a mine head gets none.
+requests. `urgency = (100 - score) + max(0, recent events - previous events) x WEIGHT_TREND`,
+events being violations plus breaches in the last `TREND_WINDOW_HOURS` (24) against the 24 hours
+before; it is still returned with each candidate. `GET /dashboard` embeds the top 3 for multi-mine roles; a mine head gets none.
+
+## Governance Risk Index (Phase 7)
+
+A separate measure beside the compliance score, which it does not change. 0-100, higher is worse.
+Points per item, each component capped, the sum times a repeat multiplier, capped at 100. All
+weights are product settings (`rules.yaml` product.governance_risk_index):
+
+| Component | Counts | Points | Cap |
+|---|---|---|---|
+| `open_violations` | unresolved violations | 2 | 25 |
+| `sensor_breaches` | threshold breaches in the compliance score's window | 1 | 10 |
+| `overdue_obligations` | obligation tasks overdue or escalated | 2 | 20 |
+| `overdue_contractor_docs` | monthly contractor documents past their due day | 1 | 10 |
+| `grievances_past_sla` | open grievances past their response time | 3 | 15 |
+| `ageing_corrective_actions` | open corrective actions past due | 2 | 20 |
+
+Multiplier: 1 + 0.1 per violation category with 5 or more violations in 45 days, at most 1.5.
+Bands: high >= 50, medium >= 20, else low. A mine head's index leaves out the sensitive grievances
+it cannot see (the regulator's can be higher). `yii jobs/score` keeps a daily history
+(`mine_risk_snapshot`).
+
+## Predicted risk (Phase 7)
+
+`prediction.probability` is the model's chance of a high-accident next year (lost-time and fatal
+accidents at 3 or more per 100 workers), from a gradient-boosting model **trained on US MSHA coal
+mine-years and transferred** to these mines (docs/AI_EVALUATION.md section 2). Bands: high >= 0.5,
+medium >= 0.25. `factors` are the features that raise it most: `points` = percentage points added
+compared with a typical mine; `fleet_percentile` = the mine's rank in our fleet on that violation
+rate (`typical` instead, for features not transferred). Stored by `yii jobs/score`; the screens
+never run the model.

@@ -37,6 +37,10 @@ return [
     // ai-service (PPE vision). Down or slow -> the API degrades, never crashes (brief section 2).
     'ai.baseUrl' => (string) env('AI_SERVICE_URL', 'http://127.0.0.1:8001'),
     'ai.timeoutSeconds' => (float) env('AI_SERVICE_TIMEOUT', 20),
+    // Phase 7: the anomaly detectors and the risk model. auto = ask ai-service, fall back to the PHP
+    // twins when it is down; php = never call it (tests, the evaluation); ai-service = no fallback.
+    'ai.engine' => (string) env('AI_ENGINE', 'auto'),
+    'ai.detectorTimeoutSeconds' => (float) env('AI_DETECTOR_TIMEOUT', 30),
     // Signed file links (annotated frames, proof images) stay valid this long.
     'files.linkTtlSeconds' => 3600,
     // Public grievance endpoints (no login): fixed-window limits per client IP, and the upload

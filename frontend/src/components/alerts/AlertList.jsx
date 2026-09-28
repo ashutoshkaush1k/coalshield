@@ -31,6 +31,7 @@ export function AlertList({ alerts, showMine = false, onSelect, actionFor }) {
               {(directive || alert.status !== ALERT_STATUS.OPEN) && (
                 <span className={`tag ${STATUS_TAG[alert.status] ?? ""}`}>{statusLabel(alert.status)}</span>
               )}
+              {alert.escalation_level > 0 && !directive && <span className="tag tag-open">{t("alert.level", { level: alert.escalation_level })}</span>}
               {showMine && <span className="mono">{alert.mine_code}</span>}
               <div className="spacer" />
               <span className="mono">{fmtDateTime(alert.created_at)}</span>

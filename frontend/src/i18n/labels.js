@@ -1,7 +1,7 @@
 // Turns the API's codes into text (brief rule 7: the API sends {code, params}, the UI words them).
 // Every label goes through i18n; unknown tokens fall back to a humanised form so nothing renders
 // as raw snake_case.
-import { fmtDateTime, humanise } from "../utils/format";
+import { fmtDate, fmtDateTime, fmtNumber, humanise } from "../utils/format";
 import { t } from "./t";
 
 const label = (key, token) => (token ? t(key + token, { defaultValue: humanise(token) }) : "");
@@ -21,10 +21,70 @@ export const frequencyLabel = (f) => (f ? t(`frequency.${f.replace(/[^a-z0-9]+/g
 export const obligationTitle = (o) => (o ? t(`obligationTitle.${o.code}`, { defaultValue: o.title ?? o.code }) : "");
 export const riskText = (level) => label("risk.", String(level || "").toLowerCase());
 
+/** A label used mid-sentence: "Roof and strata" -> "roof and strata"; "PPE" stays (scripts without case are unchanged). */
+const midSentence = (text) => (/^\p{Lu}\p{Ll}/u.test(text) ? text[0].toLocaleLowerCase() + text.slice(1) : text);
+
+/** A p-value for people: "< 0.001" below that, else three decimals. */
+const pValue = (p) => (p < 0.001 ? "< 0.001" : fmtNumber(p, 3));
+
+/**
+ * One reason a detector gives, as a sentence (Phase 7). `flag` supplies the finding's context
+ * (its date, contractor, window) where the reason's own params do not carry it.
+ */
+export function anomalyReasonText(reason, flag = {}) {
+  if (!reason) return "";
+  const p = reason.params || {};
+  const n = (v, d = 0) => fmtNumber(v, d);
+  switch (reason.code) {
+    case "OVER_TARGET":
+    case "ROLLING_MEAN_SPIKE":
+    case "ROLLING_MEAN_DROP":
+      return t(`production.anomaly.${reason.code}`, { ...p, date: fmtDate(flag.entities?.date ?? flag.subject),
+        achievement_pct: n(p.achievement_pct, 1), ratio: p.ratio == null ? "-" : n(p.ratio, 2), z: p.z == null ? "-" : n(p.z, 1) });
+    case "FLATLINE":
+      return t("anomaly.reason.FLATLINE", { sensor: sensorLabel(p.sensor_type), hours: n(p.hours), value: fmtNumber(p.value, 2), readings: n(p.readings) });
+    case "NIGHT_CONCENTRATION":
+      return t("anomaly.reason.NIGHT_CONCENTRATION", { night: n(p.night), total: n(p.total), share: n(p.share_pct), expected: n(p.expected_pct), p: pValue(p.p) });
+    case "REPEAT_IMPROBABLE":
+      return t("anomaly.reason.REPEAT_IMPROBABLE", { category: midSentence(categoryLabel(p.category)), count: n(p.count), of: n(p.of), days: n(p.days),
+        expected: n(p.expected, 1), p: pValue(p.p) });
+    case "REPEAT_THEN_INCIDENT":
+      return t("anomaly.reason.REPEAT_THEN_INCIDENT", { category: midSentence(categoryLabel(p.category)), count: n(p.count), days: n(p.days),
+        date: fmtDate(p.incident_date), id: p.incident_id });
+    case "LATE_CLOSURES":
+      return t("anomaly.reason.LATE_CLOSURES", { late: n(p.late), resolved: n(p.resolved), share: n(p.share_pct), fleet: n(p.fleet_pct), p: pValue(p.p) });
+    case "CONTRACTOR_MISSING_DOCS":
+      return t("anomaly.reason.CONTRACTOR_MISSING_DOCS", { id: flag.entities?.contractor_id ?? "-", missing: n(p.missing), median: n(p.median, 1) });
+    case "CONTRACTOR_VIOLATION_RATE":
+      return t("anomaly.reason.CONTRACTOR_VIOLATION_RATE", { id: flag.entities?.contractor_id ?? "-", rate: n(p.per_worker, 2), median: n(p.median, 2) });
+    case "GRIEVANCE_SLA_CLUSTER":
+      return t("anomaly.reason.GRIEVANCE_SLA_CLUSTER", { breaches: n(p.breaches), days: n(p.window_days), from: fmtDate(p.from), to: fmtDate(p.to) });
+    default:
+      return humanise(String(reason.code).toLowerCase());
+  }
+}
+
+/** A finding's window: one day, or from - to. */
+export function anomalyWindow(flag) {
+  if (!flag?.from) return "";
+  const from = fmtDate(flag.from);
+  const to = fmtDate(flag.to);
+  return from === to ? from : t("anomaly.window", { from, to });
+}
+
 /** One alert as a sentence. */
 export function alertText(alert) {
   if (!alert) return "";
   const p = alert.params || {};
+  if (alert.code === "ANOMALY_DETECTED") {
+    const flag = { subject: p.subject, from: p.from, to: p.to, entities: { date: p.subject, contractor_id: String(p.subject || "").replace("contractor:", "") } };
+    return t("alert.ANOMALY_DETECTED", { detector: t(`anomaly.detector.${p.detector}`, { defaultValue: p.detector }),
+      summary: anomalyReasonText({ code: p.reason, params: p.reason_params || {} }, flag) });
+  }
+  if (alert.code === "PRODUCTION_ENTRY_PENDING") {
+    return t("alert.PRODUCTION_ENTRY_PENDING", { date: fmtDate(p.date), missing: (p.missing_shifts || []).join(", ") || "-",
+      drafts: (p.draft_shifts || []).join(", ") || "-" });
+  }
   const params = {
     ...p,
     sensor: sensorLabel(p.sensor_type),
@@ -58,15 +118,18 @@ export function alertSource(alert) {
     GRIEVANCE_SLA_BREACHED: "grievance",
     DANGEROUS_OCCURRENCE_REPORTED: "incident",
     DETAIL_REQUEST_OVERDUE: "production",
+    PRODUCTION_ENTRY_PENDING: "production",
+    ANOMALY_DETECTED: "anomaly",
   };
   return t(`alert.source.${byCode[alert.code] || "system"}`);
 }
 
 /** A priority-queue reason. */
 export const reasonText = (reason) =>
-  reason ? t(`priority.${reason.code}`, { ...reason.params, risk: riskText(reason.params?.risk_level) }) : "";
+  reason ? t(`priority.${reason.code}`, { ...reason.params, risk: riskText(reason.params?.risk_level), band: riskText(reason.params?.band),
+    component: reason.params?.component ? t(`gri.component.${reason.params.component}`) : "" }) : "";
 
-/** The 48-hour reporting check of an incident. */
+/** The reporting-time check of an incident (the law's time per type). */
 export const reportingCheckText = (check) => (check ? t(`incident.check.${check.code}`, check.params) : "");
 
 /** A corrective action's description: system codes are translated, people's words are shown as typed. */

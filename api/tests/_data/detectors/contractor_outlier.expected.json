@@ -1,0 +1,75 @@
+{
+ "flags": [
+  {
+   "detector": "contractor_outlier",
+   "mine_id": 28,
+   "subject": "contractor:20",
+   "from": "2026-06-27T23:59:59Z",
+   "to": "2026-09-25T23:59:59Z",
+   "score": 4.3,
+   "reasons": [
+    {
+     "code": "CONTRACTOR_VIOLATION_RATE",
+     "params": {
+      "per_worker": 0.63,
+      "median": 0.17,
+      "z": 4.3
+     }
+    }
+   ],
+   "entities": {
+    "contractor_id": 20
+   }
+  },
+  {
+   "detector": "contractor_outlier",
+   "mine_id": 30,
+   "subject": "contractor:36",
+   "from": "2026-06-27T23:59:59Z",
+   "to": "2026-09-25T23:59:59Z",
+   "score": 4.8,
+   "reasons": [
+    {
+     "code": "CONTRACTOR_VIOLATION_RATE",
+     "params": {
+      "per_worker": 0.68,
+      "median": 0.17,
+      "z": 4.8
+     }
+    }
+   ],
+   "entities": {
+    "contractor_id": 36
+   }
+  },
+  {
+   "detector": "contractor_outlier",
+   "mine_id": 42,
+   "subject": "contractor:32",
+   "from": "2026-06-27T23:59:59Z",
+   "to": "2026-09-25T23:59:59Z",
+   "score": 17.5,
+   "reasons": [
+    {
+     "code": "CONTRACTOR_MISSING_DOCS",
+     "params": {
+      "missing": 41,
+      "median": 2.0,
+      "z": 17.5
+     }
+    },
+    {
+     "code": "CONTRACTOR_VIOLATION_RATE",
+     "params": {
+      "per_worker": 1.03,
+      "median": 0.17,
+      "z": 8.1
+     }
+    }
+   ],
+   "entities": {
+    "contractor_id": 32
+   }
+  }
+ ]
+}

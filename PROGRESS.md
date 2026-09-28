@@ -4,7 +4,7 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 
 ## Remaining phases, in order
 
-5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service) → **7B** → 8 (hardening).
+5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service, done) → **7B** → 8 (hardening).
 The full scope of each is in `PLAN.md` §6.
 
 - **Phase 5B - compliance obligation register and GIS map** (owner addition, 2026-09-27).
@@ -35,6 +35,152 @@ The full scope of each is in `PLAN.md` §6.
     existing services, so the audit chain and history stay intact.
   - Device time and out-of-boundary locations are flagged.
   - Tested by an offline → online browser run.
+
+## Phase 7: Automation, anomaly detectors and predicted risk (done, 2026-09-28)
+
+Also in this phase, committed first (0f19236): incident reporting at the law's time (RPT-05 12 h,
+RPT-04 its own legal time, RPT-03 "forthwith" plus a 1 h grace labelled as a product setting).
+The mine heads keep their seeded languages.
+
+### A. Scheduled jobs
+
+- `yii jobs/<name>`: `reminders`, `sla`, `escalate-alerts`, `score`, `anomaly`, `contractor`,
+  `obligation`, `production`, `grievance`, and `jobs/all` / `jobs/status`
+  (`api/commands/JobsController.php`).
+- Each job is idempotent: a second run finds nothing to do. Each holds a PostgreSQL advisory lock,
+  so an overlapping copy records `skipped`. Each is logged to `job_run` and
+  `api/runtime/logs/jobs.log`, and runs as the system (no user in history or audit).
+- New: alert escalation (level 1 after 24 h open, level 2 after 72 h) and the production-entry
+  reminder (`PRODUCTION_ENTRY_PENDING`). `jobs/score` keeps a daily history of the score and the
+  index per mine (`mine_risk_snapshot`) and refreshes the predictions.
+- `run_all.bat` runs `jobs/all` once at startup (about 5 s). `scripts/register_tasks.ps1`
+  registers the jobs in Task Scheduler for the current user, with no admin rights (`-DryRun`,
+  `-Unregister`). Documented in `docs/SETUP_WINDOWS.md` 7a. **Not registered on this machine** -
+  that is the owner's call; only the dry run was executed.
+- Migration `m261005_000001_phase7_automation` (reversible): `anomaly_flag`, `job_run`,
+  `mine_risk_snapshot`, `mine_risk_prediction`, and the two alert codes.
+
+### B. Governance Risk Index (the compliance score is unchanged)
+
+- A separate 0-100 measure: capped points for open violations, sensor breaches, overdue
+  obligations, overdue contractor documents, grievances past SLA and overdue corrective actions,
+  times a repeat-violation multiplier. Weights are product settings in `rules.yaml`
+  (`governance_risk_index`). `api/services/GovernanceRiskService.php`.
+- Shown beside the compliance score on both mine screens, with its components as
+  "count × points = value (max)".
+- The inspection priority queue is ordered by it (the first reason is `PRIORITY_GRI`; urgency
+  breaks ties).
+- A mine head's index leaves out the sensitive grievances it cannot see.
+- Demo scores unchanged (100/80/70/60/45, fleet 83.2, before and after `jobs/all`), and
+  `DemoScoreCest` is unchanged. Demo fleet: 6 high, 24 medium, 44 low.
+
+### C. Detectors in the ai-service, PHP fallback kept
+
+- Seven stateless detectors in `ai-service/detectors/` (`POST /anomaly/{name}`): production
+  anomaly, flatlined sensor, night-shift concentration, repeat violations, late corrective
+  actions, contractor outlier, grievance cluster.
+- Identical PHP twins in `api/services/detectors/`, used when the service is down or answers an
+  error (`AI_ENGINE=auto|php|ai-service`).
+- Parity is tested on shared fixtures dumped from the demo database, and both sides must produce
+  the same output number for number.
+- Findings become `anomaly_flag` rows and `ANOMALY_DETECTED` alerts. A finding no longer made is
+  cleared and its alert resolved. The engine that produced each finding is shown.
+- The vision code moved into `ai-service/vision/`. The service still runs from `backend\.venv`
+  (see `ai-service/requirements.txt`).
+
+### D. Predicted risk (one trained model)
+
+- `ai-service/risk/train.py`: a HistGradientBoosting model (monotonic, Platt-calibrated) on
+  `data/reference/msha_rates.csv`, real US coal mine-years. It predicts a high-accident next year
+  (lost-time and fatal accidents at 3 or more per 100 workers).
+- Split by time: fit on 2017-2020, calibration on 2021, test on 2022-2024.
+- Test results: AUC 0.816 against 0.766 for the baseline (this year's lost-time rate). Precision
+  0.667 / recall 0.569 against 0.658 / 0.630. Brier 0.160 against 0.233; ECE 0.037.
+- Exported to `model.json` and evaluated identically in Python and PHP.
+- Applied through the crosswalk features. Violation rates are transferred by percentile, because
+  US inspection intensity is about 5x ours.
+- On screen: probability, band, fleet rank, the top factors in plain language, and the statement
+  that it is trained on US regulator data and transferred. The same is in the docs and in
+  `GET /v1/risk/model`.
+
+### E. Evaluation
+
+- `docs/AI_EVALUATION.md` has three sections: the detector table, the model's results with a
+  reliability table, and the PPE model.
+- The detector table is regenerated by `php yii ai/evaluate --write`.
+- `AiEvaluationTest` recomputes the table and fails if the page is stale.
+
+| Detector | Scenarios | Flags | True positives | Missed | False positives (flags / mines) | Decoys correctly ignored |
+|---|---|---|---|---|---|---|
+| production_anomaly | S2 (decoy N1) | 5 | 1 / 1 | 0 | 4 / 4 | 1 / 1 |
+| sensor_flatline | S3 | 1 | 1 / 1 | 0 | 0 / 0 | - |
+| night_shift | S5 (decoy N3) | 1 | 1 / 1 | 0 | 0 / 0 | 1 / 1 |
+| repeat_violations | S1 | 5 | 1 / 1 | 0 | 4 / 4 | - |
+| late_actions | S7 | 1 | 1 / 1 | 0 | 0 / 0 | - |
+| contractor_outlier | S4 | 3 | 1 / 1 | 0 | 2 / 2 | - |
+| grievance_cluster | S6 (decoy N2) | 1 | 1 / 1 | 0 | 0 / 0 | 1 / 1 |
+| **All** | | 17 | **7 / 7** | 0 | 10 | **3 / 3** |
+
+### API and frontend
+
+- New endpoints: `GET /v1/views/priority` (queue plus findings in one request),
+  `GET /v1/anomalies`, `GET /v1/mines/{id}/risk` and `GET /v1/risk/model`.
+- `/v1/views/mine/{id}` gains a `risk` part.
+- New permission `risk.view` for every role, scoped as usual (404 out of scope).
+- Details are in `docs/API_CHANGES.md`, `docs/api-contract.md` and `docs/access-control.md`.
+- UI: `frontend/src/components/risk/RiskPanel.jsx`. The index sits beside the score, and the
+  panel below it shows the components, the predicted risk and the findings. The priority tab
+  lists the fleet's findings. Alerts carry an "Escalated L1/L2" tag.
+- 67 new strings, in all six locales. `check_locales` and `check_hardcoded_strings` are clean.
+
+### Tests, performance, browser check
+
+- `run_tests.bat`: locale checks clean. ai-service: 19 pytest (detectors and model against the
+  fixtures, statelessness, monotonicity, model card). API: 178 tests, 3,406 assertions, all
+  passing. New: `DetectorParityTest`, `AiEvaluationTest`, `JobsTest` and `RiskCest`.
+  `DashboardCest` now checks the GRI order and `ViewCest` the `risk` part; `DemoScoreCest` is
+  unchanged.
+- Performance: every dashboard request is under 150 ms. The slowest p95 is 57 ms; the new
+  priority view is 28 / 29 ms (`docs/PERFORMANCE.md`).
+- `node scripts/browser_check.mjs phase7 --side-tabs`: 8 screenshots in
+  `docs/screenshots/phase7/`, with no browser errors. The two side tabs polled with 0 failed
+  requests. `jobs.txt` has the fallback run, the ai-service run and the idempotent rerun.
+
+### Known issues (Phase 7)
+
+- **Scheduled tasks are not registered** on this machine (the owner decides). They run only while
+  the user is logged on, and they need PostgreSQL running.
+- **An ai-service started before this update** answers 404 on the new endpoints, so the jobs
+  silently use the PHP fallback. Restart the `SIH-AI` window after updating;
+  `GET :8001/health` then shows `detectors` and `risk_model`.
+- **With the service unreachable**, the first request waits for the connection to fail:
+  `jobs/anomaly` takes about 6 s and `jobs/score` about 5 s, instead of 1-2 s.
+- **10 false positives** on the demo data (4 production dips at the start of the month, 4 repeat
+  violations followed by a matching incident by chance, 2 contractors with high violation
+  rates). They are explained in `docs/AI_EVALUATION.md`.
+- **Predicted risk is transferred, not validated here.** It was trained on US data, and our data
+  is synthetic. It is a ranking prompt, not a calibrated probability for India.
+- **Index weights are product settings**, not fitted to outcomes.
+- **The 67 new strings in hi, bn, or, te and mr are unreviewed drafts**, like the rest of those
+  files.
+- Findings name a contractor by id ("Contractor #32"). `job_run` survives a reseed (it is a log).
+
+### How to verify (Phase 7)
+
+```bat
+cd api && run_tests.bat
+api\yii.bat jobs/all
+api\yii.bat jobs/status
+api\yii.bat ai/evaluate
+api\yii.bat ai/evaluate --engine=ai-service
+backend\.venv\Scripts\python -m pytest ai-service\tests -q
+backend\.venv\Scripts\python ai-service\risk\train.py
+node scripts\browser_check.mjs phase7 --side-tabs
+node scripts\perf_check.mjs
+powershell -ExecutionPolicy Bypass -File scripts\register_tasks.ps1 -DryRun
+```
+
+Re-seed after a browser check (`api\yii.bat seed demo` then `api\yii.bat jobs/all`).
 
 ## Phase 6: Multilingual (done, 2026-09-28)
 

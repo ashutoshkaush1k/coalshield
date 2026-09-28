@@ -175,3 +175,27 @@ Same method, 2026-09-28, mains power, fresh demo seed: every dashboard request u
 and 45 / 57. The API changed only in `/v1/users/me` (three more fields). Language switching is
 client-side and makes no extra requests. The Noto font files are bundled, and a browser fetches
 only the scripts it renders.
+
+## After Phase 7 (automation, Governance Risk Index, predicted risk)
+
+Same method, 2026-09-28, mains power, after `yii jobs/all`: every dashboard request under 150 ms.
+The mine views now carry a `risk` part (the index with its components, the stored prediction, the
+mine's findings), and the priority tab is one request, `/v1/views/priority` (queue ordered by the
+index, plus the fleet's findings).
+
+| screen | median | p95 (ms) |
+|---|---|---|
+| government overview | 50 | 53 |
+| government mine detail (with `risk`) | 40 | 45 |
+| mine head dashboard (with `risk`) | 44 | 56 |
+| government priority (new) | 28 | 29 |
+| corporate priority (new) | 21 | 23 |
+| side by side: overview / mine head | 49 / 44 | 57 / 49 |
+
+The detectors and the model never run on a request: the jobs store their output (`anomaly_flag`,
+`mine_risk_prediction`) and the screens read it. The index is computed per request from six grouped
+counts (about 8 ms for the whole fleet). The model card is read from `ai-service/risk/model.json`
+when a screen needs it; `/v1/risk/model` alone answers in about 8 ms.
+
+Note for anyone repeating this with curl on Windows: use `127.0.0.1`, not `localhost` - resolving
+`localhost` tries IPv6 first and adds about 200 ms to every request outside the server.

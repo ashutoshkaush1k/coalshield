@@ -37,7 +37,7 @@ class InspectionController extends ApiController
     {
         $this->requirePermission('inspection.viewQueue');
         $request = Yii::$app->request;
-        $candidates = InspectionPriorityService::queue($this->visibleMines($request->get('state')));
+        $candidates = InspectionPriorityService::queue($this->visibleMines($request->get('state')), null, $this->currentUser());
         $limit = $request->get('limit');
         if ($limit !== null && ctype_digit((string) $limit)) {
             $candidates = array_slice($candidates, 0, max(1, min(100, (int) $limit)));

@@ -1,6 +1,6 @@
 // End-to-end browser check of both dashboards, saving a screenshot of every step.
 //
-//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b|phase6] [outDir] [--strict] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
+//   node scripts/browser_check.mjs [phase2|phase3|phase4|phase5|phase5b|phase6|phase7] [outDir] [--strict] [--side-tabs]   (default phase2, docs/screenshots/<phase>)
 //   --side-tabs  also keep a government overview and a mine-head dashboard polling in two more tabs
 //
 // phase2: both dashboards - overview, drill-down, directive loop, corrective actions, incidents.
@@ -18,6 +18,11 @@
 //         login, the profile switching at once; then login, overview, mine detail, production,
 //         grievances, obligations, map and profile in en, hi, bn, or, te and mr with the network
 //         blocked, each screen probed for clipped or spilling text (overflow.json); --strict fails on any.
+// phase7: automation - the jobs run with the ai-service unreachable (PHP fallback) and then with it
+//         up; the Governance Risk Index beside the score and its components, the predicted risk
+//         with its factors and the US-data statement, the detectors' findings with their engine,
+//         the priority queue ordered by the index, ANOMALY_DETECTED and escalated alerts, the mine
+//         head's view, and the panel in Hindi. Needs the ai-service running (run_all.bat).
 //
 // Needs the stack running (run_all.bat: API on 8080, frontend on 5173) on a freshly seeded demo
 // database (api\yii.bat seed demo). Drives the installed Edge or Chrome headless over the
@@ -971,6 +976,103 @@ async function phase6(page) {
 }
 
 /** Two more tabs, a government overview and a mine-head dashboard, polling on their own. */
+/** `yii <args>` with extra environment (e.g. an unreachable ai-service); resolves with its output. */
+function yii(args, env = {}) {
+  const php = process.env.PHP ?? "C:/xampp/php/php.exe";
+  return new Promise((res, rej) => {
+    const p = spawn(php, [join(ROOT, "api", "yii"), ...args], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, ...env } });
+    let out = "";
+    p.stdout.on("data", (d) => (out += d));
+    p.stderr.on("data", (d) => (out += d));
+    p.on("close", (code) => (code === 0 ? res(out.trim()) : rej(new Error(`yii ${args.join(" ")}: ${out}`))));
+  });
+}
+
+async function phase7(page) {
+  const GOV = "gov@dgms.gov.in";
+  const HEAD = "head.od-tlc-05@coalmine.in";   // Bhubaneswari, mine 5: a repeat-violation finding
+  const waitFor = async (selector, timeout = 20000) => {
+    for (let waited = 0; waited < timeout; waited += 400) {
+      if (await page.eval(`!!document.querySelector(${JSON.stringify(selector)})`)) return true;
+      await sleep(400);
+    }
+    throw new Error(`waited ${timeout / 1000} s for ${selector}`);
+  };
+  const scrollToId = async (id) => { await page.eval(`document.getElementById(${JSON.stringify(id)}).scrollIntoView({ block: "start" })`); await sleep(700); };
+  const log = [];
+  const aiUp = await fetch("http://127.0.0.1:8001/health").then((r) => r.json()).catch(() => null);
+  expect(aiUp?.detectors && aiUp?.risk_model, "the ai-service is running with the detectors and the model (restart it after an update)");
+
+  console.log("Jobs with the ai-service unreachable: the PHP twins answer");
+  const down = { AI_SERVICE_URL: "http://127.0.0.1:8009" };
+  for (const job of ["anomaly", "score"]) log.push(`$ AI_SERVICE_URL=http://127.0.0.1:8009 yii jobs/${job}`, await yii([`jobs/${job}`], down));
+  expect(log.join("\n").includes('"engine":"php"') && !log.join("\n").includes('"engine":"ai-service"'), "fallback: every detector and the model ran in PHP");
+
+  await page.as(GOV, "/gov/mines/5");
+  await waitFor("#gri-beside-score");
+  let text = await page.until((t) => t.includes("Governance Risk Index") && t.includes("Predicted risk"));
+  expect(text.includes("Risk index") && text.includes("What makes it up"), "the index beside the compliance score");
+  await page.shot("01-gov-mine-score-and-index", "Government mine detail: compliance score (unchanged) with the Governance Risk Index beside it");
+  await scrollToId("risk-panel");
+  text = await page.text();
+  expect(text.includes("Open violations") && text.includes("×"), "the index's components with their arithmetic");
+  expect(text.includes("Trained on US regulator data"), "the predicted risk says where the model comes from");
+  expect(text.includes("What raises it"), "the predicted risk explains its factors");
+  expect(text.includes("Repeat violations") && text.includes("built-in check"), "a finding, computed by the PHP fallback");
+  await page.shot("02-gov-risk-panel-fallback", "Risk panel: index components, predicted risk with factors and the US-data statement, findings from the PHP fallback");
+
+  console.log("Jobs again with the ai-service up");
+  for (const job of ["anomaly", "score"]) log.push(`$ yii jobs/${job}`, await yii([`jobs/${job}`]));
+  expect(log.at(-3).includes('"engine":"ai-service"') && log.at(-1).includes('"engine":"ai-service"'), "the ai-service answered");
+  log.push("$ yii jobs/all   (again: idempotent - nothing new)", await yii(["jobs/all"]));
+  await page.goto(`${APP}/gov/mines/5`, 4500);
+  await waitFor("#risk-panel");
+  await scrollToId("risk-panel");
+  text = await page.until((t) => t.includes("AI service"));
+  expect(text.includes("AI service"), "findings and prediction now from the ai-service");
+  await page.shot("03-gov-risk-panel-ai-service", "The same panel after the jobs ran on the ai-service: same findings, engine label changed");
+
+  await page.goto(`${APP}/gov/inspections`, 4500);
+  text = await page.until((t) => t.includes("Governance Risk Index") && t.includes("Risk index"));
+  expect(text.includes("largest part"), "each queue row gives the index's largest component");
+  await page.shot("04-priority-by-index", "Priority queue ordered by the Governance Risk Index (compliance score still shown)");
+  await scrollToId("fleet-patterns");
+  text = await page.text();
+  for (const d of ["Production anomaly", "Flatlined sensor", "Night-shift concentration", "Repeat violations", "Late corrective actions", "Contractor outlier", "Grievance cluster"]) {
+    expect(text.includes(d), `fleet findings include ${d}`);
+  }
+  await page.shot("05-priority-fleet-findings", "All seven detectors' findings across the fleet, each with its reasons");
+
+  await page.goto(`${APP}/gov/mines/6`, 4500);
+  text = await page.until((t) => t.includes("Pattern found"));
+  expect(text.includes("Pattern found (Flatlined sensor)"), "ANOMALY_DETECTED alert worded");
+  expect(/Escalated L[12]/.test(text), "escalated alerts are tagged");
+  // Bring the first escalated alert into the feed's view, under the findings.
+  await page.eval(`(() => { const tag = [...document.querySelectorAll(".alert-row .tag")].find((e) => /^Escalated L/.test(e.textContent));
+    tag?.closest(".alert-row").scrollIntoView({ block: "end" }); window.scrollTo(0, 0); })()`);
+  await sleep(500);
+  await page.shot("06-anomaly-and-escalated-alerts", "Alerts: a flatlined-sensor finding (ANOMALY_DETECTED) and alerts escalated by jobs/escalate-alerts");
+
+  await page.as(HEAD, "/mine");
+  await waitFor("#risk-panel");
+  await scrollToId("risk-panel");
+  text = await page.until((t) => t.includes("Governance Risk Index"));
+  expect(text.includes("Sensitive grievances are not counted in your view"), "the mine head is told the index leaves out sensitive grievances");
+  await page.shot("07-mine-head-risk-panel", "Mine head: the same panel for their own mine, sensitive grievances left out");
+
+  await page.as(GOV, "/gov/mines/5", "hi");
+  await waitFor("#risk-panel");
+  await scrollToId("risk-panel");
+  await sleep(800);
+  text = await page.text();
+  expect(!text.includes("What raises it") && !text.includes("Trained on US regulator data"), "the panel is translated");
+  await page.shot("08-risk-panel-hindi", "The risk panel in Hindi");
+  await page.as(GOV, "/gov", "en");   // the account back to English
+
+  writeFileSync(join(OUT, "jobs.txt"), log.join("\n") + "\n");
+  console.log("  saved jobs.txt - the job runs (fallback, ai-service, idempotent rerun)");
+}
+
 async function openSideTabs() {
   const tabs = [];
   for (const [who, path] of [["gov@dgms.gov.in", "/gov"], ["head.od-tlc-05@coalmine.in", "/mine"]]) {
@@ -1029,7 +1131,7 @@ async function main() {
     if (side.length) await fetch(`http://127.0.0.1:${PORT}/json/activate/${target.id}`, { method: "PUT" }).catch(() => null);
 
     try {
-      await ({ phase2, phase3, phase4, phase5, phase5b, phase6 }[PHASE] ?? phase2)(page);
+      await ({ phase2, phase3, phase4, phase5, phase5b, phase6, phase7 }[PHASE] ?? phase2)(page);
     } catch (e) {
       // Keep what the page showed when a check failed, for diagnosis.
       const { data } = await page.send("Page.captureScreenshot", { format: "png" }).catch(() => ({}));

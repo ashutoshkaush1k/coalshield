@@ -1,10 +1,12 @@
-// Ranked inspection queue. Ranking comes from the API; this is presentation only.
-import { getInspectionQueue } from "../../../api/inspections";
+// Ranked inspection queue (ordered by the Governance Risk Index, Phase 7) and the patterns the
+// detectors found across the mines in scope. One request: GET /v1/views/priority.
+import { getPriorityView } from "../../../api/views";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { StateFilter } from "../../../components/common/StateFilter";
 import { DemoTag } from "../../../components/common/DemoTag";
 import { Loader } from "../../../components/common/Loader";
 import { PriorityQueue } from "../../../components/inspections/PriorityQueue";
+import { Patterns } from "../../../components/risk/RiskPanel";
 import { usePolling } from "../../../hooks/usePolling";
 import { useAuth } from "../../../hooks/useAuth";
 import { scopeWhere } from "../../../i18n/labels";
@@ -13,9 +15,10 @@ import { fmtNumber } from "../../../utils/format";
 
 export function PriorityPanel({ state, states, onStateChange }) {
   const { user } = useAuth();
-  const { data, error, loading } = usePolling(() => getInspectionQueue({ state }), {
+  const { data: view, error, loading } = usePolling(() => getPriorityView(state), {
     deps: [state],
   });
+  const data = view?.queue;
 
   if (loading && !data) return <Loader label={t("priority.loading")} />;
 
@@ -45,6 +48,8 @@ export function PriorityPanel({ state, states, onStateChange }) {
           </div>
         </section>
       )}
+
+      {view && <Patterns patterns={view.patterns} showMine id="fleet-patterns" />}
     </div>
   );
 }

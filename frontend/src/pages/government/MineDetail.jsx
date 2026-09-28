@@ -15,6 +15,7 @@ import { DemoTag } from "../../components/common/DemoTag";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { RiskMark } from "../../components/compliance/RiskMark";
+import { RiskPanel } from "../../components/risk/RiskPanel";
 import { Topbar } from "../../components/layout/Topbar";
 import { Drawer } from "../../components/overlay/Overlay";
 import { useToast } from "../../components/overlay/ToastHost";
@@ -43,8 +44,11 @@ function Stat({ label, value, tone }) {
   );
 }
 
-/** Score, band, tallies and the formula - the same block on both dashboards. */
-export function ComplianceSummary({ mine }) {
+/**
+ * Score, band, tallies and the formula - the same block on both dashboards. `gri` (Phase 7) puts
+ * the Governance Risk Index beside the score; it is a separate measure and changes nothing above.
+ */
+export function ComplianceSummary({ mine, gri = null }) {
   const t = useT();
   const c = mine.compliance;
   const cls = riskClass(c.risk_level);
@@ -58,6 +62,15 @@ export function ComplianceSummary({ mine }) {
             <RiskMark level={c.risk_level} />
           </div>
         </div>
+        {gri && (
+          <div className="gri-figure">
+            <span className="label">{t("gri.short")}</span>
+            <div className={`hero-score ${riskClass(gri.band)}`} id="gri-beside-score">{fmtNumber(gri.gri, 0)}</div>
+            <div style={{ marginTop: "var(--space-3)" }}>
+              <a href="#governance-risk" className="small">{t("gri.explain")}</a>
+            </div>
+          </div>
+        )}
         <div className="spacer" />
         <div className="tally-set">
           <Stat label={t("mine.openViolations")} value={c.violation_count} />
@@ -116,7 +129,7 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
         <div className="grid split">
           <section className="panel-block">
             <div className="panel-body">
-              <ComplianceSummary mine={mine} />
+              <ComplianceSummary mine={mine} gri={data.risk?.governance_risk} />
               <div className="row wrap" style={{ marginTop: "var(--space-5)" }}>
                 <button type="button" onClick={() => setSensorsOpen(true)}>{t("mine.sensorTrends")}</button>
                 <div className="spacer" />
@@ -138,6 +151,8 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
             </div>
           </section>
         </div>
+
+        <RiskPanel risk={data.risk} />
 
         {children}
       </div>

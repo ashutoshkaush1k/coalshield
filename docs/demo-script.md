@@ -24,10 +24,13 @@ a clean re-inspection frame.
 
 ```bat
 api\yii.bat seed demo
+api\yii.bat jobs/all
 ```
 
 Run it **immediately before every demo, every rehearsal, and every practice run.** It reloads the
-demo preset in one transaction (about 25 seconds) and starts a fresh audit chain.
+demo preset in one transaction (about 25 seconds) and starts a fresh audit chain. `jobs/all` (Phase
+7, about 5 seconds) then does what the clock would: reminders, escalations, the risk index history,
+the predictions and the detectors' findings. The scores are the same before and after it.
 
 ### The safety net
 
@@ -247,7 +250,20 @@ continuing.**
     scope. An empty list would read as a mine with no findings - the most dangerous wrong answer
     in a compliance system - so out-of-scope is always a 404, never a filtered empty result.
 
-**After the run - and before the next one - re-seed.**
+18. **Automation and risk (Phase 7).** `run_all.bat` has already run the scheduled jobs once. Open
+    **Priority Queue**: the mines are ordered by the **Governance Risk Index**, with the compliance
+    score still beside it - say the score itself has not changed. Scroll to **Patterns found**: seven
+    automated checks, each finding with its numbers ("12 roof and strata violations of 33 in 45
+    days, about 2.5 expected"). Open **Bhubaneswari**: the index sits beside the score; the panel
+    below shows how it is made up (count × points, capped), the **predicted risk** with what raises
+    it, and the statement that the model is **trained on US regulator data and transferred** -
+    read it out; it is a prompt to look, not a finding. If asked how good the checks are:
+    `docs/AI_EVALUATION.md` (every planted scenario found, every decoy ignored, the false positives
+    explained; the model beats last year's accident rate on later US years, AUC 0.82 against 0.77).
+    To show the fallback, close the `SIH-AI` window and run `api\yii.bat jobs/anomaly`: the same
+    findings, labelled "built-in check".
+
+**After the run - and before the next one - re-seed.** (`run_all.bat` runs the jobs again on the next start.)
 
 ---
 

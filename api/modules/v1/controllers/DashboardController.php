@@ -45,7 +45,7 @@ class DashboardController extends ApiController
 
         $queue = [];
         if ($multiMine && Yii::$app->user->can('inspection.viewQueue')) {
-            $queue = array_slice(InspectionPriorityService::queue($inScope), 0, (int) $params['dashboard.inspectionPreview']);
+            $queue = array_slice(InspectionPriorityService::queue($inScope, null, $this->currentUser()), 0, (int) $params['dashboard.inspectionPreview']);
         }
         $states = $multiMine
             ? (new Query())->select('state')->distinct()->from('{{%mine}}')

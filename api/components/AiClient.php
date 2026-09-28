@@ -13,6 +13,39 @@ use yii\httpclient\Client;
  */
 final class AiClient
 {
+    /**
+     * POST a JSON payload (the detectors, the risk model); the decoded JSON response. Retries once on
+     * a connection failure (the service may be starting), then gives up with AiUnavailableException.
+     */
+    public static function postJson(string $path, array $payload, ?float $timeout = null): array
+    {
+        $params = Yii::$app->params;
+        $timeout ??= (float) ($params['ai.detectorTimeoutSeconds'] ?? 30);
+        $last = null;
+        for ($attempt = 1; $attempt <= 2; $attempt++) {
+            try {
+                $response = (new Client(['baseUrl' => rtrim($params['ai.baseUrl'], '/'), 'requestConfig' => ['format' => Client::FORMAT_JSON],
+                    'responseConfig' => ['format' => Client::FORMAT_JSON]]))
+                    ->post(ltrim($path, '/'), $payload)
+                    ->setOptions(['timeout' => $timeout, 'connectTimeout' => 2])
+                    ->send();
+            } catch (\Throwable $e) {
+                $last = $e;
+                if ($attempt === 1) {
+                    usleep(300_000);
+                }
+                continue;
+            }
+            if (!$response->isOk || !is_array($response->data)) {
+                Yii::warning("ai-service $path: status " . $response->statusCode, __METHOD__);
+                throw new AiUnavailableException('status ' . $response->statusCode);
+            }
+            return $response->data;
+        }
+        Yii::warning("ai-service $path unreachable: " . $last?->getMessage(), __METHOD__);
+        throw new AiUnavailableException('unreachable', 0, $last);
+    }
+
     /** @return array decoded /vision/ppe response */
     public static function ppe(string $path, string $originalName): array
     {

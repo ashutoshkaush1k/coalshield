@@ -655,3 +655,21 @@ tr.is-flagged { background: var(--risk-high-bg); }
 /* Indic scripts need more line height than Latin for matras and conjuncts: the body text only;
    elements that set their own line height (hero numbers, tags) keep it. */
 html:lang(hi) body, html:lang(bn) body, html:lang(or) body, html:lang(te) body, html:lang(mr) body { line-height: 1.6; }
+
+/* Phase 7: Governance Risk Index, predicted risk, detector findings */
+.grid.three-col { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
+.grid.three-col > * { min-width: 0; }
+.gri-figure { padding-left: var(--space-5); margin-left: var(--space-5); border-left: 1px solid var(--line); }
+.gri-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.gri-table td { padding: 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.gri-table td.num { text-align: right; white-space: nowrap; padding-left: var(--space-3); }
+.gri-table tr.is-zero td { color: var(--muted); }
+.gri-table tr.is-total td { border-bottom: 0; font-weight: 600; }
+.factor-list { margin: 0; padding-left: 1.1em; font-size: var(--text-sm); display: grid; gap: 4px; }
+.pattern-list { list-style: none; margin: 0; padding: 0; }
+.pattern-list li { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); display: grid; gap: 3px; }
+.pattern-list li:last-child { border-bottom: 0; }
+.queue-figures { display: flex; align-items: baseline; gap: var(--space-4); }
+.queue-pair { display: inline-flex; align-items: baseline; gap: 6px; }
+.queue-pair .label { margin: 0; }
+@media (max-width: 640px) { .gri-figure { border-left: 0; padding-left: 0; margin-left: 0; } }

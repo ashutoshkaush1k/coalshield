@@ -40,7 +40,7 @@ class ViewCest
         $I->assertSame('mine', $I->grabDataFromResponseByJsonPath('$.dashboard.scope')[0]);
     }
 
-    public function mineViewEqualsTheSevenEndpoints(ApiTester $I): void
+    public function mineViewEqualsTheEightEndpoints(ApiTester $I): void
     {
         $mineId = Auth::user(Auth::MINE_HEAD_BHUBANESWARI)->mine_id;
         $parts = [
@@ -51,6 +51,7 @@ class ViewCest
             'audit' => ['/v1/audit', ['mine_id' => $mineId, 'per_page' => 40]],
             'corrective_actions' => ['/v1/corrective-actions', ['mine_id' => $mineId, 'per_page' => 50]],
             'incidents' => ['/v1/incidents', ['mine_id' => $mineId, 'per_page' => 50]],
+            'risk' => ["/v1/mines/$mineId/risk", []],   // Phase 7
         ];
         foreach ([Auth::MINE_HEAD_BHUBANESWARI, Auth::GOVERNMENT] as $who) {
             $I->amBearerOf($who);

@@ -201,7 +201,8 @@
       "system": "System",
       "directive": "From DGMS",
       "action": "Corrective action",
-      "production": "Production"
+      "production": "Production",
+      "anomaly": "Pattern"
     },
     "directiveNote": "Note: {{note}}",
     "raisedBy": "Raised by",
@@ -210,7 +211,10 @@
     "reopenedBecause": "Reopened: {{reason}}",
     "CONTRACT_WORKER_CAP_EXCEEDED": "Contract #{{contract_id}} has {{active_workers}} active workers, above its limit of {{max_workers}}.",
     "OBLIGATION_DUE_SOON": "{{count}} statutory obligation(s) due {{due_at}}: {{obligations}}.",
-    "OBLIGATION_OVERDUE": "{{obligation}} for {{period}} is overdue (due {{due_at}}; {{instrument}} {{clause}})."
+    "OBLIGATION_OVERDUE": "{{obligation}} for {{period}} is overdue (due {{due_at}}; {{instrument}} {{clause}}).",
+    "ANOMALY_DETECTED": "Pattern found ({{detector}}): {{summary}}",
+    "PRODUCTION_ENTRY_PENDING": "Production for {{date}} not submitted - shifts missing: {{missing}}; drafts: {{drafts}}",
+    "level": "Escalated L{{level}}"
   },
   "category": {
     "roof_strata": "Roof and strata",
@@ -238,12 +242,13 @@
     "PRIORITY_RECENT_BREACHES": "{{count}} threshold breach(es) in the last {{hours}} h",
     "PRIORITY_NO_RECENT_EVENTS": "No new events in the last {{hours}} h",
     "empty": "Nothing queued for inspection.",
-    "rowAria": "Rank {{rank}}, {{name}}, score {{score}}. Open drill-down.",
+    "rowAria": "Rank {{rank}}, {{name}}, risk index {{gri}}, score {{score}}. Open drill-down.",
     "loading": "Ranking mines...",
     "singleMine": "The inspection queue compares mines, so it is not available to a single-mine account.",
     "rankedState": "{{n}} mines ranked in {{state}}",
     "rankedScope": "{{n}} mines ranked {{where}}",
-    "hint": "Urgency combines current score with the rise in events over the last {{hours}} hours"
+    "hint": "Ordered by the Governance Risk Index; the compliance score and the rise in events over the last {{hours}} hours are shown for each mine",
+    "PRIORITY_GRI": "Governance Risk Index {{gri}} ({{band}}) - largest part: {{component}} ({{count}})"
   },
   "incident": {
     "title": "Incidents",
@@ -493,7 +498,8 @@
     "reopenReason": "Proof not sufficient",
     "reopened": "Directive reopened",
     "reopenedBody": "The mine head has been asked to resubmit.",
-    "reopenFailed": "Could not reopen"
+    "reopenFailed": "Could not reopen",
+    "scoreShort": "Score"
   },
   "records": {
     "latest_one": "{{count}} most recent",
@@ -1466,5 +1472,80 @@
     "contractor_id": "contractor",
     "user_id": "person",
     "to": "new status"
+  },
+  "gri": {
+    "title": "Governance Risk Index",
+    "short": "Risk index",
+    "hint": "0-100, higher is worse. A separate measure: the compliance score does not change. Points and caps are product settings.",
+    "explain": "What makes it up",
+    "componentLine": "{{count}} × {{points}} = {{value}} (max {{cap}})",
+    "component": {
+      "open_violations": "Open violations",
+      "sensor_breaches": "Sensor threshold breaches",
+      "overdue_obligations": "Overdue statutory obligations",
+      "overdue_contractor_docs": "Missing or expired contractor documents",
+      "grievances_past_sla": "Grievances past their deadline",
+      "ageing_corrective_actions": "Overdue corrective actions"
+    },
+    "multiplier": "Repeat violations ({{categories}}) raise the total",
+    "noRepeat": "No repeat violations - no multiplier",
+    "viewerNote": "Sensitive grievances are not counted in your view; the regulator's index includes them, so it can be higher."
+  },
+  "prediction": {
+    "title": "Predicted risk",
+    "target": "Chance of a high-accident year ahead: lost-time and fatal accidents at 3 or more per 100 workers",
+    "none": "No prediction yet. The daily score job computes it.",
+    "fleet": "Higher than {{pct}} % of the monitored mines",
+    "factors": "What raises it",
+    "factorViolation": "{{label}}: {{value}} per 100 workers a year, higher than {{pct}} % of the monitored mines (+{{points}} points)",
+    "factorOther": "{{label}}: {{value}}, typical {{typical}} (+{{points}} points)",
+    "noFactors": "Nothing raises it above a typical mine.",
+    "disclaimer": "Trained on US regulator data (MSHA coal mine-years) and transferred to these mines by matching violation categories - not trained on Indian mines. On later US years it ranked mines better than last year's accident rate alone (AUC {{auc}} against {{baseline}}). A prompt to look closer, not a finding.",
+    "computed": "Computed {{when}} ({{engine}})",
+    "feature": {
+      "log_workers": "Workforce size",
+      "underground": "Underground working",
+      "violations_per_100": "All violations",
+      "roof_strata_per_100": "Roof and side violations",
+      "ventilation_gas_per_100": "Ventilation and gas violations",
+      "electrical_per_100": "Electrical violations",
+      "machinery_per_100": "Machinery violations",
+      "transport_haulage_per_100": "Transport and haulage violations",
+      "fire_per_100": "Fire violations",
+      "ppe_per_100": "PPE violations",
+      "accidents_per_100": "Accidents per 100 workers",
+      "lost_time_per_100": "Lost-time accidents per 100 workers",
+      "had_lost_time": "A lost-time accident this year"
+    }
+  },
+  "anomaly": {
+    "title": "Patterns found",
+    "hint": "Automated checks run every hour; each finding says why. A prompt to look closer, not a violation.",
+    "none": "No patterns found.",
+    "since": "first seen {{when}}",
+    "window": "{{from}} - {{to}}",
+    "engine": {
+      "php": "built-in check",
+      "ai-service": "AI service"
+    },
+    "detector": {
+      "production_anomaly": "Production anomaly",
+      "sensor_flatline": "Flatlined sensor",
+      "night_shift": "Night-shift concentration",
+      "repeat_violations": "Repeat violations",
+      "late_actions": "Late corrective actions",
+      "contractor_outlier": "Contractor outlier",
+      "grievance_cluster": "Grievance cluster"
+    },
+    "reason": {
+      "FLATLINE": "{{sensor}} read exactly {{value}} for {{hours}} h ({{readings}} readings) - a stuck or disconnected sensor?",
+      "NIGHT_CONCENTRATION": "{{night}} of {{total}} violations on the night shift ({{share}} %, about {{expected}} % expected; chance {{p}})",
+      "REPEAT_IMPROBABLE": "{{count}} {{category}} violations of {{of}} in {{days}} days (about {{expected}} expected; chance {{p}})",
+      "REPEAT_THEN_INCIDENT": "{{count}} {{category}} violations, then a related incident #{{id}} on {{date}} within {{days}} days",
+      "LATE_CLOSURES": "{{late}} of {{resolved}} corrective actions closed late ({{share}} %, fleet {{fleet}} %; chance {{p}})",
+      "CONTRACTOR_MISSING_DOCS": "Contractor #{{id}}: {{missing}} documents missing or expired (typical {{median}})",
+      "CONTRACTOR_VIOLATION_RATE": "Contractor #{{id}}: {{rate}} violations per worker (typical {{median}})",
+      "GRIEVANCE_SLA_CLUSTER": "{{breaches}} grievances past their deadline within {{days}} days ({{from}} - {{to}})"
+    }
   }
 }

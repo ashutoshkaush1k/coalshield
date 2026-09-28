@@ -1,0 +1,1287 @@
+{
+ "model_version": "msha-hgb-2026-09-28",
+ "predictions": [
+  {
+   "mine_id": 1,
+   "probability": 0.0318,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.565,
+     "fleet_percentile": 63,
+     "typical": null,
+     "points": 0.9
+    }
+   ]
+  },
+  {
+   "mine_id": 2,
+   "probability": 0.0124,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 3,
+   "probability": 0.0166,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 4,
+   "probability": 0.0214,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 5,
+   "probability": 0.0377,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.695,
+     "fleet_percentile": 75,
+     "typical": null,
+     "points": 2.0
+    }
+   ]
+  },
+  {
+   "mine_id": 6,
+   "probability": 0.8169,
+   "band": "high",
+   "factors": [
+    {
+     "feature": "machinery_per_100",
+     "value": 22.062,
+     "fleet_percentile": 97,
+     "typical": null,
+     "points": 21.9
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 37.506,
+     "fleet_percentile": 98,
+     "typical": null,
+     "points": 15.1
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 30.887,
+     "fleet_percentile": 98,
+     "typical": null,
+     "points": 11.0
+    }
+   ]
+  },
+  {
+   "mine_id": 7,
+   "probability": 0.0203,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.508,
+     "fleet_percentile": 61,
+     "typical": null,
+     "points": 0.6
+    }
+   ]
+  },
+  {
+   "mine_id": 8,
+   "probability": 0.0264,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 9,
+   "probability": 0.0174,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 10,
+   "probability": 0.0239,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 11,
+   "probability": 0.0124,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 12,
+   "probability": 0.3174,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 3.857,
+     "fleet_percentile": 79,
+     "typical": null,
+     "points": 18.3
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 2.314,
+     "fleet_percentile": 79,
+     "typical": null,
+     "points": 15.3
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 3.857,
+     "fleet_percentile": 86,
+     "typical": null,
+     "points": 8.9
+    }
+   ]
+  },
+  {
+   "mine_id": 13,
+   "probability": 0.0299,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 14,
+   "probability": 0.0746,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.147,
+     "fleet_percentile": 68,
+     "typical": null,
+     "points": 4.0
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.311,
+     "fleet_percentile": 72,
+     "typical": null,
+     "points": 2.0
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 1.1
+    }
+   ]
+  },
+  {
+   "mine_id": 15,
+   "probability": 0.4195,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 3.428,
+     "fleet_percentile": 84,
+     "typical": null,
+     "points": 13.4
+    },
+    {
+     "feature": "accidents_per_100",
+     "value": 3.428,
+     "fleet_percentile": null,
+     "typical": 3.077,
+     "points": 10.3
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 6.9
+    }
+   ]
+  },
+  {
+   "mine_id": 16,
+   "probability": 0.058,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.191,
+     "fleet_percentile": 70,
+     "typical": null,
+     "points": 3.2
+    },
+    {
+     "feature": "machinery_per_100",
+     "value": 1.191,
+     "fleet_percentile": 70,
+     "typical": null,
+     "points": 0.9
+    }
+   ]
+  },
+  {
+   "mine_id": 17,
+   "probability": 0.0507,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.219,
+     "fleet_percentile": 71,
+     "typical": null,
+     "points": 2.8
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 12.193,
+     "fleet_percentile": 71,
+     "typical": null,
+     "points": 0.7
+    }
+   ]
+  },
+  {
+   "mine_id": 18,
+   "probability": 0.0449,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.131,
+     "fleet_percentile": 66,
+     "typical": null,
+     "points": 2.2
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.565,
+     "fleet_percentile": 64,
+     "typical": null,
+     "points": 1.2
+    }
+   ]
+  },
+  {
+   "mine_id": 19,
+   "probability": 0.0183,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 20,
+   "probability": 0.561,
+   "band": "high",
+   "factors": [
+    {
+     "feature": "machinery_per_100",
+     "value": 26.623,
+     "fleet_percentile": 98,
+     "typical": null,
+     "points": 21.4
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 11.41,
+     "fleet_percentile": 97,
+     "typical": null,
+     "points": 20.0
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 72.262,
+     "fleet_percentile": 97,
+     "typical": null,
+     "points": 6.9
+    }
+   ]
+  },
+  {
+   "mine_id": 21,
+   "probability": 0.0143,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 22,
+   "probability": 0.0992,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.346,
+     "fleet_percentile": 72,
+     "typical": null,
+     "points": 5.9
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.346,
+     "fleet_percentile": 74,
+     "typical": null,
+     "points": 2.6
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 1.4
+    }
+   ]
+  },
+  {
+   "mine_id": 23,
+   "probability": 0.0166,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 24,
+   "probability": 0.0124,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 25,
+   "probability": 0.0276,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 26,
+   "probability": 0.0644,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 0.823,
+     "fleet_percentile": 60,
+     "typical": null,
+     "points": 3.1
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.412,
+     "fleet_percentile": 59,
+     "typical": null,
+     "points": 1.7
+    }
+   ]
+  },
+  {
+   "mine_id": 27,
+   "probability": 0.4403,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 7.086,
+     "fleet_percentile": 91,
+     "typical": null,
+     "points": 26.0
+    },
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 11.023,
+     "fleet_percentile": 94,
+     "typical": null,
+     "points": 24.4
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 13.385,
+     "fleet_percentile": 94,
+     "typical": null,
+     "points": 9.8
+    }
+   ]
+  },
+  {
+   "mine_id": 28,
+   "probability": 0.1144,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 2.265,
+     "fleet_percentile": 78,
+     "typical": null,
+     "points": 6.7
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.812,
+     "fleet_percentile": 82,
+     "typical": null,
+     "points": 2.9
+    },
+    {
+     "feature": "electrical_per_100",
+     "value": 1.359,
+     "fleet_percentile": 79,
+     "typical": null,
+     "points": 1.8
+    }
+   ]
+  },
+  {
+   "mine_id": 29,
+   "probability": 0.0456,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.909,
+     "fleet_percentile": 83,
+     "typical": null,
+     "points": 1.6
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 0.7
+    }
+   ]
+  },
+  {
+   "mine_id": 30,
+   "probability": 0.4994,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 10.486,
+     "fleet_percentile": 90,
+     "typical": null,
+     "points": 26.3
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 10.486,
+     "fleet_percentile": 95,
+     "typical": null,
+     "points": 24.9
+    },
+    {
+     "feature": "log_workers",
+     "value": 5.96,
+     "fleet_percentile": null,
+     "typical": 4.5,
+     "points": 11.3
+    }
+   ]
+  },
+  {
+   "mine_id": 31,
+   "probability": 0.0124,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 32,
+   "probability": 0.0198,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 33,
+   "probability": 0.0227,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 34,
+   "probability": 0.0573,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 0.818,
+     "fleet_percentile": 59,
+     "typical": null,
+     "points": 3.1
+    },
+    {
+     "feature": "electrical_per_100",
+     "value": 1.636,
+     "fleet_percentile": 82,
+     "typical": null,
+     "points": 0.5
+    }
+   ]
+  },
+  {
+   "mine_id": 35,
+   "probability": 0.1174,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 7.3,
+     "fleet_percentile": 86,
+     "typical": null,
+     "points": 7.5
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.913,
+     "fleet_percentile": 71,
+     "typical": null,
+     "points": 3.0
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 12.775,
+     "fleet_percentile": 75,
+     "typical": null,
+     "points": 2.0
+    }
+   ]
+  },
+  {
+   "mine_id": 36,
+   "probability": 0.1048,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ppe_per_100",
+     "value": 27.026,
+     "fleet_percentile": 89,
+     "typical": null,
+     "points": 4.1
+    }
+   ]
+  },
+  {
+   "mine_id": 37,
+   "probability": 0.1336,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 3.623,
+     "fleet_percentile": 86,
+     "typical": null,
+     "points": 9.3
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.51,
+     "fleet_percentile": 76,
+     "typical": null,
+     "points": 3.3
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 1.9
+    }
+   ]
+  },
+  {
+   "mine_id": 38,
+   "probability": 0.2611,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "lost_time_per_100",
+     "value": 2.978,
+     "fleet_percentile": null,
+     "typical": 1.328,
+     "points": 7.9
+    },
+    {
+     "feature": "accidents_per_100",
+     "value": 5.957,
+     "fleet_percentile": null,
+     "typical": 3.077,
+     "points": 6.1
+    },
+    {
+     "feature": "violations_per_100",
+     "value": 29.784,
+     "fleet_percentile": 78,
+     "typical": null,
+     "points": 4.3
+    }
+   ]
+  },
+  {
+   "mine_id": 39,
+   "probability": 0.0189,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 40,
+   "probability": 0.0501,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.654,
+     "fleet_percentile": 68,
+     "typical": null,
+     "points": 1.3
+    }
+   ]
+  },
+  {
+   "mine_id": 41,
+   "probability": 0.0134,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 42,
+   "probability": 0.2137,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 10.284,
+     "fleet_percentile": 89,
+     "typical": null,
+     "points": 13.9
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 9.599,
+     "fleet_percentile": 94,
+     "typical": null,
+     "points": 13.5
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 19.198,
+     "fleet_percentile": 79,
+     "typical": null,
+     "points": 2.5
+    }
+   ]
+  },
+  {
+   "mine_id": 43,
+   "probability": 0.11,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 2.714,
+     "fleet_percentile": 82,
+     "typical": null,
+     "points": 5.9
+    },
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 10.857,
+     "fleet_percentile": 93,
+     "typical": null,
+     "points": 0.9
+    }
+   ]
+  },
+  {
+   "mine_id": 44,
+   "probability": 0.3767,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "lost_time_per_100",
+     "value": 1.695,
+     "fleet_percentile": null,
+     "typical": 1.328,
+     "points": 20.5
+    },
+    {
+     "feature": "accidents_per_100",
+     "value": 3.389,
+     "fleet_percentile": null,
+     "typical": 3.077,
+     "points": 14.8
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.847,
+     "fleet_percentile": 70,
+     "typical": null,
+     "points": 7.9
+    }
+   ]
+  },
+  {
+   "mine_id": 45,
+   "probability": 0.0609,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 2.036,
+     "fleet_percentile": 76,
+     "typical": null,
+     "points": 3.3
+    },
+    {
+     "feature": "machinery_per_100",
+     "value": 2.036,
+     "fleet_percentile": 79,
+     "typical": null,
+     "points": 0.9
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 13.235,
+     "fleet_percentile": 76,
+     "typical": null,
+     "points": 0.8
+    }
+   ]
+  },
+  {
+   "mine_id": 46,
+   "probability": 0.0329,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.58,
+     "fleet_percentile": 67,
+     "typical": null,
+     "points": 0.9
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 0.5
+    }
+   ]
+  },
+  {
+   "mine_id": 47,
+   "probability": 0.044,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 3.367,
+     "fleet_percentile": 84,
+     "typical": null,
+     "points": 1.5
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 0.7
+    }
+   ]
+  },
+  {
+   "mine_id": 48,
+   "probability": 0.0783,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ppe_per_100",
+     "value": 25.226,
+     "fleet_percentile": 84,
+     "typical": null,
+     "points": 3.1
+    }
+   ]
+  },
+  {
+   "mine_id": 49,
+   "probability": 0.0315,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.324,
+     "fleet_percentile": 56,
+     "typical": null,
+     "points": 0.7
+    }
+   ]
+  },
+  {
+   "mine_id": 50,
+   "probability": 0.1414,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 2.681,
+     "fleet_percentile": 80,
+     "typical": null,
+     "points": 8.2
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 6.256,
+     "fleet_percentile": 89,
+     "typical": null,
+     "points": 4.6
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 12.512,
+     "fleet_percentile": 72,
+     "typical": null,
+     "points": 2.3
+    }
+   ]
+  },
+  {
+   "mine_id": 51,
+   "probability": 0.0134,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 52,
+   "probability": 0.3946,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 6.287,
+     "fleet_percentile": 83,
+     "typical": null,
+     "points": 21.6
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 3.144,
+     "fleet_percentile": 83,
+     "typical": null,
+     "points": 16.0
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 7.335,
+     "fleet_percentile": 91,
+     "typical": null,
+     "points": 10.7
+    }
+   ]
+  },
+  {
+   "mine_id": 53,
+   "probability": 0.0343,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.754,
+     "fleet_percentile": 80,
+     "typical": null,
+     "points": 0.9
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 0.5
+    }
+   ]
+  },
+  {
+   "mine_id": 54,
+   "probability": 0.025,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 55,
+   "probability": 0.0575,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 0.86,
+     "fleet_percentile": 61,
+     "typical": null,
+     "points": 3.1
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.573,
+     "fleet_percentile": 66,
+     "typical": null,
+     "points": 1.5
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 0.9
+    }
+   ]
+  },
+  {
+   "mine_id": 56,
+   "probability": 0.0215,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 57,
+   "probability": 0.027,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.568,
+     "fleet_percentile": 78,
+     "typical": null,
+     "points": 0.7
+    }
+   ]
+  },
+  {
+   "mine_id": 58,
+   "probability": 0.0154,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 59,
+   "probability": 0.027,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 60,
+   "probability": 0.0323,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 61,
+   "probability": 0.0188,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 62,
+   "probability": 0.0782,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 0.693,
+     "fleet_percentile": 57,
+     "typical": null,
+     "points": 3.8
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.734,
+     "fleet_percentile": 79,
+     "typical": null,
+     "points": 2.0
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 1.2
+    }
+   ]
+  },
+  {
+   "mine_id": 63,
+   "probability": 0.0718,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.137,
+     "fleet_percentile": 67,
+     "typical": null,
+     "points": 3.9
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.379,
+     "fleet_percentile": 57,
+     "typical": null,
+     "points": 1.9
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 1.1
+    }
+   ]
+  },
+  {
+   "mine_id": 64,
+   "probability": 0.1337,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 5.041,
+     "fleet_percentile": 89,
+     "typical": null,
+     "points": 7.7
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 21.846,
+     "fleet_percentile": 82,
+     "typical": null,
+     "points": 2.2
+    },
+    {
+     "feature": "electrical_per_100",
+     "value": 3.361,
+     "fleet_percentile": 87,
+     "typical": null,
+     "points": 2.0
+    }
+   ]
+  },
+  {
+   "mine_id": 65,
+   "probability": 0.0172,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 66,
+   "probability": 0.585,
+   "band": "high",
+   "factors": [
+    {
+     "feature": "machinery_per_100",
+     "value": 42.158,
+     "fleet_percentile": 99,
+     "typical": null,
+     "points": 21.5
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 4.216,
+     "fleet_percentile": 87,
+     "typical": null,
+     "points": 20.1
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 88.531,
+     "fleet_percentile": 98,
+     "typical": null,
+     "points": 5.9
+    }
+   ]
+  },
+  {
+   "mine_id": 67,
+   "probability": 0.1568,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "ppe_per_100",
+     "value": 36.963,
+     "fleet_percentile": 93,
+     "typical": null,
+     "points": 5.0
+    },
+    {
+     "feature": "electrical_per_100",
+     "value": 2.843,
+     "fleet_percentile": 84,
+     "typical": null,
+     "points": 0.6
+    },
+    {
+     "feature": "machinery_per_100",
+     "value": 2.843,
+     "fleet_percentile": 86,
+     "typical": null,
+     "points": 0.6
+    }
+   ]
+  },
+  {
+   "mine_id": 68,
+   "probability": 0.0866,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 1.413,
+     "fleet_percentile": 74,
+     "typical": null,
+     "points": 4.6
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 1.413,
+     "fleet_percentile": 75,
+     "typical": null,
+     "points": 2.2
+    },
+    {
+     "feature": "underground",
+     "value": 1.0,
+     "fleet_percentile": null,
+     "typical": 0.0,
+     "points": 1.3
+    }
+   ]
+  },
+  {
+   "mine_id": 69,
+   "probability": 0.0698,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 0.922,
+     "fleet_percentile": 64,
+     "typical": null,
+     "points": 2.7
+    },
+    {
+     "feature": "ppe_per_100",
+     "value": 26.73,
+     "fleet_percentile": 86,
+     "typical": null,
+     "points": 2.0
+    }
+   ]
+  },
+  {
+   "mine_id": 70,
+   "probability": 0.3934,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "log_workers",
+     "value": 2.621,
+     "fleet_percentile": null,
+     "typical": 4.5,
+     "points": 10.6
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 63.644,
+     "fleet_percentile": 99,
+     "typical": null,
+     "points": 8.1
+    },
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 63.644,
+     "fleet_percentile": 99,
+     "typical": null,
+     "points": 8.1
+    }
+   ]
+  },
+  {
+   "mine_id": 71,
+   "probability": 0.0241,
+   "band": "low",
+   "factors": []
+  },
+  {
+   "mine_id": 72,
+   "probability": 0.0546,
+   "band": "low",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 0.9,
+     "fleet_percentile": 63,
+     "typical": null,
+     "points": 2.7
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 0.45,
+     "fleet_percentile": 60,
+     "typical": null,
+     "points": 1.5
+    }
+   ]
+  },
+  {
+   "mine_id": 73,
+   "probability": 0.494,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 10.598,
+     "fleet_percentile": 91,
+     "typical": null,
+     "points": 26.1
+    },
+    {
+     "feature": "roof_strata_per_100",
+     "value": 7.418,
+     "fleet_percentile": 93,
+     "typical": null,
+     "points": 24.8
+    },
+    {
+     "feature": "log_workers",
+     "value": 5.95,
+     "fleet_percentile": null,
+     "typical": 4.5,
+     "points": 11.3
+    }
+   ]
+  },
+  {
+   "mine_id": 74,
+   "probability": 0.4346,
+   "band": "medium",
+   "factors": [
+    {
+     "feature": "roof_strata_per_100",
+     "value": 5.21,
+     "fleet_percentile": 90,
+     "typical": null,
+     "points": 26.1
+    },
+    {
+     "feature": "transport_haulage_per_100",
+     "value": 4.168,
+     "fleet_percentile": 80,
+     "typical": null,
+     "points": 23.1
+    },
+    {
+     "feature": "ventilation_gas_per_100",
+     "value": 6.252,
+     "fleet_percentile": 87,
+     "typical": null,
+     "points": 11.2
+    }
+   ]
+  }
+ ]
+}

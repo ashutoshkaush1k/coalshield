@@ -72,6 +72,14 @@ return [
                     'logVars' => [],
                     'except' => ['yii\web\HttpException:4*', 'JwtHttpBearerAuth'],
                 ],
+                // Phase 7: every scheduled job's run (yii jobs/*), also in the job_run table.
+                [
+                    'class' => yii\log\FileTarget::class,
+                    'categories' => ['jobs'],
+                    'levels' => ['error', 'warning', 'info'],
+                    'logFile' => '@runtime/logs/jobs.log',
+                    'logVars' => [],
+                ],
             ],
         ],
     ],

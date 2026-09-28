@@ -56,10 +56,11 @@ class DashboardCest
         $I->seeResponseCodeIs(200);
         $ranks = $I->grabDataFromResponseByJsonPath('$.candidates[*].rank');
         $I->assertSame([1, 2, 3, 4, 5], $ranks);
-        $urgency = $I->grabDataFromResponseByJsonPath('$.candidates[*].urgency');
-        $sorted = $urgency;
+        // Phase 7: ordered by the Governance Risk Index (urgency breaks ties); the score is unchanged.
+        $gri = $I->grabDataFromResponseByJsonPath('$.candidates[*].governance_risk.gri');
+        $sorted = $gri;
         rsort($sorted);
-        $I->assertSame($sorted, $urgency);
+        $I->assertSame($sorted, $gri);
         $I->seeResponseMatchesJsonType(['code' => 'string', 'params' => 'array'], '$.candidates[0].reasons[0]');
 
         $I->amBearerOf(Auth::MINE_HEAD_BHUBANESWARI);

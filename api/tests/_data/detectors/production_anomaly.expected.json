@@ -1,0 +1,133 @@
+{
+ "flags": [
+  {
+   "detector": "production_anomaly",
+   "mine_id": 2,
+   "subject": "2026-08-02",
+   "from": "2026-08-02T00:00:00Z",
+   "to": "2026-08-02T23:59:59Z",
+   "score": 0.63,
+   "reasons": [
+    {
+     "code": "ROLLING_MEAN_DROP",
+     "params": {
+      "actual_t": 55181.5,
+      "rolling_mean_t": 87000.3,
+      "ratio": 0.63,
+      "z": -4.1,
+      "days": 30
+     }
+    }
+   ],
+   "entities": {
+    "direction": "drop",
+    "date": "2026-08-02"
+   }
+  },
+  {
+   "detector": "production_anomaly",
+   "mine_id": 3,
+   "subject": "2026-09-04",
+   "from": "2026-09-04T00:00:00Z",
+   "to": "2026-09-04T23:59:59Z",
+   "score": 2.0,
+   "reasons": [
+    {
+     "code": "OVER_TARGET",
+     "params": {
+      "actual_t": 180895.4,
+      "target_t": 100851.7,
+      "achievement_pct": 179.4,
+      "threshold_pct": 50
+     }
+    },
+    {
+     "code": "ROLLING_MEAN_SPIKE",
+     "params": {
+      "actual_t": 180895.4,
+      "rolling_mean_t": 90447.7,
+      "ratio": 2.0,
+      "z": 14.4,
+      "days": 30
+     }
+    }
+   ],
+   "entities": {
+    "direction": "spike",
+    "date": "2026-09-04"
+   }
+  },
+  {
+   "detector": "production_anomaly",
+   "mine_id": 41,
+   "subject": "2026-08-01",
+   "from": "2026-08-01T00:00:00Z",
+   "to": "2026-08-01T23:59:59Z",
+   "score": 0.65,
+   "reasons": [
+    {
+     "code": "ROLLING_MEAN_DROP",
+     "params": {
+      "actual_t": 18966.9,
+      "rolling_mean_t": 29045.2,
+      "ratio": 0.65,
+      "z": -4.2,
+      "days": 30
+     }
+    }
+   ],
+   "entities": {
+    "direction": "drop",
+    "date": "2026-08-01"
+   }
+  },
+  {
+   "detector": "production_anomaly",
+   "mine_id": 42,
+   "subject": "2026-09-02",
+   "from": "2026-09-02T00:00:00Z",
+   "to": "2026-09-02T23:59:59Z",
+   "score": 1.62,
+   "reasons": [
+    {
+     "code": "ROLLING_MEAN_SPIKE",
+     "params": {
+      "actual_t": 30114.7,
+      "rolling_mean_t": 18535.9,
+      "ratio": 1.62,
+      "z": 5.0,
+      "days": 30
+     }
+    }
+   ],
+   "entities": {
+    "direction": "spike",
+    "date": "2026-09-02"
+   }
+  },
+  {
+   "detector": "production_anomaly",
+   "mine_id": 48,
+   "subject": "2026-08-02",
+   "from": "2026-08-02T00:00:00Z",
+   "to": "2026-08-02T23:59:59Z",
+   "score": 0.64,
+   "reasons": [
+    {
+     "code": "ROLLING_MEAN_DROP",
+     "params": {
+      "actual_t": 4452.3,
+      "rolling_mean_t": 6907.4,
+      "ratio": 0.64,
+      "z": -4.7,
+      "days": 30
+     }
+    }
+   ],
+   "entities": {
+    "direction": "drop",
+    "date": "2026-08-02"
+   }
+  }
+ ]
+}

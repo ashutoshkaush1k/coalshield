@@ -17,9 +17,11 @@ use yii\db\Query;
  *   urgency = (100 - score) + max(0, recent events - previous events) x WEIGHT_TREND
  *
  * Events are violations (detected_at) plus breached readings (recorded_at) in the last
- * TREND_WINDOW_HOURS against the window before it. Ties: urgency, then severity, then recent
- * events, then mine id - so the queue never reorders between identical requests.
- * Reasons are {code, params} for the frontend to translate (brief rule 7).
+ * TREND_WINDOW_HOURS against the window before it. Phase 7: the queue is ordered by the
+ * Governance Risk Index first (GovernanceRiskService - open violations, breaches, overdue
+ * obligations and contractor documents, grievances past SLA, ageing corrective actions, repeat
+ * violations); ties: urgency, then severity, then recent events, then mine id - so the queue never
+ * reorders between identical requests. Reasons are {code, params} for the frontend to translate.
  */
 final class InspectionPriorityService
 {
@@ -27,7 +29,7 @@ final class InspectionPriorityService
      * @param Mine[] $mines
      * @return list<array> ranked candidates
      */
-    public static function queue(array $mines, ?DateTimeImmutable $now = null): array
+    public static function queue(array $mines, ?DateTimeImmutable $now = null, ?\app\models\User $viewer = null): array
     {
         if ($mines === []) {
             return [];
@@ -35,6 +37,7 @@ final class InspectionPriorityService
         $ids = array_map(fn(Mine $m) => (int) $m->id, $mines);
         $scores = ComplianceScoreService::scoreMines($ids);
         $trends = self::trends($ids, $now);
+        $gri = GovernanceRiskService::forMines($ids, $viewer);
         $weight = (float) Yii::$app->params['priority.weightTrend'];
 
         $candidates = [];
@@ -52,12 +55,13 @@ final class InspectionPriorityService
                 'urgency' => round($severity + max(0, $trend['delta']) * $weight, 1),
                 'severity' => $severity,
                 'compliance' => $score->toArray(),
+                'governance_risk' => $gri[$mine->id],
                 'trend' => $trend,
-                'reasons' => self::reasons($score, $trend),
+                'reasons' => [self::griReason($gri[$mine->id]), ...self::reasons($score, $trend)],
             ];
         }
-        usort($candidates, fn($a, $b) => [$b['urgency'], $b['severity'], $b['trend']['recent_events'], $a['mine_id']]
-            <=> [$a['urgency'], $a['severity'], $a['trend']['recent_events'], $b['mine_id']]);
+        usort($candidates, fn($a, $b) => [$b['governance_risk']['gri'], $b['urgency'], $b['severity'], $b['trend']['recent_events'], $a['mine_id']]
+            <=> [$a['governance_risk']['gri'], $a['urgency'], $a['severity'], $a['trend']['recent_events'], $b['mine_id']]);
         foreach ($candidates as $i => &$candidate) {
             $candidate = ['rank' => $i + 1] + $candidate;
         }
@@ -99,6 +103,15 @@ final class InspectionPriorityService
             ];
         }
         return $out;
+    }
+
+    /** The index and its largest component, e.g. "Governance Risk Index 47 (high): 11 open violations". */
+    private static function griReason(array $gri): array
+    {
+        $top = $gri['components'];
+        usort($top, fn($a, $b) => [$b['value'], $a['key']] <=> [$a['value'], $b['key']]);
+        return ['code' => 'PRIORITY_GRI', 'params' => ['gri' => $gri['gri'], 'band' => $gri['band'],
+            'component' => $top[0]['key'], 'count' => $top[0]['count'], 'multiplier' => $gri['multiplier']]];
     }
 
     /** @return list<array{code: string, params: array}> */

@@ -110,3 +110,56 @@ product:
     z: 4.0                                        # ... and at least z standard deviations from it, for the output AND for the
                                                   # output-to-target ratio (a move the target explains is not an anomaly)
   detail_request_escalate_after_hours: 72         # brief Phase 4: an overdue "Call for Detailed Report" escalates after this
+  detectors:                                      # Phase 7: the anomaly detectors (ai-service, PHP fallback). Product settings,
+                                                  # not law; each threshold is a statistical test, not a count tuned to a scenario.
+    lookback_days: 90                             # the data a run looks at
+    sensor_flatline:                              # S3: a sensor reporting one value for hours (stuck, covered, bypassed)
+      min_hours: 12                               # a real sensor always moves; the demo fleet's longest innocent flat run is 2 h
+      tolerance: 0.0                              # values within this of each other count as the same
+    night_shift:                                  # S5: camera-detected violations concentrated at night
+      night_from: 22                              # IST
+      night_to: 6
+      p_max: 0.001                                # binomial tail at the night's share of the day (8/24)
+      min_count: 10                               # no verdict on fewer violations
+    repeat_violations:                            # S1: the same category again and again
+      window_days: 45
+      min_repeats: 5
+      p_max: 0.00001                              # binomial tail: the category's share of the mine's own violations in the
+                                                  # window against its fleet share (size-neutral). ~800 mine x category tests,
+                                                  # so 1e-5 keeps the expected false alarms across the fleet near 0.01
+      hazard_incident_types:                      # or: an incident of the same hazard follows (DGMS cause groups)
+        roof_strata: [ground_movement]
+        ventilation_gas: [gas_dust_fire]
+        fire: [gas_dust_fire]
+        electrical: [electricity]
+        machinery: [machinery_other]
+        transport_haulage: [transportation_winding, transportation_other]
+        explosives: [explosives]
+    late_actions:                                 # S7: corrective actions routinely closed late
+      min_late: 10
+      p_max: 0.001                                # binomial tail at the fleet's late rate
+    contractor_outlier:                           # S4: a contractor far outside its peers
+      z: 3.5                                      # robust z (median / MAD), the usual outlier cut-off
+      min_missing_docs: 3
+      min_violations: 5
+  governance_risk_index:                          # Phase 7 (brief's "extended score"), SEPARATE from the compliance score, which
+                                                  # does not change. 0-100, higher = more risk. Points per item, each component
+                                                  # capped, the sum times the repeat multiplier, capped at 100. Product settings.
+    components:
+      open_violations:           {points: 2, cap: 25}
+      sensor_breaches:           {points: 1, cap: 10}   # in the compliance score's breach window
+      overdue_obligations:       {points: 2, cap: 20}   # overdue or escalated statutory tasks
+      overdue_contractor_docs:   {points: 1, cap: 10}   # monthly documents past their due day
+      grievances_past_sla:       {points: 3, cap: 15}   # open, past their response time
+      ageing_corrective_actions: {points: 2, cap: 20}   # open and past due
+    ageing_days: 0                                # a corrective action counts once this many days past its due time
+    repeat_multiplier:                            # x (1 + step per category with min_repeats violations in window_days), max
+      step: 0.1
+      max: 1.5
+      window_days: 45
+      min_repeats: 5
+    bands: {high: 50, medium: 20}                 # >= high: high risk; >= medium: medium; else low
+  alert_escalation:                               # Phase 7 jobs/escalate-alerts: an open, unacknowledged alert moves up a level
+    after_hours: [24, 72]                         # level 1 (area / corporate) after 24 h, level 2 (government) after 72 h
+  production_entry_reminder:                      # Phase 7 jobs/reminders: yesterday's shifts not reported (or still draft)
+    shifts: [A, B, C]
