@@ -265,8 +265,8 @@
       "dangerous_occurrence": "Dangerous occurrence"
     },
     "check": {
-      "REPORTED_WITHIN_48H": "Reported after {{hours}} h - within {{limit_hours}} h ({{obligation_code}})",
-      "REPORTED_AFTER_48H": "Reported after {{hours}} h - later than {{limit_hours}} h ({{obligation_code}})"
+      "REPORTED_ON_TIME": "Reported after {{hours}} h - on time ({{obligation_code}}: “{{rule}}”, {{limit_hours}} h)",
+      "REPORTED_LATE": "Reported after {{hours}} h - late ({{obligation_code}}: “{{rule}}”, {{limit_hours}} h)"
     },
     "obligation": {
       "RPT-03": "RPT-03 · fatal accident notice",
@@ -280,7 +280,8 @@
     "linkedViolation": "Linked violation",
     "none": "None",
     "empty": "No incidents recorded.",
-    "late": "late"
+    "late": "late",
+    "checkGrace": "“Forthwith” is treated as immediate, with a {{hours}} h grace period - a product setting, not the law."
   },
   "correctiveAction": {
     "title": "Corrective actions",
@@ -1087,7 +1088,7 @@
       "reported": "Reported with incident #{{id}}",
       "late": "Reported late",
       "onTime": "Reported on time",
-      "detail": "Incident #{{id}}: occurred {{occurred}}, reported {{reported}}. The incident record is the report; the task is due 48 hours after the incident (a product setting)."
+      "detail": "Incident #{{id}}: occurred {{occurred}}, reported {{reported}}. The incident record is the report; it is due by the rule's time: “{{rule}}”."
     },
     "appliesTo": {
       "mine": "mine",

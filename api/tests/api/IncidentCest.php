@@ -10,7 +10,7 @@ use app\models\Violation;
 use app\tests\Support\ApiTester;
 use app\tests\Support\Helper\Auth;
 
-/** Incidents (HANDOFF C23): scoped list, detail, 48-hour reporting check with its obligation, links. */
+/** Incidents (HANDOFF C23): scoped list, detail, the reporting check at the law's time for its obligation, links. */
 class IncidentCest
 {
     public function listAndDetailCarryTheReportingCheck(ApiTester $I): void
@@ -23,7 +23,8 @@ class IncidentCest
         }
         // S1: the dangerous occurrence on the HIGH demo mine, linked to a strata violation.
         $I->seeResponseContainsJson([['severity' => 'dangerous_occurrence', 'obligation_code' => 'RPT-05',
-            'reporting_check' => ['code' => 'REPORTED_WITHIN_48H', 'params' => ['limit_hours' => 48, 'obligation_code' => 'RPT-05']]]]);
+            'reporting_check' => ['code' => 'REPORTED_ON_TIME', 'params' => ['limit_hours' => 12, 'basis' => 'law',
+                'rule' => 'within twelve hours', 'obligation_code' => 'RPT-05']]]]);
         $id = $I->grabDataFromResponseByJsonPath('$[0].id')[0];
         $I->sendGet("/v1/incidents/$id");
         $I->seeResponseMatchesJsonType(['relatedViolation' => 'array|null']);
@@ -31,7 +32,14 @@ class IncidentCest
 
     public function lateReportsAreFlagged(ApiTester $I): void
     {
-        $late = Incident::find()->where(['reported_within_48h' => false])->one();
+        // Late by the law's time for the incident's obligation (IncidentDeadline).
+        $late = null;
+        foreach (Incident::find()->orderBy('id')->all() as $incident) {
+            if ($incident->reportedLate()) {
+                $late = $incident;
+                break;
+            }
+        }
         $I->amBearerOf(Auth::GOVERNMENT);
         $I->sendGet('/v1/incidents', ['late' => 1, 'per_page' => 200]);
         $I->seeResponseCodeIs(200);
@@ -39,7 +47,10 @@ class IncidentCest
             $I->seeResponseEquals('[]');
             return;
         }
-        $I->seeResponseContainsJson([['id' => $late->id, 'reporting_check' => ['code' => 'REPORTED_AFTER_48H']]]);
+        $I->seeResponseContainsJson([['id' => $late->id, 'reported_late' => true, 'reporting_check' => ['code' => 'REPORTED_LATE']]]);
+        foreach ($I->grabDataFromResponseByJsonPath('$[*].reported_late') as $flag) {
+            $I->assertTrue($flag, 'the late filter returns late reports only');
+        }
     }
 
     public function reportingADangerousOccurrenceRaisesAnAlert(ApiTester $I): void
@@ -53,9 +64,9 @@ class IncidentCest
         ]);
         $I->seeResponseCodeIs(201);
         // Obligation follows the severity; a dangerous occurrence has nobody killed or injured;
-        // 72 h after the event is a late report.
+        // 72 h after the event is a late report: RPT-05 allows 12 h.
         $I->seeResponseContainsJson(['obligation_code' => 'RPT-05', 'persons_affected' => 0, 'reported_within_48h' => false,
-            'reporting_check' => ['code' => 'REPORTED_AFTER_48H']]);
+            'reported_late' => true, 'reporting_check' => ['code' => 'REPORTED_LATE', 'params' => ['limit_hours' => 12, 'basis' => 'law']]]);
         $id = $I->grabDataFromResponseByJsonPath('$.id')[0];
         $I->assertNotNull(Alert::findOne(['code' => 'DANGEROUS_OCCURRENCE_REPORTED', 'entity_type' => 'incident', 'entity_id' => $id]));
     }

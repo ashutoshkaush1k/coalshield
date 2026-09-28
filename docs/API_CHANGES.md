@@ -123,3 +123,12 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | `GET /v1/users/me` (and `/auth/me`, the login response's `user`) | adds `mine_code`, `subsidiary_name`, `area_name` (the account's area, or its mine's) for the Profile page |
 | `PATCH /v1/users/me` | unchanged: `preferred_language` only (`en`, `hi`, `bn`, `or`, `te`, `mr`); the frontend now uses it and applies the saved language after login |
 | errors and alerts | unchanged `{code, params}`; every code now has text in all six languages |
+
+## Phase 7: incident reporting at the law's time (owner decision)
+
+| Changed | Notes |
+|---|---|
+| incident `reporting_check` | codes `REPORTED_WITHIN_48H` / `REPORTED_AFTER_48H` replaced by `REPORTED_ON_TIME` / `REPORTED_LATE`; params add `basis` (law / product) and `rule` (the law's wording); `limit_hours` is the obligation's own: RPT-05 12, RPT-04 60, RPT-03 1 (forthwith + grace) |
+| incident fields | add `reported_late`; `reported_within_48h` stays as recorded data |
+| `GET /v1/incidents?late=1` | late by the obligation's deadline, not 48 h |
+| incident reporting tasks | due at the law's time (`due_basis` law), RPT-03 forthwith + 1 h grace (`due_basis` product) |

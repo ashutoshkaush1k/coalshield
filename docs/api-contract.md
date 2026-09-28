@@ -52,7 +52,7 @@ outside scope is 404. Permissions are in `api/config/rbac.php`.
 | POST | `/alerts/directives` | `directive.create` | `{mine_id, message?, severity?, reference_id?}` |
 | POST | `/alerts/{id}/resolve` | `alert.resolve` | multipart `proof_text`, `file?` |
 | POST | `/alerts/{id}/reopen` | `directive.reopen` | `{reason}` - directives only |
-| GET/POST | `/incidents`, `/incidents/{id}` | `incident.view` / `.create` | `?late=1`; each with `reporting_check` (48 h, obligation code) |
+| GET/POST | `/incidents`, `/incidents/{id}` | `incident.view` / `.create` | `?late=1`; each with `reporting_check` (the law's time for its obligation: RPT-05 12 h, RPT-04 60 h, RPT-03 forthwith + 1 h grace) and `reported_late` |
 | PATCH | `/incidents/{id}/violation` | `incident.linkViolation` | `{related_violation_id: id|null}` (same mine) |
 | GET | `/audit?mine_id=&entity=&action=&source=` | `audit.view` | scoped audit trail (hash-chained); `source` = `app`, `seed` or `seed_history` (the seeded records' own history) |
 | GET | `/contractors?mine_id=&band=&status=` | `contractor.view` | contractors of the mines in scope, worst first, each with `compliance` (score, band, reasons, penalties) |
@@ -216,9 +216,17 @@ in `yii obligation/check` and in `run_all.bat`; it is idempotent and recorded as
 New periods' tasks are created once a day.
 
 **Incidents.** Each incident has one task for its reporting obligation (RPT-03 / RPT-04 / RPT-05
-by severity), due 48 hours after the incident (`incident_notice_hours`, a product setting - the
-same rule as the incident's 48-hour reporting check; the rules' own wording is in the citation).
-It is created done: `accepted` at `reported_at`, `reported_late` when that is after the due time.
+by severity), due at the **law's time** (`components/IncidentDeadline.php`, the same rule as the data
+track):
+- RPT-05 *within twelve hours*: 12 h, law;
+- RPT-04 *within twelve hours after the completion of forty-eight hours*: 60 h from the incident,
+  law;
+- RPT-03 *forthwith*: immediate with a 1 h grace, a product setting (labelled so in the UI).
+
+The incident's own `reporting_check` uses the same deadline: `REPORTED_ON_TIME` / `REPORTED_LATE`,
+with params `hours`, `limit_hours`, `basis`, `rule` (the law's wording, shown as written) and
+`obligation_code`. The task is created done: `accepted` at `reported_at`, `reported_late` when that
+is after the due time.
 The incident record is the report, so there is no upload and no review. Seeded incidents' tasks come
 from the data track; `POST /v1/incidents` creates the task for a new one.
 

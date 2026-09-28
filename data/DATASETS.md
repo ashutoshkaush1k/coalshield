@@ -849,17 +849,25 @@ fine-grained for a register, and contractor and worker duties belong to the cont
 obligation (`incident.obligation_code`: RPT-03 fatal, RPT-04 serious or minor injury, RPT-05
 dangerous occurrence), linked by `obligation_task.incident_id`:
 - period `INC-000123`, the incident's date (IST) as period start and end;
-- due 48 hours after the incident (`rules.yaml product.obligation_schedule.incident_notice_hours`,
-  `due_basis` product). This is the product's reporting check (`incident.reported_within_48h`),
-  not the rules' own wording, which stays in each obligation's citation (RPT-03 *forthwith*,
-  RPT-05 *within twelve hours*, RPT-04 *within twelve hours after the completion of forty-eight
-  hours*);
+- due at the **law's time** (owner, Phase 6 approval; `gen_obligations.incident_deadline`):
+  - RPT-05 *within twelve hours*: 12 h after the incident, `due_basis` law;
+  - RPT-04 *within twelve hours after the completion of forty-eight hours* (of disablement,
+    counted from the incident): 60 h, law;
+  - RPT-03 *forthwith*: treated as immediate, with a 1 h grace
+    (`product.obligation_schedule.forthwith_grace_hours`), `due_basis` product.
+
+  The hours are the `legal` values of `rules.yaml`, each citing its obligation;
 - `accepted` at the incident's `reported_at`, which is on time or late; the incident record is the
   report, so there is no upload and no review.
 
 They are appended after the calendar tasks with no random draws, so no existing row moves. Demo: 83
-tasks, 8 of them late, exactly the incidents with `reported_within_48h` false (V12 checks one
-task per incident, obligation, due time, status, `accepted_at` and lateness).
+tasks, 12 of them late:
+- all 6 fatal notices (reported hours after the accident, against *forthwith* + 1 h);
+- 6 of 76 injury reports (after 60 h);
+- the one dangerous occurrence was reported in 3 h.
+
+`incident.reported_within_48h` stays as recorded data. V12 checks one task per incident, its
+obligation, the due time and basis, the status and `accepted_at`.
 
 **Applicability** (modelling choices):
 - SAF-07, SAF-09, SAF-12 (winding ropes, CO testing of depillaring districts, gas checks where

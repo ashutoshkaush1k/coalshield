@@ -242,12 +242,13 @@ final class ObligationService
             throw new \RuntimeException("obligation {$incident->obligation_code} is not in the catalogue");
         }
         $occurred = new \DateTimeImmutable((string) $incident->occurred_at, new \DateTimeZone('UTC'));
+        $deadline = \app\components\IncidentDeadline::for((string) $incident->obligation_code);
         $day = $occurred->setTimezone(new \DateTimeZone('Asia/Kolkata'))->format('Y-m-d');
         $task = new ObligationTask([
             'mine_id' => $incident->mine_id, 'obligation_id' => $obligation->id,
             'period' => sprintf('INC-%06d', $incident->id), 'period_start' => $day, 'period_end' => $day,
-            'due_at' => Format::sql($occurred->modify('+' . (int) self::settings()['incident_notice_hours'] . ' hours')),
-            'due_basis' => 'product', 'status' => 'accepted', 'escalation_level' => 0,
+            'due_at' => Format::sql($occurred->modify('+' . (int) round($deadline['hours'] * 60) . ' minutes')),
+            'due_basis' => $deadline['basis'], 'status' => 'accepted', 'escalation_level' => 0,
             'accepted_at' => Format::sql(new \DateTimeImmutable((string) $incident->reported_at, new \DateTimeZone('UTC'))),
             'created_at' => Format::sql(Format::now()), 'incident_id' => $incident->id,
         ]);

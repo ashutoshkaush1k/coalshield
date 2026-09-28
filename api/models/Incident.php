@@ -13,8 +13,9 @@ use app\components\ScopedActiveRecord;
  *
  * The obligation follows the severity, as in the data: fatal RPT-03 (r.7(1)), serious and minor
  * injuries RPT-04 (r.7(2)), dangerous occurrence RPT-05 (r.7(3)) - data/reference/obligations.csv.
- * The reporting check compares reported_at - occurred_at with 48 hours, the rule the data's
- * reported_within_48h column encodes.
+ * The reporting check compares reported_at with the obligation's due time (IncidentDeadline: the
+ * law's times - RPT-05 12 h, RPT-04 60 h, RPT-03 forthwith + a product grace). reported_within_48h
+ * stays as recorded data (the data's own 48-hour flag); lateness comes from the deadline.
  *
  * @property int $id
  * @property int $mine_id
@@ -85,15 +86,23 @@ class Incident extends ScopedActiveRecord
         return round((strtotime($this->reported_at) - strtotime($this->occurred_at)) / 3600, 1);
     }
 
-    /** {code, params} for the 48-hour reporting check. */
+    /** Reported after the obligation's due time (IncidentDeadline). */
+    public function reportedLate(): bool
+    {
+        return $this->reportingHours() > \app\components\IncidentDeadline::for($this->obligation_code)['hours'];
+    }
+
+    /** {code, params} for the reporting check: the law's time for this obligation (and its wording). */
     public function reportingCheck(): array
     {
-        $hours = $this->reportingHours();
+        $deadline = \app\components\IncidentDeadline::for($this->obligation_code);
         return [
-            'code' => $hours <= self::REPORTING_LIMIT_HOURS ? 'REPORTED_WITHIN_48H' : 'REPORTED_AFTER_48H',
+            'code' => $this->reportedLate() ? 'REPORTED_LATE' : 'REPORTED_ON_TIME',
             'params' => [
-                'hours' => $hours,
-                'limit_hours' => self::REPORTING_LIMIT_HOURS,
+                'hours' => $this->reportingHours(),
+                'limit_hours' => $deadline['hours'],
+                'basis' => $deadline['basis'],
+                'rule' => $deadline['rule'],
                 'obligation_code' => $this->obligation_code,
             ],
         ];
@@ -110,6 +119,7 @@ class Incident extends ScopedActiveRecord
             'persons_affected' => fn() => (int) $this->persons_affected,
             'description_code', 'related_violation_id',
             'reported_within_48h' => fn() => (bool) $this->reported_within_48h,
+            'reported_late' => fn() => $this->reportedLate(),
             'obligation_code',
             'reporting_check' => fn() => $this->reportingCheck(),
         ];

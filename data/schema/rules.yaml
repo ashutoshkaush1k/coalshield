@@ -32,6 +32,9 @@ legal:
   injury_report_hours_after_48h_disablement:
     value: 12                 # report within 12 hours after 48 hours of disablement (incident.reported_within_48h flags > 48 h)
     obligation: RPT-04        # r.7(2)
+  injury_disablement_hours:
+    value: 48                 # "after the completion of forty-eight hours" - of disablement; counted from the incident time
+    obligation: RPT-04        # r.7(2)
 
 # Sensor thresholds. A reading is `breached` only where a verified obligation gives the limit.
 sensors:
@@ -92,10 +95,10 @@ product:
     due: period_end                               # due at 23:59 IST on the period's last day (product setting, labelled as such)
     reminder_days: 3                              # OBLIGATION_DUE_SOON this many days before the due time
     escalate_after_hours: 168                     # overdue this long -> escalated (level 2)
-    incident_notice_hours: 48                     # an incident's reporting task (RPT-03/04/05, from incident.obligation_code)
-                                                  # falls due this long after the incident - the product's reporting check
-                                                  # (incident.reported_within_48h). Product setting, labelled as such; the
-                                                  # rules' own wording (forthwith; within 12 hours) stays in each citation.
+    forthwith_grace_hours: 1                      # an incident's reporting task (owner, 2026-09-28): due at the law's time -
+                                                  # RPT-05 12 h, RPT-04 12 h after 48 h of disablement (60 h from the
+                                                  # incident), both from `legal` above. RPT-03 says "forthwith": treated as
+                                                  # immediate, with this grace period - a product setting, labelled so.
   contractor_doc_due_day: 10                      # brief Phase 3: "due day configurable"
   production_lock_after_days: 7                   # brief Phase 4: a submitted entry's period closes (status locked) after this many days
   production_anomaly:                             # brief Phase 4: "flags days where actual > target by a configurable % or deviates

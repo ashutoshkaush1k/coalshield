@@ -16,7 +16,8 @@ use app\services\ObligationService;
 use Yii;
 
 /**
- * Incidents (HANDOFF C23): list (?mine_id=, ?late=1 for reports after 48 h, filter[severity|type]),
+ * Incidents (HANDOFF C23): list (?mine_id=, ?late=1 for reports after the obligation's due time -
+ * IncidentDeadline, the law's times - filter[severity|type]),
  * detail with the linked violation and the 48-hour reporting check (citing RPT-03/04/05),
  * report a new one, link or unlink a violation of the same mine.
  */
@@ -33,7 +34,8 @@ class IncidentController extends ApiController
         $query = $this->scopedList(Incident::find())->with('mine');
         $late = Yii::$app->request->get('late');
         if ($late !== null && $late !== '') {
-            $query->andWhere(['incident.reported_within_48h' => !filter_var($late, FILTER_VALIDATE_BOOLEAN)]);
+            $cmp = filter_var($late, FILTER_VALIDATE_BOOLEAN) ? '>' : '<=';
+            $query->andWhere("incident.reported_at $cmp " . \app\components\IncidentDeadline::dueSql('incident'));
         }
         return ListingQuery::apply($query, ['severity', 'type', 'obligation_code', 'reported_within_48h', 'related_violation_id'],
             ['occurred_at', 'reported_at', 'id'], '-occurred_at');

@@ -94,17 +94,19 @@ class ObligationCest
 
     public function incidentsAreOnTheRegister(ApiTester $I): void
     {
-        // Seeded: one reporting task per incident, done at reported_at; late exactly when the
-        // incident was reported after 48 hours.
+        // Seeded: one reporting task per incident, done at reported_at, due at the law's time for its
+        // obligation (RPT-05 12 h, RPT-04 60 h, RPT-03 forthwith + 1 h grace, a product setting).
         $db = Yii::$app->db;
         $I->assertSame((int) $db->createCommand('SELECT count(*) FROM incident')->queryScalar(),
             (int) $db->createCommand('SELECT count(*) FROM obligation_task WHERE incident_id IS NOT NULL')->queryScalar());
         $I->assertSame(0, (int) $db->createCommand(
             "SELECT count(*) FROM obligation_task t JOIN incident i ON i.id = t.incident_id JOIN obligation o ON o.id = t.obligation_id
              WHERE t.status <> 'accepted' OR t.accepted_at <> i.reported_at OR o.code <> i.obligation_code
-                OR t.due_at <> i.occurred_at + interval '48 hours' OR (t.accepted_at > t.due_at) = i.reported_within_48h")->queryScalar());
+                OR t.due_at <> " . \app\components\IncidentDeadline::dueSql('i') . "
+                OR t.due_basis <> CASE i.obligation_code WHEN 'RPT-03' THEN 'product' ELSE 'law' END")->queryScalar());
 
-        // Live: reporting an incident puts its task on the register, late here (72 h after).
+        // Live: reporting an incident puts its task on the register - a serious injury (RPT-04), due
+        // 60 h after it (12 h after 48 h of disablement), reported 72 h after: late.
         $mineId = (int) Auth::user(self::HEAD)->mine_id;
         $occurred = gmdate('Y-m-d\TH:i:s\Z', time() - 72 * 3600);
         $I->amBearerOf(Auth::GOVERNMENT);
@@ -116,10 +118,10 @@ class ObligationCest
         $I->assertNotNull($task);
         $I->amBearerOf(self::HEAD);
         $I->sendGet("/v1/obligation-tasks/{$task->id}");
-        $I->seeResponseContainsJson(['status' => 'accepted', 'period' => sprintf('INC-%06d', $incidentId), 'due_basis' => 'product',
+        $I->seeResponseContainsJson(['status' => 'accepted', 'period' => sprintf('INC-%06d', $incidentId), 'due_basis' => 'law',
             'incident_id' => $incidentId, 'reported_late' => true, 'obligation' => ['code' => 'RPT-04'],
             'incident' => ['id' => $incidentId, 'reported_within_48h' => false]]);
-        $I->assertSame(gmdate('Y-m-d\TH:i:s\Z', strtotime($occurred) + 48 * 3600), $I->grabDataFromResponseByJsonPath('$.due_at')[0]);
+        $I->assertSame(gmdate('Y-m-d\TH:i:s\Z', strtotime($occurred) + 60 * 3600), $I->grabDataFromResponseByJsonPath('$.due_at')[0]);
         $I->seeResponseContainsJson(['history' => [['to_status' => 'accepted', 'context' => ['code' => 'INCIDENT_REPORTED']]]]);
         $I->sendGet('/v1/obligations');
         $I->seeResponseContainsJson([['code' => 'RPT-04', 'from_incidents' => true, 'generates_tasks' => false]]);

@@ -265,8 +265,8 @@
       "dangerous_occurrence": "ప్రమాదకర సంఘటన"
     },
     "check": {
-      "REPORTED_WITHIN_48H": "{{hours}} h తర్వాత నివేదించబడింది - {{limit_hours}} h లోపు ({{obligation_code}})",
-      "REPORTED_AFTER_48H": "{{hours}} h తర్వాత నివేదించబడింది - {{limit_hours}} h కంటే ఆలస్యం ({{obligation_code}})"
+      "REPORTED_ON_TIME": "{{hours}} గంటల తర్వాత నివేదించారు - సమయానికి ({{obligation_code}}: “{{rule}}”, {{limit_hours}} గంటలు)",
+      "REPORTED_LATE": "{{hours}} గంటల తర్వాత నివేదించారు - ఆలస్యంగా ({{obligation_code}}: “{{rule}}”, {{limit_hours}} గంటలు)"
     },
     "obligation": {
       "RPT-03": "RPT-03 · ప్రాణాంతక ప్రమాద నోటీసు",
@@ -280,7 +280,8 @@
     "linkedViolation": "సంబంధిత ఉల్లంఘన",
     "none": "ఏదీ లేదు",
     "empty": "ఘటనలు ఏవీ నమోదు కాలేదు.",
-    "late": "ఆలస్యం"
+    "late": "ఆలస్యం",
+    "checkGrace": "“Forthwith” అంటే వెంటనే; {{hours}} గంటల వెసులుబాటు యాప్ సెట్టింగ్, చట్టం కాదు."
   },
   "correctiveAction": {
     "title": "దిద్దుబాటు చర్యలు",
@@ -1087,7 +1088,7 @@
       "reported": "ఘటన #{{id}}తో నివేదించబడింది",
       "late": "ఆలస్యంగా నివేదించబడింది",
       "onTime": "సమయానికి నివేదించబడింది",
-      "detail": "ఘటన #{{id}}: జరిగింది {{occurred}}, నివేదించబడింది {{reported}}. ఘటన రికార్డే నివేదిక; పని గడువు ఘటన జరిగిన 48 గంటల తర్వాత (యాప్ సెట్టింగ్)."
+      "detail": "ఘటన #{{id}}: {{occurred}}న జరిగింది, {{reported}}న నివేదించారు. ఘటన రికార్డే నివేదిక; నిబంధన సమయంలోగా ఇవ్వాలి: “{{rule}}”."
     },
     "appliesTo": {
       "mine": "గని",

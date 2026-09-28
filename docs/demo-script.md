@@ -143,7 +143,7 @@ continuing.**
 5. **Drill down** → click Bhubaneswari. Score with the formula, alerts (each a translated
    `{code, params}`), sensor trends with the legal limit lines, and one row of records:
    **violations** (all 11 categories), **corrective actions** (overdue ones flagged),
-   **incidents** (the dangerous occurrence of 18 Sept, reported after 3 h - within 48 h, RPT-05 -
+   **incidents** (the dangerous occurrence of 18 Sept, reported after 3 h - within the 12 h RPT-05 allows -
    linked to the strata violation before it) and the **audit trail**.
 6. **Raise a directive** → **Flag for inspection** on the drill-down. It records the score at the
    moment of the click and appears on the mine's dashboard tagged *From DGMS*.

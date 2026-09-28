@@ -38,7 +38,7 @@ export function MineRecords({ bundle, onChanged }) {
   const { violations, correctiveActions, incidents, audit } = bundle;
   const openViolations = violations.filter((v) => !v.resolved).length;
   const overdue = correctiveActions.filter((a) => a.is_overdue).length;
-  const late = incidents.filter((i) => !i.reported_within_48h).length;
+  const late = incidents.filter((i) => i.reported_late).length;
 
   // Selections are re-read from the live bundle, so a poll updates an open detail in place.
   const live = (kind, list) => (selected?.kind === kind ? list.find((r) => r.id === selected.id) : null);
@@ -109,7 +109,7 @@ export function MineRecords({ bundle, onChanged }) {
               {incidents.map((i) => (
                 <tr key={i.id} className="clickable" onClick={() => setSelected({ kind: "incident", id: i.id })}>
                   <td><strong>{incidentSeverityLabel(i.severity)}</strong><div className="faint small">{incidentTypeLabel(i.type)}</div></td>
-                  <td><span className={`tag ${i.reported_within_48h ? "tag-resolved" : "tag-open"}`}>{i.obligation_code}{i.reported_within_48h ? "" : ` · ${t("incident.late")}`}</span></td>
+                  <td><span className={`tag ${i.reported_late ? "tag-open" : "tag-resolved"}`}>{i.obligation_code}{i.reported_late ? ` · ${t("incident.late")}` : ""}</span></td>
                   <td className="mono">{fmtDateTime(i.occurred_at)}</td>
                 </tr>
               ))}
@@ -340,8 +340,9 @@ function IncidentDetail({ incident, violations, onClose }) {
   return (
     <Drawer open onClose={onClose} title={incidentSeverityLabel(incident.severity)} subtitle={incidentTypeLabel(incident.type)}>
       <div className="stack tight">
-        <div className={`notice ${check?.code === "REPORTED_WITHIN_48H" ? "info" : "error"}`}>
+        <div className={`notice ${check?.code === "REPORTED_ON_TIME" ? "info" : "error"}`} id="incident-reporting-check">
           {reportingCheckText(check)}
+          {check?.params?.basis === "product" && <div className="small">{t("incident.checkGrace", { hours: check.params.limit_hours })}</div>}
         </div>
         <Field label={t("incident.cause")}>{descriptionCodeLabel(incident.description_code)}</Field>
         <Field label={t("incident.occurred")}>{fmtDateTime(incident.occurred_at)}</Field>

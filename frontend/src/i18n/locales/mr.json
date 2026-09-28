@@ -265,8 +265,8 @@
       "dangerous_occurrence": "धोकादायक घटना"
     },
     "check": {
-      "REPORTED_WITHIN_48H": "{{hours}} h नंतर नोंदवले - {{limit_hours}} h च्या आत ({{obligation_code}})",
-      "REPORTED_AFTER_48H": "{{hours}} h नंतर नोंदवले - {{limit_hours}} h पेक्षा उशिरा ({{obligation_code}})"
+      "REPORTED_ON_TIME": "{{hours}} तासांनंतर कळवले - वेळेत ({{obligation_code}}: “{{rule}}”, {{limit_hours}} तास)",
+      "REPORTED_LATE": "{{hours}} तासांनंतर कळवले - उशिरा ({{obligation_code}}: “{{rule}}”, {{limit_hours}} तास)"
     },
     "obligation": {
       "RPT-03": "RPT-03 · प्राणघातक अपघाताची सूचना",
@@ -280,7 +280,8 @@
     "linkedViolation": "संबंधित उल्लंघन",
     "none": "काहीही नाही",
     "empty": "कोणतीही दुर्घटना नोंदलेली नाही.",
-    "late": "उशिरा"
+    "late": "उशिरा",
+    "checkGrace": "“Forthwith” म्हणजे तात्काळ; {{hours}} तासांची सवलत ही प्रणालीतील सेटिंग आहे, कायदा नाही."
   },
   "correctiveAction": {
     "title": "सुधारात्मक कारवाया",
@@ -1087,7 +1088,7 @@
       "reported": "दुर्घटना #{{id}} सह नोंदवले",
       "late": "उशिरा नोंदवले",
       "onTime": "वेळेवर नोंदवले",
-      "detail": "दुर्घटना #{{id}}: घडली {{occurred}}, नोंदवली {{reported}}. दुर्घटनेची नोंद हाच अहवाल आहे; कार्याची मुदत दुर्घटनेनंतर 48 तास आहे (प्रणाली सेटिंग)."
+      "detail": "दुर्घटना #{{id}}: {{occurred}} रोजी घडली, {{reported}} रोजी कळवली. दुर्घटनेची नोंद हाच अहवाल; तो नियमाच्या वेळेत देय आहे: “{{rule}}”."
     },
     "appliesTo": {
       "mine": "खाण",

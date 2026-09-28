@@ -265,8 +265,8 @@
       "dangerous_occurrence": "ବିପଜ୍ଜନକ ଘଟଣା"
     },
     "check": {
-      "REPORTED_WITHIN_48H": "{{hours}} h ପରେ ରିପୋର୍ଟ - {{limit_hours}} h ମଧ୍ୟରେ ({{obligation_code}})",
-      "REPORTED_AFTER_48H": "{{hours}} h ପରେ ରିପୋର୍ଟ - {{limit_hours}} h ସୀମାଠାରୁ ବିଳମ୍ବରେ ({{obligation_code}})"
+      "REPORTED_ON_TIME": "{{hours}} ଘଣ୍ଟା ପରେ ସୂଚିତ - ସମୟରେ ({{obligation_code}}: “{{rule}}”, {{limit_hours}} ଘଣ୍ଟା)",
+      "REPORTED_LATE": "{{hours}} ଘଣ୍ଟା ପରେ ସୂଚିତ - ବିଳମ୍ବରେ ({{obligation_code}}: “{{rule}}”, {{limit_hours}} ଘଣ୍ଟା)"
     },
     "obligation": {
       "RPT-03": "RPT-03 · ସାଂଘାତିକ ଦୁର୍ଘଟଣା ସୂଚନା",
@@ -280,7 +280,8 @@
     "linkedViolation": "ସମ୍ପୃକ୍ତ ଉଲ୍ଲଂଘନ",
     "none": "କିଛି ନାହିଁ",
     "empty": "କୌଣସି ଘଟଣା ରେକର୍ଡ ହୋଇନାହିଁ।",
-    "late": "ବିଳମ୍ବରେ"
+    "late": "ବିଳମ୍ବରେ",
+    "checkGrace": "“Forthwith” ଅର୍ଥାତ୍ ତୁରନ୍ତ, {{hours}} ଘଣ୍ଟାର ଛାଡ଼ ସହ - ଏହା ସିଷ୍ଟମ ସେଟିଂ, ଆଇନ ନୁହେଁ।"
   },
   "correctiveAction": {
     "title": "ସଂଶୋଧନମୂଳକ ପଦକ୍ଷେପ",
@@ -1087,7 +1088,7 @@
       "reported": "ଘଟଣା #{{id}} ସହ ରିପୋର୍ଟ ହୋଇଛି",
       "late": "ବିଳମ୍ବରେ ରିପୋର୍ଟ",
       "onTime": "ସମୟରେ ରିପୋର୍ଟ",
-      "detail": "ଘଟଣା #{{id}}: ଘଟିଥିଲା {{occurred}}, ରିପୋର୍ଟ {{reported}}। ଘଟଣା ରେକର୍ଡ ହିଁ ରିପୋର୍ଟ; କାର୍ଯ୍ୟଟି ଘଟଣାର 48 ଘଣ୍ଟା ପରେ ଧାର୍ଯ୍ୟ (ଏକ ପ୍ରୋଡକ୍ଟ ସେଟିଂ)।"
+      "detail": "ଘଟଣା #{{id}}: {{occurred}}ରେ ଘଟିଲା, {{reported}}ରେ ସୂଚିତ। ଘଟଣାର ରେକର୍ଡ ହିଁ ରିପୋର୍ଟ; ଏହା ନିୟମର ସମୟ ମଧ୍ୟରେ ଦେୟ: “{{rule}}”।"
     },
     "appliesTo": {
       "mine": "ଖଣି",

@@ -2,7 +2,7 @@ table: obligation_task
 description: One due occurrence of an obligation for one mine (Phase 5B register).
 defined_by:
   - "PLAN.md Phase 5B: obligation_task (mine_id, obligation, period, due_at, status open/submitted/accepted/rejected/overdue/escalated/waived, escalation_level), unique (mine, obligation, period)"
-  - "Owner, 2026-09-28: each incident creates an on-event task for its reporting obligation (RPT-03/04/05), due 48 hours after it occurred, done or late from reported_at"
+  - "Owner, 2026-09-28: each incident creates an on-event task for its reporting obligation (RPT-03/04/05), done or late from reported_at; due at the law's time (owner, Phase 6 approval): RPT-05 12 h, RPT-04 60 h (12 h after 48 h of disablement), RPT-03 forthwith + a 1 h grace (product setting)"
 generator: gen_obligations.py
 primary_key: id
 unique: [[mine_id, obligation_id, period]]

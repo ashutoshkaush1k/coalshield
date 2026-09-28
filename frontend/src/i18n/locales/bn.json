@@ -265,8 +265,8 @@
       "dangerous_occurrence": "বিপজ্জনক ঘটনা"
     },
     "check": {
-      "REPORTED_WITHIN_48H": "{{hours}} h পরে রিপোর্ট - {{limit_hours}} h-এর মধ্যে ({{obligation_code}})",
-      "REPORTED_AFTER_48H": "{{hours}} h পরে রিপোর্ট - {{limit_hours}} h-এর পরে ({{obligation_code}})"
+      "REPORTED_ON_TIME": "{{hours}} ঘণ্টা পরে জানানো হয়েছে - সময়মতো ({{obligation_code}}: “{{rule}}”, {{limit_hours}} ঘণ্টা)",
+      "REPORTED_LATE": "{{hours}} ঘণ্টা পরে জানানো হয়েছে - দেরিতে ({{obligation_code}}: “{{rule}}”, {{limit_hours}} ঘণ্টা)"
     },
     "obligation": {
       "RPT-03": "RPT-03 · প্রাণঘাতী দুর্ঘটনার নোটিস",
@@ -280,7 +280,8 @@
     "linkedViolation": "সংযুক্ত লঙ্ঘন",
     "none": "নেই",
     "empty": "কোনো ঘটনা নথিভুক্ত হয়নি।",
-    "late": "বিলম্বিত"
+    "late": "বিলম্বিত",
+    "checkGrace": "“Forthwith” অর্থাৎ অবিলম্বে, {{hours}} ঘণ্টার ছাড়সহ - এটি সিস্টেমের সেটিং, আইন নয়।"
   },
   "correctiveAction": {
     "title": "সংশোধনমূলক ব্যবস্থা",
@@ -1087,7 +1088,7 @@
       "reported": "ঘটনা #{{id}}-এর সঙ্গে রিপোর্ট করা হয়েছে",
       "late": "বিলম্বে রিপোর্ট করা হয়েছে",
       "onTime": "সময়মতো রিপোর্ট করা হয়েছে",
-      "detail": "ঘটনা #{{id}}: ঘটেছে {{occurred}}, রিপোর্ট {{reported}}। ঘটনার রেকর্ডই রিপোর্ট; কাজটির নির্ধারিত সময় ঘটনার 48 ঘণ্টা পরে (একটি প্রোডাক্ট সেটিং)।"
+      "detail": "ঘটনা #{{id}}: ঘটেছে {{occurred}}, জানানো হয়েছে {{reported}}। ঘটনার রেকর্ডই রিপোর্ট; এটি নিয়মের সময়ের মধ্যে দেয়: “{{rule}}”।"
     },
     "appliesTo": {
       "mine": "খনি",

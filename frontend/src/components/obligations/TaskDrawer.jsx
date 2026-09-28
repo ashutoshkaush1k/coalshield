@@ -75,8 +75,13 @@ export function TaskDrawer({ taskId, onClose, onChanged }) {
 
           {task.incident && (
             <p className="notice" id="obligation-incident">
-              {t("obligation.incident.detail", { id: task.incident.id, occurred: fmtWhen(task.incident.occurred_at), reported: fmtWhen(task.incident.reported_at) })}
+              {t("obligation.incident.detail", { id: task.incident.id, occurred: fmtWhen(task.incident.occurred_at), reported: fmtWhen(task.incident.reported_at), rule: o.due_rule ?? "" })}
               {" "}<strong>{t(task.reported_late ? "obligation.incident.late" : "obligation.incident.onTime")}</strong>
+              {task.due_basis === "product" && (
+                <span className="small" style={{ display: "block" }}>
+                  {t("incident.checkGrace", { hours: Math.round((Date.parse(task.due_at) - Date.parse(task.incident.occurred_at)) / 36e5) })}
+                </span>
+              )}
             </p>
           )}
 

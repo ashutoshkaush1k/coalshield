@@ -9,7 +9,8 @@ Which obligations get due tasks: only **verified** obligations that apply to a *
 **calendar frequency** (weekly, fortnightly, monthly, quarterly / every 3 months, half-yearly /
 every 6 months, annual). On-event duties come from the events themselves: each incident gets one
 task for its reporting obligation (incident.obligation_code, RPT-03 / RPT-04 / RPT-05), due
-product.obligation_schedule.incident_notice_hours (48) after it occurred and done - on time or late -
+by the law's time (incident_deadline: RPT-05 12 h, RPT-04 12 h after 48 h of disablement, RPT-03
+"forthwith" + a product grace period) and done - on time or late -
 at its reported_at (the incident record is the report: no upload, no review); continuous limits (HLT-04, SAF-11, ENV-04/08 ...) are monitored by the sensor rules;
 "every shift" (SAF-08) is too fine-grained for a register; contractor and worker duties belong to
 the contractor module. RPT-08 (TODO-VERIFY) never gets a task.
@@ -114,6 +115,21 @@ def periods(schedule: str, code: str, first: dt.date, last: dt.date):
     return [p for p in out if p[1] <= last and p[3] >= first]
 
 
+def incident_deadline(rules: dict, code: str) -> tuple[float, str]:
+    """Hours from the incident to its reporting obligation's due time, and the basis (owner, Phase 6
+    approval: the law's times). RPT-05 r.7(3) "within twelve hours"; RPT-04 r.7(2) "within twelve
+    hours after the completion of forty-eight hours" (of disablement, counted from the incident);
+    RPT-03 r.7(1) "forthwith" - immediate, with product.obligation_schedule.forthwith_grace_hours."""
+    legal = rules["legal"]
+    if code == "RPT-05":
+        return float(legal["dangerous_occurrence_notice_hours"]["value"]), "law"
+    if code == "RPT-04":
+        return float(legal["injury_disablement_hours"]["value"] + legal["injury_report_hours_after_48h_disablement"]["value"]), "law"
+    if code == "RPT-03":
+        return float(rules["product"]["obligation_schedule"]["forthwith_grace_hours"]), "product"
+    raise ValueError(f"no reporting deadline for {code}")
+
+
 def run(ctx: Ctx) -> None:
     rng = ctx.rng("obligations")
     esc_after = pd.Timedelta(hours=float(ctx.rules["product"]["obligation_schedule"]["escalate_after_hours"]))
@@ -213,10 +229,9 @@ def run(ctx: Ctx) -> None:
                 tasks.append(task)
 
     # On-event reporting tasks (owner, 2026-09-28): one per incident, for its reporting obligation
-    # (incident.obligation_code: RPT-03 / RPT-04 / RPT-05), due incident_notice_hours after it occurred.
+    # (incident.obligation_code: RPT-03 / RPT-04 / RPT-05), due at the law's time (incident_deadline).
     # The incident record is the report, so the task is done when reported_at comes - on time or late
     # - with no upload and no review. No random draws: nothing else shifts.
-    notice_after = pd.Timedelta(hours=float(ctx.rules["product"]["obligation_schedule"]["incident_notice_hours"]))
     ob_id = dict(zip(ob["code"], ob["id"]))
     inc = ctx.tables["incident"].sort_values("id")
     for i in inc.itertuples():
@@ -224,11 +239,12 @@ def run(ctx: Ctx) -> None:
         occurred = occurred.tz_localize("UTC") if occurred.tzinfo is None else occurred.tz_convert("UTC")
         reported = pd.Timestamp(i.reported_at)
         reported = reported.tz_localize("UTC") if reported.tzinfo is None else reported.tz_convert("UTC")
-        due = occurred + notice_after
+        hours, basis = incident_deadline(ctx.rules, i.obligation_code)
+        due = occurred + pd.Timedelta(hours=hours)
         day = (occurred + IST).date()
         task = {"id": len(tasks) + 1, "mine_id": int(i.mine_id), "obligation_id": int(ob_id[i.obligation_code]),
                 "period": f"INC-{int(i.id):06d}", "period_start": day, "period_end": day, "due_at": due,
-                "due_basis": "product", "status": "open", "escalation_level": 0, "accepted_at": None,
+                "due_basis": basis, "status": "open", "escalation_level": 0, "accepted_at": None,
                 "created_at": occurred, "incident_id": int(i.id)}
         if reported <= ctx.as_of:
             task["status"], task["accepted_at"] = "accepted", reported

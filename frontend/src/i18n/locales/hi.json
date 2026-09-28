@@ -265,8 +265,8 @@
       "dangerous_occurrence": "खतरनाक घटना"
     },
     "check": {
-      "REPORTED_WITHIN_48H": "{{hours}} h बाद सूचित - {{limit_hours}} h के भीतर ({{obligation_code}})",
-      "REPORTED_AFTER_48H": "{{hours}} h बाद सूचित - {{limit_hours}} h से देर ({{obligation_code}})"
+      "REPORTED_ON_TIME": "{{hours}} घंटे बाद सूचित - समय पर ({{obligation_code}}: “{{rule}}”, {{limit_hours}} घंटे)",
+      "REPORTED_LATE": "{{hours}} घंटे बाद सूचित - विलंब से ({{obligation_code}}: “{{rule}}”, {{limit_hours}} घंटे)"
     },
     "obligation": {
       "RPT-03": "RPT-03 · घातक दुर्घटना की सूचना",
@@ -280,7 +280,8 @@
     "linkedViolation": "संबद्ध उल्लंघन",
     "none": "कोई नहीं",
     "empty": "कोई घटना दर्ज नहीं।",
-    "late": "देर से"
+    "late": "देर से",
+    "checkGrace": "“Forthwith” को तुरंत माना गया है, {{hours}} घंटे की छूट के साथ - यह सिस्टम की सेटिंग है, कानून नहीं।"
   },
   "correctiveAction": {
     "title": "सुधारात्मक कार्रवाइयाँ",
@@ -1087,7 +1088,7 @@
       "reported": "घटना #{{id}} के साथ सूचित",
       "late": "देर से सूचित",
       "onTime": "समय पर सूचित",
-      "detail": "घटना #{{id}}: घटित {{occurred}}, सूचित {{reported}}। घटना का रिकॉर्ड ही रिपोर्ट है; कार्य घटना के 48 घंटे बाद देय होता है (उत्पाद सेटिंग)।"
+      "detail": "घटना #{{id}}: {{occurred}} को हुई, {{reported}} को सूचित। घटना का रिकॉर्ड ही सूचना है; यह नियम के समय तक देय है: “{{rule}}”।"
     },
     "appliesTo": {
       "mine": "खदान",
