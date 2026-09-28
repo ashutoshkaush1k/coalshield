@@ -107,10 +107,12 @@ extension=intl
 extension=pdo_pgsql
 extension=pgsql
 extension=sodium
+extension=zip
 ```
 
-Check with `C:\xampp\php\php.exe -m` (the list must include `pdo_pgsql`, `pgsql`, `intl`,
-`sodium`). To undo, copy the backup back over `php.ini`. The API runs under XAMPP's Apache with its
+`zip` is for Composer, which unpacks packages with it (`scripts/setup.ps1` switches it on for its
+own Composer run, so it also works without this line). Check with `C:\xampp\php\php.exe -m` (the list must include `pdo_pgsql`, `pgsql`, `intl`,
+`sodium` and `zip`). To undo, copy the backup back over `php.ini`. The API runs under XAMPP's Apache with its
 own configuration (6a); XAMPP's `httpd.conf` and `php.ini` stay untouched.
 
 ## 5. Composer
@@ -346,7 +348,8 @@ Remove-Item Env:PGPASSWORD
 #    (signs everyone out and invalidates signed file links)
 C:\xampp\php\php.exe -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
 
-# 3. New simulator key (the old one stops working at once)
+# 3. New simulator key (the old one stops working at once - also when a second checkout of the
+#    repository issues its own on its first run_all.bat: copy scripts\.simulator.key across instead)
 cd api; .\yii.bat api-key/issue simulator --out=..\scripts\.simulator.key; cd ..
 ```
 

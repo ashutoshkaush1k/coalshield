@@ -206,6 +206,8 @@ exit /b 0
 :stop
 echo  Closing the SIH-* windows - the supervisor first, so it restarts nothing...
 for %%W in (SIH-Supervisor SIH-Simulator SIH-Field SIH-Frontend SIH-AI SIH-API) do taskkill /fi "WINDOWTITLE eq %%W*" /t /f >nul 2>&1
+REM npm renames its window, so the title does not always match: free the stack's ports as well.
+powershell -NoProfile -Command "foreach ($p in 8001,5173,5180,5443,5080) { Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue } }"
 call "%ROOT%scripts\api_server.bat" stop
 call "%ROOT%scripts\db.bat" stop
 exit /b %ERRORLEVEL%

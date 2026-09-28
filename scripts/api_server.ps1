@@ -159,6 +159,9 @@ switch ($Action.ToLower()) {
         for ($i = 0; $i -lt 40; $i++) {
             Start-Sleep -Milliseconds 250
             if ((Get-ApachePid) -and (Test-Listening)) {
+                # A hidden Apache counts as a background process to Windows, which may hold it on the
+                # efficiency cores: measured 7x slower PHP. Opt it out (scripts\no_throttle.ps1).
+                & (Join-Path $PSScriptRoot 'no_throttle.ps1') -Names httpd -Ports @() -Quiet
                 Write-Output "[ok] API (Apache + mod_php, OPcache) on http://127.0.0.1:$Port/v1/health"
                 exit 0
             }

@@ -8,7 +8,7 @@ Coal Mine Tracker, August 2026, CC BY 4.0); the numbers attached to them are not
 
 ---
 
-## READ THIS FIRST: re-seed before every run
+## READ THIS FIRST: reset before every run
 
 **Scores fall and recover.** A sensor breach counts against its mine only inside a rolling window
 (`BREACH_WINDOW_HOURS`, 12 s by default - six ticks at the simulator's 2 s interval), so the
@@ -23,14 +23,19 @@ a clean re-inspection frame.
 ### The rule
 
 ```bat
-api\yii.bat seed demo
-api\yii.bat jobs/all
+scripts\demo_reset.bat
+scripts\predemo_check.bat
 ```
 
-Run it **immediately before every demo, every rehearsal, and every practice run.** It reloads the
-demo preset in one transaction (about 25 seconds) and starts a fresh audit chain. `jobs/all` (Phase
-7, about 5 seconds) then does what the clock would: reminders, escalations, the risk index history,
-the predictions and the detectors' findings. The scores are the same before and after it.
+Run them **immediately before every demo, every rehearsal, and every practice run.**
+`demo_reset.bat` restores the board to "seed demo + jobs/all" from a snapshot in about 6 seconds and
+checks it: the five demo mines, the 83.2 average and the audit chain (the first run, or a run after
+the data or a migration changed, rebuilds the snapshot first - about 40 s). `predemo_check.bat`
+then prints **READY** or a numbered list of what to fix (a service down, the certificate, Windows
+sleep, disk space, ...).
+
+The long way, if the reset script cannot run: `api\yii.bat seed demo` (about 30 s), then
+`api\yii.bat jobs/all` (about 5 s). The scores are the same either way.
 
 ### The safety net
 
@@ -44,7 +49,7 @@ banner if scores have drifted from the seeded baseline:
   MINE                   SCORE  VIOLATIONS  BREACHES
   MP-SGR-02           80 -> 70          +2         -  low -> medium
   ...
-  FIX BEFORE DEMOING:  api\yii.bat seed demo
+  FIX BEFORE DEMOING:  scripts\demo_reset.bat
 ==============================================================================
 ```
 
@@ -64,8 +69,9 @@ simulator, so by step 4 the scores have legitimately drifted.
 - [ ] **`run_all.bat`** - starts PostgreSQL if needed, the API (Apache on 8080), the ai-service and the frontend,
       waits for the ports and opens the dashboard. It stops with a clear message if the database
       will not start. (First run on a machine: it migrates and seeds by itself.)
-- [ ] **`api\yii.bat seed demo`** - the board must read **100 / 80 / 70 / 60 / 45** for the five
-      demo mines and **83.2** national average.
+- [ ] **`scripts\demo_reset.bat`** - ends with "Demo board reset.": the board reads
+      **100 / 80 / 70 / 60 / 45** for the five demo mines and **83.2** national average.
+- [ ] **`scripts\predemo_check.bat`** - must print **READY**. Fix what it lists (it says how).
 - [ ] `python scripts\run_simulator.py --check-only` - must print `Pre-flight : OK`.
 - [ ] **Languages.** Mine heads are seeded with their state's language and open in it after login
       (Bhubaneswari: Odia; Moonidih, Gevra, Block-B: Hindi). That is the feature. To walk a step
@@ -85,7 +91,8 @@ simulator, so by step 4 the scores have legitimately drifted.
 - [ ] **Two browser tabs**, signed in - Government in one, Mine Head (Jayant,
       `head.mp-sgr-02@coalmine.in`) in the other. Sessions are per tab, so both stay signed in.
 - [ ] A photograph ready to attach as resolution proof (JPG, PNG or WEBP).
-- [ ] A terminal with `api\yii.bat seed demo` typed, not yet run.
+- [ ] A terminal with `scripts\demo_reset.bat` typed, not yet run (about 6 s if a judge wants the
+      board back mid-session).
 
 Clean baseline: **74 mines across 10 states**, national average **83.2**, **6 high / 21 medium /
 47 low**. The Overview board shows the five highest-risk mines nationally, not all 74. The five
@@ -100,8 +107,8 @@ demo mines keep their codes; their names now come from the real roster
 | WB-RNG-04 Sonepur Bazari | ECL | Paschim Bardhaman, West Bengal | 60 | Medium |
 | OD-TLC-05 Bhubaneswari | MCL | Angul, Odisha | 45 | High |
 
-If the national average does not read 83.2 before the simulator starts, **re-seed before
-continuing.**
+If the national average does not read 83.2 before the simulator starts, **reset before
+continuing** (`scripts\demo_reset.bat`).
 
 ---
 
@@ -286,7 +293,7 @@ continuing.**
     in a desktop browser at `http://localhost:5180/field` with DevTools set to a phone and **Offline**
     (the screenshots in `docs/screenshots/phase7b/` show every step).
 
-**After the run - and before the next one - re-seed.** (`run_all.bat` runs the jobs again on the next start.)
+**After the run - and before the next one - reset:** `scripts\demo_reset.bat`.
 
 ---
 

@@ -109,12 +109,12 @@
   },
   {
     "name": "side-tab gov@dgms.gov.in",
-    "note": "20 API requests in 94 s",
+    "note": "24 API requests in 94 s",
     "errors": []
   },
   {
     "name": "side-tab head.od-tlc-05@coalmine.in",
-    "note": "17 API requests in 88 s",
+    "note": "18 API requests in 88 s",
     "errors": []
   }
 ]

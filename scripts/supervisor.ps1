@@ -104,6 +104,9 @@ foreach ($s in $services) { $s.Failures = 0; $s.Restarts = 0; $s.NextTry = [date
 
 Write-Log ("supervisor started: every {0} s; watching {1}" -f $IntervalSeconds, (($services | Where-Object { $_.Enabled } | ForEach-Object { $_.Name }) -join ', '))
 while ($true) {
+    # Every round: keep the stack out of Windows power throttling, including anything just
+    # restarted and PostgreSQL's per-connection processes (scripts\no_throttle.ps1 says why).
+    & (Join-Path $Root 'scripts\no_throttle.ps1') -Quiet
     foreach ($s in ($services | Where-Object { $_.Enabled })) {
         $check = Test-Up $s.Url
         if ($check.Up) {

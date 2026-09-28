@@ -50,10 +50,12 @@ goto :wait
 set /a TRIES=0
 :waitloop
 "%PGREADY%" -h 127.0.0.1 -p %PG_PORT% -q
-if not errorlevel 1 (
-  echo [ok] PostgreSQL is accepting connections on port %PG_PORT%.
-  exit /b 0
-)
+if errorlevel 1 goto :notready
+rem Hidden processes may be held on the efficiency cores by Windows: opt PostgreSQL out (no_throttle.ps1).
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0no_throttle.ps1" -Names postgres -Quiet
+echo [ok] PostgreSQL is accepting connections on port %PG_PORT%.
+exit /b 0
+:notready
 set /a TRIES+=1
 if %TRIES% GEQ 30 goto :startfailed
 ping -n 2 127.0.0.1 >nul

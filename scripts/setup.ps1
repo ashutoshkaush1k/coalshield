@@ -18,7 +18,17 @@ $php = if ($env:PHP) { $env:PHP } else { 'C:\xampp\php\php.exe' }
 
 Write-Host '== API (api\): Composer packages and api\.env'
 Push-Location "$root\api"
-if (-not (Test-Path 'vendor\autoload.php')) { & $composer install --no-interaction }
+if (-not (Test-Path 'vendor\autoload.php')) {
+    # Composer unpacks packages with PHP's zip extension (or an unzip / 7z command, which PowerShell
+    # does not have). XAMPP ships the extension but leaves it off: switch it on for this command only.
+    $phar = Join-Path (Split-Path $composer) 'composer.phar'
+    if (Test-Path $phar) { & $php -d extension=zip $phar install --no-interaction }
+    else { & $composer install --no-interaction }
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path 'vendor\autoload.php')) {
+        Pop-Location
+        throw 'composer install failed - see above (docs\SETUP_WINDOWS.md 4-5: the zip extension, Composer).'
+    }
+}
 if (-not (Test-Path '.env')) {
     Copy-Item '.env.example' '.env'
     # A fresh JWT secret from the system's cryptographic generator (32 bytes as 64 hex characters).
@@ -42,8 +52,12 @@ if (-not $SkipAi) {
     Write-Host '== ai-service (ai-service\.venv): Python packages (torch is large, the first run takes a while)'
     $venv = "$root\ai-service\.venv"
     if (-not (Test-Path "$venv\Scripts\python.exe")) { py -3 -m venv $venv }
-    & "$venv\Scripts\python.exe" -m pip install --upgrade pip
-    & "$venv\Scripts\python.exe" -m pip install -r "$root\ai-service\requirements.txt"
+    & "$venv\Scripts\python.exe" -c "import fastapi, uvicorn, torch, ultralytics, sklearn, pytest" 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        & "$venv\Scripts\python.exe" -m pip install --upgrade pip
+        & "$venv\Scripts\python.exe" -m pip install -r "$root\ai-service\requirements.txt"
+        if ($LASTEXITCODE -ne 0) { throw 'pip install failed for ai-service\requirements.txt - see above.' }
+    } else { Write-Host '   ai-service\.venv already has its packages.' }
     if (-not (Test-Path "$root\ai-service\ml\weights\ppe.pt")) {
         Write-Host '   No PPE weights yet: PPE vision uses the test fixture until you build them (about 25 min):'
         Write-Host '     ai-service\.venv\Scripts\python.exe scripts\build_ppe_model.py   (docs\SETUP_WINDOWS.md 11)'

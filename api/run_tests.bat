@@ -36,4 +36,7 @@ echo === seed %TEST_PRESET%
 echo === codeception
 "%PHP%" vendor\bin\codecept build >nul || exit /b 1
 "%PHP%" vendor\bin\codecept run %*
-exit /b %ERRORLEVEL%
+set "RESULT=%ERRORLEVEL%"
+echo === audit chain after the test run (brief Phase 8)
+"%PHP%" yii_test audit/verify || exit /b 1
+exit /b %RESULT%

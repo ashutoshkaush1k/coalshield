@@ -4,7 +4,7 @@ Brief: `CLAUDE_CODE_TASK.md`. Plan and decisions: `PLAN.md`. Data: `data/HANDOFF
 
 ## Remaining phases, in order
 
-5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service, done) → **7B** (field app, done) → 8 (hardening).
+5 (grievances, done) → **5B** (done) → 6 (multilingual, done) → 7 (automation, ai-service, done) → **7B** (field app, done) → 8 (hardening, done).
 The full scope of each is in `PLAN.md` §6.
 
 - **Phase 5B - compliance obligation register and GIS map** (owner addition, 2026-09-27).
@@ -35,6 +35,164 @@ The full scope of each is in `PLAN.md` §6.
     existing services, so the audit chain and history stay intact.
   - Device time and out-of-boundary locations are flagged.
   - Tested by an offline → online browser run.
+
+## Phase 8: Hardening (done, 2026-09-29)
+
+**Real-phone results:** none were reported (the message kept its placeholder), so none were fixed;
+the field app is still tested only in a headless browser emulating a 360 px Android phone.
+
+### Parity sign-off, then `backend/` removed
+
+Every prototype endpoint maps to the new API, or was dropped on purpose (recorded in Phase 2,
+`docs/API_CHANGES.md`):
+
+| Prototype (`/api/v1`) | Now | Evidence |
+|---|---|---|
+| `POST /auth/login`, `GET /auth/me` | `POST /v1/auth/login`, `GET /v1/users/me` (+ `/auth/me`) | `AuthCest`, `UsersMeCest` |
+| `GET /mines`, `/mines/{id}` | same, plus `/mines/geojson` | `ScopingCest`, `DashboardCest` |
+| `GET /dashboard` | same payload, plus `/views/overview` | `DashboardCest`, `DemoScoreCest` |
+| `GET /sensors`, `/sensors/breaches`, `/sensors/{id}`, `/sensors/{id}/trend` | same | `SensorCest` |
+| `GET /sensors/live`, `/sensors/{id}/live` | **dropped** (the frontend never used them; charts poll the trend) | Phase 2 decision |
+| per-tick IsolationForest `anomaly_score` | **not ported**: trained on the prototype's 5-mine seed, never shown; sensor anomalies are the evaluated flatline detector | `ai-service/ml/README.md`, `docs/AI_EVALUATION.md` |
+| `GET /inspections` (queue) | `/v1/inspections/priority` (now ordered by the Governance Risk Index) | `DashboardCest`, `RiskCest` |
+| `GET /violations`, `/alerts` + ack / directives / resolve / reopen, `/audit` | same (+ `?since=`) | `AlertCest`, `AuditTrailCest` |
+| `POST /vision/analyze` | same, the API calls the ai-service | `VisionCest` |
+| compliance, corrective actions (stubs) | built | `CorrectiveActionCest` |
+| `WS /ws` | polling (Phase 2 decision) | - |
+| simulator writing the database | `scripts/run_simulator.py` through `POST /v1/sensor-readings/ingest` (API key) | `SensorCest` |
+| scoring, breach window, ranking | ported unchanged | `ComplianceScoreServiceTest` (the prototype's numbers) |
+
+Moved before the removal: the Python environment (`backend\.venv` -> `ai-service\.venv`), the PPE
+weights and training runs (-> `ai-service\ml\`, gitignored), the sample and held-out images
+(-> `ai-service/samples/`), and the prototype's demo seed (-> `data/reference/prototype_seed/`, the data
+track's source S01; same files, same SHA-256, `mines_base.csv` reproduces byte for byte).
+
+Removed: `backend/` (tracked files are in git history; its untracked leftovers - `.env`,
+`smartmine.db`, `sensor_anomaly.joblib`, two uploads - were moved to `D:\SIH_backend_removed_2026-09-29`,
+outside the repo, for you to delete), and the prototype-only scripts (`demo_vision.py`,
+`generate_sensor_data.py`, `seed_db.py`, `train_sensor_model.py`, `run_backend.ps1`). `setup.ps1`
+was rewritten for the current stack. Every command and document that named `backend/` now names the
+new place; the remaining mentions say it was removed.
+
+### 1. Reliability
+
+- `scripts/supervisor.ps1`, started by `run_all.bat` (window SIH-Supervisor): every 30 s it checks the
+  API, the ai-service, the frontend and the field server; two failed checks in a row -> restart
+  (Apache through `api_server.bat`, else `serve.bat`; the others in their SIH-* windows); every
+  restart in `api\runtime\logs\supervisor.log`; after three failed restarts it retries every 5 min.
+  Tested by killing the ai-service: logged, restarted, answering again.
+- `run_all.bat` starts the field server when the field app is built, and `--stop` closes the
+  supervisor first.
+- `GET /v1/system/status` (cached 20 s) and a footer warning on every signed-in screen, in six
+  languages, while detection runs on the PHP fallback (service down, or `AI_ENGINE=php`).
+
+### 2. Demo reset
+
+`scripts\demo_reset.bat`: a `pg_dump` snapshot of "seed demo + jobs/all" (23.5 MB, rebuilt when the
+generated data, a migration, the seeder, the RBAC config or the rules change; `-Rebuild`, `-Status`),
+restored with `pg_restore` as the application role - it ends the API's other sessions, drops the
+application's own tables, sequences and functions, restores everything but the PostGIS extension and
+its reference table, runs `ANALYZE` - then `yii demo/check`: the five mines, the fleet average and
+bands, no breach in the window, the audit chain. **About 6 s** end to end.
+
+### 3. Pre-demo check
+
+`scripts\predemo_check.bat` changes nothing and prints READY or a numbered list, with the fix for
+each: PostgreSQL, the API and a demo sign-in, the PPE weights and the model file, the ai-service
+running the real model, detection not on the fallback, the dashboard, the field server, the
+certificate (not expired, covering every current LAN address), the supervisor, fonts bundled (no web
+font links, the @fontsource packages present), Windows sleep and hibernate on mains, mains power,
+free disk space, the demo scores and the audit chain.
+
+### 4. Problem statement coverage
+
+`docs/PROBLEM_STATEMENT_COVERAGE.md`: 18 rows (feature, screenshot, evidence, limitations) and
+questions judges may ask, answered from the docs.
+
+### 5. Security pass (`docs/SECURITY.md`)
+
+- `composer audit`: none. `npm audit`: 1 high (Vite dev server) -> **Vite 7.3.6**; 2 moderate left
+  (React Router 6; not reachable in this app, v7 migration planned). `pip-audit` (ai-service and data
+  environments): none.
+- New: sign-in failure limits (10 per account, 50 per address, 15 min), security headers on every
+  API answer and on the field server (CSP included), no exception details unless
+  `API_DEBUG_ERRORS=1` (never a trace), PHP version hidden, uploads capped at 12 MB in PHP,
+  `X-Forwarded-For` trusted only from the local proxy, a cryptographic JWT secret from `setup.ps1`.
+- Checked, unchanged: CORS (explicit origins, no credentials), upload types by content, bcrypt,
+  HS256 with a 256-bit key, the API listening on 127.0.0.1 only, parameterised SQL.
+
+### 6. Fresh-clone test
+
+Cloned to `D:\SIH_CLONE_TEST` and followed only the README and `docs/SETUP_WINDOWS.md`, reusing the
+installed PostgreSQL (role, databases, extensions), PHP and Composer. Result:
+
+| Step (as documented) | Result |
+|---|---|
+| `scripts\setup.ps1` | **Gap found and fixed:** `composer install` failed - XAMPP's PHP has the `zip` extension off and PowerShell has no `unzip` (the original install ran from Git Bash, which has one). `setup.ps1` now runs Composer with `-d extension=zip`, stops on failure, and skips pip when the environment is complete; `SETUP_WINDOWS.md` 4 lists `zip`. npm install and the ai-service environment (pip, from the cache) worked. |
+| `api\.env` | created with a fresh random JWT secret (cryptographic generator); `DB_PASSWORD` copied as step 4 says |
+| `dataun_data.bat setup`, `generate demo`, `validate demo` | ok; the mines extraction reads the moved prototype seed; validation 16/16 (demo scores 100/80/70/60/45, 83.2; determinism) |
+| `apiun_tests.bat` | 187 tests, 3,551 assertions, all passing (the clone was at the part-1 commit) |
+| `scripts\demo_reset.bat` (migrate, RBAC, seed, jobs, snapshot, restore, check) | ok, the same baseline and audit chain as the main checkout |
+| `run_all.bat` | ok: Apache (the clone's own configuration), ai-service, dashboards, supervisor; field app not built, as documented |
+| `scripts\predemo_check.bat` | everything ok except the PPE weights (not in git by design; the check prints the build command) and this laptop's sleep setting |
+| `run_all.bat --stop` | **Bug found and fixed:** npm renames its window, so `--stop` left Vite running on 5173; it now also frees the stack's ports |
+
+Also found then: issuing the simulator key from a second checkout replaces the first one's
+(documented in `SETUP_WINDOWS.md` 8). Not re-run in the clone: building the PPE weights (25 min
+and the S13 download; unchanged since Phase 4) and sections 1-3 (PostgreSQL, PostGIS, role and
+databases were reused, as asked). Its secret copies (`api\.env`, the simulator key) were deleted; the
+folder `D:\SIH_CLONE_TEST` (2 GB, dependencies) is left for you to delete - my tools may not remove a
+top-level folder.
+
+**Docker**: `docker-compose.yml` is **kept, marked UNTESTED** in its first lines and in
+`SETUP_WINDOWS.md`; it covers the database and the API only.
+
+### 7. Documentation
+
+- `docs/API.md`: every endpoint (111) with its auth and the permission it checks, generated by
+  `php yii docs/api`; `ApiDocTest` fails when it is stale or when a new token endpoint checks nothing.
+- README and `docs/architecture.md` rewritten for the current system; `SETUP_WINDOWS.md` opens with the
+  fresh-clone checklist and gains 6b (ai-service environment), 6c (demo data), 7c (reset and check);
+  the demo script uses the reset and the check.
+- Brief Phase 8 test list: all present; added `ScopingCest::mineHeadGets404ForAnotherMinesRecords`
+  (contractors, production, grievances, alerts in one test) and `audit/verify` after the test run in
+  `run_tests.bat`.
+
+### Tests, browser checks, performance
+
+- `apiun_tests.bat`: locale checks clean (1,418 keys x 6 languages); ai-service 19 pytest; API
+  **188 tests, 3,571 assertions, all passing** (none skipped); `audit/verify` intact after the seed
+  and again after the test run. New: `ApiDocTest`, `AuthCest` (sign-in limits, headers),
+  `ScopingCest::mineHeadGets404ForAnotherMinesRecords`.
+- **Every browser check, phases 2-7B** (`scriptsun_browser_checks.ps1`, a reset before each):
+  all 8 passed - phase 2 (21 screenshots), 3 (16), 4 (15), 5 (16), 5B (21), 6 strict (57, no
+  overflow), 7 (8), 7B strict (13); the browser errors they log are the ones they provoke (404, 403,
+  422, offline). Summary: `docs/screenshots/browser_checks.txt`.
+- **Performance**: every dashboard request under 150 ms, slowest p95 52 ms - after fixing a 4-5x
+  slowdown caused by Windows power throttling of hidden processes (`scripts/no_throttle.ps1`,
+  applied at start and by the supervisor every round; `docs/PERFORMANCE.md`, Phase 8).
+- `scripts\predemo_check.bat` on this laptop: everything ok except Windows sleep on mains (45 min) -
+  your setting to change.
+
+### Known issues (Phase 8)
+
+- Real-phone test still to do (see above).
+- The PPE weights are not in git (AGPL, size): a fresh clone runs the test fixture until
+  `scripts\build_ppe_model.py` has run (about 25 min, needs the S13 dataset from `data\run_data.bat download`).
+- React Router 6 moderate advisories (above); Docker untested.
+- Windows sleeps after 45 min on mains on this laptop - `predemo_check.bat` says how to turn it off.
+- `D:\SIH_backend_removed_2026-09-29` holds the prototype's untracked leftovers until you delete it.
+
+### How to verify (Phase 8)
+
+```bat
+cd api && run_tests.bat
+scripts\demo_reset.bat
+scripts\predemo_check.bat
+powershell -ExecutionPolicy Bypass -File scripts\run_browser_checks.ps1
+node scripts\perf_check.mjs
+cd api && yii.bat docs/api --check
+```
 
 ## Phase 7B: Offline field app (done, 2026-09-28)
 

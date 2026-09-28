@@ -38,7 +38,7 @@
   },
   {
     "name": "08-gov-new-findings",
-    "note": "Government, no reload: open violations 0 -> 2 within 7 s of the sync; the field captures listed with their flag",
+    "note": "Government, no reload: open violations 0 -> 2 within 8 s of the sync; the field captures listed with their flag",
     "errors": []
   },
   {

@@ -49,13 +49,13 @@
       "Bhubaneswari Coal Mine",
       "OD-TLC-05 · Angul, Odisha · Mahanadi Coalfields Ltd",
       "Back to overview",
+      "What makes it up",
       "Flag for inspection",
-      "SAF-10 for 2026-06 is overdue (due 30 Jun, 11:59 pm; Coal Mines Regula",
-      "Violation recorded: No helmet (PPE, from PPE vision).",
-      "1 worker(s) on contract #10 are past their periodic medical examinatio",
-      "Corrective action for violation #1561 is 5 days overdue."
+      "Pattern found (Late corrective actions): 10 of 10 corrective actions c",
+      "Pattern found (Repeat violations): 6 roof and strata violations, then ",
+      "SAF-10 for 2026-06 is overdue (due 30 Jun, 11:59 pm; Coal Mines Regula"
     ],
-    "latinCount": 31,
+    "latinCount": 48,
     "englishMonths": []
   },
   "en-4-production": {
@@ -102,7 +102,7 @@
       "A mine is flagged when at least 5 grievances raised within 10 days all",
       "Moonidih Coal Mine"
     ],
-    "latinCount": 421,
+    "latinCount": 423,
     "englishMonths": []
   },
   "en-6-obligations": {
@@ -128,7 +128,7 @@
       "Saoner Coal Mine",
       "Mine noise limits"
     ],
-    "latinCount": 273,
+    "latinCount": 274,
     "englishMonths": []
   },
   "en-6b-obligation-task": {
@@ -154,7 +154,7 @@
       "Saoner Coal Mine",
       "Mine noise limits"
     ],
-    "latinCount": 279,
+    "latinCount": 280,
     "englishMonths": []
   },
   "en-7-map": {
@@ -290,14 +290,14 @@
       "Moonidih Coal Mine",
       "Talcher UG Coal Mine",
       "Vindhya Coal Mine",
+      "Lingaraj Coal Mine",
       "Katkona Coal Mine",
       "Chhal Coal Mine",
       "Niljai Coal Mine",
       "Tilaboni Coal Mine",
-      "Ramagundam III Coal Mine",
-      "Nigahi Coal Mine"
+      "Ramagundam III Coal Mine"
     ],
-    "latinCount": 409,
+    "latinCount": 411,
     "englishMonths": []
   },
   "hi-6-obligations": {
@@ -323,7 +323,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 83,
+    "latinCount": 84,
     "englishMonths": []
   },
   "hi-6b-obligation-task": {
@@ -349,7 +349,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 85,
+    "latinCount": 86,
     "englishMonths": []
   },
   "hi-7-map": {
@@ -477,14 +477,14 @@
       "Moonidih Coal Mine",
       "Talcher UG Coal Mine",
       "Vindhya Coal Mine",
+      "Lingaraj Coal Mine",
       "Katkona Coal Mine",
       "Chhal Coal Mine",
       "Niljai Coal Mine",
       "Tilaboni Coal Mine",
-      "Ramagundam III Coal Mine",
-      "Nigahi Coal Mine"
+      "Ramagundam III Coal Mine"
     ],
-    "latinCount": 409,
+    "latinCount": 411,
     "englishMonths": []
   },
   "bn-6-obligations": {
@@ -510,7 +510,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 83,
+    "latinCount": 84,
     "englishMonths": []
   },
   "bn-6b-obligation-task": {
@@ -536,7 +536,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 85,
+    "latinCount": 86,
     "englishMonths": []
   },
   "bn-7-map": {
@@ -664,14 +664,14 @@
       "Moonidih Coal Mine",
       "Talcher UG Coal Mine",
       "Vindhya Coal Mine",
+      "Lingaraj Coal Mine",
       "Katkona Coal Mine",
       "Chhal Coal Mine",
       "Niljai Coal Mine",
       "Tilaboni Coal Mine",
-      "Ramagundam III Coal Mine",
-      "Nigahi Coal Mine"
+      "Ramagundam III Coal Mine"
     ],
-    "latinCount": 409,
+    "latinCount": 411,
     "englishMonths": []
   },
   "or-6-obligations": {
@@ -697,7 +697,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 83,
+    "latinCount": 84,
     "englishMonths": []
   },
   "or-6b-obligation-task": {
@@ -723,7 +723,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 85,
+    "latinCount": 86,
     "englishMonths": []
   },
   "or-7-map": {
@@ -848,14 +848,14 @@
       "Moonidih Coal Mine",
       "Talcher UG Coal Mine",
       "Vindhya Coal Mine",
+      "Lingaraj Coal Mine",
       "Katkona Coal Mine",
       "Chhal Coal Mine",
       "Niljai Coal Mine",
       "Tilaboni Coal Mine",
-      "Ramagundam III Coal Mine",
-      "Nigahi Coal Mine"
+      "Ramagundam III Coal Mine"
     ],
-    "latinCount": 409,
+    "latinCount": 411,
     "englishMonths": []
   },
   "te-6-obligations": {
@@ -881,7 +881,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 83,
+    "latinCount": 84,
     "englishMonths": []
   },
   "te-6b-obligation-task": {
@@ -907,7 +907,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 85,
+    "latinCount": 86,
     "englishMonths": []
   },
   "te-7-map": {
@@ -1032,14 +1032,14 @@
       "Moonidih Coal Mine",
       "Talcher UG Coal Mine",
       "Vindhya Coal Mine",
+      "Lingaraj Coal Mine",
       "Katkona Coal Mine",
       "Chhal Coal Mine",
       "Niljai Coal Mine",
       "Tilaboni Coal Mine",
-      "Ramagundam III Coal Mine",
-      "Nigahi Coal Mine"
+      "Ramagundam III Coal Mine"
     ],
-    "latinCount": 409,
+    "latinCount": 411,
     "englishMonths": []
   },
   "mr-6-obligations": {
@@ -1065,7 +1065,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 83,
+    "latinCount": 84,
     "englishMonths": []
   },
   "mr-6b-obligation-task": {
@@ -1091,7 +1091,7 @@
       "NCPH Coal Mine",
       "Kusmunda Coal Mine"
     ],
-    "latinCount": 85,
+    "latinCount": 86,
     "englishMonths": []
   },
   "mr-7-map": {

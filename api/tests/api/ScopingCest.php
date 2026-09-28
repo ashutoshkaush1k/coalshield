@@ -83,6 +83,26 @@ class ScopingCest
         $I->seeApiError(404, 'NOT_FOUND');
     }
 
+    /** Brief Phase 8: another mine's contractors, production, grievances and alerts are 404 for a mine head. */
+    public function mineHeadGets404ForAnotherMinesRecords(ApiTester $I): void
+    {
+        $mineId = (int) Auth::user(Auth::MINE_HEAD_MOONIDIH)->mine_id;
+        $db = \Yii::$app->db;
+        $records = [
+            'contractors' => $db->createCommand('SELECT contractor_id FROM contract WHERE contractor_id NOT IN
+                (SELECT contractor_id FROM contract WHERE mine_id = :m) LIMIT 1', [':m' => $mineId])->queryScalar(),
+            'production' => $db->createCommand('SELECT id FROM daily_production WHERE mine_id <> :m LIMIT 1', [':m' => $mineId])->queryScalar(),
+            'grievances' => $db->createCommand('SELECT id FROM grievance WHERE mine_id <> :m LIMIT 1', [':m' => $mineId])->queryScalar(),
+            'alerts' => $db->createCommand('SELECT id FROM alert WHERE mine_id <> :m LIMIT 1', [':m' => $mineId])->queryScalar(),
+        ];
+        $I->amBearerOf(Auth::MINE_HEAD_MOONIDIH);
+        foreach ($records as $path => $id) {
+            $I->assertNotFalse($id, "a $path record at another mine exists in the seed");
+            $I->sendGet("/v1/$path/$id");
+            $I->seeApiError(404, 'NOT_FOUND');
+        }
+    }
+
     public function outOfScopeLooksExactlyLikeMissing(ApiTester $I): void
     {
         $user = Auth::user(Auth::MINE_HEAD_MOONIDIH);

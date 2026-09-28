@@ -218,3 +218,36 @@ touch (production 47 -> 60, map 12 -> 14), so the machine's state explains most 
 change on dashboard requests: a violation list now attaches its field-capture details, loaded once
 per request in two queries (`FieldCapture`). The field app's own requests are not polled:
 `GET /v1/field/bootstrap` takes about 17 ms.
+
+## Phase 8: Windows power throttling (found and fixed)
+
+After the fresh-clone test restarted the stack from a background session, every screen was 4-5x
+slower (government overview 256 ms median, 350 ms p95) with an idle CPU. The code was not the cause:
+the same PHP loop took 31 ms in the console and 204 ms inside Apache. Windows 11 treats hidden
+processes started from a background session as background work and, on this laptop's hybrid CPU,
+keeps them on the efficiency cores ("efficiency mode"). The supervisor restarts services from such a
+session, so a restarted service would have come back slow too.
+
+Fix: `scripts/no_throttle.ps1` opts the stack's processes out of power throttling
+(`SetProcessInformation(ProcessPowerThrottling)`, per process, no administrator rights, no change to
+the power plan). `api_server.ps1` applies it to Apache when it starts, `db.bat` to PostgreSQL, and the
+supervisor to the whole stack every 30 s (which also covers PostgreSQL's per-connection processes and
+anything it restarted). The same loop in Apache then took 29 ms.
+
+After the fix, 2026-09-29, mains power, same method - every dashboard request under 150 ms, the
+slowest p95 52 ms:
+
+| screen | median | p95 (ms) |
+|---|---|---|
+| government overview | 46 | 51 |
+| government mine detail | 38 | 42 |
+| mine head dashboard | 40 | 44 |
+| government production | 44 | 46 |
+| government grievances | 39 | 45 |
+| government obligations | 23 | 25 |
+| government map | 12 | 13 |
+| government priority | 28 | 29 |
+| side by side: overview / mine head | 49 / 44 | 52 / 46 |
+
+The Phase 8 changes on the request path (security headers, the sign-in limits, the footer's status
+poll every 30 s, cached for 20 s) did not change these numbers.

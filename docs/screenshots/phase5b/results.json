@@ -1,7 +1,7 @@
 [
   {
     "name": "01-head-register",
-    "note": "mine head: statutory compliance 85.7 % (separate from the score), due soon, overdue, open, submitted, accepted - each with act and section",
+    "note": "mine head: statutory compliance 86.2 % (separate from the score), due soon, overdue, open, submitted, accepted - each with act and section",
     "errors": []
   },
   {
@@ -21,7 +21,7 @@
   },
   {
     "name": "04-gov-register",
-    "note": "government: statutory compliance 77.8 % across the fleet, per company, the most overdue items with their citations",
+    "note": "government: statutory compliance 77.3 % across the fleet, per company, the most overdue items with their citations",
     "errors": []
   },
   {
@@ -137,12 +137,12 @@
   },
   {
     "name": "side-tab gov@dgms.gov.in",
-    "note": "21 API requests in 141 s",
+    "note": "29 API requests in 139 s",
     "errors": []
   },
   {
     "name": "side-tab head.od-tlc-05@coalmine.in",
-    "note": "19 API requests in 135 s",
+    "note": "25 API requests in 133 s",
     "errors": []
   }
 ]
