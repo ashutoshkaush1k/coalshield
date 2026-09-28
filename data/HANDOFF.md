@@ -175,7 +175,7 @@ HEADER true, NULL '')`, then reset each table's id sequence to `max(id)`.
 | 20 | `incident` | mine, violation | |
 | 21 | `obligation` | - | the cited catalogue (Phase 5B) |
 | 22 | `obligation_applicability` | mine, obligation | |
-| 23 | `obligation_task` | mine, obligation | |
+| 23 | `obligation_task` | mine, obligation, **incident** | `incident_id` (nullable): an incident's reporting task (RPT-03/04/05), one per incident |
 | 24 | `obligation_submission` | obligation_task, file, user | the evidence file rows are in `file.csv` (entity `obligation_submission`) |
 | 25 | `sensor_reading` | mine | Largest table; partition by month on `recorded_at` (brief rule 10) before `COPY` |
 | 26 | `env_reading` | mine | |

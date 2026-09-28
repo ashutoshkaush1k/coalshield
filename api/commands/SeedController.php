@@ -37,9 +37,10 @@ class SeedController extends Controller
         'contractor' => 3, 'contract' => 3, 'contract_worker' => 3, 'contractor_compliance_doc' => 3,
         'daily_production' => 4, 'production_edit_log' => 4, 'production_detail_request' => 4,
         'grievance' => 5, 'grievance_action' => 5,
-        'obligation' => 5, 'obligation_applicability' => 5, 'obligation_task' => 5, 'obligation_submission' => 5,
         'inspection' => 2, 'observation' => 2, 'violation' => 2, 'alert' => 2,
         'corrective_action' => 2, 'incident' => 2, 'sensor_reading' => 2, 'env_reading' => 2,
+        // After incident: an incident's reporting task references it.
+        'obligation' => 5, 'obligation_applicability' => 5, 'obligation_task' => 5, 'obligation_submission' => 5,
     ];
 
     /** CSV column => table column, where they differ (HANDOFF conflict C11). */

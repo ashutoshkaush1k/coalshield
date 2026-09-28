@@ -62,6 +62,8 @@ class Obligation extends ActiveRecord
             // Sensor types whose limit comes from this obligation (rules.yaml): a continuous limit
             // is watched by the sensor rules, not tracked as a dated task.
             'monitored_by' => fn() => self::monitoredBy()[$this->code] ?? [],
+            // A reporting obligation whose tasks come from incidents (one per incident).
+            'from_incidents' => fn() => in_array($this->code, Incident::OBLIGATION_FOR_SEVERITY, true),
         ];
     }
 

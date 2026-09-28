@@ -215,6 +215,13 @@ a due time, one alert per mine and due time. The check runs on register reads (o
 in `yii obligation/check` and in `run_all.bat`; it is idempotent and recorded as a system action.
 New periods' tasks are created once a day.
 
+**Incidents.** Each incident has one task for its reporting obligation (RPT-03 / RPT-04 / RPT-05
+by severity), due 48 hours after the incident (`incident_notice_hours`, a product setting - the
+same rule as the incident's 48-hour reporting check; the rules' own wording is in the citation).
+It is created done: `accepted` at `reported_at`, `reported_late` when that is after the due time.
+The incident record is the report, so there is no upload and no review. Seeded incidents' tasks come
+from the data track; `POST /v1/incidents` creates the task for a new one.
+
 **Statutory compliance** = tasks due in the last 90 days whose evidence was submitted by the due
 time and accepted, divided by the tasks due. It is a **separate metric**: the compliance score and
 its formula are unchanged (`api/tests/api/ObligationCest.php`

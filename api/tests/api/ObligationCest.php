@@ -92,6 +92,39 @@ class ObligationCest
             'accepted evidence resolves the overdue alert');
     }
 
+    public function incidentsAreOnTheRegister(ApiTester $I): void
+    {
+        // Seeded: one reporting task per incident, done at reported_at; late exactly when the
+        // incident was reported after 48 hours.
+        $db = Yii::$app->db;
+        $I->assertSame((int) $db->createCommand('SELECT count(*) FROM incident')->queryScalar(),
+            (int) $db->createCommand('SELECT count(*) FROM obligation_task WHERE incident_id IS NOT NULL')->queryScalar());
+        $I->assertSame(0, (int) $db->createCommand(
+            "SELECT count(*) FROM obligation_task t JOIN incident i ON i.id = t.incident_id JOIN obligation o ON o.id = t.obligation_id
+             WHERE t.status <> 'accepted' OR t.accepted_at <> i.reported_at OR o.code <> i.obligation_code
+                OR t.due_at <> i.occurred_at + interval '48 hours' OR (t.accepted_at > t.due_at) = i.reported_within_48h")->queryScalar());
+
+        // Live: reporting an incident puts its task on the register, late here (72 h after).
+        $mineId = (int) Auth::user(self::HEAD)->mine_id;
+        $occurred = gmdate('Y-m-d\TH:i:s\Z', time() - 72 * 3600);
+        $I->amBearerOf(Auth::GOVERNMENT);
+        $I->sendPost('/v1/incidents', ['mine_id' => $mineId, 'occurred_at' => $occurred, 'type' => 'fall_other_than_ground',
+            'severity' => 'serious', 'persons_affected' => 1, 'description_code' => 'FALL_OF_PERSONS']);
+        $I->seeResponseCodeIs(201);
+        $incidentId = $I->grabDataFromResponseByJsonPath('$.id')[0];
+        $task = ObligationTask::findOne(['incident_id' => $incidentId]);
+        $I->assertNotNull($task);
+        $I->amBearerOf(self::HEAD);
+        $I->sendGet("/v1/obligation-tasks/{$task->id}");
+        $I->seeResponseContainsJson(['status' => 'accepted', 'period' => sprintf('INC-%06d', $incidentId), 'due_basis' => 'product',
+            'incident_id' => $incidentId, 'reported_late' => true, 'obligation' => ['code' => 'RPT-04'],
+            'incident' => ['id' => $incidentId, 'reported_within_48h' => false]]);
+        $I->assertSame(gmdate('Y-m-d\TH:i:s\Z', strtotime($occurred) + 48 * 3600), $I->grabDataFromResponseByJsonPath('$.due_at')[0]);
+        $I->seeResponseContainsJson(['history' => [['to_status' => 'accepted', 'context' => ['code' => 'INCIDENT_REPORTED']]]]);
+        $I->sendGet('/v1/obligations');
+        $I->seeResponseContainsJson([['code' => 'RPT-04', 'from_incidents' => true, 'generates_tasks' => false]]);
+    }
+
     public function governmentWaivesWithAReason(ApiTester $I): void
     {
         $task = $this->openTask('overdue');

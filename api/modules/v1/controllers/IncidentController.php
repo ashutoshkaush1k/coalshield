@@ -12,6 +12,7 @@ use app\models\Incident;
 use app\models\Mine;
 use app\models\Violation;
 use app\services\AlertService;
+use app\services\ObligationService;
 use Yii;
 
 /**
@@ -69,6 +70,8 @@ class IncidentController extends ApiController
             if (!$incident->save()) {
                 throw ApiException::validation($incident);
             }
+            // Its reporting obligation on the register: due 48 h after it occurred, done when reported.
+            ObligationService::recordIncident($incident);
             if ($incident->severity === 'dangerous_occurrence') {
                 AlertService::create((int) $mine->id, Alert::CODE_DANGEROUS_OCCURRENCE, 'high', 'incident', (int) $incident->id, [
                     'incident_id' => (int) $incident->id, 'type' => $incident->type,

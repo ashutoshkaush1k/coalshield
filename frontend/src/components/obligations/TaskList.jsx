@@ -50,9 +50,18 @@ export function TaskList({ tasks, showMine = false, onSelect, empty }) {
               </td>
               <td><TaskStatus task={task} /></td>
               <td className="small">
-                {task.latest_submission
-                  ? <>{t(`status.${task.latest_submission.status}`)} · {fmtWhen(task.latest_submission.submitted_at)}</>
-                  : <span className="faint">-</span>}
+                {task.incident_id
+                  ? <>
+                      {t("obligation.incident.reported", { id: task.incident_id })}
+                      {task.status === "accepted" && (
+                        <div><span className={`tag ${task.reported_late ? "tag-open" : "tag-resolved"}`}>
+                          {t(task.reported_late ? "obligation.incident.late" : "obligation.incident.onTime")}
+                        </span></div>
+                      )}
+                    </>
+                  : task.latest_submission
+                    ? <>{t(`status.${task.latest_submission.status}`)} · {fmtWhen(task.latest_submission.submitted_at)}</>
+                    : <span className="faint">-</span>}
               </td>
             </tr>
           ))}

@@ -965,9 +965,15 @@
         "monitored": "Monitored continuously by the sensor rules ({{sensors}})",
         "continuous": "A continuous duty - not a dated task",
         "shift": "Every shift - too frequent for the register",
-        "event": "On an event - due when the event happens; not tracked here yet",
+        "event": "On an event - not tracked here",
         "other": "Once or on renewal - not on the calendar register"
       }
+    },
+    "incident": {
+      "reported": "Reported with incident #{{id}}",
+      "late": "Reported late",
+      "onTime": "Reported on time",
+      "detail": "Incident #{{id}}: occurred {{occurred}}, reported {{reported}}. The incident record is the report; the task is due 48 hours after the incident (a product setting)."
     }
   },
   "map": {

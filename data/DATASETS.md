@@ -835,7 +835,7 @@ back to the nearest eligible mine.
 |---|---|
 | **Kind** | **Catalogue: real** (`reference/obligations.csv`, cited). **Tasks and submissions: synthetic** |
 | **Produced by** | `data/generators/gen_obligations.py`, run inside `generate.py` after the scenarios, on its own random stream (so no other table moves; evidence file rows are appended to `file.csv` after the existing ids) |
-| **Tables** | `obligation` (40, the catalogue with its schedule), `obligation_applicability` (961 in demo), `obligation_task` (4,506), `obligation_submission` (3,595); 3,595 file rows appended |
+| **Tables** | `obligation` (40, the catalogue with its schedule), `obligation_applicability` (961 in demo), `obligation_task` (4,589: 4,506 calendar + 83 incident reporting tasks), `obligation_submission` (3,595); 3,595 file rows appended |
 | **Validated by** | `validate.py` V12 (and V1-V4 for schema, keys, references, dates) |
 
 **Which obligations get tasks.** Only verified obligations that apply to a mine and have a
@@ -844,6 +844,22 @@ HLT-01, HLT-03, ENV-03, ENV-05, ENV-06, ENV-07, RPT-06). On-event duties come fr
 themselves, continuous limits are monitored by the sensor rules, "every shift" (SAF-08) is too
 fine-grained for a register, and contractor and worker duties belong to the contractor module.
 **RPT-08 (TODO-VERIFY) never gets a task**; V12 checks it.
+
+**Incident reporting tasks** (owner, 2026-09-28). Each incident gets one task for its reporting
+obligation (`incident.obligation_code`: RPT-03 fatal, RPT-04 serious or minor injury, RPT-05
+dangerous occurrence), linked by `obligation_task.incident_id`:
+- period `INC-000123`, the incident's date (IST) as period start and end;
+- due 48 hours after the incident (`rules.yaml product.obligation_schedule.incident_notice_hours`,
+  `due_basis` product). This is the product's reporting check (`incident.reported_within_48h`),
+  not the rules' own wording, which stays in each obligation's citation (RPT-03 *forthwith*,
+  RPT-05 *within twelve hours*, RPT-04 *within twelve hours after the completion of forty-eight
+  hours*);
+- `accepted` at the incident's `reported_at`, which is on time or late; the incident record is the
+  report, so there is no upload and no review.
+
+They are appended after the calendar tasks with no random draws, so no existing row moves. Demo: 83
+tasks, 8 of them late, exactly the incidents with `reported_within_48h` false (V12 checks one
+task per incident, obligation, due time, status, `accepted_at` and lateness).
 
 **Applicability** (modelling choices):
 - SAF-07, SAF-09, SAF-12 (winding ropes, CO testing of depillaring districts, gas checks where

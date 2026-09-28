@@ -114,3 +114,4 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | error codes | `ALREADY_REVIEWED` (422), `BOUNDARIES_MISSING` (503) |
 | audit | seeded submissions and reviews in the chain as `seed_history` |
 | console | `yii obligation/check [--at=ISO]`, `yii obligation/summary` |
+| incidents on the register (after 5B) | `obligation_task.incident_id` (migration `m261004_000001`); `POST /v1/incidents` also creates the incident's reporting task (RPT-03/04/05), due 48 h after it occurred (product setting), `accepted` at `reported_at`. Tasks add `incident_id` and `reported_late`, and the task detail adds `incident`; the catalogue adds `from_incidents`. Statutory compliance counts them on time or late by `reported_at` |

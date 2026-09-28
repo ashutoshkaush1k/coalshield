@@ -9,8 +9,11 @@ use app\components\Format;
 use app\components\Rules;
 use app\components\StatusTransition;
 use app\models\Alert;
+use app\models\Incident;
+use app\models\Obligation;
 use app\models\ObligationSubmission;
 use app\models\ObligationTask;
+use app\models\StatusHistory;
 use app\models\User;
 use Yii;
 use yii\db\Query;
@@ -227,6 +230,34 @@ final class ObligationService
     }
 
     /**
+     * An incident's reporting task (owner, 2026-09-28): its obligation (incident.obligation_code,
+     * RPT-03 / RPT-04 / RPT-05), due incident_notice_hours after it occurred (a product setting), done
+     * at reported_at - the incident record is the report, so there is no upload and no review. Called
+     * in the incident's transaction; the seeded incidents' tasks come from the data track.
+     */
+    public static function recordIncident(Incident $incident): ObligationTask
+    {
+        $obligation = Obligation::findOne(['code' => $incident->obligation_code]);
+        if ($obligation === null) {
+            throw new \RuntimeException("obligation {$incident->obligation_code} is not in the catalogue");
+        }
+        $occurred = new \DateTimeImmutable((string) $incident->occurred_at, new \DateTimeZone('UTC'));
+        $day = $occurred->setTimezone(new \DateTimeZone('Asia/Kolkata'))->format('Y-m-d');
+        $task = new ObligationTask([
+            'mine_id' => $incident->mine_id, 'obligation_id' => $obligation->id,
+            'period' => sprintf('INC-%06d', $incident->id), 'period_start' => $day, 'period_end' => $day,
+            'due_at' => Format::sql($occurred->modify('+' . (int) self::settings()['incident_notice_hours'] . ' hours')),
+            'due_basis' => 'product', 'status' => 'accepted', 'escalation_level' => 0,
+            'accepted_at' => Format::sql(new \DateTimeImmutable((string) $incident->reported_at, new \DateTimeZone('UTC'))),
+            'created_at' => Format::sql(Format::now()), 'incident_id' => $incident->id,
+        ]);
+        $task->save(false);
+        StatusHistory::record($task, 'open', 'accepted', null, ['code' => 'INCIDENT_REPORTED', 'incident_id' => (int) $incident->id]);
+        self::bump();
+        return $task;
+    }
+
+    /**
      * Government only: waive a task that has no accepted evidence (the mine is not bound for this
      * period - e.g. the mine was closed). A reason is required; it is kept in the task's history.
      * Waived tasks leave statutory compliance, and their overdue alert is resolved.
@@ -396,6 +427,8 @@ final class ObligationService
         }
         // One grouped query (mine x domain); the per-mine, per-company, per-domain and fleet figures
         // are sums of its rows.
+        // When the duty was done: the first upload, or for an incident's reporting task (no upload -
+        // the incident record is the report) the time it was reported, kept as accepted_at.
         $first = (new Query())->select(['task_id', 'at' => 'min(submitted_at)'])->from('{{%obligation_submission}}')->groupBy('task_id');
         $cells = (new Query())->from(['t' => '{{%obligation_task}}'])
             ->innerJoin(['o' => '{{%obligation}}'], 'o.id = t.obligation_id')
@@ -404,8 +437,8 @@ final class ObligationService
             ->select([
                 'mine_id' => 't.mine_id', 'domain' => 'o.domain',
                 'due' => 'count(*)',
-                'on_time' => "count(*) FILTER (WHERE t.status = 'accepted' AND f.at <= t.due_at)",
-                'late_accepted' => "count(*) FILTER (WHERE t.status = 'accepted' AND f.at > t.due_at)",
+                'on_time' => "count(*) FILTER (WHERE t.status = 'accepted' AND coalesce(f.at, t.accepted_at) <= t.due_at)",
+                'late_accepted' => "count(*) FILTER (WHERE t.status = 'accepted' AND coalesce(f.at, t.accepted_at) > t.due_at)",
                 'awaiting_review' => "count(*) FILTER (WHERE t.status = 'submitted')",
                 'overdue' => "count(*) FILTER (WHERE t.status IN ('overdue', 'rejected'))",
                 'escalated' => "count(*) FILTER (WHERE t.status = 'escalated')",

@@ -1,4 +1,5 @@
-// The obligations that are not on the dated register, each with its citation and why it has no
+// The obligations that are not on the dated register (incident reporting duties are: one task per
+// incident), each with its citation and why it has no
 // tasks: a limit watched by the sensor rules, a continuous duty, every shift, on an event, or a
 // once / renewal duty. Read once from the catalogue (GET /v1/obligations), not polled.
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ export function OtherObligations() {
 
   useEffect(() => {
     let live = true;
-    getObligations().then((all) => live && setRows(all.filter((o) => !o.generates_tasks))).catch(() => live && setRows([]));
+    getObligations().then((all) => live && setRows(all.filter((o) => !o.generates_tasks && !o.from_incidents))).catch(() => live && setRows([]));
     return () => { live = false; };
   }, []);
 

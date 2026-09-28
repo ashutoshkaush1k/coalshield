@@ -2,6 +2,7 @@ table: obligation_task
 description: One due occurrence of an obligation for one mine (Phase 5B register).
 defined_by:
   - "PLAN.md Phase 5B: obligation_task (mine_id, obligation, period, due_at, status open/submitted/accepted/rejected/overdue/escalated/waived, escalation_level), unique (mine, obligation, period)"
+  - "Owner, 2026-09-28: each incident creates an on-event task for its reporting obligation (RPT-03/04/05), due 48 hours after it occurred, done or late from reported_at"
 generator: gen_obligations.py
 primary_key: id
 unique: [[mine_id, obligation_id, period]]
@@ -9,7 +10,7 @@ columns:
   - {name: id, type: integer, nullable: false}
   - {name: mine_id, type: integer, nullable: false, fk: mine.id}
   - {name: obligation_id, type: integer, nullable: false, fk: obligation.id}
-  - {name: period, type: string, nullable: false, note: "2026-W39, 2026-F20, 2026-09, 2026-Q3, 2026-H2, 2026 or FY2025-26"}
+  - {name: period, type: string, nullable: false, note: "2026-W39, 2026-F20, 2026-09, 2026-Q3, 2026-H2, 2026 or FY2025-26; INC-000123 for an incident's reporting task"}
   - {name: period_start, type: date, nullable: false}
   - {name: period_end, type: date, nullable: false}
   - {name: due_at, type: datetime, nullable: false}
@@ -18,3 +19,4 @@ columns:
   - {name: escalation_level, type: integer, nullable: false}
   - {name: accepted_at, type: datetime, nullable: true}
   - {name: created_at, type: datetime, nullable: false}
+  - {name: incident_id, type: integer, nullable: true, fk: incident.id, note: "the incident whose reporting obligation (RPT-03/04/05) this task is; accepted at reported_at, without an upload - the incident record is the report"}

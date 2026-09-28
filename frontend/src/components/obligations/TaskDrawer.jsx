@@ -72,6 +72,13 @@ export function TaskDrawer({ taskId, onClose, onChanged }) {
             {o.due_rule && <><dt>{t("obligation.task.dueRule")}</dt><dd className="small">{o.due_rule}</dd></>}
           </dl>
 
+          {task.incident && (
+            <p className="notice" id="obligation-incident">
+              {t("obligation.incident.detail", { id: task.incident.id, occurred: fmtWhen(task.incident.occurred_at), reported: fmtWhen(task.incident.reported_at) })}
+              {" "}<strong>{t(task.reported_late ? "obligation.incident.late" : "obligation.incident.onTime")}</strong>
+            </p>
+          )}
+
           {waived && (
             <p className="notice" id="obligation-waiver">
               {t("obligation.task.waivedBy", { name: waived.user_name ?? "-", when: fmtWhen(waived.created_at) })}

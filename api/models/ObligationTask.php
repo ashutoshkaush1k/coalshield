@@ -15,6 +15,9 @@ use app\components\ScopedActiveRecord;
  *   submitted -> accepted | rejected (government or inspector review)
  *   open / rejected -> overdue (due time passed; system) -> escalated (system)
  *
+ * An incident's reporting task (incident_id set; RPT-03/04/05) is created done: accepted at the
+ * incident's reported_at, late when that is after its due time. The incident record is the report.
+ *
  * @property int $id
  * @property int $mine_id
  * @property int $obligation_id
@@ -27,6 +30,7 @@ use app\components\ScopedActiveRecord;
  * @property int $escalation_level
  * @property string|null $accepted_at
  * @property string $created_at
+ * @property int|null $incident_id
  */
 class ObligationTask extends ScopedActiveRecord implements HasStatusTransitions
 {
@@ -73,6 +77,10 @@ class ObligationTask extends ScopedActiveRecord implements HasStatusTransitions
             'accepted_at' => fn() => Format::utc($this->accepted_at),
             'is_overdue' => fn() => in_array($this->status, self::LATE, true),
             'latest_submission' => fn() => $this->latestSubmission?->toArray(),
+            'incident_id' => fn() => $this->incident_id === null ? null : (int) $this->incident_id,
+            // An incident's report after its due time: done, but late.
+            'reported_late' => fn() => $this->incident_id !== null && $this->accepted_at !== null
+                && strtotime((string) $this->accepted_at) > strtotime((string) $this->due_at),
         ];
     }
 
@@ -91,6 +99,7 @@ class ObligationTask extends ScopedActiveRecord implements HasStatusTransitions
         return [
             'submissions' => fn() => array_map(fn(ObligationSubmission $s) => $s->toArray(), $this->submissions),
             'history' => fn() => StatusHistory::forEntity($this),
+            'incident' => fn() => $this->incident === null ? null : $this->incident->toArray(['id', 'occurred_at', 'reported_at', 'severity', 'type', 'reported_within_48h']),
         ];
     }
 
@@ -107,6 +116,11 @@ class ObligationTask extends ScopedActiveRecord implements HasStatusTransitions
     public function getSubmissions()
     {
         return $this->hasMany(ObligationSubmission::class, ['task_id' => 'id'])->orderBy(['submitted_at' => SORT_DESC, 'id' => SORT_DESC]);
+    }
+
+    public function getIncident()
+    {
+        return $this->hasOne(Incident::class, ['id' => 'incident_id']);
     }
 
     public function getLatestSubmission()

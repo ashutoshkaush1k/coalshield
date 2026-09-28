@@ -84,7 +84,7 @@ class ObligationController extends ApiController
     public function actionTask(int $id): array
     {
         $this->requirePermission('obligation.view');
-        return ObligationTask::findScoped($id)->toArray([], ['submissions', 'history']);
+        return ObligationTask::findScoped($id)->toArray([], ['submissions', 'history', 'incident']);
     }
 
     public function actionSubmit(int $id): array

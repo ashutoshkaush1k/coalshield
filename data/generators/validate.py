@@ -476,6 +476,31 @@ def v12_obligations(folder: Path, manifest: dict, rep: Report) -> None:
     if set(gen["code"]) != set(expected_gen["obligation_code"]):
         probs.append(f"task-generating set differs: {sorted(set(gen['code']) ^ set(expected_gen['obligation_code']))}")
     code_of = dict(zip(ob["id"], ob["code"]))
+    # Incident reporting tasks (on event): one per incident, its obligation, due 48 h after it
+    # occurred, done at reported_at. Checked here, then set aside for the calendar checks.
+    inc = read(folder, "incident")
+    inc.index = inc["id"].astype(int)
+    it = t[t["incident_id"] != ""].copy()
+    t = t[t["incident_id"] == ""].copy()
+    notice = pd.Timedelta(hours=float(rules["product"]["obligation_schedule"]["incident_notice_hours"]))
+    iid = it["incident_id"].astype(int)
+    if sorted(iid) != sorted(inc.index) or iid.duplicated().any():
+        probs.append(f"incident tasks: {len(it)} for {len(inc)} incidents (want exactly one each)")
+    else:
+        row = inc.loc[iid.values]
+        occurred, reported = ts(row["occurred_at"]).values, ts(row["reported_at"]).values
+        if (it["obligation_id"].map(code_of).values != row["obligation_code"].values).any():
+            probs.append("an incident task for another obligation than the incident's")
+        if (ts(it["due_at"]).values != (ts(row["occurred_at"]) + notice).values).any() or (it["due_basis"] != "product").any():
+            probs.append("an incident task not due incident_notice_hours after the incident (product basis)")
+        if ((it["status"] != "accepted").values | (ts(it["accepted_at"].replace("", None)).values != reported)).any():
+            probs.append("an incident task not accepted at the incident's reported_at")
+        late = ts(it["accepted_at"]).values > ts(it["due_at"]).values
+        if (late != (row["reported_within_48h"] == "false").values).any():
+            probs.append("incident task lateness disagrees with incident.reported_within_48h")
+    if set(s["task_id"]) & set(it["id"]):
+        probs.append("an incident task has an uploaded submission")
+    s = s[~s["task_id"].isin(it["id"])]
     with_tasks = set(t["obligation_id"].map(code_of))
     if not with_tasks <= set(gen["code"]):
         probs.append(f"tasks for non-generating obligations: {sorted(with_tasks - set(gen['code']))}")
@@ -540,7 +565,7 @@ def v12_obligations(folder: Path, manifest: dict, rep: Report) -> None:
         probs.append("a rejection without a reason, or a pending submission with a reviewer")
     counts = t["status"].value_counts().to_dict()
     rep.add(f"V12 obligations: {len(t):,} tasks from {len(gen)} verified calendar obligations, applicability, due dates, statuses; "
-            f"RPT-08 never", not probs, {"problems": probs[:6], "by_status": counts,
+            f"{len(it)} incident reporting tasks (one per incident, due 48 h after, done at reported_at); RPT-08 never", not probs, {"problems": probs[:6], "by_status": counts,
                                          "rejected_submissions": int((s['status'] == 'rejected').sum())})
 
 

@@ -36,6 +36,25 @@ The full scope of each is in `PLAN.md` §6.
   - Device time and out-of-boundary locations are flagged.
   - Tested by an offline → online browser run.
 
+## Phase 5B follow-ups (done, 2026-09-28)
+
+- **Performance on mains power** (`docs/PERFORMANCE.md`): every dashboard request is under 150 ms
+  (medians 11-51 ms, slowest p95 55 ms, government production). The battery run was the machine.
+  Nothing needed fixing.
+- **Incidents on the obligation register:**
+  - Each incident has one on-event task for its reporting obligation (RPT-03 / RPT-04 / RPT-05),
+    due 48 hours after it occurred. It is done at `reported_at`, on time or late.
+  - The historical tasks come from the data track (`gen_obligations.py`): 83 in demo, 8 late,
+    matching `reported_within_48h`. They are appended with no random draws, so no existing row
+    moves, and V12 checks them.
+  - The API creates the task when an incident is reported (`POST /v1/incidents`; migration
+    `m261004_000001`).
+  - Statutory compliance counts them by `reported_at`. The demo scores are unchanged (V8,
+    `DemoScoreCest`).
+  - The 48 h is a product setting labelled as such (`incident_notice_hours`), matching the
+    incident's reporting check. The rules' own wording stays in the citation and is stricter for
+    two of them: RPT-03 *forthwith*, RPT-05 *within twelve hours*.
+
 ## Phase 5B: Obligation register and GIS map, plus the grievance tracking code (done, 2026-09-28)
 
 ### Fix first: grievance tracking code
@@ -161,10 +180,10 @@ The full scope of each is in `PLAN.md` §6.
 ### Known issues (Phase 5B)
 
 - **Where the owner's rules override PLAN.md:**
-  - PLAN had on-event notice tasks created from incidents. The owner's rule for this phase is that
-    only verified obligations with a calendar frequency get tasks, so on-event obligations are
-    listed (with citations) but get no tasks. The seeded incidents already carry their notice's
-    code (RPT-03/04/05), so this is a small follow-up if wanted.
+  - PLAN had on-event notice tasks created from incidents. The owner's rule for this phase was
+    that only verified obligations with a calendar frequency get tasks. The owner then asked for
+    incident tasks as a follow-up (done, see above); other on-event duties are listed without
+    tasks.
   - PLAN had an optional "overdue obligations" score component (weight 0). The owner's rule is
     not to touch the score formula, so there is none.
 - **Source PDF pages are named, not linked:** the legal PDFs (`raw/legal/`) are not in the

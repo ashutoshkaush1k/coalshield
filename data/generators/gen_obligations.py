@@ -7,8 +7,10 @@ Catalogue: reference/obligations.csv (40 obligations, each cited: instrument, cl
 
 Which obligations get due tasks: only **verified** obligations that apply to a **mine** and have a
 **calendar frequency** (weekly, fortnightly, monthly, quarterly / every 3 months, half-yearly /
-every 6 months, annual). On-event duties (accident notices, RPT-02..05) come from the events
-themselves; continuous limits (HLT-04, SAF-11, ENV-04/08 ...) are monitored by the sensor rules;
+every 6 months, annual). On-event duties come from the events themselves: each incident gets one
+task for its reporting obligation (incident.obligation_code, RPT-03 / RPT-04 / RPT-05), due
+product.obligation_schedule.incident_notice_hours (48) after it occurred and done - on time or late -
+at its reported_at (the incident record is the report: no upload, no review); continuous limits (HLT-04, SAF-11, ENV-04/08 ...) are monitored by the sensor rules;
 "every shift" (SAF-08) is too fine-grained for a register; contractor and worker duties belong to
 the contractor module. RPT-08 (TODO-VERIFY) never gets a task.
 
@@ -207,7 +209,33 @@ def run(ctx: Ctx) -> None:
                     task["status"], task["escalation_level"] = ("escalated", 2) if late > esc_after else ("overdue", 1)
                 elif latest is not None:
                     task["status"] = "rejected"
+                task["incident_id"] = None
                 tasks.append(task)
+
+    # On-event reporting tasks (owner, 2026-09-28): one per incident, for its reporting obligation
+    # (incident.obligation_code: RPT-03 / RPT-04 / RPT-05), due incident_notice_hours after it occurred.
+    # The incident record is the report, so the task is done when reported_at comes - on time or late
+    # - with no upload and no review. No random draws: nothing else shifts.
+    notice_after = pd.Timedelta(hours=float(ctx.rules["product"]["obligation_schedule"]["incident_notice_hours"]))
+    ob_id = dict(zip(ob["code"], ob["id"]))
+    inc = ctx.tables["incident"].sort_values("id")
+    for i in inc.itertuples():
+        occurred = pd.Timestamp(i.occurred_at)
+        occurred = occurred.tz_localize("UTC") if occurred.tzinfo is None else occurred.tz_convert("UTC")
+        reported = pd.Timestamp(i.reported_at)
+        reported = reported.tz_localize("UTC") if reported.tzinfo is None else reported.tz_convert("UTC")
+        due = occurred + notice_after
+        day = (occurred + IST).date()
+        task = {"id": len(tasks) + 1, "mine_id": int(i.mine_id), "obligation_id": int(ob_id[i.obligation_code]),
+                "period": f"INC-{int(i.id):06d}", "period_start": day, "period_end": day, "due_at": due,
+                "due_basis": "product", "status": "open", "escalation_level": 0, "accepted_at": None,
+                "created_at": occurred, "incident_id": int(i.id)}
+        if reported <= ctx.as_of:
+            task["status"], task["accepted_at"] = "accepted", reported
+        elif due <= ctx.as_of:
+            late = ctx.as_of - due
+            task["status"], task["escalation_level"] = ("escalated", 2) if late > esc_after else ("overdue", 1)
+        tasks.append(task)
 
     ctx.emit("obligation_applicability", pd.DataFrame(app).sort_values(["mine_id", "obligation_id"]).assign(
         id=lambda d: range(1, len(d) + 1))[["id", "mine_id", "obligation_id", "basis"]])

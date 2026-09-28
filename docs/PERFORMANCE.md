@@ -117,8 +117,33 @@ side by side with `php -S` against the same database, in the same power state: t
 overview took 333 and 332 ms, `/dashboard` 236 and 234 ms, the grievance view 227 and 227 ms.
 The Phase 5B changes do not slow the existing screens; the machine was about three times slower
 (the same `php -S` overview measured 110 ms in the table above). The new screens stay under 150 ms
-even so. Rerun `node scripts/perf_check.mjs` on mains power for numbers comparable with the
-earlier sections.
+even so. The rerun on mains power below confirms it.
+
+### Rerun on mains power (2026-09-28)
+
+The same check, same freshly seeded demo, the laptop on mains power. **Every dashboard request is
+under 150 ms; the slowest p95 is 55 ms.**
+
+| Screen (one request per cycle) | median / p95 (ms) |
+|---|---|
+| Government overview | 41 / 47 |
+| Government mine detail | 36 / 39 |
+| Mine head dashboard | 38 / 40 |
+| Government production | 51 / 55 |
+| Mine head production | 21 / 31 |
+| Government grievances | 37 / 40 |
+| Mine head grievances | 14 / 15 |
+| Government obligations | 24 / 29 |
+| Corporate SECL obligations | 25 / 26 |
+| Mine head obligations | 20 / 22 |
+| Government map | 12 / 13 |
+| Mine head map | 11 / 12 |
+| Map outlines, first load (`/geo/states` 8 / 8 + `/geo/districts` 18 / 20) | 19 / 20 |
+| **Side by side:** government overview / mine head dashboard | 47 / 50, 38 / 47 |
+
+These match the Phase 5 numbers (overview 42-56 there), which confirms the battery run was the
+machine. The first government obligations request after a change recomputes the roll-up in
+36-45 ms (three runs), then 27-30 ms.
 
 What keeps the register fast: the obligation check runs once per request with targeted queries
 (late tasks, due-soon groups, stale reminders), and new periods' tasks are generated once a day.
