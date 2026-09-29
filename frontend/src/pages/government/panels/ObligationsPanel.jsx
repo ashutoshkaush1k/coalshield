@@ -1,6 +1,7 @@
 // Government / corporate / inspector: statutory compliance across the mines in scope - per
-// company and per mine (lowest first), by domain, the most overdue items with their citations, and
-// the evidence awaiting review (government and inspector accept or reject it in the drawer).
+// company, by domain (four equal cards), per mine (lowest first, one full-width table), the most
+// overdue items with their citations, and the evidence awaiting review (government and inspector
+// accept or reject it in the drawer).
 // A separate metric: the compliance score does not change. One request per polling cycle.
 import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
@@ -16,10 +17,16 @@ import { ObligationDrawer } from "../../../components/obligations/ObligationDraw
 import { usePolling } from "../../../hooks/usePolling";
 import { useT } from "../../../i18n/t";
 
-function Row({ label, sub, r }) {
+/** First cell: a mine (name on one line, its code beneath) or a company (code, then its name). */
+function Row({ label, sub, subIsCode = false, r }) {
   return (
     <>
-      <td><strong>{label}</strong>{sub && <span className="mono faint"> {sub}</span>}</td>
+      <td>
+        <span className="mine-cell">
+          <span className="mine-name">{label}</span>
+          {sub && <span className={subIsCode ? "mine-code" : "faint small"}>{sub}</span>}
+        </span>
+      </td>
       <td className="num">{fmtNumber(r.compliance_pct)} %</td>
       <td className="num">{fmtNumber(r.due)}</td>
       <td className="num">{fmtNumber(r.on_time)}</td>
@@ -28,6 +35,31 @@ function Row({ label, sub, r }) {
       <td className="num">{fmtNumber(r.overdue)}</td>
       <td className="num">{fmtNumber(r.escalated)}</td>
     </>
+  );
+}
+
+/** One domain as a summary card: compliance with a progress bar, then its counts. */
+function DomainCard({ d }) {
+  const t = useT();
+  return (
+    <section className="panel-block fill span-3 stat-card" data-domain={d.domain}>
+      <div className="panel-head"><div><h2>{t(`obligation.domain.${d.domain}`)}</h2></div></div>
+      <div className="panel-body stack tight">
+        <div>
+          <span className="label">{t("obligation.gov.pct")}</span>
+          <span className="tally-v">{fmtNumber(d.compliance_pct)} %</span>
+          <div className="meter" style={{ marginTop: "var(--space-2)" }}><i className="progress" style={{ width: `${Math.max(0, Math.min(100, d.compliance_pct))}%` }} /></div>
+        </div>
+        <dl className="figure-list">
+          <dt>{t("obligation.gov.due")}</dt><dd>{fmtNumber(d.due)}</dd>
+          <dt>{t("obligation.gov.onTime")}</dt><dd>{fmtNumber(d.on_time)}</dd>
+          <dt>{t("obligation.gov.late")}</dt><dd>{fmtNumber(d.late_accepted)}</dd>
+          <dt>{t("obligation.gov.awaiting")}</dt><dd>{fmtNumber(d.awaiting_review)}</dd>
+          <dt>{t("obligation.gov.overdue")}</dt><dd>{fmtNumber(d.overdue)}</dd>
+          <dt>{t("obligation.gov.escalated")}</dt><dd>{fmtNumber(d.escalated)}</dd>
+        </dl>
+      </div>
+    </section>
   );
 }
 
@@ -83,15 +115,32 @@ export function ObligationsPanel({ state, states, onStateChange }) {
         </div>
       </section>
 
+      <div id="obligation-by-domain">
+        <span className="section-label">{t("obligation.gov.byDomain")}</span>
+        <div className="grid-12">
+          {s.by_domain.map((d) => <DomainCard key={d.domain} d={d} />)}
+        </div>
+      </div>
+
+      <section className="panel-block" id="obligation-by-mine">
+        <div className="panel-head"><div><h2>{t("obligation.gov.byMine")}</h2></div></div>
+        <div className="panel-body flush scroll-x">
+          <table>
+            <Head first={t("obligation.list.mine")} />
+            <tbody>{s.by_mine.slice(0, 20).map((m) => <tr key={m.mine_id} data-mine={m.code}><Row label={m.name} sub={m.code} subIsCode r={m} /></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+
       <section className="panel-block" id="obligation-most-overdue">
-        <div className="panel-head"><h2>{t("obligation.gov.mostOverdue")}</h2></div>
+        <div className="panel-head"><div><h2>{t("obligation.gov.mostOverdue")}</h2></div></div>
         <div className="panel-body flush">
           <TaskList tasks={s.most_overdue} showMine onSelect={(task) => setSelected(task.id)} empty={t("obligation.gov.noneOverdue")} />
         </div>
       </section>
 
       <section className="panel-block" id="obligation-pending-review">
-        <div className="panel-head"><h2>{t("obligation.gov.pendingReview")} <span className="tag">{s.pending_review}</span></h2></div>
+        <div className="panel-head"><div><h2>{t("obligation.gov.pendingReview")} <span className="tag">{s.pending_review}</span></h2></div></div>
         {s.pending_review > data.pending_review.length && (
           <p className="note pad-label" id="obligation-pending-more">{t("obligation.gov.showing", { shown: data.pending_review.length, total: s.pending_review })}</p>
         )}
@@ -100,26 +149,6 @@ export function ObligationsPanel({ state, states, onStateChange }) {
         </div>
       </section>
 
-      <div className="grid two-col">
-        <section className="panel-block" id="obligation-by-mine">
-          <div className="panel-head"><h2>{t("obligation.gov.byMine")}</h2></div>
-          <div className="panel-body flush scroll-x">
-            <table>
-              <Head first={t("obligation.list.mine")} />
-              <tbody>{s.by_mine.slice(0, 20).map((m) => <tr key={m.mine_id} data-mine={m.code}><Row label={m.name} sub={m.code} r={m} /></tr>)}</tbody>
-            </table>
-          </div>
-        </section>
-        <section className="panel-block" id="obligation-by-domain">
-          <div className="panel-head"><h2>{t("obligation.gov.byDomain")}</h2></div>
-          <div className="panel-body flush scroll-x">
-            <table>
-              <Head first={t("obligation.list.obligation")} />
-              <tbody>{s.by_domain.map((d) => <tr key={d.domain}><Row label={t(`obligation.domain.${d.domain}`)} r={d} /></tr>)}</tbody>
-            </table>
-          </div>
-        </section>
-      </div>
       <OtherObligations />
       {linked.value && <ObligationDrawer code={linked.value} onClose={linked.clear} />}
       {selected && <TaskDrawer taskId={selected} onClose={() => setSelected(null)} onChanged={() => setToken((n) => n + 1)} />}

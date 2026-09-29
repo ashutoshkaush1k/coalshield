@@ -34,7 +34,7 @@ export function AlertList({ alerts, showMine = false, onSelect, actionFor }) {
               {alert.escalation_level > 0 && !directive && <span className="tag tag-open">{t("alert.level", { level: alert.escalation_level })}</span>}
               {showMine && <span className="mono">{alert.mine_code}</span>}
               <div className="spacer" />
-              <span className="mono">{fmtDateTime(alert.created_at)}</span>
+              <span className="time faint small">{fmtDateTime(alert.created_at)}</span>
             </div>
 
             <p className="alert-message">{alertText(alert)}</p>

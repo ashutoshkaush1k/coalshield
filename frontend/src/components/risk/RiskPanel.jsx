@@ -63,7 +63,7 @@ export function GovernanceRisk({ gri }) {
   const scored = gri.components.filter((c) => c.value > 0).sort((a, b) => b.value - a.value || b.cap - a.cap);
   const clear = gri.components.filter((c) => !(c.value > 0));
   return (
-    <section className="panel-block risk-card" id="governance-risk" tabIndex={-1}>
+    <section className="panel-block risk-card fill span-6" id="governance-risk" tabIndex={-1}>
       <CardHead title={t("gri.title")} subtitle={t("gri.subtitle")} kind={t("gri.kind")} />
       <div className="panel-body stack tight">
         <div className="risk-headline">
@@ -120,7 +120,7 @@ export function PredictedRisk({ prediction: p }) {
   const hasFleet = p && p.fleet_percentile !== null && p.fleet_percentile !== undefined;
   const total = p ? 100 * p.probability : 0;   // the headline in percentage points: what a factor's points are part of
   return (
-    <section className="panel-block risk-card" id="predicted-risk">
+    <section className="panel-block risk-card fill span-6" id="predicted-risk">
       <CardHead title={t("prediction.title")} subtitle={t("prediction.subtitle")} kind={t("prediction.kind")} />
       <div className="panel-body stack tight">
         {!p ? <EmptyState>{t("prediction.none")}</EmptyState> : (
@@ -220,7 +220,7 @@ export function RiskPanel({ risk }) {
   if (!risk) return null;
   return (
     <div className="risk-section" id="risk-panel">
-      <div className="risk-pair">
+      <div className="grid-12 risk-pair">
         <GovernanceRisk gri={risk.governance_risk} />
         <PredictedRisk prediction={risk.prediction} />
       </div>

@@ -788,7 +788,9 @@ const OVERFLOW_PROBE = `(() => {
     const clipX = ["hidden", "clip"].includes(cs.overflowX) || cs.textOverflow === "ellipsis";
     const clipY = ["hidden", "clip"].includes(cs.overflowY);
     const add = (kind, px) => found.push({ kind, px: Math.round(px), where: path(el), text: text.slice(0, 60) });
-    if (clipX && el.scrollWidth > el.clientWidth + 1) add("clipped-x", el.scrollWidth - el.clientWidth);
+    // Cut with an ellipsis on purpose, with the full text as the element's tooltip: not a finding.
+    const tooltip = (el.getAttribute("title") ?? "").trim() === text;
+    if (clipX && el.scrollWidth > el.clientWidth + 1 && !tooltip) add("clipped-x", el.scrollWidth - el.clientWidth);
     else if (clipY && el.scrollHeight > el.clientHeight + 2) add("clipped-y", el.scrollHeight - el.clientHeight);
     else if (!clipX && cs.display !== "inline" && el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 2 && cs.whiteSpace !== "pre") add("spills", el.scrollWidth - el.clientWidth);
     if (r.right > vw + 1 && !scroller(el)) add("past-window", r.right - vw);

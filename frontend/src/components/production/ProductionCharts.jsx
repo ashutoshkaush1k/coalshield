@@ -11,7 +11,7 @@ import { fmtNum } from "./common";
 
 const colours = () => ({
   target: token("--muted", "#6b7280"),
-  actual: token("--accent-ink", "#1d4ed8"),
+  actual: token("--accent-ink", "#0e7490"),
 });
 
 const axisProps = (c) => ({ tick: { fontSize: 10, fill: c.axis }, tickLine: false, axisLine: false });

@@ -38,7 +38,7 @@ const PROOF_TYPES = ["image/jpeg", "image/png", "image/webp"];
 function RecordTile({ id, icon: Icon, title, count, status, attention = false, onOpen }) {
   return (
     <button type="button" className="record-tile" id={`records-${id}`} onClick={onOpen}>
-      <span className="record-tile-head"><Icon size={18} aria-hidden="true" /><span>{title}</span></span>
+      <span className="record-tile-head"><Icon size={18} aria-hidden="true" /><span className="truncate" title={title}>{title}</span></span>
       <span className="record-tile-count">{fmtNumber(count, 0)}</span>
       <span className={`record-tile-status${attention ? " is-attention" : ""}`}>{status}</span>
     </button>
@@ -117,7 +117,7 @@ export function MineRecords({ bundle, onChanged }) {
                     {v.field && <FieldTags field={v.field} />}</td>
                   <td>{categoryLabel(v.category)}</td>
                   <td><span className={`tag ${v.resolved ? "tag-resolved" : "tag-open"}`}>{statusLabel(v.resolved ? "resolved" : "open")}</span></td>
-                  <td className="mono">{fmtDateTime(v.detected_at)}</td>
+                  <td className="time">{fmtDateTime(v.detected_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -138,7 +138,7 @@ export function MineRecords({ bundle, onChanged }) {
                     <span className={`tag ${a.status === "resolved" ? "tag-resolved" : "tag-open"}`}>{statusLabel(a.status)}</span>
                     {a.is_overdue && <span className="tag tag-open" style={{ marginLeft: 4 }}>{t("correctiveAction.overdue")}</span>}
                   </td>
-                  <td className="mono">{fmtDateTime(a.due_at)}</td>
+                  <td className="time">{fmtDateTime(a.due_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -156,7 +156,7 @@ export function MineRecords({ bundle, onChanged }) {
                 <tr key={i.id} className="clickable" onClick={() => setSelected({ kind: "incident", id: i.id })}>
                   <td><strong>{incidentSeverityLabel(i.severity)}</strong><div className="faint small">{incidentTypeLabel(i.type)}</div></td>
                   <td><span className={`tag ${i.reported_late ? "tag-open" : "tag-resolved"}`}>{i.obligation_code}{i.reported_late ? ` · ${t("incident.late")}` : ""}</span></td>
-                  <td className="mono">{fmtDateTime(i.occurred_at)}</td>
+                  <td className="time">{fmtDateTime(i.occurred_at)}</td>
                 </tr>
               ))}
             </tbody>
@@ -176,7 +176,7 @@ export function MineRecords({ bundle, onChanged }) {
                     {entry.source === "seed_history" && <span className="tag" style={{ marginLeft: 6 }}>{t("audit.source.seed_history")}</span>}
                     <div className="muted small">{entry.actor || t("audit.system")} &middot; {auditChanges(entry).slice(0, 2).join("; ")}</div>
                   </td>
-                  <td className="mono">{fmtDateTime(entry.created_at)}</td>
+                  <td className="time">{fmtDateTime(entry.created_at)}</td>
                 </tr>
               ))}
             </tbody>

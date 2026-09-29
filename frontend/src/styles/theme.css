@@ -1,28 +1,27 @@
-/* Design tokens - clean light SaaS dashboard.
-   Follows the shared frontend design rules. */
+/* Design tokens - defined here and nowhere else (UI polish).
+   White cards on a very light slate page; dark navy text, headings, dark buttons and bar fills;
+   cyan for focus, the active tab, progress, selection and chart accents (darker cyan for text and
+   links on white, WCAG AA). Risk bands stay semantic. No purple anywhere. */
 
 :root {
-  /* ---- Ground ------------------------------------------------------------
-     Cards separate from the page by tone and a soft shadow, not by heavy rules. */
-  --page: #f7f7f8;
+  /* ---- Ground: cards stand out from the page by tone, one border and one shadow. */
+  --page: #f8fafc;
   --card: #ffffff;
-  --sunk: #f3f4f6;
-  --hover: #f9fafb;
+  --sunk: #f1f5f9;
+  --hover: #f8fafc;
 
-  /* ---- Ink --------------------------------------------------------------- */
-  --ink: #111114;
-  --ink-2: #374151;
-  --muted: #6b7280;
-  --faint: #9ca3af;
+  /* ---- Ink (contrast on white): ink 17.9:1, ink-2 10.4:1, muted 7.6:1, faint 4.8:1 - all AA. */
+  --ink: #0f172a;
+  --ink-2: #334155;
+  --muted: #475569;
+  --faint: #64748b;
 
-  /* ---- Lines -------------------------------------------------------------- */
-  --line: #e5e7eb;
-  --line-soft: #f0f1f3;
+  /* ---- One border colour; a softer one for dividers inside a card. */
+  --line: #e2e8f0;
+  --line-soft: #f1f5f9;
 
-  /* ---- Risk: semantic and reserved ---------------------------------------
-     Bands mirror services/compliance/risk.py. Each has a dot, a text colour and a
-     pale pill tint - never a saturated block fill, and never colour without a label. */
-  --risk-low: #059669;
+  /* ---- Risk: semantic and reserved. Text colours meet AA on white and on their tint. */
+  --risk-low: #047857;
   --risk-low-dot: #10b981;
   --risk-low-bg: #ecfdf5;
 
@@ -30,31 +29,34 @@
   --risk-medium-dot: #f59e0b;
   --risk-medium-bg: #fffbeb;
 
-  --risk-high: #dc2626;
+  --risk-high: #b91c1c;
   --risk-high-dot: #ef4444;
   --risk-high-bg: #fef2f2;
 
-  /* ---- Accent ------------------------------------------------------------- */
-  --accent: #111114;
-  --accent-hover: #2a2a30;
-  --accent-soft: #eef2ff;
-  --accent-ink: #4338ca;
+  /* ---- Navy (secondary) for dark buttons and bar fills; cyan (accent) for focus, the active tab,
+     progress and selection; accent-ink is the cyan that reads as text on white (5.4:1). */
+  --accent: #0f172a;
+  --accent-hover: #1e293b;
+  --cyan: #06b6d4;
+  --accent-ink: #0e7490;
+  --accent-soft: #ecfeff;
+  --focus: #06b6d4;
+  --focus-ring: 0 0 0 3px rgba(6, 182, 212, .35);
+  /* The top bar: translucent white over the page (solid white where backdrop-filter is missing). */
+  --glass: rgba(255, 255, 255, .72);
+  --glass-blur: 12px;
 
-  /* ---- Data series --------------------------------------------------------
-     Chart line colours: an identity, not a judgement. Only threshold lines and
-     breach markers carry risk colour, because only they mean something is wrong. */
-  --sensor-gas: #6366f1;
-  --sensor-dust: #0ea5e9;
-  --sensor-temperature: #f97316;
-  --sensor-gas-return: #8b5cf6;
-  --sensor-co: #64748b;
-  --sensor-humidity: #14b8a6;
-  --chart-grid: #eef0f3;
-  --chart-axis: #9ca3af;
+  /* ---- Data series: an identity, not a judgement (one series per chart). */
+  --sensor-gas: #0891b2;
+  --sensor-dust: #0284c7;
+  --sensor-temperature: #ea580c;
+  --sensor-gas-return: #0f766e;
+  --sensor-co: #475569;
+  --sensor-humidity: #0d9488;
+  --chart-grid: #eef2f6;
+  --chart-axis: #64748b;
 
-  /* ---- Type --------------------------------------------------------------- */
-  /* Indic fallbacks (Phase 6): Inter has no Devanagari, Bengali, Odia or Telugu glyphs, so those
-     characters fall through to the bundled Noto faces - in the mono stack too (dates in .mono). */
+  /* ---- Type: one sans-serif (Inter; the bundled Noto faces for Indic scripts); mono only for short codes. */
   --font-indic: "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Sans Oriya", "Noto Sans Telugu";
   --font: "Inter", var(--font-indic), -apple-system, "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", var(--font-indic), ui-monospace, Consolas, monospace;
@@ -70,26 +72,30 @@
 
   --tracking-tight: -.022em;
 
-  /* ---- Spacing: 4px base --------------------------------------------------- */
+  /* ---- Spacing: an 8 px scale (4 and 12 are half-steps for dense rows and chips). */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 20px;
+  --space-5: 24px;
   --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
 
-  /* ---- Shape and elevation ------------------------------------------------- */
+  /* ---- Layout: a 12-column grid with one gutter; the page margin matches the gutter scale. */
+  --gutter: 24px;
+  --page-margin: 32px;
+
+  /* ---- Shape and elevation: one card radius, one card shadow. */
   --radius-sm: 8px;
   --radius: 12px;
-  --radius-lg: 16px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(17, 17, 20, .04);
-  --shadow: 0 1px 3px rgba(17, 17, 20, .06);
-  --shadow-md: 0 4px 12px rgba(17, 17, 20, .08);
-  --shadow-lg: 0 16px 48px rgba(17, 17, 20, .14);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, .05);
+  --shadow: 0 1px 3px rgba(15, 23, 42, .06), 0 1px 2px rgba(15, 23, 42, .04);
+  --shadow-md: 0 1px 3px rgba(15, 23, 42, .06), 0 1px 2px rgba(15, 23, 42, .04);
+  --shadow-lg: 0 16px 48px rgba(15, 23, 42, .16);
 
   --panel-pad: var(--space-5);
   --z-overlay: 100;

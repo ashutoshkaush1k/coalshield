@@ -25,12 +25,12 @@ export function GrievanceList({ grievances, showMine = false, onSelect, empty })
           {grievances.map((g) => (
             <tr key={g.id} data-grievance={g.ticket_no} className={g.is_overdue || g.escalation_level > 0 ? "is-flagged" : ""}
                 onClick={() => onSelect?.(g)} style={{ cursor: onSelect ? "pointer" : undefined }}>
-              <td className="mono"><strong>{g.ticket_no}</strong><div className="faint small">{fmtWhen(g.created_at)}</div></td>
+              <td><strong className="code">{g.ticket_no}</strong><div className="faint small time">{fmtWhen(g.created_at)}</div></td>
               {showMine && <td>{g.mine_name} <span className="mono faint">{g.mine_code}</span></td>}
               <td>{t(`grievance.category.${g.category}`)}</td>
               <td><LanguageTag language={g.language} /></td>
               <td><div className="row wrap-row"><GrievanceStatus status={g.status} /><GrievanceFlags g={g} /></div></td>
-              <td className="mono">{fmtWhen(g.sla_due_at)}</td>
+              <td className="time">{fmtWhen(g.sla_due_at)}</td>
               <td className="small">{g.assignee_name ?? "-"}</td>
             </tr>
           ))}

@@ -36,7 +36,7 @@ export function RequestList({ requests, showMine = false, actions }) {
                   </div>
                 )}
               </td>
-              <td className="mono">{fmtDateTime(r.due_at)}</td>
+              <td className="time">{fmtDateTime(r.due_at)}</td>
               <td><StatusTag status={r.status} /></td>
               <td>{actions?.(r)}</td>
             </tr>

@@ -50,7 +50,7 @@ export function ComplianceSummary({ mine, gri = null }) {
   const cls = riskClass(c.risk_level);
   return (
     <>
-      <div className="hero-figure">
+      <div className="stat-row mine-stats">
         <div>
           <span className="label">{t("mine.score")}</span>
           <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
@@ -59,7 +59,7 @@ export function ComplianceSummary({ mine, gri = null }) {
           </div>
         </div>
         {gri && (
-          <div className="gri-figure">
+          <div>
             <span className="label">{t("gri.short")}</span>
             <div className={`hero-score ${riskClass(gri.band)}`} id="gri-beside-score">{fmtNumber(gri.gri, 0)}</div>
             <div style={{ marginTop: "var(--space-3)" }}>
@@ -75,12 +75,9 @@ export function ComplianceSummary({ mine, gri = null }) {
             </div>
           </div>
         )}
-        <div className="spacer" />
-        <div className="tally-set">
-          <Stat label={t("mine.openViolations")} value={c.violation_count} />
-          <Stat label={breachesLabel(c.breach_window_hours)} hint={breachesHint(c.breach_window_hours)} value={c.breach_count} />
-          <Stat label={t("mine.openAlerts")} value={mine.open_alerts} tone={mine.open_alerts ? "risk-high" : undefined} />
-        </div>
+        <Stat label={t("mine.openViolations")} value={c.violation_count} />
+        <Stat label={breachesLabel(c.breach_window_hours)} hint={breachesHint(c.breach_window_hours)} value={c.breach_count} />
+        <Stat label={t("mine.openAlerts")} value={mine.open_alerts} tone={mine.open_alerts ? "risk-high" : undefined} />
       </div>
       <div className="meter" style={{ marginTop: "var(--space-5)" }}>
         <i className={cls} style={{ width: `${Math.max(0, Math.min(100, c.score))}%` }} />
@@ -133,22 +130,22 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
       <div className="content stack">
         <ErrorNotice error={error} />
 
-        <div className="grid split fit">
-          <section className="panel-block">
+        <div className="grid-12">
+          <section className="panel-block fill span-8">
             <div className="panel-body">
               <ComplianceSummary mine={mine} gri={data.risk?.governance_risk} />
               <MineRecords bundle={data} onChanged={refresh} />
             </div>
           </section>
 
-          <section className="panel-block">
+          <section className="panel-block fill span-4">
             <div className="panel-head">
               <div>
                 <h2>{t("mine.alerts")}</h2>
                 <div className="hint">{t("mine.openDirectives", { count: openDirectives })}</div>
               </div>
             </div>
-            <div className="panel-body flush scroll-y">
+            <div className="panel-body flush alerts-body">
               <AlertList alerts={alerts} onSelect={setSelectedAlert} />
             </div>
           </section>

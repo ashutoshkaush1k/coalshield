@@ -221,7 +221,7 @@ function Violations({ data }) {
             <td><strong>{violationTypeLabel(v.violation_type)}</strong></td>
             <td>{categoryLabel(v.category)}</td>
             <td><span className={`tag ${v.resolved ? "tag-resolved" : "tag-open"}`}>{statusLabel(v.resolved ? "resolved" : "open")}</span></td>
-            <td className="mono">{fmtDateTime(v.detected_at)}</td>
+            <td className="time">{fmtDateTime(v.detected_at)}</td>
           </tr>
         ))}
       </tbody>

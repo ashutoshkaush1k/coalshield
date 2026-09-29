@@ -15,7 +15,7 @@ import { useT } from "../../i18n/t";
  * particular must keep meaning HIGH risk wherever it shows up.
  */
 const CATEGORY_TOKEN = {
-  gas: ["--sensor-gas", "#6366f1"],
+  gas: ["--sensor-gas", "#0891b2"],
   dust: ["--sensor-dust", "#0ea5e9"],
   temperature: ["--sensor-temperature", "#f97316"],
 };

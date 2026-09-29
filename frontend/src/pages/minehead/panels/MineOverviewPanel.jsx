@@ -26,22 +26,22 @@ export function MineOverviewPanel({ bundle, mineId, onAnalysed, onChanged }) {
 
   return (
     <div className="stack">
-      <div className="grid split fit">
-        <section className="panel-block">
+      <div className="grid-12">
+        <section className="panel-block fill span-8">
           <div className="panel-body">
             <ComplianceSummary mine={mine} gri={bundle.risk?.governance_risk} />
             <MineRecords bundle={bundle} onChanged={onChanged} />
           </div>
         </section>
 
-        <section className="panel-block">
+        <section className="panel-block fill span-4">
           <div className="panel-head">
             <div>
               <h2>{t("mine.alertsAndDirectives")}</h2>
               <div className="hint">{t("mine.openDirectivesFromDgms", { count: openDirectives })}</div>
             </div>
           </div>
-          <div className="panel-body flush scroll-y">
+          <div className="panel-body flush alerts-body">
             <AlertList
               alerts={alerts}
               onSelect={setSelectedAlert}

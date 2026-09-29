@@ -39,8 +39,6 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
               </p>
             </div>
 
-            <div className="spacer" />
-
             <div className="tally-set">
               <Tally label={t("risk.high")} value={stats?.high_risk_count ?? 0} tone="high" />
               <Tally label={t("risk.medium")} value={stats?.medium_risk_count ?? 0} tone="medium" />

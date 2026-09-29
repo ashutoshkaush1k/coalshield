@@ -40,13 +40,13 @@ export function TaskList({ tasks, showMine = false, onSelect, empty }) {
                 className={task.status === "overdue" || task.status === "escalated" ? "is-flagged" : ""}
                 onClick={() => onSelect?.(task)} style={{ cursor: onSelect ? "pointer" : undefined }}>
               <td>
-                <strong className="mono">{task.obligation?.code}</strong> {obligationTitle(task.obligation)}
+                <strong className="code">{task.obligation?.code}</strong> {obligationTitle(task.obligation)}
                 <div className="small"><Citation obligation={task.obligation} compact /></div>
               </td>
-              {showMine && <td>{task.mine_name} <span className="mono faint">{task.mine_code}</span></td>}
-              <td className="mono">{task.period}</td>
+              {showMine && <td><span className="mine-cell"><span className="mine-name">{task.mine_name}</span><span className="mine-code">{task.mine_code}</span></span></td>}
+              <td><span className="code">{task.period}</span></td>
               <td>
-                <span className="mono">{fmtWhen(task.due_at)}</span>
+                <span className="time">{fmtWhen(task.due_at)}</span>
                 <div className="faint small">{t(`obligation.dueBasis.${task.due_basis}`)}</div>
               </td>
               <td><TaskStatus task={task} /></td>
