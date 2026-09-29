@@ -8,6 +8,7 @@ import { homeFor } from "../auth/roles";
 import { useT } from "../i18n/t";
 import { LanguageSwitcher } from "../components/common/LanguageSwitcher";
 import { BrandBackground } from "../components/common/BrandBackground";
+import { SiteFooter } from "../components/common/SiteFooter";
 import { PasswordInput } from "../components/common/PasswordInput";
 
 // One form for both roles: the account decides the scope, not the login screen. The quick-fill
@@ -97,6 +98,7 @@ export default function Login() {
           </div>
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

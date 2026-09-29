@@ -1714,5 +1714,16 @@
       "grievances": "Grievances",
       "obligations": "Obligations"
     }
+  },
+  "footer": {
+    "help": "Help and support",
+    "helpline": "Helpline",
+    "helplineSoon": "Helpline number to be announced",
+    "email": "Email",
+    "hoursLabel": "Hours",
+    "hours": "Monday to Saturday, 9 am to 6 pm IST",
+    "grievances": "Grievances",
+    "safety": "In an emergency",
+    "emergency": "At a mine, follow the mine's emergency plan and alert its control room first. This dashboard is not an emergency service."
   }
 }

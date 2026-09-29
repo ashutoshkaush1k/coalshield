@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { trackGrievance } from "../../api/grievances";
 import { BrandBackground } from "../../components/common/BrandBackground";
+import { SiteFooter } from "../../components/common/SiteFooter";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { GrievanceStatus, fmtWhen } from "../../components/grievances/common";
 import { useT } from "../../i18n/t";
@@ -88,6 +89,7 @@ export default function TrackGrievance() {
           <Link to="/login">{t("grievance.public.backToLogin")}</Link>
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

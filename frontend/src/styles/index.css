@@ -678,8 +678,10 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
 .move-score { font-size: var(--text-display); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* --- login --- */
-.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: var(--space-5); background: var(--page); }
-.login-card { width: 100%; max-width: 400px; }
+/* The card centred in the window, the site footer across the bottom. */
+.login-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; background: var(--page); }
+.login-card { width: calc(100% - 2 * var(--space-5)); max-width: 400px; margin: var(--space-5) auto; }
+.login-wrap > .site-footer { width: 100%; }
 .login-wrap .brandline { margin-bottom: var(--space-6); text-align: center; }
 .login-wrap .brandline h1 { font-size: var(--text-xl); }
 .login-wrap .brandline span { display: block; margin-top: var(--space-2); font-size: var(--text-sm); color: var(--muted); }
@@ -772,7 +774,7 @@ tr.is-flagged { background: var(--risk-high-bg); }
 /* Grievances (Phase 5) */
 .grid.two-col { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .grid.two-col > * { min-width: 0; }
-.public-card { width: 100%; max-width: 640px; }
+.public-card { width: calc(100% - 2 * var(--space-5)); max-width: 640px; margin: var(--space-5) auto; }
 .public-links { justify-content: center; margin-top: var(--space-3); }
 .public-links a { font-size: var(--text-sm); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-navy); }
@@ -983,3 +985,20 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .has-bg .public-links a:not(.btn) { text-decoration: underline; text-underline-offset: 2px; }
 /* A worked figure (the contractor detail's score breakdown): normal font, tabular numerals. */
 .formula { font-size: var(--text-sm); color: var(--ink-2); font-variant-numeric: tabular-nums; background: var(--sunk); padding: var(--space-3); border-radius: var(--radius-sm); }
+
+/* --- Site footer (components/common/SiteFooter.jsx): on every page, a navy band. --- */
+.site-footer { margin-top: auto; padding: var(--space-6) var(--page-margin) var(--space-4); background: var(--navy); color: var(--on-navy-muted); font-size: var(--text-sm); }
+.site-footer .system-warning { margin-bottom: var(--space-4); }
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--space-5); }
+.footer-grid > * { min-width: 0; }
+.footer-name { display: flex; align-items: center; gap: var(--space-2); color: var(--on-navy); }
+.footer-brand p, .site-footer section p { margin: var(--space-2) 0 0; overflow-wrap: anywhere; }
+.footer-title { margin: 0; font-size: var(--text-sm); font-weight: 600; color: var(--on-navy); letter-spacing: 0; }
+.footer-facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-1) var(--space-3); margin: var(--space-2) 0 0; }
+.footer-facts dt { color: var(--on-navy-faint); }
+.footer-facts dd { margin: 0; color: var(--on-navy); overflow-wrap: anywhere; }
+.footer-masked { font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.footer-links { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: var(--space-1); }
+.site-footer a { color: var(--on-navy); text-decoration: underline; text-underline-offset: 2px; }
+.site-footer a:hover { color: var(--cyan-on-navy); }
+.footer-bottom { margin-top: var(--space-5); padding-top: var(--space-3); border-top: 1px solid var(--navy-line); font-size: var(--text-xs); color: var(--on-navy-faint); }
