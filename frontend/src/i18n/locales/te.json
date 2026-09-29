@@ -471,7 +471,9 @@
     "checkCredentials": "ఈమెయిల్, పాస్‌వర్డ్‌ను సరిచూసుకోండి.",
     "signingIn": "సైన్ ఇన్ అవుతోంది...",
     "signIn": "సైన్ ఇన్",
-    "demoAccounts": "డెమో ఖాతాలు, పాస్‌వర్డ్ {{password}}"
+    "demoAccounts": "డెమో ఖాతాలు, పాస్‌వర్డ్ {{password}}",
+    "showPassword": "పాస్‌వర్డ్ చూపించు",
+    "hidePassword": "పాస్‌వర్డ్ దాచు"
   },
   "mine": {
     "score": "నిబంధనల పాటింపు స్కోరు",

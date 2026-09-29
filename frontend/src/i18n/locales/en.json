@@ -471,7 +471,9 @@
     "checkCredentials": "Check the email and password.",
     "signingIn": "Signing in...",
     "signIn": "Sign in",
-    "demoAccounts": "Demo accounts, password {{password}}"
+    "demoAccounts": "Demo accounts, password {{password}}",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "mine": {
     "score": "Compliance score",

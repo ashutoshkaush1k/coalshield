@@ -279,6 +279,20 @@ input, textarea, select {
   width: 100%; background: var(--card); color: var(--ink);
 }
 textarea { resize: vertical; }
+/* Password with a show / hide toggle inside its right edge (components/common/PasswordInput.jsx):
+   the input keeps its full width and reserves room on the right, so the text never runs under the
+   button and nothing moves when it toggles. */
+.password-field { position: relative; }
+.password-field input { padding-right: 44px; }
+.password-toggle {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 40px; min-height: 0; padding: 0; margin: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; background: none; box-shadow: none; color: var(--muted); cursor: pointer; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.password-toggle:hover { color: var(--ink); background: none; }
+.password-toggle:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: -3px; }
+.field-app .password-field input { padding-right: 48px; }
+.field-app .password-toggle { width: 44px; }
 input:focus, textarea:focus, select:focus {
   outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(17, 17, 20, .06);
 }

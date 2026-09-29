@@ -471,7 +471,9 @@
     "checkCredentials": "ईमेल आणि पासवर्ड तपासा.",
     "signingIn": "साइन इन होत आहे...",
     "signIn": "साइन इन",
-    "demoAccounts": "डेमो खाती, पासवर्ड {{password}}"
+    "demoAccounts": "डेमो खाती, पासवर्ड {{password}}",
+    "showPassword": "पासवर्ड दाखवा",
+    "hidePassword": "पासवर्ड लपवा"
   },
   "mine": {
     "score": "अनुपालन स्कोअर",

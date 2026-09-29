@@ -471,7 +471,9 @@
     "checkCredentials": "ଇମେଲ ଓ ପାସୱାର୍ଡ ଯାଞ୍ଚ କରନ୍ତୁ।",
     "signingIn": "ଲଗଇନ ହେଉଛି...",
     "signIn": "ଲଗଇନ",
-    "demoAccounts": "ଡେମୋ ଆକାଉଣ୍ଟ, ପାସୱାର୍ଡ {{password}}"
+    "demoAccounts": "ଡେମୋ ଆକାଉଣ୍ଟ, ପାସୱାର୍ଡ {{password}}",
+    "showPassword": "ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ",
+    "hidePassword": "ପାସୱାର୍ଡ ଲୁଚାନ୍ତୁ"
   },
   "mine": {
     "score": "ଅନୁପାଳନ ସ୍କୋର",

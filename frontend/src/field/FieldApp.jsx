@@ -16,6 +16,7 @@ import { queue as readQueue } from "./db";
 import { adopt, dropToken, forgetSession, loadSession, refresh, signIn, tokenValid } from "./session";
 import { syncQueue } from "./sync";
 import { getToken } from "../api/client";
+import { PasswordInput } from "../components/common/PasswordInput";
 
 function useOnline() {
   const [online, setOnline] = useState(navigator.onLine);
@@ -111,7 +112,7 @@ function FieldSignIn({ onSignedIn, lockedEmail = null, onCancel = null }) {
       <input id="field-email" type="email" autoComplete="username" value={email} readOnly={!!lockedEmail}
              onChange={(e) => setEmail(e.target.value)} required />
       <label className="label" htmlFor="field-password">{t("login.password")}</label>
-      <input id="field-password" type="password" autoComplete="current-password" value={password}
+      <PasswordInput id="field-password" name="password" autoComplete="current-password" value={password}
              onChange={(e) => setPassword(e.target.value)} required />
       {error && <p className="field-error" role="alert">{error}</p>}
       <button type="submit" className="primary field-big" disabled={busy || !online}>{busy ? t("field.signingIn") : t("login.signIn")}</button>

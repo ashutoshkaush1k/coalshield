@@ -471,7 +471,9 @@
     "checkCredentials": "ইমেল ও পাসওয়ার্ড যাচাই করুন।",
     "signingIn": "সাইন ইন হচ্ছে...",
     "signIn": "সাইন ইন",
-    "demoAccounts": "ডেমো অ্যাকাউন্ট, পাসওয়ার্ড {{password}}"
+    "demoAccounts": "ডেমো অ্যাকাউন্ট, পাসওয়ার্ড {{password}}",
+    "showPassword": "পাসওয়ার্ড দেখান",
+    "hidePassword": "পাসওয়ার্ড লুকান"
   },
   "mine": {
     "score": "নিয়ম মেনে চলার স্কোর",

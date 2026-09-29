@@ -8,6 +8,7 @@ import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
 import { useT } from "../i18n/t";
 import { LanguageSwitcher } from "../components/common/LanguageSwitcher";
+import { PasswordInput } from "../components/common/PasswordInput";
 
 // One form for both roles: the account decides the scope, not the login screen. The quick-fill
 // buttons (and a pre-filled form) exist only in demo mode - VITE_DEMO_MODE=true, set by
@@ -64,7 +65,7 @@ export default function Login() {
             </div>
             <div>
               <label htmlFor="password">{t("login.password")}</label>
-              <input id="password" type="password" value={password} autoComplete="current-password"
+              <PasswordInput id="password" name="password" value={password} autoComplete="current-password"
                      onChange={(e) => setPassword(e.target.value)} required />
             </div>
 
