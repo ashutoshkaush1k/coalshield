@@ -1716,7 +1716,6 @@
     "placeholderShort": "Search",
     "placeholder": "Search mines, contractors, grievance tickets, obligations",
     "title": "Search",
-    "kbd": "Ctrl K",
     "hint": "Type at least 2 characters: a mine's name, code, district, state or company; a contractor or registration number; a grievance ticket; an obligation code or title.",
     "searching": "Searching...",
     "noResults": "No results for \"{{q}}\"",

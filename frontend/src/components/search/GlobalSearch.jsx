@@ -51,7 +51,6 @@ export function GlobalSearch() {
               aria-haspopup="dialog" aria-label={t("search.open")} title={t("search.shortcut")}>
         <Search size={18} aria-hidden="true" />
         <span className="search-trigger-text">{t("search.placeholderShort")}</span>
-        <kbd className="search-kbd">{t("search.kbd")}</kbd>
       </button>
       {open && <SearchPanel onClose={() => { setOpen(false); document.getElementById("search-trigger")?.focus(); }} />}
     </>
