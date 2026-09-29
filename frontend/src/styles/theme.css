@@ -45,7 +45,7 @@
   /* The top bar: translucent white over the page (solid white where backdrop-filter is missing). */
   --glass: rgba(255, 255, 255, .6);
   /* ---- Motion: the drawer opens with a fast start and a gentle stop, and closes accelerating away. */
-  --drawer-open-ms: 280ms;
+  --drawer-open-ms: 420ms;
   --drawer-close-ms: 200ms;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);

@@ -76,7 +76,7 @@ async function run(p) {
   expect(delay >= 118 && delay < 200, `opens ${delay.toFixed(0)} ms after the pointer reaches the hamburger (hover intent 120 ms)`);
   expect(await isOpen(), "open once the pointer has rested 120 ms");
   const openCss = await p.evaluate(`(() => { const d = getComputedStyle(document.getElementById("nav-drawer")); return { dur: d.transitionDuration, ease: d.transitionTimingFunction }; })()`);
-  expect(openCss.dur.startsWith("0.28s") && openCss.ease.startsWith("cubic-bezier(0.22, 1, 0.36, 1)"), `open: 280 ms, cubic-bezier(0.22, 1, 0.36, 1) (${openCss.dur}, ${openCss.ease})`);
+  expect(openCss.dur.startsWith("0.42s") && openCss.ease.startsWith("cubic-bezier(0.22, 1, 0.36, 1)"), `open: 420 ms, cubic-bezier(0.22, 1, 0.36, 1) (${openCss.dur}, ${openCss.ease})`);
   await sleep(400);
   await mouse(150, 300); await sleep(250);          // into the drawer (it covers the icon now)
   await mouse(420, 300); await sleep(150);          // out of both ...
@@ -127,7 +127,7 @@ async function run(p) {
 
   console.log("Frames and layout during the animation");
   const pageBefore = await p.evaluate(`JSON.stringify(document.querySelector(".main").getBoundingClientRect()) + scrollY + document.documentElement.scrollWidth`);
-  for (const [label, action, ms] of [["open", `document.getElementById("nav-toggle").click()`, 320], ["close", `document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))`, 240]]) {
+  for (const [label, action, ms] of [["open", `document.getElementById("nav-toggle").click()`, 460], ["close", `document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))`, 240]]) {
     await p.evaluate(action);
     await p.evaluate(`new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))`);   // the frame that starts it
     const before = await metrics();
@@ -146,7 +146,7 @@ async function run(p) {
       const bd = await p.evaluate(`getComputedStyle(document.querySelector(".nav-backdrop")).opacity`);
       expect(bd === "0.25", `backdrop at 0.25 (${bd})`);
       const stagger = await p.evaluate(`[...document.querySelectorAll("#nav-drawer .nav-stagger")].map((e) => parseFloat(getComputedStyle(e).animationDelay) * 1000)`);
-      expect(stagger.length > 3 && stagger.every((d, i) => i === 0 || d - stagger[i - 1] === 20) && Math.max(...stagger) <= 200, `stagger on open: 20 ms apart, at most 200 ms (${stagger.join(", ")})`);
+      expect(stagger.length > 3 && stagger.every((d, i) => i === 0 || d - stagger[i - 1] === 30) && Math.max(...stagger) <= 300, `stagger on open: 30 ms apart, at most 300 ms (${stagger.join(", ")})`);
       await sleep(300);
     } else {
       await sleep(200);
