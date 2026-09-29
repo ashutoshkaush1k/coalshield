@@ -15,7 +15,7 @@ import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { RiskMark } from "../../components/compliance/RiskMark";
 import { RiskPanel } from "../../components/risk/RiskPanel";
-import { Topbar } from "../../components/layout/Topbar";
+import { PageTitle } from "../../components/layout/PageTitle";
 import { Drawer } from "../../components/overlay/Overlay";
 import { useToast } from "../../components/overlay/ToastHost";
 import { MineRecords } from "../../components/records/MineRecords";
@@ -103,7 +103,7 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
   if (error && !data) {
     return (
       <>
-        <Topbar title={t("mine.detail")} />
+        <PageTitle title={t("mine.detail")} />
         <div className="content">
           <ErrorNotice error={error} />
           {backTo && <p style={{ marginTop: 12 }}><Link to={backTo}>{t("mine.back")}</Link></p>}
@@ -118,9 +118,9 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
 
   return (
     <>
-      <Topbar title={mine.name} subtitle={mineSubtitle(mine)}>
+      <PageTitle title={mine.name} subtitle={mineSubtitle(mine)}>
         {backTo && <Link className="btn" to={backTo}>{t("mine.backToOverview")}</Link>}
-      </Topbar>
+      </PageTitle>
 
       <div className="content stack">
         <ErrorNotice error={error} />

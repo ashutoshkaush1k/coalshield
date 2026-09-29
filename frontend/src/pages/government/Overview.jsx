@@ -4,7 +4,8 @@ import { getOverviewView } from "../../api/views";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { TabPanel } from "../../components/common/Tabs";
-import { Masthead } from "../../components/layout/Masthead";
+import { PageTitle } from "../../components/layout/PageTitle";
+import { useHomeTabs } from "../../components/layout/navTabs";
 import { usePolling } from "../../hooks/usePolling";
 import { OverviewPanel } from "./panels/OverviewPanel";
 import { useAuth } from "../../hooks/useAuth";
@@ -20,23 +21,9 @@ import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
 import { fmtNumber } from "../../utils/format";
 
-// Built at render, so the labels follow a language switch.
-// Five tabs on the bar, the rest in the navigation drawer.
-const BAR_TABS = ["overview", "priority", "obligations", "production", "map"];
-const tabs = () => [
-  { id: "overview", label: t("tabs.overview") },
-  { id: "priority", label: t("tabs.priority") },
-  { id: "sensors", label: t("tabs.sensors") },
-  { id: "trends", label: t("tabs.trends") },
-  { id: "production", label: t("production.tabLabel") },
-  { id: "contractors", label: t("contractor.tabLabel") },
-  { id: "grievances", label: t("grievance.tabLabel") },
-  { id: "obligations", label: t("obligation.tabLabel") },
-  { id: "map", label: t("map.tabLabel") },
-];
-
-export default function GovernmentDashboard({ initialTab = "overview" }) {
-  const [tab, setTab] = useState(initialTab);
+export default function GovernmentDashboard() {
+  // The active tab is in the URL (?tab=), set from the shell's top bar and drawer (navTabs.js).
+  const { active: tab, goTo: setTab } = useHomeTabs();
   const { user } = useAuth();
   // Held here rather than in each panel so the selection survives tab switches.
   const [state, setState] = useState(null);
@@ -50,17 +37,13 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
 
   return (
     <>
-      <Masthead
+      <PageTitle
         title={t("overview.title")}
         subtitle={
           state
             ? t("overview.subtitleState", { n: fmtNumber(data?.stats?.mine_count ?? 0, 0), state })
             : t("overview.subtitleScope", { n: fmtNumber(data?.stats?.mine_count ?? 0, 0), where: scopeWhere(user) })
         }
-        tabs={tabs()}
-        barIds={BAR_TABS}
-        active={tab}
-        onTabChange={setTab}
       />
 
       <div className="content">

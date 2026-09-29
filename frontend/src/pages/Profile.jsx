@@ -3,7 +3,7 @@
 // once; it follows the account to any browser.
 import { useState } from "react";
 import { ErrorNotice } from "../components/common/ErrorNotice";
-import { Masthead } from "../components/layout/Masthead";
+import { PageTitle } from "../components/layout/PageTitle";
 import { useToast } from "../components/overlay/ToastHost";
 import { useAuth } from "../hooks/useAuth";
 import { LANGUAGES } from "../i18n";
@@ -36,7 +36,7 @@ export default function Profile() {
 
   return (
     <>
-      <Masthead title={t("profile.title")} subtitle={user?.email} />
+      <PageTitle title={t("profile.title")} subtitle={user?.email} />
       <div className="content stack">
         <section className="panel-block" id="profile-account">
           <div className="panel-head"><h2>{t("profile.account")}</h2></div>

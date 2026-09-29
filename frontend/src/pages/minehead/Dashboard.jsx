@@ -7,7 +7,8 @@ import { useState } from "react";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { TabPanel } from "../../components/common/Tabs";
-import { Masthead } from "../../components/layout/Masthead";
+import { PageTitle } from "../../components/layout/PageTitle";
+import { useHomeTabs } from "../../components/layout/navTabs";
 import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
 import { loadMineBundle, mineSubtitle } from "../government/MineDetail";
@@ -21,23 +22,10 @@ import { ObligationsPanel } from "./panels/ObligationsPanel";
 import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
 
-// Built at render, so the labels follow a language switch.
-// Five tabs on the bar, the rest in the navigation drawer.
-const BAR_TABS = ["overview", "production", "obligations", "contractors", "grievances"];
-const tabs = () => [
-  { id: "overview", label: t("tabs.overview") },
-  { id: "sensors", label: t("tabs.sensors") },
-  { id: "trends", label: t("tabs.trends") },
-  { id: "production", label: t("production.tabLabel") },
-  { id: "contractors", label: t("contractor.tabLabel") },
-  { id: "grievances", label: t("grievance.tabLabel") },
-  { id: "obligations", label: t("obligation.tabLabel") },
-  { id: "map", label: t("map.tabLabel") },
-];
-
 export default function MineHeadDashboard() {
   const { user } = useAuth();
-  const [tab, setTab] = useState("overview");
+  // The active tab is in the URL (?tab=), set from the shell's top bar and drawer (navTabs.js).
+  const { active: tab, goTo: setTab } = useHomeTabs();
   // Bumped after a detection so the view refetches immediately rather than waiting
   // out the polling interval.
   const [refreshToken, setRefreshToken] = useState(0);
@@ -62,7 +50,7 @@ export default function MineHeadDashboard() {
   if (error && !data) {
     return (
       <>
-        <Masthead title={t("mineHead.myMine")} />
+        <PageTitle title={t("mineHead.myMine")} />
         <div className="content"><ErrorNotice error={error} /></div>
       </>
     );
@@ -70,13 +58,9 @@ export default function MineHeadDashboard() {
 
   return (
     <>
-      <Masthead
+      <PageTitle
         title={data.mine.name}
         subtitle={mineSubtitle(data.mine)}
-        tabs={tabs()}
-        barIds={BAR_TABS}
-        active={tab}
-        onTabChange={setTab}
       />
 
       <div className="content">

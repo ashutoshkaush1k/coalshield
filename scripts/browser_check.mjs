@@ -891,16 +891,16 @@ async function phase6(page) {
   await fetch(`${API}/users/me`, { method: "PATCH", headers: { Authorization: `Bearer ${headToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ preferred_language: "hi" }) });
   await page.eval(`sessionStorage.setItem("smg.token", ${JSON.stringify(headToken)})`);
   await page.goto(`${APP}/mine`, 4000);
-  await waitFor(".masthead h1");
+  await waitFor(".page-title h1");
   expect(await lang() === "hi", `after login the saved preference wins (browser te, account hi; got ${await lang()})`);
   await page.shot("00b-head-saved-hindi", "Gevra mine head: browser set to Telugu, account saved Hindi - Hindi wins after login");
   // The profile page saves a new language and switches immediately.
   await page.goto(`${APP}/profile`, 3000);
   await waitFor("#profile-language");
-  const before = await text(".masthead h1");
+  const before = await text(".page-title h1");
   await page.eval(`document.querySelector('#profile-language input[value="or"]').click()`);
   for (let i = 0; i < 20 && (await lang()) !== "or"; i++) await sleep(250);
-  expect(await lang() === "or" && (await text(".masthead h1")) !== before, "the profile switches the language at once");
+  expect(await lang() === "or" && (await text(".page-title h1")) !== before, "the profile switches the language at once");
   // The interface switches first; the save (PATCH /v1/users/me) completes a moment later.
   let me = {};
   for (let i = 0; i < 20 && me.preferred_language !== "or"; i++) {

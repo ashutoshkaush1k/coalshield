@@ -19,7 +19,8 @@ export function TabIcon({ id, size = 18 }) {
   return Icon ? <Icon size={size} aria-hidden="true" className="tab-icon" /> : null;
 }
 
-export function Tabs({ tabs, active, onChange }) {
+/** `controls`: the panels are on this page (the home page), so each tab names the one it shows. */
+export function Tabs({ tabs, active, onChange, controls = true }) {
   return (
     <div className="tabs" role="tablist">
       {tabs.map((tab) => (
@@ -31,7 +32,8 @@ export function Tabs({ tabs, active, onChange }) {
           title={tab.label}
           aria-label={tab.label}
           aria-selected={active === tab.id}
-          aria-controls={`panel-${tab.id}`}
+          aria-controls={controls ? `panel-${tab.id}` : undefined}
+          data-tab={tab.id}
           onClick={() => onChange(tab.id)}
         >
           <TabIcon id={tab.id} />

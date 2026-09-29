@@ -1,8 +1,7 @@
-// Deep link to the ranked queue. Renders the same dashboard with the Priority
-// Queue tab already selected, so /gov/inspections keeps working without a second
-// design of the same screen.
-import GovernmentDashboard from "./Overview";
+// Deep link to the ranked queue: /gov/inspections keeps working and opens the government home on
+// its Priority Queue tab (the active tab lives in the URL, components/layout/navTabs.js).
+import { Navigate } from "react-router-dom";
 
 export default function InspectionPriority() {
-  return <GovernmentDashboard initialTab="priority" />;
+  return <Navigate to="/gov?tab=priority" replace />;
 }

@@ -65,8 +65,7 @@ a:hover { text-decoration: underline; }
 }
 .nav-drawer.is-open { transform: none; visibility: visible; transition: transform .2s ease; }
 .home-link { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--ink); cursor: pointer; border-radius: var(--radius-sm); }
-.home-link:hover { text-decoration: none; }
-.home-link:hover .brand-name, .home-link:hover strong { text-decoration: underline; }
+.home-link, .home-link:hover { text-decoration: none; }
 .home-link:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
 .nav-drawer-brand { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); letter-spacing: var(--tracking-tight); }
 .nav-section { display: grid; gap: var(--space-2); }
@@ -86,16 +85,20 @@ a:hover { text-decoration: underline; }
 .nav-foot .who { font-size: var(--text-sm); font-weight: 600; padding: 0 var(--space-3); overflow-wrap: anywhere; }
 .nav-foot .role { font-size: var(--text-xs); color: var(--muted); padding: 0 var(--space-3) var(--space-2); overflow-wrap: anywhere; }
 
-.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.main { min-width: 0; min-height: 100vh; display: flex; flex-direction: column; }
 .content { padding: var(--space-6) var(--space-8) var(--space-10); }
 
 /* --- masthead + tabs --- */
+/* The app shell's top bar (components/layout/Nav.jsx), the same on every signed-in page. When the
+   brand and the tabs do not fit on one line the tabs take their own line (and wrap there): a tab is
+   never pushed past the window, where body's overflow-x would hide it. */
 .masthead {
-  background: var(--page); padding: var(--space-4) var(--space-8) 0;
+  background: var(--page); padding: var(--space-3) var(--space-8) 0;
   position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 var(--space-6);
 }
 /* Hamburger, logo and app name, and the current tab's name when that tab is in the drawer. */
-.masthead-brand { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); }
+.masthead-brand { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-2); }
 .nav-toggle {
   display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0;
   margin-left: calc(-1 * var(--space-2)); border: none; border-radius: var(--radius-sm); background: none; color: var(--ink); cursor: pointer;
@@ -108,17 +111,17 @@ a:hover { text-decoration: underline; }
   display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--radius-pill);
   background: var(--sunk); color: var(--ink); font-size: var(--text-sm); font-weight: 600;
 }
-/* Title left, tabs right; when they do not fit on one line the tabs take their own line (and wrap
-   there): a tab is never pushed past the window, where body's overflow-x would hide it. */
-.masthead-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
 /* A link to a card (#governance-risk) and scrollIntoView stop below the sticky masthead, not under
    it. --masthead-h is its measured height (components/layout/useMastheadHeight.js). */
 html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
-.masthead-title { min-width: 0; }
-.masthead-title h1 { font-size: var(--text-xl); overflow-wrap: anywhere; }
-.masthead-title .sub { font-size: var(--text-sm); color: var(--muted); margin-top: 2px; }
 .masthead .spacer { flex: 1; }
-.masthead-meta { display: flex; align-items: center; gap: var(--space-2); padding-bottom: var(--space-3); }
+/* A page's own title row (components/layout/PageTitle.jsx), at the top of its content. */
+.page-title { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3) var(--space-6); padding: var(--space-6) var(--space-8) 0; }
+.page-title + .content { padding-top: var(--space-5); }
+.page-title-text { flex: 1 1 16rem; min-width: 0; }
+.page-title h1 { font-size: var(--text-xl); overflow-wrap: anywhere; }
+.page-title .sub { font-size: var(--text-sm); color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; }
+.page-title-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 
 .tabs { display: flex; flex-wrap: wrap; gap: 0 var(--space-1); align-self: flex-end; min-width: 0; max-width: 100%; margin-left: auto; }
 .tab {
@@ -554,7 +557,8 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
 
 /* --- narrow viewports --- */
 @media (max-width: 900px) {
-  .masthead { padding: var(--space-4) var(--space-4) 0; }
+  .masthead { padding: var(--space-3) var(--space-4) 0; }
+  .page-title { padding: var(--space-4) var(--space-4) 0; }
   .content { padding: var(--space-4) var(--space-4) var(--space-8); }
 
   /* A drawer wider than the screen would sit half off it. */

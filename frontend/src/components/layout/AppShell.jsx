@@ -1,11 +1,12 @@
-// Page frame: navigation drawer (opened from the hamburger in each page's top bar), content outlet.
-// The content uses the full width; nothing is docked on the left.
+// The app shell for every signed-in page: one top bar (hamburger, logo link, five tabs), one drawer
+// (the other tabs, Profile and language, the user, Sign out) and one footer. Pages render only their
+// content - a PageTitle row and panels - never their own header, sidebar or footer.
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES, normalizeRole } from "../../auth/roles";
 import { SiteFooter } from "../common/SiteFooter";
 import { useT } from "../../i18n/t";
-import { NavDrawer, NavProvider } from "./Nav";
+import { NavDrawer, NavProvider, TopBar } from "./Nav";
 
 // Scope line under the user name: what the API lets this account see.
 function scopeLabel(t, user) {
@@ -25,6 +26,7 @@ export function AppShell() {
       <div className="shell">
         <NavDrawer who={user?.full_name || user?.email} scope={scopeLabel(t, user)} onSignOut={signOut} />
         <div className="main">
+          <TopBar />
           <Outlet />
           <SiteFooter />
         </div>
