@@ -11,7 +11,6 @@ import { AlertDetailDrawer } from "../../components/alerts/AlertDetailDrawer";
 import { AlertList } from "../../components/alerts/AlertList";
 import { FlagMineButton } from "../../components/alerts/FlagMineButton";
 import { SensorTrendChart } from "../../components/charts/SensorTrendChart";
-import { DemoTag } from "../../components/common/DemoTag";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { RiskMark } from "../../components/compliance/RiskMark";
@@ -56,7 +55,7 @@ export function ComplianceSummary({ mine, gri = null }) {
     <>
       <div className="hero-figure">
         <div>
-          <span className="label">{t("mine.score")} <DemoTag /></span>
+          <span className="label">{t("mine.score")}</span>
           <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
           <div style={{ marginTop: "var(--space-3)" }}>
             <RiskMark level={c.risk_level} />

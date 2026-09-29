@@ -14,7 +14,7 @@
     ai-service   http://127.0.0.1:8001/health      window SIH-AI (ai-service\run_ai_service.bat);
                                                     while it is down the API's detection uses the PHP
                                                     fallback and the dashboards' footer says so
-    frontend     http://127.0.0.1:5173/            window SIH-Frontend (npm run dev)
+    frontend     http://127.0.0.1:5173/            window SIH-Frontend (npm run dev:demo)
     field server http://127.0.0.1:5180/field       window SIH-Field (only when frontend\dist is built,
                                                     run_field.bat)
 
@@ -93,7 +93,7 @@ $services = @(
     } },
     @{ Name = 'frontend'; Url = 'http://127.0.0.1:5173/'; Enabled = (Test-Path (Join-Path $Root 'frontend\node_modules')); Restart = {
         Stop-Window 'SIH-Frontend'; Stop-Port 5173
-        Start-Window 'SIH-Frontend' (Join-Path $Root 'frontend') 'npm run dev'
+        Start-Window 'SIH-Frontend' (Join-Path $Root 'frontend') 'npm run dev:demo'
     } },
     @{ Name = 'field server'; Url = 'http://127.0.0.1:5180/field'; Enabled = (Test-Path (Join-Path $Root 'frontend\dist\index.html')); Restart = {
         Stop-Window 'SIH-Field'; Stop-Port 5180; Stop-Port 5443; Stop-Port 5080

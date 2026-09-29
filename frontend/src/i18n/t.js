@@ -1,5 +1,5 @@
 // Translation helpers.
-//   t("demo.footer")                   plain function, usable outside components
+//   t("footer.dataSources")            plain function, usable outside components
 //   useT()                             hook for components (re-renders on language change)
 //   errorMessage(err)                  a normalised API error (api/client.js) -> text
 import { useTranslation } from "react-i18next";

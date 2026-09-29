@@ -4,7 +4,6 @@
 import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
 import { getObligationView } from "../../../api/obligations";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { OtherObligations } from "../../../components/obligations/OtherObligations";
@@ -31,7 +30,7 @@ export function ObligationsPanel() {
       <section className="panel-block" id="obligation-summary">
         <div className="panel-head">
           <div>
-            <h2>{t("obligation.mine.title")} <DemoTag /></h2>
+            <h2>{t("obligation.mine.title")}</h2>
             <span className="hint">{t("obligation.mine.hint")}</span>
           </div>
         </div>

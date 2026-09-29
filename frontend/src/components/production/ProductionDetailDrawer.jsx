@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { getProductionDetail } from "../../api/production";
 import { useT } from "../../i18n/t";
 import { fmtDateTime } from "../../utils/format";
-import { DemoTag } from "../common/DemoTag";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Loader } from "../common/Loader";
 import { Drawer } from "../overlay/Overlay";
@@ -54,7 +53,6 @@ export function ProductionDetailDrawer({ mineId, from, to, title, onClose }) {
               </span>
             </section>
           )}
-          <div className="row"><DemoTag /></div>
           {data.charts.anomalies.length > 0 && (
             <div className="notice error">{data.charts.anomalies.flatMap(anomalyLines).map((line) => <div key={line}>{line}</div>)}</div>
           )}

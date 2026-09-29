@@ -8,7 +8,6 @@ import { Loader } from "../../../components/common/Loader";
 import { ContractorDetail } from "../../../components/contractors/ContractorDetail";
 import { RegisterContractorButton } from "../../../components/contractors/ContractorForms";
 import { ContractorList } from "../../../components/contractors/ContractorList";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { useAuth } from "../../../hooks/useAuth";
 import { usePolling } from "../../../hooks/usePolling";
 import { useT } from "../../../i18n/t";
@@ -28,7 +27,7 @@ export function ContractorsPanel({ mineId }) {
       <section className="panel-block">
         <div className="panel-head">
           <div>
-            <h2>{t("contractor.titleMine")} <DemoTag /></h2>
+            <h2>{t("contractor.titleMine")}</h2>
             <span className="hint">{t("contractor.hintMine", { count: data?.length ?? 0, flagged })}</span>
           </div>
           <div className="spacer" />

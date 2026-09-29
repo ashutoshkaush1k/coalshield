@@ -1,7 +1,7 @@
-// Standing notice on every screen: the figures are synthetic, and the mine data is GEM's
-// (attribution required by CC BY 4.0 wherever mine names or locations are shown). Signed in, it
-// also warns when the automated detection is running on the PHP fallback (Phase 8): polled every
-// 30 s, apart from the screens' own 10 s poll.
+// Footer on every screen. The data sources whose licences require credit (Global Energy Monitor's
+// mine data, DataMeet's boundaries, OpenStreetMap's tiles on the map) sit behind one small "Data
+// sources" link. Signed in, it also warns when the automated detection is running on the PHP
+// fallback (Phase 8): polled every 30 s, apart from the screens' own 10 s poll.
 import { getSystemStatus } from "../../api/system";
 import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
@@ -19,14 +19,20 @@ function FallbackNotice() {
   );
 }
 
-export function DemoFooter() {
+export function SiteFooter() {
   const t = useT();
   const { user } = useAuth();
   return (
-    <footer className="demo-footer">
+    <footer className="site-footer">
       {user && <FallbackNotice />}
-      {t("demo.footer")}
-      <span className="demo-attribution">{t("demo.attribution")}</span>
+      <details className="data-sources" id="data-sources">
+        <summary>{t("footer.dataSources")}</summary>
+        <ul>
+          <li>{t("footer.sourceGem")}</li>
+          <li>{t("map.attributionDatameet")}</li>
+          <li>{t("footer.sourceOsm")}</li>
+        </ul>
+      </details>
     </footer>
   );
 }

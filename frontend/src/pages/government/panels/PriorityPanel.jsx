@@ -3,7 +3,6 @@
 import { getPriorityView } from "../../../api/views";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { StateFilter } from "../../../components/common/StateFilter";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { Loader } from "../../../components/common/Loader";
 import { PriorityQueue } from "../../../components/inspections/PriorityQueue";
 import { Patterns } from "../../../components/risk/RiskPanel";
@@ -33,7 +32,7 @@ export function PriorityPanel({ state, states, onStateChange }) {
               <h2>
                 {state
                   ? t("priority.rankedState", { n: fmtNumber(data.mine_count, 0), state })
-                  : t("priority.rankedScope", { n: fmtNumber(data.mine_count, 0), where: scopeWhere(user) })} <DemoTag />
+                  : t("priority.rankedScope", { n: fmtNumber(data.mine_count, 0), where: scopeWhere(user) })}
               </h2>
               <span className="hint">
                 {t("priority.hint", { hours: fmtNumber(data.trend_window_hours, 0) })}

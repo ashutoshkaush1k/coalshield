@@ -71,7 +71,6 @@ export default function Profile() {
                 </label>
               ))}
             </div>
-            {user?.preferred_language !== "en" && <p className="note" id="translation-draft">{t("profile.draftNote")}</p>}
           </div>
         </section>
       </div>

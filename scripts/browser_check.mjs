@@ -823,7 +823,7 @@ const FONT_AND_TEXT_PROBE = `(() => {
   while (walker.nextNode()) {
     const s = walker.currentNode.textContent.trim();
     const el = walker.currentNode.parentElement;
-    if (!s || !el || el.closest("script, style, svg, .mono, .leaflet-control-attribution, .demo-footer, .lang-switch, .citation-quote, .citation-head, blockquote, input, select option")) continue;
+    if (!s || !el || el.closest("script, style, svg, .mono, .leaflet-control-attribution, .site-footer, .lang-switch, .citation-quote, .citation-head, blockquote, input, select option")) continue;
     if (/[A-Za-z]{3,}(\\s+[A-Za-z]{2,}){2,}/.test(s)) latin.push(s.slice(0, 70));
   }
   return { fonts: [...new Set(fonts)], latin: [...new Set(latin)].slice(0, 12), latinCount: latin.length };

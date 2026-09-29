@@ -5,7 +5,6 @@
 import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
 import { getObligationView } from "../../../api/obligations";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { StateFilter } from "../../../components/common/StateFilter";
@@ -56,7 +55,7 @@ export function ObligationsPanel({ state, states, onStateChange }) {
       <section className="panel-block" id="obligation-summary">
         <div className="panel-head wrap">
           <div>
-            <h2>{t("obligation.gov.title")} <DemoTag /></h2>
+            <h2>{t("obligation.gov.title")}</h2>
             <span className="hint">{t("obligation.gov.hint", { days: s.window_days })}</span>
           </div>
           <div className="row head-controls">

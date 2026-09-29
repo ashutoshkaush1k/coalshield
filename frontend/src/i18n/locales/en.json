@@ -4,12 +4,6 @@
     "source": true,
     "note": "The source language. hi, bn, or, te and mr are drafts translated from this file (data/reference/glossary.csv for terms); each says whether it has been reviewed."
   },
-  "demo": {
-    "footer": "Demo data: synthetic, calibrated to public statistics — see DATASETS.md",
-    "attribution": "Mine names, locations and capacities: Global Energy Monitor, Global Coal Mine Tracker, August 2026 (CC BY 4.0).",
-    "valueTag": "demo value",
-    "valueTitle": "Demo score - not a real safety assessment. Computed from synthetic data."
-  },
   "roles": {
     "government": "Government",
     "corporate": "Corporate",
@@ -336,7 +330,7 @@
       "insert": "created",
       "update": "changed",
       "delete": "deleted",
-      "seed": "demo data loaded",
+      "seed": "initial data loaded",
       "ingest": "sensor readings received",
       "analyze": "PPE image analysed",
       "recorded": "recorded",
@@ -376,7 +370,7 @@
       "mine": "Mine",
       "sensor_reading": "Sensor readings",
       "vision_run": "PPE vision",
-      "seed": "Demo data",
+      "seed": "Initial data",
       "contractor": "Contractor",
       "contract": "Contract",
       "contract_worker": "Contract worker",
@@ -394,8 +388,8 @@
     "changes": "Changes",
     "hash": "Row hash",
     "source": {
-      "seed_history": "from the demo history",
-      "seed": "demo data loaded",
+      "seed_history": "from the imported history",
+      "seed": "initial data loaded",
       "app": ""
     },
     "field": {
@@ -701,12 +695,11 @@
     "compliancePct": "Compliant",
     "allTitle": "All contractors",
     "allHint": "Worst first; select one for its detail (read-only)",
-    "scoreNote": "The contractor score is a demo value: 100 minus violations per active worker (x40, max 40), 2 per missing monthly document (max 30), 30 for an expired or 10 for an expiring licence, up to 15 for workers with expired training or overdue medicals, and 5 per contract over its worker limit."
+    "scoreNote": "The contractor score is 100 minus violations per active worker (x40, max 40), 2 per missing monthly document (max 30), 30 for an expired or 10 for an expiring licence, up to 15 for workers with expired training or overdue medicals, and 5 per contract over its worker limit."
   },
   "production": {
     "tabLabel": "Production",
     "loading": "Loading production...",
-    "demoNote": "Production figures are synthetic demo data calibrated to Ministry of Coal monthly figures.",
     "field": {
       "coal_target_t": "Coal target (t)",
       "coal_actual_t": "Coal actual (t)",
@@ -1054,7 +1047,7 @@
       "escalation": "Escalation level {{level}}",
       "history": "History",
       "openFile": "Open the file",
-      "noFile": "File not stored (demo history)",
+      "noFile": "File not stored (imported history)",
       "waive": "Waive",
       "waiveTitle": "Waive this task (government)",
       "waiveHint": "Waiving says the mine is not bound for this period, for example because the mine was closed. The reason is recorded in the task's history; a waived task leaves statutory compliance.",
@@ -1170,7 +1163,7 @@
     "lastMinutes": "Breaches, last {{n}} min",
     "lastHours": "Breaches, last {{n}}h",
     "live": "Live sensor breaches",
-    "liveHint": "Sensor threshold breaches in the last {{n}} seconds: the live window of the demo sensor feed"
+    "liveHint": "Sensor threshold breaches in the last {{n}} seconds: the live window of the sensor feed"
   },
   "chart": {
     "totalBreaches": "Total breaches",
@@ -1198,8 +1191,8 @@
   "board": {
     "noMines": "No mines match this selection.",
     "coreAria": "{{name}}, {{district}}, {{state}}. Score {{score}}, {{band}}. Open drill-down.",
-    "title": "Core sample board",
-    "hint": "Each core is filled to its compliance score, worst on the left",
+    "title": "Compliance by mine",
+    "hint": "Bar height = compliance score, lowest first",
     "topN": "Top {{n}} highest-risk mines {{where}}",
     "ofMonitored": "of {{total}} monitored. Select a state to see every mine there.",
     "allInState": "All {{n}} monitored mines in {{state}}",
@@ -1251,8 +1244,7 @@
     "none": "-",
     "language": "Language",
     "languageHint": "The interface switches at once and the choice is saved to your account, on any browser.",
-    "saved": "Language saved",
-    "draftNote": "Translations in this language are drafts, not yet reviewed by a native speaker. Legal citations and quotes stay in the language of the source; grievance texts are shown as written."
+    "saved": "Language saved"
   },
   "obligationTitle": {
     "RPT-01": "Register the mine as an establishment",
@@ -1695,5 +1687,10 @@
   "nav": {
     "menu": "Menu",
     "more": "More views"
+  },
+  "footer": {
+    "dataSources": "Data sources",
+    "sourceGem": "Mine names, locations and capacities: Global Energy Monitor, Global Coal Mine Tracker, August 2026 (CC BY 4.0).",
+    "sourceOsm": "Map tiles: © OpenStreetMap contributors (ODbL)"
   }
 }

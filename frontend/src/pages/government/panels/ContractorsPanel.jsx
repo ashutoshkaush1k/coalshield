@@ -3,7 +3,6 @@
 import { fmtNumber } from "../../../utils/format";
 import { useState } from "react";
 import { listContractors } from "../../../api/contractors";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
@@ -22,7 +21,7 @@ export function ContractorSummaryCard({ data, onOpen }) {
     <section className="panel-block">
       <div className="panel-head">
         <div>
-          <h2>{t("contractor.summaryTitle")} <DemoTag /></h2>
+          <h2>{t("contractor.summaryTitle")}</h2>
           <span className="hint">{t("contractor.summaryHint", { contractors: data.contractor_count, mines: data.mine_count })}</span>
         </div>
         <div className="spacer" />

@@ -45,7 +45,8 @@ Monitor, Global Coal Mine Tracker, CC BY 4.0), and so are the legal duties with 
 the company production totals, DGMS accident statistics and CPCB air-quality figures. Daily
 operations - production entries, sensor readings, violations, grievances - are synthetic, generated
 with a fixed seed and calibrated to those public statistics (`data/DATASETS.md`, "Data provenance
-for judges"). Every score on screen carries a "demo value" tag.
+for judges"). The screens no longer tag scores as demo values (production-styled UI); the data
+sources whose licences require credit are listed under "Data sources" in every page's footer.
 
 **Which law does it follow?** The OSH Code 2020, in force from 21.11.2025, the OSH (Central) Rules
 2026 and the Coal Mines Regulations 2017 (saved under the Code). The Mines Act 1952 and the Contract

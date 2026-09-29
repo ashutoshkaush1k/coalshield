@@ -4,7 +4,6 @@
 // form. One request per polling cycle (GET /v1/views/production).
 import { useState } from "react";
 import { getProductionView } from "../../../api/production";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { RespondButton } from "../../../components/production/DetailRequestForms";
@@ -51,7 +50,7 @@ export function ProductionPanel() {
       <section className="panel-block">
         <div className="panel-head wrap">
           <div>
-            <h2>{t("production.tabLabel")}: {monthLabel(data.month)} <DemoTag /></h2>
+            <h2>{t("production.tabLabel")}: {monthLabel(data.month)}</h2>
             <span className="hint">{t("production.entry.hint")}</span>
           </div>
           <div className="row head-controls">
@@ -66,7 +65,7 @@ export function ProductionPanel() {
             <div className="notice error">{data.charts.anomalies.flatMap(anomalyLines).map((line) => <div key={line}>{line}</div>)}</div>
           )}
           <ProductionCharts charts={data.charts} />
-          <p className="note">{t("production.anomaly.rule")} {t("production.demoNote")}</p>
+          <p className="note">{t("production.anomaly.rule")}</p>
         </div>
       </section>
 

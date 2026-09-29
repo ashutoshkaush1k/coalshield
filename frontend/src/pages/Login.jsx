@@ -3,14 +3,17 @@ import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Card } from "../components/common/Card";
 import { ErrorNotice } from "../components/common/ErrorNotice";
-import { DemoFooter } from "../components/common/DemoFooter";
+import { SiteFooter } from "../components/common/SiteFooter";
 import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
 import { useT } from "../i18n/t";
 import { LanguageSwitcher } from "../components/common/LanguageSwitcher";
 
-// One form for both roles: the account decides the scope, not the login screen. Quick-fill
-// buttons exist so nobody types a password on stage.
+// One form for both roles: the account decides the scope, not the login screen. The quick-fill
+// buttons (and a pre-filled form) exist only in demo mode - VITE_DEMO_MODE=true, set by
+// frontend/.env.demo, which run_all.bat uses - so nobody types a password on stage. Off by default.
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
+const DEMO_PASSWORD = "demo123";   // the seeded demo accounts only
 // Mine names from data/reference/mines_real.csv (the five demo mines keep their codes).
 const DEMO = [
   { key: "government", email: "gov@dgms.gov.in" },
@@ -20,8 +23,8 @@ const DEMO = [
 ];
 
 export default function Login() {
-  const [email, setEmail] = useState("gov@dgms.gov.in");
-  const [password, setPassword] = useState("demo123");
+  const [email, setEmail] = useState(DEMO_MODE ? DEMO[0].email : "");
+  const [password, setPassword] = useState(DEMO_MODE ? DEMO_PASSWORD : "");
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const { signIn } = useAuth();
@@ -72,15 +75,17 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="demo-accounts">
-            <span className="label">{t("login.demoAccounts", { password: "demo123" })}</span>
-            {DEMO.map((account) => (
-              <button key={account.email} type="button"
-                      onClick={() => { setEmail(account.email); setPassword("demo123"); }}>
-                {t(`login.demo.${account.key}`)}
-              </button>
-            ))}
-          </div>
+          {DEMO_MODE && (
+            <div className="demo-accounts">
+              <span className="label">{t("login.demoAccounts", { password: DEMO_PASSWORD })}</span>
+              {DEMO.map((account) => (
+                <button key={account.email} type="button"
+                        onClick={() => { setEmail(account.email); setPassword(DEMO_PASSWORD); }}>
+                  {t(`login.demo.${account.key}`)}
+                </button>
+              ))}
+            </div>
+          )}
         </Card>
         <div className="public-links stack tight" id="grievance-links">
           <span className="faint small">{t("login.grievanceHint")}</span>
@@ -89,7 +94,7 @@ export default function Login() {
             <Link className="btn" to="/grievance/track">{t("login.trackGrievance")}</Link>
           </div>
         </div>
-        <DemoFooter />
+        <SiteFooter />
       </div>
     </div>
   );

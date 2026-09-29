@@ -6,7 +6,6 @@
 import { useState } from "react";
 import { getProductionOverview } from "../../../api/production";
 import { can } from "../../../auth/permissions";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { StateFilter } from "../../../components/common/StateFilter";
@@ -59,7 +58,7 @@ export function ProductionPanel({ state, states, onStateChange }) {
       <section className="panel-block">
         <div className="panel-head wrap">
           <div>
-            <h2>{t("production.gov.title")} <DemoTag /></h2>
+            <h2>{t("production.gov.title")}</h2>
             <span className="hint">{t("production.gov.hint")}</span>
           </div>
           <div className="row head-controls">

@@ -7,7 +7,7 @@ export function ComplianceBadge({ compliance }) {
   const t = useT();
   if (!compliance) return null;
   return (
-    <span className={`risk-mark ${TONE[compliance.band] ?? ""}`} title={t("demo.valueTitle")}>
+    <span className={`risk-mark ${TONE[compliance.band] ?? ""}`}>
       <span className="chip" aria-hidden="true" />
       {compliance.score} &middot; {t(`contractor.band.${compliance.band}`)}
     </span>

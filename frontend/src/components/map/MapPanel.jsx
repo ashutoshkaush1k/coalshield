@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { getDistricts, getMapView, getStates } from "../../api/geo";
 import { usePolling } from "../../hooks/usePolling";
 import { useTranslation } from "react-i18next";
-import { DemoTag } from "../common/DemoTag";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Loader } from "../common/Loader";
 import { StateFilter } from "../common/StateFilter";
@@ -32,7 +31,7 @@ export function MapPanel({ state = null, states, onStateChange, onOpenMine = nul
     <section className="panel-block" id="map-panel">
       <div className="panel-head wrap">
         <div>
-          <h2>{t("map.title")} <DemoTag /></h2>
+          <h2>{t("map.title")}</h2>
           <span className="hint">{t("map.hint")}</span>
         </div>
         {onStateChange && (

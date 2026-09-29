@@ -11,7 +11,6 @@ import { anomalyReasonText, anomalyWindow, categoryLabel, midSentence } from "..
 import { useT } from "../../i18n/t";
 import { fmtList, fmtNumber, fmtPercent, fmtWhen } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
-import { DemoTag } from "../common/DemoTag";
 import { EmptyState } from "../common/EmptyState";
 import { RiskMark } from "../compliance/RiskMark";
 
@@ -65,7 +64,7 @@ export function GovernanceRisk({ gri }) {
   const clear = gri.components.filter((c) => !(c.value > 0));
   return (
     <section className="panel-block risk-card" id="governance-risk">
-      <CardHead title={t("gri.title")} subtitle={t("gri.subtitle")} kind={t("gri.kind")}><DemoTag /></CardHead>
+      <CardHead title={t("gri.title")} subtitle={t("gri.subtitle")} kind={t("gri.kind")} />
       <div className="panel-body stack tight">
         <div className="risk-headline">
           <span className={`hero-score risk-big ${riskClass(gri.band)}`} id="gri-value">{fmtNumber(gri.gri, 0)}</span>

@@ -1,106 +1,60 @@
-// Mines as drill cores: one tube per mine, filled to its compliance score.
+// Compliance by mine: one bar per mine, filled to its compliance score, lowest on the left.
 //
-// Worst on the left, because the mine that needs an inspector is the one the eye should
-// land on first. The score and band are set inside the core itself rather than in a
-// separate badge, so the bar is never carrying meaning by colour alone.
+// Every bar has the same track - same width, full 0-100 height, on the same gridlines - so only the
+// fill height differs, in solid band colour. The score and band sit just above the fill, in the same
+// place and size on every bar and always inside the track, so no bar carries meaning by colour
+// alone. Names, codes and places sit in the bar's own column, so they line up under it. More bars
+// than fit keep their width and the chart scrolls sideways inside the card.
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "../common/EmptyState";
 import { fmtScore } from "../../utils/format";
 import { riskClass, riskLabel } from "../../utils/risk";
 import { t } from "../../i18n/t";
 
-// Below roughly a quarter depth a core cannot hold its own readout, so the number moves
-// above the fill and switches to ink. It never disappears.
-const INSIDE_MIN_SCORE = 26;
-
-// Past this many cores the board scrolls sideways rather than shrinking each core until
-// its score is unreadable. Compressing the design to fit an arbitrary count is how a
-// board stops being legible from across a room.
-const SCROLL_THRESHOLD = 10;
-const CORE_MIN_WIDTH = 116;
-
-// Band boundaries from services/compliance/risk.py, drawn across the board.
-const RULES = [
-  { at: 100, label: "100" },
-  { at: 80, label: "80" },
-  { at: 50, label: "50" },
-  { at: 0, label: "0" },
-];
-
-function Readout({ score, level, inside }) {
-  const cls = riskClass(level);
-  return (
-    <>
-      <span className={`core-score${inside ? "" : ` ${cls}`}`}>{fmtScore(score)}</span>
-      <span className="core-band">{riskLabel(level)}</span>
-    </>
-  );
-}
+// Band boundaries from the compliance rules, drawn across the chart.
+const RULES = [100, 80, 50, 0];
 
 export function CoreSampleBoard({ mines }) {
   const navigate = useNavigate();
   if (!mines?.length) return <EmptyState>{t("board.noMines")}</EmptyState>;
 
-  // Worst first. The API already sorts this way; sorting here keeps the board correct
+  // Lowest first. The API already sorts this way; sorting here keeps the chart correct
   // regardless of the order it arrives in.
   const ordered = [...mines].sort((a, b) => a.compliance.score - b.compliance.score);
-  const scrolls = ordered.length > SCROLL_THRESHOLD;
-  const laneStyle = scrolls ? { minWidth: ordered.length * CORE_MIN_WIDTH } : undefined;
 
   return (
-    <div className={`board${scrolls ? " is-scrolling" : ""}`}>
+    <div className="board">
+      <div className="board-axis" aria-hidden="true">
+        {RULES.map((at) => <span key={at} style={{ bottom: `${at}%` }}>{at}</span>)}
+      </div>
       <div className="board-scroll">
-        <div className="board-lane" style={laneStyle}>
-          <div className="board-track">
-            {RULES.map((rule) => (
-              <div key={rule.at} className="board-rule" style={{ bottom: `${rule.at}%` }}>
-                <span>{rule.label}</span>
-              </div>
-            ))}
-
-            <div className="board-bars">
-              {ordered.map((mine) => {
-                const { score, risk_level: level } = mine.compliance;
-                const cls = riskClass(level);
-                const inside = score >= INSIDE_MIN_SCORE;
-                const open = () => navigate(`/gov/mines/${mine.id}`);
-
-                return (
-                  <button
-                    key={mine.id}
-                    type="button"
-                    className="core"
-                    onClick={open}
-                    aria-label={t("board.coreAria", { name: mine.name, district: mine.district, state: mine.state, score: fmtScore(score), band: riskLabel(level) })}
-                  >
-                    {!inside && (
-                      <div className="core-readout-above">
-                        <Readout score={score} level={level} inside={false} />
-                      </div>
-                    )}
-                    <div className="core-tube">
-                      <div className={`core-fill ${cls}`}
-                           style={{ height: `${Math.max(2, Math.min(100, score))}%` }}>
-                        {inside && <Readout score={score} level={level} inside />}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+        <div className="board-lane">
+          <div className="board-rules" aria-hidden="true">
+            {RULES.map((at) => <div key={at} className="board-rule" style={{ bottom: `${at}%` }} />)}
           </div>
-
-          <div className="board-foot">
-            {ordered.map((mine) => (
-              <div key={mine.id} className="core-foot">
-                <div className="core-name">{mine.name}</div>
-                <div className="core-code">{mine.code}</div>
-                {/* District, not just state: on a national board the point is where the
-                    worst risk actually sits, and a state name is too coarse for that. */}
-                <div className="core-place">{mine.district}, {mine.state}</div>
+          {ordered.map((mine) => {
+            const { score, risk_level: level } = mine.compliance;
+            const cls = riskClass(level);
+            const pct = Math.max(0, Math.min(100, score));
+            return (
+              <div key={mine.id} className="core-col">
+                <button type="button" className="core" onClick={() => navigate(`/gov/mines/${mine.id}`)}
+                        aria-label={t("board.coreAria", { name: mine.name, district: mine.district, state: mine.state, score: fmtScore(score), band: riskLabel(level) })}>
+                  <span className={`core-fill ${cls}`} style={{ height: `${Math.max(1, pct)}%` }} />
+                  <span className={`core-readout ${cls}`} style={{ "--score": pct }}>
+                    <span className="core-score">{fmtScore(score)}</span>
+                    <span className="core-band">{riskLabel(level)}</span>
+                  </span>
+                </button>
+                <div className="core-foot">
+                  <div className="core-name">{mine.name}</div>
+                  <div className="core-code">{mine.code}</div>
+                  {/* District, not just state: the point is where the worst risk actually sits. */}
+                  <div className="core-place">{mine.district}, {mine.state}</div>
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>

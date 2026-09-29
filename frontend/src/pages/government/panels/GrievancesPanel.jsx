@@ -5,7 +5,6 @@
 import { fmtNumber } from "../../../utils/format";
 import { useMemo, useState } from "react";
 import { getGrievanceView } from "../../../api/grievances";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { ErrorNotice } from "../../../components/common/ErrorNotice";
 import { Loader } from "../../../components/common/Loader";
 import { StateFilter } from "../../../components/common/StateFilter";
@@ -39,7 +38,7 @@ export function GrievancesPanel({ state, states, onStateChange }) {
       <section className="panel-block" id="grievance-stats">
         <div className="panel-head wrap">
           <div>
-            <h2>{t("grievance.stats.title")} <DemoTag /></h2>
+            <h2>{t("grievance.stats.title")}</h2>
             <span className="hint">{t("grievance.stats.hint")}</span>
           </div>
           <div className="row head-controls">

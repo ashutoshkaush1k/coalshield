@@ -3,7 +3,7 @@
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES, normalizeRole } from "../../auth/roles";
-import { DemoFooter } from "../common/DemoFooter";
+import { SiteFooter } from "../common/SiteFooter";
 import { useT } from "../../i18n/t";
 import { NavDrawer, NavProvider } from "./Nav";
 
@@ -26,7 +26,7 @@ export function AppShell() {
         <NavDrawer who={user?.full_name || user?.email} scope={scopeLabel(t, user)} onSignOut={signOut} />
         <div className="main">
           <Outlet />
-          <DemoFooter />
+          <SiteFooter />
         </div>
       </div>
     </NavProvider>

@@ -2,9 +2,11 @@
 
 Target: the multi-mine comparison story, since PRD Section 8 names it the primary judge-facing
 scenario. Stack: Yii2 API (port 8080) + PostgreSQL, ai-service (8001) for PPE vision, React (5173).
-Every score on screen is a **demo value** computed from synthetic data (`data/DATASETS.md`) - the
-UI says so next to each one. Mine names and locations are real (Global Energy Monitor, Global
-Coal Mine Tracker, August 2026, CC BY 4.0); the numbers attached to them are not.
+Every score on screen is computed from synthetic data (`data/DATASETS.md`). The UI is production-styled:
+it no longer labels figures as demo values, so say it out loud - mine names and locations are real
+(Global Energy Monitor, Global Coal Mine Tracker, August 2026, CC BY 4.0; credited under "Data sources"
+in the footer), the numbers attached to them are not. The login page's quick-fill buttons appear because
+run_all.bat starts the dashboard in demo mode (`frontend/.env.demo`, `VITE_DEMO_MODE=true`).
 
 ---
 
@@ -115,7 +117,7 @@ continuing** (`scripts\demo_reset.bat`).
 ## Run of show
 
 1. **Government login** (`gov@dgms.gov.in`, quick-fill "Government (DGMS)") → national overview.
-   The headline numbers cover all 74 mines; the core sample board shows the five highest-risk
+   The headline numbers cover all 74 mines; the "Compliance by mine" chart shows the five highest-risk
    mines nationally, each with its district. The page refreshes itself.
 
    **Then use the State dropdown.** Pick Odisha: the board fills with all 19 Odisha mines and

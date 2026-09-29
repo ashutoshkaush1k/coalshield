@@ -1,7 +1,6 @@
 // Fleet-wide glance: one hero figure, compact secondary stats, then the core board.
 import { CoreSampleBoard } from "../../../components/compliance/CoreSampleBoard";
 import { StateFilter } from "../../../components/common/StateFilter";
-import { DemoTag } from "../../../components/common/DemoTag";
 import { breachesHint, breachesLabel, fmtNumber } from "../../../utils/format";
 import { t } from "../../../i18n/t";
 import { scopeWhere } from "../../../i18n/labels";
@@ -31,7 +30,7 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
             <div>
               {/* The label names the scope, so a number can never be read as national
                   when it is actually one state's. */}
-              <span className="label">{t("overview.averageLabel", { scope })} <DemoTag /></span>
+              <span className="label">{t("overview.averageLabel", { scope })}</span>
               <div className="hero-number">{stats?.average_score == null ? "-" : fmtNumber(stats.average_score)}</div>
               <p className="hero-caption">
                 {state
@@ -57,7 +56,7 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
       <section className="panel-block">
         <div className="panel-head">
           <div>
-            <h2>{t("board.title")} <DemoTag /></h2>
+            <h2>{t("board.title")}</h2>
             <span className="hint">{t("board.hint")}</span>
           </div>
           <div className="spacer" />

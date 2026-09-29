@@ -145,7 +145,7 @@ start "SIH-AI" /d "%ROOT%" cmd /k "ai-service\run_ai_service.bat"
 
 :startfrontend
 echo  Starting frontend  - window SIH-Frontend, port 5173...
-start "SIH-Frontend" /d "%ROOT%frontend" cmd /k "npm run dev"
+start "SIH-Frontend" /d "%ROOT%frontend" cmd /k "npm run dev:demo"
 
 REM The field app for phones, when it has been built (run_field.bat builds it).
 if not exist "%ROOT%frontend\dist\index.html" goto :nofield
