@@ -56,7 +56,7 @@ a:hover { text-decoration: underline; }
 
 /* --- navigation drawer (components/layout/Nav.jsx): over the page, never docked --- */
 /* Only transform and opacity animate (the compositor does the work; nothing reflows). Opening:
-   420 ms, fast start and gentle stop; closing: 200 ms, accelerating away. The drawer stays mounted
+   600 ms, fast start and gentle stop; closing: 200 ms, accelerating away. The drawer stays mounted
    off-screen (64 px further than its width, so its shadow cannot show) and inert while closed -
    no visibility flip, which would cost a layout at the end of the close. */
 .nav-drawer {
@@ -75,9 +75,9 @@ a:hover { text-decoration: underline; }
   transition: opacity var(--drawer-close-ms) var(--ease-in);
 }
 .nav-backdrop.is-open { opacity: .25; transition: opacity var(--drawer-open-ms) var(--ease-out); }
-/* The items arrive one after another on open only: each fades and slides 8 px, 30 ms apart, the
-   last starting within 300 ms (scaled with the 420 ms open). */
-.nav-drawer.is-open .nav-stagger { animation: nav-item-in 270ms var(--ease-out) both; animation-delay: calc(min(var(--i, 0), 10) * 30ms); }
+/* The items arrive one after another on open only: each fades and slides 8 px, 40 ms apart, the
+   last starting within 400 ms (scaled with the 600 ms open). */
+.nav-drawer.is-open .nav-stagger { animation: nav-item-in 380ms var(--ease-out) both; animation-delay: calc(min(var(--i, 0), 10) * 40ms); }
 @keyframes nav-item-in { from { opacity: 0; transform: translate3d(-8px, 0, 0); } to { opacity: 1; transform: none; } }
 /* Reduced motion: no slide, no stagger - a quick fade. */
 @media (prefers-reduced-motion: reduce) {
