@@ -5,8 +5,10 @@
 // A tabbed page shows five tabs on its bar; the rest are published here (Masthead) and listed in
 // the drawer. Tab state stays local to the page: the drawer only calls the page's onChange.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { LogOut, Menu, UserRound } from "lucide-react";
+import { homeFor } from "../../auth/roles";
+import { useAuth } from "../../hooks/useAuth";
 import { useT } from "../../i18n/t";
 import { TabIcon } from "../common/Tabs";
 
@@ -31,6 +33,27 @@ export function Logo() {
   return <img className="app-logo" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width="28" height="28" />;
 }
 
+/**
+ * Logo and app name as a link to the user's home: the government / corporate Overview tab, or the
+ * mine head's mine overview. Already there on another tab: back to the Overview tab (tab state is
+ * the page's own, so the route alone would not change it). Closes the drawer.
+ */
+export function HomeLink({ className = "", children }) {
+  const { user } = useAuth();
+  const nav = useNav();
+  const location = useLocation();
+  const home = homeFor(user);
+  const onClick = () => {
+    nav?.setOpen(false);
+    if (location.pathname === home) nav?.pageTabs?.onChange("overview");
+  };
+  return (
+    <Link to={home} className={`home-link ${className}`} onClick={onClick}>
+      <Logo />{children ?? <span className="brand-name">{APP_NAME}</span>}
+    </Link>
+  );
+}
+
 /** Hamburger, logo and app name - and the current tab's name when that tab lives in the drawer. */
 export function NavToggle() {
   const t = useT();
@@ -48,8 +71,7 @@ export function NavToggle() {
               onClick={(e) => { nav.cancelClose(); nav.setOpen(e.nativeEvent.pointerType === "mouse" ? true : !nav.open); }}>
         <Menu size={22} aria-hidden="true" />
       </button>
-      <Logo />
-      <span className="brand-name">{APP_NAME}</span>
+      <HomeLink />
       {current && (
         <span className="nav-current" id="nav-current"><TabIcon id={current.id} />{current.label}</span>
       )}
@@ -85,31 +107,31 @@ export function NavDrawer({ who, scope, onSignOut }) {
     <nav className={`nav-drawer${open ? " is-open" : ""}`} id="nav-drawer" ref={ref} aria-label={t("nav.menu")}
          onPointerEnter={(e) => { if (e.pointerType === "mouse") nav.cancelClose(); }}
          onPointerLeave={(e) => { if (e.pointerType === "mouse") nav.closeSoon(); }}>
-      <div className="nav-drawer-brand"><Logo /><strong>{APP_NAME}</strong></div>
+      <HomeLink className="nav-drawer-brand"><strong>{APP_NAME}</strong></HomeLink>
 
-      {pageTabs?.tabs.length > 0 && (
-        <div className="nav-section">
-          <span className="label">{t("nav.more")}</span>
-          <ul className="nav-list" role="tablist" aria-orientation="vertical">
-            {pageTabs.tabs.map((tab) => (
+      <div className="nav-section">
+        <span className="label">{t("nav.more")}</span>
+        <ul className="nav-list">
+            {pageTabs?.tabs.map((tab) => (
               <li key={tab.id}>
-                <button type="button" role="tab" className="nav-item" aria-selected={pageTabs.active === tab.id}
+                <button type="button" className="nav-item" aria-current={pageTabs.active === tab.id ? "true" : undefined}
                         aria-controls={`panel-${tab.id}`} data-tab={tab.id}
                         onClick={() => { pageTabs.onChange(tab.id); setOpen(false); }}>
                   <TabIcon id={tab.id} />{tab.label}
                 </button>
               </li>
             ))}
-          </ul>
-        </div>
-      )}
+          <li>
+            <NavLink to="/profile" className="nav-item" id="profile-link" onClick={() => setOpen(false)}>
+              <UserRound size={18} aria-hidden="true" />{t("shell.profile")}
+            </NavLink>
+          </li>
+        </ul>
+      </div>
 
       <div className="nav-foot">
         <div className="who">{who}</div>
         <div className="role">{scope}</div>
-        <NavLink to="/profile" className="nav-item" id="profile-link" onClick={() => setOpen(false)}>
-          <UserRound size={18} aria-hidden="true" />{t("shell.profile")}
-        </NavLink>
         <button type="button" className="nav-item" onClick={onSignOut}>
           <LogOut size={18} aria-hidden="true" />{t("shell.signOut")}
         </button>

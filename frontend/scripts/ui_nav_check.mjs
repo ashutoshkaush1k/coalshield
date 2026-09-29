@@ -94,6 +94,9 @@ async function run(p) {
       await p.evaluate(`document.querySelector('#nav-drawer [data-tab="${s.drawerTab}"]').click()`); await sleep(800);
       expect(!(await isOpen()) && await p.evaluate(`!!document.getElementById("panel-${s.drawerTab}")`), `a drawer tab (${s.drawerTab}) opens its panel and closes the drawer`);
       expect(await p.evaluate(`document.getElementById("nav-current")?.textContent.trim().length > 0`), "its name shows next to the hamburger");
+      await p.evaluate(`document.querySelector(".masthead .home-link").click()`); await sleep(800);
+      expect(await p.evaluate(`!!document.getElementById("panel-overview") && location.pathname === ${JSON.stringify(s.path)}`), "the logo link goes back to the home overview");
+      expect(await p.evaluate(`[...document.querySelectorAll("#nav-drawer .nav-list > li")].at(-1).textContent.includes("Profile")`), "Profile and language is the last item of More views");
       await p.evaluate(`document.getElementById("nav-toggle").click()`); await sleep(300);
       await p.send("Input.dispatchMouseEvent", { type: "mousePressed", x: 1200, y: 600, button: "left", clickCount: 1 });
       await p.send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 1200, y: 600, button: "left", clickCount: 1 }); await sleep(300);
