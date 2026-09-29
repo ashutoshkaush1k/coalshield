@@ -10,6 +10,7 @@ import { Loader } from "../../../components/common/Loader";
 import { StateFilter } from "../../../components/common/StateFilter";
 import { GrievanceDetail } from "../../../components/grievances/GrievanceDetail";
 import { GrievanceList } from "../../../components/grievances/GrievanceList";
+import { useLinkedId } from "../../../hooks/useLinkedId";
 import { usePolling } from "../../../hooks/usePolling";
 import { useT } from "../../../i18n/t";
 
@@ -23,6 +24,9 @@ const FILTERS = {
 export function GrievancesPanel({ state, states, onStateChange }) {
   const t = useT();
   const [selected, setSelected] = useState(null);
+  // A grievance named in the URL (from the search panel) opens its detail.
+  const linked = useLinkedId("grievance");
+  const openId = selected ?? (linked.value ? Number(linked.value) : null);
   const [filter, setFilter] = useState("all");
   const [token, setToken] = useState(0);
   const { data, error, loading } = usePolling(() => getGrievanceView(state), { deps: [state, token] });
@@ -144,7 +148,7 @@ export function GrievancesPanel({ state, states, onStateChange }) {
           <GrievanceList grievances={shown} showMine onSelect={(g) => setSelected(g.id)} />
         </div>
       </section>
-      {selected && <GrievanceDetail grievanceId={selected} onClose={() => setSelected(null)} onChanged={() => setToken((n) => n + 1)} />}
+      {openId && <GrievanceDetail grievanceId={openId} onClose={() => { setSelected(null); linked.clear(); }} onChanged={() => setToken((n) => n + 1)} />}
     </div>
   );
 }

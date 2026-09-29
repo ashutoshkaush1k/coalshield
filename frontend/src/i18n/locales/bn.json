@@ -214,6 +214,8 @@
     "OBLIGATION_OVERDUE": "{{period}}-এর {{obligation}}-এর সময়সীমা পেরিয়ে গেছে (নির্ধারিত {{due_at}}; {{instrument}} {{clause}})।",
     "ANOMALY_DETECTED": "প্যাটার্ন শনাক্ত ({{detector}}): {{summary}}",
     "PRODUCTION_ENTRY_PENDING": "{{date}}-এর উৎপাদন জমা দেওয়া হয়নি - অনুপস্থিত শিফট: {{missing}}; খসড়া: {{drafts}}",
+    "PRODUCTION_ENTRY_PENDING_MISSING": "{{date}}-এর উৎপাদন জমা দেওয়া হয়নি - অনুপস্থিত শিফট: {{missing}}",
+    "PRODUCTION_ENTRY_PENDING_DRAFTS": "{{date}}-এর উৎপাদন জমা দেওয়া হয়নি - খসড়া: {{drafts}}",
     "level": "উচ্চস্তরে প্রেরিত L{{level}}"
   },
   "category": {
@@ -501,7 +503,8 @@
     "reopened": "নির্দেশ পুনরায় খোলা হয়েছে",
     "reopenedBody": "খনি প্রধানকে আবার জমা দিতে বলা হয়েছে।",
     "reopenFailed": "পুনরায় খোলা যায়নি",
-    "scoreShort": "স্কোর"
+    "scoreShort": "স্কোর",
+    "howCalculated": "এটি কীভাবে গণনা করা হয়?"
   },
   "records": {
     "latest_one": "সাম্প্রতিকতম {{count}}টি",
@@ -516,7 +519,19 @@
     "saving": "সংরক্ষণ হচ্ছে...",
     "created": "নথিভুক্ত",
     "obligation": "রিপোর্টিং বাধ্যবাধকতা",
-    "actor": "কে করেছেন"
+    "actor": "কে করেছেন",
+    "tile": {
+      "open": "{{n}}টি খোলা",
+      "noneOpen": "কোনোটি খোলা নেই",
+      "overdue": "{{n}}টি বকেয়া",
+      "noneOverdue": "কোনোটি বকেয়া নেই",
+      "late": "{{n}}টি দেরিতে জানানো",
+      "onTime": "সবগুলি সময়মতো জানানো",
+      "none": "কিছু নথিভুক্ত নেই",
+      "latest": "সর্বশেষ {{when}}",
+      "breaches": "{{n}}টি সীমালঙ্ঘন",
+      "noBreaches": "কোনো সীমালঙ্ঘন নেই"
+    }
   },
   "errorNotice": {
     "forbidden": "অনুমতি নেই।",
@@ -1694,5 +1709,29 @@
     "dataSources": "তথ্যের উৎস",
     "sourceGem": "খনির নাম, অবস্থান ও উৎপাদন ক্ষমতা: Global Energy Monitor, Global Coal Mine Tracker, আগস্ট 2026 (CC BY 4.0)।",
     "sourceOsm": "মানচিত্রের টাইল: © OpenStreetMap অবদানকারীরা (ODbL)"
+  },
+  "search": {
+    "open": "অনুসন্ধান খুলুন",
+    "shortcut": "অনুসন্ধান (Ctrl+K বা /)",
+    "placeholderShort": "অনুসন্ধান",
+    "placeholder": "খনি, ঠিকাদার, অভিযোগের টিকিট, দায়িত্ব খুঁজুন",
+    "title": "অনুসন্ধান",
+    "kbd": "Ctrl K",
+    "hint": "অন্তত 2টি অক্ষর লিখুন: খনির নাম, কোড, জেলা, রাজ্য বা কোম্পানি; ঠিকাদার বা নিবন্ধন নম্বর; অভিযোগের টিকিট; দায়িত্বের কোড বা শিরোনাম।",
+    "searching": "অনুসন্ধান চলছে...",
+    "noResults": "\"{{q}}\"-এর জন্য কোনো ফল নেই",
+    "failed": "অনুসন্ধান এখন উপলব্ধ নয়।",
+    "keys": "↑ ↓ সরান · Enter খুলুন · Esc বন্ধ করুন",
+    "obligationMissing": "এই দায়িত্ব রেজিস্টারে নেই।",
+    "obligationDomain": "ক্ষেত্র",
+    "obligationFrequency": "পুনরাবৃত্তি",
+    "obligationCitation": "উদ্ধৃতি",
+    "group": {
+      "recent": "সাম্প্রতিক অনুসন্ধান",
+      "mines": "খনি",
+      "contractors": "ঠিকাদার",
+      "grievances": "অভিযোগ",
+      "obligations": "দায়িত্ব"
+    }
   }
 }

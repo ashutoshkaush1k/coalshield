@@ -55,6 +55,7 @@ return [
     'GET v1/views/map' => 'v1/view/map',
     // Phase 7: automation findings, the Governance Risk Index, the predictive model
     'GET v1/views/priority' => 'v1/view/priority',
+    'GET v1/search' => 'v1/search/index',
     'GET v1/anomalies' => 'v1/risk/anomalies',
     'GET v1/mines/<id:\d+>/risk' => 'v1/risk/mine',
     'GET v1/risk/model' => 'v1/risk/model',

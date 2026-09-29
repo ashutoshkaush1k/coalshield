@@ -184,21 +184,21 @@ async function phase2(page) {
   await page.click("Flag for inspection");
   await sleep(1500);
   await page.shot("07-gov-directive-raised", "directive raised: toast and the directive on top of the alerts");
-  await page.click("Violations (");
+  await page.click("Violations", ".record-tile");
   await page.shot("08-gov-violations", "violations drawer: all categories, open and resolved");
   await page.escape();
-  await page.click("Corrective actions (");
+  await page.click("Corrective actions", ".record-tile");
   await page.shot("09-gov-corrective-actions", "corrective actions with overdue flags");
   await page.escape();
-  await page.click("Incidents (");
+  await page.click("Incidents", ".record-tile");
   await page.click("Dangerous occurrence", "td strong");
   await page.shot("10-gov-incident-detail", "incident detail: 48-hour check citing RPT-05, linked strata violation");
   await page.escape();
   await page.escape();
-  await page.click("Audit trail (");
+  await page.click("Audit trail", ".record-tile");
   await page.shot("11-gov-audit-trail", "audit trail of the mine (hash-chained)");
   await page.escape();
-  await page.click("Sensor trends");
+  await page.click("Sensor trends", ".record-tile");
   await page.shot("12-gov-sensor-trends", "sensor trend drawer with legal limit lines");
   await page.escape();
 
@@ -212,7 +212,7 @@ async function phase2(page) {
   await page.click("Submit resolution");
   await sleep(1500);
   await page.shot("15-head-directive-resolved", "directive resolved; visible to DGMS with the proof");
-  await page.click("Violations (");
+  await page.click("Violations", ".record-tile");
   await page.click("No helmet", "td strong");
   await page.click("Record corrective action");
   await page.type("textarea", "Issue helmets at the bench entry and add a PPE check to the shift start.");
@@ -221,7 +221,7 @@ async function phase2(page) {
   await page.click("Save action");
   await page.escape();
   await page.escape();
-  await page.click("Corrective actions (");
+  await page.click("Corrective actions", ".record-tile");
   await page.click("Issue helmets at the bench entry", "td");
   await page.click("Resolve with proof");
   await page.type("textarea", "Helmets issued; PPE check added to the shift-start briefing.");
@@ -292,7 +292,7 @@ async function phase3(page) {
   await page.shot("10-head-contractor-registered", "registered: licence expiring within 30 days already counts against it");
 
   await page.click("Overview", "button[role=tab]");
-  await page.click("Violations (");
+  await page.click("Violations", ".record-tile");
   await page.click("No ", "td strong");
   await page.shot("11-head-violation-contractor-select", "violation detail: responsible-contractor selector");
   await page.escape();
@@ -1154,7 +1154,7 @@ async function phase7b(page) {
     const elapsed = Math.round((Date.now() - syncedAt) / 1000);
     expect(govAfter === govBefore + 2 && headAfter === headBefore + 2,
       `government ${govBefore} -> ${govAfter}, mine head ${headBefore} -> ${headAfter} open violations`);
-    await gov.tab.click("Violations (");
+    await gov.tab.click("Violations", ".record-tile");
     await gov.tab.shot("08-gov-new-findings", `Government, no reload: open violations ${govBefore} -> ${govAfter} within ${elapsed} s of the sync; the field captures listed with their flag`);
     await gov.tab.eval(`[...document.querySelectorAll("tr.clickable")].find((r) => r.textContent.includes("Field capture")).click()`);
     await sleep(1500);

@@ -63,7 +63,7 @@ export function GovernanceRisk({ gri }) {
   const scored = gri.components.filter((c) => c.value > 0).sort((a, b) => b.value - a.value || b.cap - a.cap);
   const clear = gri.components.filter((c) => !(c.value > 0));
   return (
-    <section className="panel-block risk-card" id="governance-risk">
+    <section className="panel-block risk-card" id="governance-risk" tabIndex={-1}>
       <CardHead title={t("gri.title")} subtitle={t("gri.subtitle")} kind={t("gri.kind")} />
       <div className="panel-body stack tight">
         <div className="risk-headline">

@@ -214,6 +214,8 @@
     "OBLIGATION_OVERDUE": "{{obligation}} for {{period}} is overdue (due {{due_at}}; {{instrument}} {{clause}}).",
     "ANOMALY_DETECTED": "Pattern found ({{detector}}): {{summary}}",
     "PRODUCTION_ENTRY_PENDING": "Production for {{date}} not submitted - shifts missing: {{missing}}; drafts: {{drafts}}",
+    "PRODUCTION_ENTRY_PENDING_MISSING": "Production for {{date}} not submitted - shifts missing: {{missing}}",
+    "PRODUCTION_ENTRY_PENDING_DRAFTS": "Production for {{date}} not submitted - drafts: {{drafts}}",
     "level": "Escalated L{{level}}"
   },
   "category": {
@@ -501,7 +503,8 @@
     "reopened": "Directive reopened",
     "reopenedBody": "The mine head has been asked to resubmit.",
     "reopenFailed": "Could not reopen",
-    "scoreShort": "Score"
+    "scoreShort": "Score",
+    "howCalculated": "How is this calculated?"
   },
   "records": {
     "latest_one": "{{count}} most recent",
@@ -516,7 +519,19 @@
     "saving": "Saving...",
     "created": "Recorded",
     "obligation": "Reporting obligation",
-    "actor": "By"
+    "actor": "By",
+    "tile": {
+      "open": "{{n}} open",
+      "noneOpen": "None open",
+      "overdue": "{{n}} overdue",
+      "noneOverdue": "None overdue",
+      "late": "{{n}} reported late",
+      "onTime": "All reported on time",
+      "none": "None recorded",
+      "latest": "Latest {{when}}",
+      "breaches": "{{n}} breaches",
+      "noBreaches": "No breaches"
+    }
   },
   "errorNotice": {
     "forbidden": "Not permitted.",
@@ -1694,5 +1709,29 @@
     "dataSources": "Data sources",
     "sourceGem": "Mine names, locations and capacities: Global Energy Monitor, Global Coal Mine Tracker, August 2026 (CC BY 4.0).",
     "sourceOsm": "Map tiles: © OpenStreetMap contributors (ODbL)"
+  },
+  "search": {
+    "open": "Open search",
+    "shortcut": "Search (Ctrl+K or /)",
+    "placeholderShort": "Search",
+    "placeholder": "Search mines, contractors, grievance tickets, obligations",
+    "title": "Search",
+    "kbd": "Ctrl K",
+    "hint": "Type at least 2 characters: a mine's name, code, district, state or company; a contractor or registration number; a grievance ticket; an obligation code or title.",
+    "searching": "Searching...",
+    "noResults": "No results for \"{{q}}\"",
+    "failed": "Search is not available right now.",
+    "keys": "↑ ↓ move · Enter open · Esc close",
+    "obligationMissing": "This obligation is not in the register.",
+    "obligationDomain": "Domain",
+    "obligationFrequency": "Frequency",
+    "obligationCitation": "Citation",
+    "group": {
+      "recent": "Recent searches",
+      "mines": "Mines",
+      "contractors": "Contractors",
+      "grievances": "Grievances",
+      "obligations": "Obligations"
+    }
   }
 }

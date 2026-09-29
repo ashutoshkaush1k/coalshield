@@ -63,6 +63,8 @@ $permissions = [
     'risk.view' => 'The Governance Risk Index, the predicted risk and the anomaly findings of the mines in scope',
     // Phase 7B
     'field.capture' => 'Use the offline field app: record visits and captures at mines in scope and sync them',
+    // Dashboard search panel
+    'search.global' => 'Search the mines, contractors, grievances and obligations in scope (GET /v1/search)',
 ];
 
 $read = ['user.viewOwn', 'user.updateOwnLanguage', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
@@ -76,9 +78,9 @@ return [
         'government' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'inspection.manage',
             'directive.create', 'directive.reopen', 'incident.create', 'incident.linkViolation', 'vision.analyze',
             'admin.baselineCheck', 'contractor.summary', ...$productionOversight, 'detailRequest.create',
-            'grievance.manage', 'grievance.stats', 'obligation.review', 'obligation.waive', 'obligation.summary']),
+            'grievance.manage', 'grievance.stats', 'obligation.review', 'obligation.waive', 'obligation.summary', 'search.global']),
         // Corporate management: every mine of its company, read-only plus the ranking.
-        'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'contractor.summary', ...$productionOversight, 'detailRequest.create', 'grievance.stats', 'obligation.summary']),
+        'corporate' => array_merge($read, ['sensor.viewFleet', 'inspection.viewQueue', 'contractor.summary', ...$productionOversight, 'detailRequest.create', 'grievance.stats', 'obligation.summary', 'search.global']),
         'mine_head' => array_merge($read, ['correctiveAction.create', 'correctiveAction.resolve', 'alert.resolve',
             'incident.create', 'incident.linkViolation', 'vision.analyze', 'contractor.manage', 'violation.linkContractor',
             'production.manage', 'production.viewDetail', 'detailRequest.respond', 'grievance.manage', 'obligation.submit', 'field.capture']),

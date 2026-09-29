@@ -214,6 +214,8 @@
     "OBLIGATION_OVERDUE": "{{period}} साठीची {{obligation}} मुदतबाह्य आहे (मुदत {{due_at}}; {{instrument}} {{clause}}).",
     "ANOMALY_DETECTED": "नमुना आढळला ({{detector}}): {{summary}}",
     "PRODUCTION_ENTRY_PENDING": "{{date}} चे उत्पादन सादर केलेले नाही - गहाळ पाळ्या: {{missing}}; मसुदे: {{drafts}}",
+    "PRODUCTION_ENTRY_PENDING_MISSING": "{{date}} चे उत्पादन सादर केलेले नाही - गहाळ पाळ्या: {{missing}}",
+    "PRODUCTION_ENTRY_PENDING_DRAFTS": "{{date}} चे उत्पादन सादर केलेले नाही - मसुदे: {{drafts}}",
     "level": "वरिष्ठांकडे पाठवले L{{level}}"
   },
   "category": {
@@ -501,7 +503,8 @@
     "reopened": "निर्देश पुन्हा उघडला",
     "reopenedBody": "खाण प्रमुखांना पुन्हा सादर करण्यास सांगितले आहे.",
     "reopenFailed": "पुन्हा उघडता आले नाही",
-    "scoreShort": "स्कोअर"
+    "scoreShort": "स्कोअर",
+    "howCalculated": "हे कसे मोजले जाते?"
   },
   "records": {
     "latest_one": "{{count}} सर्वात अलीकडील",
@@ -516,7 +519,19 @@
     "saving": "जतन करत आहे...",
     "created": "नोंदवले",
     "obligation": "कळवण्याची जबाबदारी",
-    "actor": "कोणी"
+    "actor": "कोणी",
+    "tile": {
+      "open": "{{n}} उघडी",
+      "noneOpen": "एकही उघडे नाही",
+      "overdue": "{{n}} मुदतबाह्य",
+      "noneOverdue": "एकही मुदतबाह्य नाही",
+      "late": "{{n}} उशिरा कळवले",
+      "onTime": "सर्व वेळेवर कळवले",
+      "none": "काहीही नोंदलेले नाही",
+      "latest": "नवीनतम {{when}}",
+      "breaches": "{{n}} मर्यादाभंग",
+      "noBreaches": "एकही मर्यादाभंग नाही"
+    }
   },
   "errorNotice": {
     "forbidden": "परवानगी नाही.",
@@ -1694,5 +1709,29 @@
     "dataSources": "डेटा स्रोत",
     "sourceGem": "खाणींची नावे, स्थाने आणि क्षमता: Global Energy Monitor, Global Coal Mine Tracker, ऑगस्ट 2026 (CC BY 4.0).",
     "sourceOsm": "नकाशा टाइल्स: © OpenStreetMap योगदानकर्ते (ODbL)"
+  },
+  "search": {
+    "open": "शोध उघडा",
+    "shortcut": "शोध (Ctrl+K किंवा /)",
+    "placeholderShort": "शोधा",
+    "placeholder": "खाणी, कंत्राटदार, तक्रार तिकिटे, दायित्वे शोधा",
+    "title": "शोध",
+    "kbd": "Ctrl K",
+    "hint": "किमान 2 अक्षरे लिहा: खाणीचे नाव, कोड, जिल्हा, राज्य किंवा कंपनी; कंत्राटदार किंवा नोंदणी क्रमांक; तक्रार तिकीट; दायित्वाचा कोड किंवा शीर्षक.",
+    "searching": "शोध सुरू आहे...",
+    "noResults": "\"{{q}}\" साठी कोणतेही निकाल नाहीत",
+    "failed": "शोध सध्या उपलब्ध नाही.",
+    "keys": "↑ ↓ निवडा · Enter उघडा · Esc बंद करा",
+    "obligationMissing": "हे दायित्व नोंदवहीत नाही.",
+    "obligationDomain": "क्षेत्र",
+    "obligationFrequency": "वारंवारता",
+    "obligationCitation": "संदर्भ",
+    "group": {
+      "recent": "अलीकडील शोध",
+      "mines": "खाणी",
+      "contractors": "कंत्राटदार",
+      "grievances": "तक्रारी",
+      "obligations": "दायित्वे"
+    }
   }
 }

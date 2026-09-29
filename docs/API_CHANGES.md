@@ -171,3 +171,11 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | flags | `geo_flag`: more than `product.field_capture.geo_radius_m` (5 km) from the mine's recorded point; `clock_flag`: the phone's clock off by more than `clock_skew_s` (300 s) at sync, and then the observation's time is the receipt time. Flagged captures are stored like any other |
 | inspection types | adds `self` (a mine head's inspection from the field app) |
 | migration | `m261006_000001_field_capture` (reversible): observation capture columns, `inspection.client_uuid`, `field_sync` |
+
+## Dashboard search (after Phase 8)
+
+| New | Notes |
+|---|---|
+| `GET /v1/search?q=` | read-only; `{q, mines: [{id, code, name, district, state, operator}], contractors: [{id, name, registration_no}], grievances: [{id, ticket_no, category, status, mine_id, mine_name}], obligations: [{id, code, title, domain}]}`, at most 5 per group, case-insensitive substring (mines: name, code, district, state, company name or code; contractors: name, registration no.; grievances: ticket number; obligations: code, title). Fewer than 2 characters: empty groups. Each group is scoped like its list endpoint (`forCurrentUser`): corporate sees only its companies; sensitive grievances only for roles that may see them |
+| RBAC | `search.global`: government, corporate (mine head and inspector: 403) |
+| tests | `SearchCest` (authentication, 403, scoping per role, sensitive grievances, limits, read-only) |

@@ -10,18 +10,15 @@ import { can } from "../../auth/permissions";
 import { AlertDetailDrawer } from "../../components/alerts/AlertDetailDrawer";
 import { AlertList } from "../../components/alerts/AlertList";
 import { FlagMineButton } from "../../components/alerts/FlagMineButton";
-import { SensorTrendChart } from "../../components/charts/SensorTrendChart";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { Loader } from "../../components/common/Loader";
 import { RiskMark } from "../../components/compliance/RiskMark";
 import { RiskPanel } from "../../components/risk/RiskPanel";
 import { PageTitle } from "../../components/layout/PageTitle";
-import { Drawer } from "../../components/overlay/Overlay";
 import { useToast } from "../../components/overlay/ToastHost";
 import { MineRecords } from "../../components/records/MineRecords";
 import { useAuth } from "../../hooks/useAuth";
 import { usePolling } from "../../hooks/usePolling";
-import { sensorLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
 import { getMineView } from "../../api/views";
 import { breachesHint, breachesLabel, fmtScore, fmtNumber } from "../../utils/format";
@@ -66,7 +63,15 @@ export function ComplianceSummary({ mine, gri = null }) {
             <span className="label">{t("gri.short")}</span>
             <div className={`hero-score ${riskClass(gri.band)}`} id="gri-beside-score">{fmtNumber(gri.gri, 0)}</div>
             <div style={{ marginTop: "var(--space-3)" }}>
-              <a href="#governance-risk" className="small">{t("gri.explain")}</a>
+              {/* A real link: it scrolls to the index card below (clear of the sticky header) and moves focus there. */}
+              <a href="#governance-risk" className="text-link small" id="gri-explain-link"
+                 onClick={(e) => {
+                   const card = document.getElementById("governance-risk");
+                   if (!card) return;
+                   e.preventDefault();
+                   card.scrollIntoView({ behavior: "smooth", block: "start" });
+                   card.focus({ preventScroll: true });
+                 }}>{t("gri.explain")}</a>
             </div>
           </div>
         )}
@@ -80,10 +85,13 @@ export function ComplianceSummary({ mine, gri = null }) {
       <div className="meter" style={{ marginTop: "var(--space-5)" }}>
         <i className={cls} style={{ width: `${Math.max(0, Math.min(100, c.score))}%` }} />
       </div>
-      <div className="formula" style={{ marginTop: "var(--space-3)" }}>
-        100 - ({c.violation_count} {t("mine.violationsShort")} x {c.weight_ppe}) - ({c.breach_count} {t("mine.breachesShort")} x{" "}
-        {c.weight_env}) = {fmtScore(c.score)}
-      </div>
+      <details className="risk-more score-how" id="score-how">
+        <summary>{t("mine.howCalculated")}</summary>
+        <div className="formula">
+          100 - ({c.violation_count} {t("mine.violationsShort")} x {c.weight_ppe}) - ({c.breach_count} {t("mine.breachesShort")} x{" "}
+          {c.weight_env}) = {fmtScore(c.score)}
+        </div>
+      </details>
     </>
   );
 }
@@ -95,7 +103,6 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
   const { user } = useAuth();
   const load = () => loadMineBundle(mineId);
   const { data, error, loading, refresh } = usePolling(load, { deps: [mineId, refreshToken] });
-  const [sensorsOpen, setSensorsOpen] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState(null);
 
   if (loading && !data) return <Loader label={t("mine.loading")} />;
@@ -112,7 +119,7 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
     );
   }
 
-  const { mine, trend, alerts } = data;
+  const { mine, alerts } = data;
   const openDirectives = alerts.filter(isOpenDirective).length;
   const liveAlert = selectedAlert && alerts.find((a) => a.id === selectedAlert.id);
 
@@ -120,20 +127,16 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
     <>
       <PageTitle title={mine.name} subtitle={mineSubtitle(mine)}>
         {backTo && <Link className="btn" to={backTo}>{t("mine.backToOverview")}</Link>}
+        {can(user, "directive.create") && <FlagMineButton mineId={mine.id} onFlagged={refresh} />}
       </PageTitle>
 
       <div className="content stack">
         <ErrorNotice error={error} />
 
-        <div className="grid split">
+        <div className="grid split fit">
           <section className="panel-block">
             <div className="panel-body">
               <ComplianceSummary mine={mine} gri={data.risk?.governance_risk} />
-              <div className="row wrap" style={{ marginTop: "var(--space-5)" }}>
-                <button type="button" onClick={() => setSensorsOpen(true)}>{t("mine.sensorTrends")}</button>
-                <div className="spacer" />
-                {can(user, "directive.create") && <FlagMineButton mineId={mine.id} onFlagged={refresh} />}
-              </div>
               <MineRecords bundle={data} onChanged={refresh} />
             </div>
           </section>
@@ -155,29 +158,6 @@ export function MineDetailView({ mineId, backTo, refreshToken = 0, children }) {
 
         {children}
       </div>
-
-      <Drawer open={sensorsOpen} onClose={() => setSensorsOpen(false)}
-              title={t("mine.sensorTrends")} subtitle={t("mine.sensorTrendsHint")}>
-        <div className="stack">
-          {trend.series.map((series) => (
-            <div key={series.sensor_type}>
-              <div className="row" style={{ marginBottom: "var(--space-2)" }}>
-                <strong>{sensorLabel(series.sensor_type)}</strong>
-                <span className="muted small">
-                  {series.threshold != null
-                    ? t("sensor.limit", { limit: series.threshold, unit: series.unit, obligation: series.obligation })
-                    : t("sensor.noLimit")}
-                </span>
-                <div className="spacer" />
-                <span className={series.breach_count ? "sev high" : "tag"}>
-                  {t("mine.breaches", { count: series.breach_count })}
-                </span>
-              </div>
-              <SensorTrendChart series={series} mineId={trend.mine_id} />
-            </div>
-          ))}
-        </div>
-      </Drawer>
 
       <AlertDetailDrawer
         alert={liveAlert}

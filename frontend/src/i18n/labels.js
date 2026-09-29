@@ -82,11 +82,17 @@ export function alertText(alert) {
       summary: anomalyReasonText({ code: p.reason, params: p.reason_params || {} }, flag) });
   }
   if (alert.code === "PRODUCTION_ENTRY_PENDING") {
-    return t("alert.PRODUCTION_ENTRY_PENDING", { date: fmtDate(p.date), missing: (p.missing_shifts || []).join(", ") || "-",
-      drafts: (p.draft_shifts || []).join(", ") || "-" });
+    // An empty part is left out rather than shown as "drafts: -".
+    const missing = (p.missing_shifts || []).join(", ");
+    const drafts = (p.draft_shifts || []).join(", ");
+    const key = missing && drafts ? "PRODUCTION_ENTRY_PENDING" : drafts ? "PRODUCTION_ENTRY_PENDING_DRAFTS" : "PRODUCTION_ENTRY_PENDING_MISSING";
+    return t(`alert.${key}`, { date: fmtDate(p.date), missing: missing || "-", drafts });
   }
+  // List parameters (e.g. obligation codes) read "HLT-03, SAF-01" rather than i18next's "HLT-03,SAF-01".
+  const lists = Object.fromEntries(Object.entries(p).filter(([, v]) => Array.isArray(v)).map(([k, v]) => [k, v.join(", ")]));
   const params = {
     ...p,
+    ...lists,
     sensor: sensorLabel(p.sensor_type),
     type: violationTypeLabel(p.violation_type),
     category: categoryLabel(p.category),

@@ -11,6 +11,8 @@ import { StateFilter } from "../../../components/common/StateFilter";
 import { OtherObligations } from "../../../components/obligations/OtherObligations";
 import { TaskDrawer } from "../../../components/obligations/TaskDrawer";
 import { TaskList } from "../../../components/obligations/TaskList";
+import { useLinkedId } from "../../../hooks/useLinkedId";
+import { ObligationDrawer } from "../../../components/obligations/ObligationDrawer";
 import { usePolling } from "../../../hooks/usePolling";
 import { useT } from "../../../i18n/t";
 
@@ -43,6 +45,8 @@ function Head({ first }) {
 export function ObligationsPanel({ state, states, onStateChange }) {
   const t = useT();
   const [selected, setSelected] = useState(null);
+  // An obligation named in the URL (from the search panel) opens its register entry.
+  const linked = useLinkedId("obligation");
   const [token, setToken] = useState(0);
   const { data, error, loading } = usePolling(() => getObligationView(state), { deps: [state, token] });
   if (loading && !data) return <Loader label={t("obligation.loading")} />;
@@ -117,6 +121,7 @@ export function ObligationsPanel({ state, states, onStateChange }) {
         </section>
       </div>
       <OtherObligations />
+      {linked.value && <ObligationDrawer code={linked.value} onClose={linked.clear} />}
       {selected && <TaskDrawer taskId={selected} onClose={() => setSelected(null)} onChanged={() => setToken((n) => n + 1)} />}
     </div>
   );

@@ -214,6 +214,8 @@
     "OBLIGATION_OVERDUE": "{{period}} का {{obligation}} विलंबित है (देय {{due_at}}; {{instrument}} {{clause}})।",
     "ANOMALY_DETECTED": "पैटर्न मिला ({{detector}}): {{summary}}",
     "PRODUCTION_ENTRY_PENDING": "{{date}} का उत्पादन जमा नहीं हुआ - अनुपलब्ध पालियाँ: {{missing}}; ड्राफ्ट: {{drafts}}",
+    "PRODUCTION_ENTRY_PENDING_MISSING": "{{date}} का उत्पादन जमा नहीं हुआ - अनुपलब्ध पालियाँ: {{missing}}",
+    "PRODUCTION_ENTRY_PENDING_DRAFTS": "{{date}} का उत्पादन जमा नहीं हुआ - ड्राफ्ट: {{drafts}}",
     "level": "एस्केलेट किया गया L{{level}}"
   },
   "category": {
@@ -501,7 +503,8 @@
     "reopened": "निर्देश फिर से खोला गया",
     "reopenedBody": "खदान प्रमुख से दोबारा जमा करने को कहा गया है।",
     "reopenFailed": "फिर से नहीं खोला जा सका",
-    "scoreShort": "स्कोर"
+    "scoreShort": "स्कोर",
+    "howCalculated": "इसकी गणना कैसे होती है?"
   },
   "records": {
     "latest_one": "{{count}} सबसे हालिया",
@@ -516,7 +519,19 @@
     "saving": "सहेजा जा रहा है...",
     "created": "दर्ज किया गया",
     "obligation": "रिपोर्टिंग दायित्व",
-    "actor": "द्वारा"
+    "actor": "द्वारा",
+    "tile": {
+      "open": "{{n}} खुले",
+      "noneOpen": "कोई खुला नहीं",
+      "overdue": "{{n}} विलंबित",
+      "noneOverdue": "कोई विलंबित नहीं",
+      "late": "{{n}} देर से सूचित",
+      "onTime": "सभी समय पर सूचित",
+      "none": "कुछ दर्ज नहीं",
+      "latest": "नवीनतम {{when}}",
+      "breaches": "{{n}} सीमा-पार",
+      "noBreaches": "कोई सीमा-पार नहीं"
+    }
   },
   "errorNotice": {
     "forbidden": "अनुमति नहीं है।",
@@ -1694,5 +1709,29 @@
     "dataSources": "डेटा स्रोत",
     "sourceGem": "खदानों के नाम, स्थान और क्षमताएँ: Global Energy Monitor, Global Coal Mine Tracker, अगस्त 2026 (CC BY 4.0)।",
     "sourceOsm": "मानचित्र टाइलें: © OpenStreetMap योगदानकर्ता (ODbL)"
+  },
+  "search": {
+    "open": "खोज खोलें",
+    "shortcut": "खोजें (Ctrl+K या /)",
+    "placeholderShort": "खोजें",
+    "placeholder": "खदानें, ठेकेदार, शिकायत टिकट, दायित्व खोजें",
+    "title": "खोज",
+    "kbd": "Ctrl K",
+    "hint": "कम से कम 2 अक्षर लिखें: खदान का नाम, कोड, ज़िला, राज्य या कंपनी; ठेकेदार या पंजीकरण संख्या; शिकायत टिकट; दायित्व का कोड या शीर्षक।",
+    "searching": "खोज जारी है...",
+    "noResults": "\"{{q}}\" के लिए कोई परिणाम नहीं",
+    "failed": "खोज अभी उपलब्ध नहीं है।",
+    "keys": "↑ ↓ चुनें · Enter खोलें · Esc बंद करें",
+    "obligationMissing": "यह दायित्व रजिस्टर में नहीं है।",
+    "obligationDomain": "क्षेत्र",
+    "obligationFrequency": "आवृत्ति",
+    "obligationCitation": "उद्धरण",
+    "group": {
+      "recent": "हाल की खोजें",
+      "mines": "खदानें",
+      "contractors": "ठेकेदार",
+      "grievances": "शिकायतें",
+      "obligations": "दायित्व"
+    }
   }
 }

@@ -10,6 +10,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { LogOut, Menu, UserRound } from "lucide-react";
 import { useT } from "../../i18n/t";
 import { TabIcon, Tabs } from "../common/Tabs";
+import { GlobalSearch } from "../search/GlobalSearch";
 import { useHomeTabs } from "./navTabs";
 import { useMastheadHeight } from "./useMastheadHeight";
 
@@ -74,6 +75,7 @@ export function TopBar() {
             {current.id === "profile" ? <UserRound size={18} aria-hidden="true" /> : <TabIcon id={current.id} />}{current.label}
           </span>
         )}
+        <GlobalSearch />
       </div>
       <div className="spacer" />
       <Tabs tabs={barTabs} active={active} onChange={goTo} controls={onHome} />

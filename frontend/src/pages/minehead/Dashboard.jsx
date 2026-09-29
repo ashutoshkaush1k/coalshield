@@ -20,6 +20,8 @@ import { ProductionPanel } from "./panels/ProductionPanel";
 import { GrievancePanel } from "./panels/GrievancePanel";
 import { ObligationsPanel } from "./panels/ObligationsPanel";
 import { MapPanel } from "../../components/map/MapPanel";
+import { UploadPanel } from "../../components/vision/UploadPanel";
+import { can } from "../../auth/permissions";
 import { t } from "../../i18n/t";
 
 export default function MineHeadDashboard() {
@@ -58,10 +60,10 @@ export default function MineHeadDashboard() {
 
   return (
     <>
-      <PageTitle
-        title={data.mine.name}
-        subtitle={mineSubtitle(data.mine)}
-      />
+      <PageTitle title={data.mine.name} subtitle={mineSubtitle(data.mine)}>
+        {/* The mine head's own page action, where government has "Flag for inspection". */}
+        {can(user, "vision.analyze") && <UploadPanel mineId={mineId} onAnalysed={() => setRefreshToken((n) => n + 1)} />}
+      </PageTitle>
 
       <div className="content">
         <ErrorNotice error={error} />

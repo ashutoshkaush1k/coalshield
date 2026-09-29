@@ -1,8 +1,11 @@
-// A mine's records behind one row of buttons: violations, corrective actions, incidents and the
-// audit trail, each in a drawer with a detail view. Shared by the government drill-down and the
+// A mine's records behind one row of equal tiles - violations, corrective actions, incidents, the
+// audit trail and the sensor trends - each with its count and a short status, each opening a drawer
+// with a detail view. Shared by the government drill-down and the
 // mine head overview so both read exactly the same data the same way. Actions (record or close a
 // corrective action) appear only when the account holds the permission; the API checks it again.
 import { useState } from "react";
+import { Activity, History, ShieldAlert, TriangleAlert, Wrench } from "lucide-react";
+import { SensorTrendChart } from "../charts/SensorTrendChart";
 import { createCorrectiveAction, resolveCorrectiveAction } from "../../api/correctiveActions";
 import { linkViolationContractor } from "../../api/contractors";
 import { ContractorSelect } from "../contractors/ContractorSelect";
@@ -10,7 +13,7 @@ import { can } from "../../auth/permissions";
 import { useAuth } from "../../hooks/useAuth";
 import {
   actionDescription, auditChanges, auditHeadline, categoryLabel, descriptionCodeLabel, incidentSeverityLabel,
-  incidentTypeLabel, reportingCheckText, sourceLabel, statusLabel, violationTypeLabel,
+  incidentTypeLabel, reportingCheckText, sensorLabel, sourceLabel, statusLabel, violationTypeLabel,
 } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
 import { fmtDateTime, fmtNumber, fmtPercent } from "../../utils/format";
@@ -31,12 +34,25 @@ function Field({ label, children, mono = false }) {
 
 const PROOF_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-/** Buttons plus drawers. `bundle` = {violations, correctiveActions, incidents, audit}. */
+/** One record tile: icon and title, the count, and a short status (stronger when it needs attention). */
+function RecordTile({ id, icon: Icon, title, count, status, attention = false, onOpen }) {
+  return (
+    <button type="button" className="record-tile" id={`records-${id}`} onClick={onOpen}>
+      <span className="record-tile-head"><Icon size={18} aria-hidden="true" /><span>{title}</span></span>
+      <span className="record-tile-count">{fmtNumber(count, 0)}</span>
+      <span className={`record-tile-status${attention ? " is-attention" : ""}`}>{status}</span>
+    </button>
+  );
+}
+
+/** Tiles plus drawers. `bundle` = {violations, correctiveActions, incidents, audit, trend}. */
 export function MineRecords({ bundle, onChanged }) {
   const t = useT();
   const [panel, setPanel] = useState(null);
   const [selected, setSelected] = useState(null);
-  const { violations, correctiveActions, incidents, audit } = bundle;
+  const { violations, correctiveActions, incidents, audit, trend } = bundle;
+  const series = trend?.series ?? [];
+  const breaches = series.reduce((n, s) => n + (s.breach_count || 0), 0);
   const openViolations = violations.filter((v) => !v.resolved).length;
   const overdue = correctiveActions.filter((a) => a.is_overdue).length;
   const late = incidents.filter((i) => i.reported_late).length;
@@ -46,20 +62,48 @@ export function MineRecords({ bundle, onChanged }) {
 
   return (
     <>
-      <div className="row wrap records-bar">
-        <button type="button" onClick={() => setPanel("violations")}>
-          {t("violation.title")} ({openViolations} {statusLabel("open").toLowerCase()})
-        </button>
-        <button type="button" onClick={() => setPanel("actions")}>
-          {t("correctiveAction.title")} ({correctiveActions.length}{overdue ? `, ${overdue} ${t("correctiveAction.overdue")}` : ""})
-        </button>
-        <button type="button" onClick={() => setPanel("incidents")}>
-          {t("incident.title")} ({incidents.length}{late ? `, ${late} ${t("incident.late")}` : ""})
-        </button>
-        <button type="button" onClick={() => setPanel("audit")}>
-          {t("audit.title")} ({audit.length})
-        </button>
+      <div className="record-tiles-wrap">
+        <div className="record-tiles" id="mine-records">
+          <RecordTile id="violations" icon={ShieldAlert} title={t("violation.title")} count={violations.length}
+                      status={openViolations ? t("records.tile.open", { n: fmtNumber(openViolations, 0) }) : t("records.tile.noneOpen")}
+                      attention={openViolations > 0} onOpen={() => setPanel("violations")} />
+          <RecordTile id="actions" icon={Wrench} title={t("correctiveAction.title")} count={correctiveActions.length}
+                      status={overdue ? t("records.tile.overdue", { n: fmtNumber(overdue, 0) }) : t("records.tile.noneOverdue")}
+                      attention={overdue > 0} onOpen={() => setPanel("actions")} />
+          <RecordTile id="incidents" icon={TriangleAlert} title={t("incident.title")} count={incidents.length}
+                      status={!incidents.length ? t("records.tile.none") : late ? t("records.tile.late", { n: fmtNumber(late, 0) }) : t("records.tile.onTime")}
+                      attention={late > 0} onOpen={() => setPanel("incidents")} />
+          <RecordTile id="audit" icon={History} title={t("audit.title")} count={audit.length}
+                      status={audit.length ? t("records.tile.latest", { when: fmtDateTime(audit[0].created_at) }) : t("records.tile.none")}
+                      onOpen={() => setPanel("audit")} />
+          <RecordTile id="sensors" icon={Activity} title={t("mine.sensorTrends")} count={series.length}
+                      status={breaches ? t("records.tile.breaches", { n: fmtNumber(breaches, 0) }) : t("records.tile.noBreaches")}
+                      attention={breaches > 0} onOpen={() => setPanel("sensors")} />
+        </div>
       </div>
+
+      <Drawer open={panel === "sensors"} onClose={() => setPanel(null)}
+              title={t("mine.sensorTrends")} subtitle={t("mine.sensorTrendsHint")}>
+        <div className="stack">
+          {series.map((line) => (
+            <div key={line.sensor_type}>
+              <div className="row" style={{ marginBottom: "var(--space-2)" }}>
+                <strong>{sensorLabel(line.sensor_type)}</strong>
+                <span className="muted small">
+                  {line.threshold != null
+                    ? t("sensor.limit", { limit: line.threshold, unit: line.unit, obligation: line.obligation })
+                    : t("sensor.noLimit")}
+                </span>
+                <div className="spacer" />
+                <span className={line.breach_count ? "sev high" : "tag"}>
+                  {t("mine.breaches", { count: line.breach_count })}
+                </span>
+              </div>
+              <SensorTrendChart series={line} mineId={trend.mine_id} />
+            </div>
+          ))}
+        </div>
+      </Drawer>
 
       <Drawer open={panel === "violations"} onClose={() => setPanel(null)} title={t("violation.title")}
               subtitle={t("records.latest", { count: violations.length })} flush>

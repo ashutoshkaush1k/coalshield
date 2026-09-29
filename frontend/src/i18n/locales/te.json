@@ -214,6 +214,8 @@
     "OBLIGATION_OVERDUE": "{{period}}కు {{obligation}} గడువు మీరింది (గడువు {{due_at}}; {{instrument}} {{clause}}).",
     "ANOMALY_DETECTED": "అసాధారణత కనిపించింది ({{detector}}): {{summary}}",
     "PRODUCTION_ENTRY_PENDING": "{{date}} ఉత్పత్తి సమర్పించబడలేదు - లేని షిఫ్ట్‌లు: {{missing}}; డ్రాఫ్ట్‌లు: {{drafts}}",
+    "PRODUCTION_ENTRY_PENDING_MISSING": "{{date}} ఉత్పత్తి సమర్పించబడలేదు - లేని షిఫ్ట్‌లు: {{missing}}",
+    "PRODUCTION_ENTRY_PENDING_DRAFTS": "{{date}} ఉత్పత్తి సమర్పించబడలేదు - డ్రాఫ్ట్‌లు: {{drafts}}",
     "level": "ఎస్కలేట్ అయింది L{{level}}"
   },
   "category": {
@@ -501,7 +503,8 @@
     "reopened": "ఆదేశం మళ్లీ తెరవబడింది",
     "reopenedBody": "మళ్లీ సమర్పించమని గని అధిపతిని కోరాం.",
     "reopenFailed": "మళ్లీ తెరవలేకపోయాం",
-    "scoreShort": "స్కోరు"
+    "scoreShort": "స్కోరు",
+    "howCalculated": "దీన్ని ఎలా లెక్కిస్తారు?"
   },
   "records": {
     "latest_one": "తాజా {{count}}",
@@ -516,7 +519,19 @@
     "saving": "సేవ్ అవుతోంది...",
     "created": "నమోదైంది",
     "obligation": "నివేదన బాధ్యత",
-    "actor": "చేసినవారు"
+    "actor": "చేసినవారు",
+    "tile": {
+      "open": "{{n}} తెరిచి ఉన్నాయి",
+      "noneOpen": "ఏదీ తెరిచి లేదు",
+      "overdue": "{{n}} గడువు మీరినవి",
+      "noneOverdue": "ఏదీ గడువు మీరలేదు",
+      "late": "{{n}} ఆలస్యంగా నివేదించారు",
+      "onTime": "అన్నీ సమయానికి నివేదించారు",
+      "none": "ఏదీ నమోదు కాలేదు",
+      "latest": "తాజాది {{when}}",
+      "breaches": "{{n}} పరిమితి దాటడాలు",
+      "noBreaches": "పరిమితి దాటడాలు లేవు"
+    }
   },
   "errorNotice": {
     "forbidden": "అనుమతి లేదు.",
@@ -1694,5 +1709,29 @@
     "dataSources": "డేటా మూలాలు",
     "sourceGem": "గనుల పేర్లు, స్థానాలు, సామర్థ్యాలు: Global Energy Monitor, Global Coal Mine Tracker, ఆగస్టు 2026 (CC BY 4.0).",
     "sourceOsm": "మ్యాప్ టైల్స్: © OpenStreetMap సహకారులు (ODbL)"
+  },
+  "search": {
+    "open": "శోధన తెరవండి",
+    "shortcut": "శోధన (Ctrl+K లేదా /)",
+    "placeholderShort": "శోధన",
+    "placeholder": "గనులు, కాంట్రాక్టర్లు, ఫిర్యాదు టికెట్లు, బాధ్యతలు వెతకండి",
+    "title": "శోధన",
+    "kbd": "Ctrl K",
+    "hint": "కనీసం 2 అక్షరాలు టైప్ చేయండి: గని పేరు, కోడ్, జిల్లా, రాష్ట్రం లేదా కంపెనీ; కాంట్రాక్టర్ లేదా నమోదు సంఖ్య; ఫిర్యాదు టికెట్; బాధ్యత కోడ్ లేదా శీర్షిక.",
+    "searching": "వెతుకుతోంది...",
+    "noResults": "\"{{q}}\" కోసం ఫలితాలు లేవు",
+    "failed": "శోధన ప్రస్తుతం అందుబాటులో లేదు.",
+    "keys": "↑ ↓ ఎంచుకోండి · Enter తెరవండి · Esc మూసివేయండి",
+    "obligationMissing": "ఈ బాధ్యత రిజిస్టర్‌లో లేదు.",
+    "obligationDomain": "విభాగం",
+    "obligationFrequency": "తరచుదనం",
+    "obligationCitation": "ఉల్లేఖనం",
+    "group": {
+      "recent": "ఇటీవలి శోధనలు",
+      "mines": "గనులు",
+      "contractors": "కాంట్రాక్టర్లు",
+      "grievances": "ఫిర్యాదులు",
+      "obligations": "బాధ్యతలు"
+    }
   }
 }

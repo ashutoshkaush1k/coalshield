@@ -115,6 +115,44 @@ a:hover { text-decoration: underline; }
    it. --masthead-h is its measured height (components/layout/useMastheadHeight.js). */
 html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
 .masthead .spacer { flex: 1; }
+/* Search (components/search/GlobalSearch.jsx): a box-like button in the top bar, a panel over the page. */
+.search-trigger {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-width: 0; height: 36px; padding: 0 var(--space-2) 0 var(--space-3);
+  border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--card); color: var(--muted);
+  font: inherit; font-size: var(--text-sm); cursor: pointer;
+}
+.search-trigger:hover { color: var(--ink); border-color: var(--faint); }
+.search-trigger:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.search-trigger-text { min-width: 8rem; text-align: left; }
+.search-kbd { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--faint); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+@media (max-width: 767px) {
+  .search-trigger { width: 40px; height: 40px; padding: 0; justify-content: center; }
+  .search-trigger-text, .search-kbd { display: none; }
+}
+.scrim.is-modal.search-scrim { align-items: flex-start; justify-content: center; padding: 10vh var(--space-4) var(--space-4); }
+.search-panel {
+  width: min(640px, 100%); max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+}
+.search-field { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); color: var(--muted); }
+.search-field input { flex: 1; min-width: 0; border: none; box-shadow: none; padding: var(--space-2) 0; font-size: var(--text-lg); background: none; }
+.search-field input:focus { box-shadow: none; }
+.search-field input::-webkit-search-cancel-button { display: none; }
+.search-close { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: none; background: none; color: var(--muted); cursor: pointer; border-radius: var(--radius-sm); }
+.search-close:hover { background: var(--sunk); color: var(--ink); }
+.search-body { overflow-y: auto; padding: var(--space-2); }
+.search-group + .search-group { margin-top: var(--space-2); }
+.search-group-title { padding: var(--space-2) var(--space-3) var(--space-1); font-size: var(--text-xs); font-weight: 500; color: var(--muted); }
+.search-option { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); cursor: pointer; }
+.search-option svg { flex: none; margin-top: 2px; color: var(--muted); }
+.search-option.is-active { background: var(--sunk); }
+.search-option.is-active svg { color: var(--ink); }
+.search-option-text { display: flex; flex-direction: column; min-width: 0; }
+.search-option-label { font-weight: 500; overflow-wrap: anywhere; }
+.search-option-sub { font-size: var(--text-xs); color: var(--muted); overflow-wrap: anywhere; }
+.search-hint { margin: 0; padding: var(--space-4) var(--space-3); font-size: var(--text-sm); color: var(--muted); }
+.search-foot { padding: var(--space-2) var(--space-4); border-top: 1px solid var(--line-soft); font-size: var(--text-xs); color: var(--faint); }
+
 /* A page's own title row (components/layout/PageTitle.jsx), at the top of its content. */
 .page-title { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3) var(--space-6); padding: var(--space-6) var(--space-8) 0; }
 .page-title + .content { padding-top: var(--space-5); }
@@ -172,6 +210,12 @@ html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
 .grid.split { grid-template-columns: 1.6fr 1fr; align-items: stretch; }
 .grid.split > * { min-width: 0; }
 @media (max-width: 1150px) { .grid.split { grid-template-columns: 1fr; } }
+/* Cards as tall as their own content (the mine page: no empty space under the summary). */
+.grid.split.fit { align-items: start; }
+/* A link that reads as one: accent colour, underlined. */
+.text-link { color: var(--accent-ink); text-decoration: underline; text-underline-offset: 2px; font-weight: 500; }
+.text-link:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; border-radius: 2px; }
+#governance-risk:focus { outline: none; }
 
 /* --- risk pills: dot + label on a pale tint, never a saturated block --- */
 .risk-mark {
@@ -609,7 +653,29 @@ body { overflow-x: hidden; }
 }
 
 /* Records row under the score (violations, corrective actions, incidents, audit). */
-.records-bar { margin-top: var(--space-3); gap: var(--space-2); }
+.score-how { margin-top: var(--space-4); }
+/* A mine's records as one row of equal tiles (components/records/MineRecords.jsx): five across when
+   the card is wide enough, otherwise two per row with the odd last tile spanning the row, so the
+   rows always wrap evenly. */
+.record-tiles-wrap { container-type: inline-size; margin-top: var(--space-5); }
+.record-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.record-tiles > .record-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@container (min-width: 620px) {
+  .record-tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .record-tiles > .record-tile:last-child:nth-child(odd) { grid-column: auto; }
+}
+.record-tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; width: 100%;
+  padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card);
+  text-align: left; cursor: pointer; font: inherit; color: var(--ink); transition: background .12s ease, border-color .12s ease;
+}
+.record-tile:hover { background: var(--hover); border-color: var(--faint); }
+.record-tile:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.record-tile-head { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); overflow-wrap: anywhere; }
+.record-tile-head svg { flex: none; color: var(--muted); }
+.record-tile-count { font-size: var(--text-xl); font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.record-tile-status { font-size: var(--text-xs); color: var(--muted); overflow-wrap: anywhere; }
+.record-tile-status.is-attention { color: var(--ink); font-weight: 600; }
 .change-list { margin: var(--space-2) 0 0; padding-left: var(--space-5); font-size: var(--text-sm, 13px); }
 .change-list li { margin: 2px 0; word-break: break-word; }
 

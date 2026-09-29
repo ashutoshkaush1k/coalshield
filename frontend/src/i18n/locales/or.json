@@ -214,6 +214,8 @@
     "OBLIGATION_OVERDUE": "{{period}} ପାଇଁ {{obligation}} ବିଳମ୍ବିତ (ଧାର୍ଯ୍ୟ {{due_at}}; {{instrument}} {{clause}})।",
     "ANOMALY_DETECTED": "ଢାଞ୍ଚା ମିଳିଲା ({{detector}}): {{summary}}",
     "PRODUCTION_ENTRY_PENDING": "{{date}} ପାଇଁ ଉତ୍ପାଦନ ଦାଖଲ ହୋଇନାହିଁ - ଅନୁପସ୍ଥିତ ପାଳି: {{missing}}; ଖସଡ଼ା: {{drafts}}",
+    "PRODUCTION_ENTRY_PENDING_MISSING": "{{date}} ପାଇଁ ଉତ୍ପାଦନ ଦାଖଲ ହୋଇନାହିଁ - ଅନୁପସ୍ଥିତ ପାଳି: {{missing}}",
+    "PRODUCTION_ENTRY_PENDING_DRAFTS": "{{date}} ପାଇଁ ଉତ୍ପାଦନ ଦାଖଲ ହୋଇନାହିଁ - ଖସଡ଼ା: {{drafts}}",
     "level": "ଉଚ୍ଚସ୍ତରକୁ ପ୍ରେରିତ L{{level}}"
   },
   "category": {
@@ -501,7 +503,8 @@
     "reopened": "ନିର୍ଦ୍ଦେଶ ପୁନଃ ଖୋଲାଗଲା",
     "reopenedBody": "ଖଣି ମୁଖ୍ୟଙ୍କୁ ପୁଣି ଦାଖଲ କରିବାକୁ କୁହାଯାଇଛି।",
     "reopenFailed": "ପୁନଃ ଖୋଲିହେଲା ନାହିଁ",
-    "scoreShort": "ସ୍କୋର"
+    "scoreShort": "ସ୍କୋର",
+    "howCalculated": "ଏହା କିପରି ଗଣନା କରାଯାଏ?"
   },
   "records": {
     "latest_one": "ସର୍ବଶେଷ {{count}}ଟି",
@@ -516,7 +519,19 @@
     "saving": "ସେଭ ହେଉଛି...",
     "created": "ରେକର୍ଡ ହେଲା",
     "obligation": "ରିପୋର୍ଟିଂ ଦାୟିତ୍ୱ",
-    "actor": "ଦ୍ୱାରା"
+    "actor": "ଦ୍ୱାରା",
+    "tile": {
+      "open": "{{n}}ଟି ଖୋଲା",
+      "noneOpen": "କୌଣସି ଖୋଲା ନାହିଁ",
+      "overdue": "{{n}}ଟି ବିଳମ୍ବିତ",
+      "noneOverdue": "କୌଣସି ବିଳମ୍ବିତ ନାହିଁ",
+      "late": "{{n}}ଟି ବିଳମ୍ବରେ ଜଣାଯାଇଛି",
+      "onTime": "ସବୁ ସମୟରେ ଜଣାଯାଇଛି",
+      "none": "କିଛି ରେକର୍ଡ ନାହିଁ",
+      "latest": "ସର୍ବଶେଷ {{when}}",
+      "breaches": "{{n}}ଟି ସୀମା ଉଲ୍ଲଂଘନ",
+      "noBreaches": "କୌଣସି ସୀମା ଉଲ୍ଲଂଘନ ନାହିଁ"
+    }
   },
   "errorNotice": {
     "forbidden": "ଅନୁମତି ନାହିଁ।",
@@ -1694,5 +1709,29 @@
     "dataSources": "ତଥ୍ୟ ଉତ୍ସ",
     "sourceGem": "ଖଣିର ନାମ, ଅବସ୍ଥାନ ଓ କ୍ଷମତା: Global Energy Monitor, Global Coal Mine Tracker, ଅଗଷ୍ଟ 2026 (CC BY 4.0)।",
     "sourceOsm": "ମାନଚିତ୍ର ଟାଇଲ: © OpenStreetMap ଅବଦାନକାରୀ (ODbL)"
+  },
+  "search": {
+    "open": "ସନ୍ଧାନ ଖୋଲନ୍ତୁ",
+    "shortcut": "ସନ୍ଧାନ (Ctrl+K କିମ୍ବା /)",
+    "placeholderShort": "ସନ୍ଧାନ",
+    "placeholder": "ଖଣି, ଠିକାଦାର, ଅଭିଯୋଗ ଟିକେଟ, ଦାୟିତ୍ୱ ଖୋଜନ୍ତୁ",
+    "title": "ସନ୍ଧାନ",
+    "kbd": "Ctrl K",
+    "hint": "ଅତି କମରେ 2ଟି ଅକ୍ଷର ଲେଖନ୍ତୁ: ଖଣିର ନାମ, କୋଡ, ଜିଲ୍ଲା, ରାଜ୍ୟ କିମ୍ବା କମ୍ପାନୀ; ଠିକାଦାର କିମ୍ବା ପଞ୍ଜୀକରଣ ନମ୍ବର; ଅଭିଯୋଗ ଟିକେଟ; ଦାୟିତ୍ୱର କୋଡ କିମ୍ବା ଶୀର୍ଷକ।",
+    "searching": "ସନ୍ଧାନ ଚାଲିଛି...",
+    "noResults": "\"{{q}}\" ପାଇଁ କୌଣସି ଫଳାଫଳ ନାହିଁ",
+    "failed": "ସନ୍ଧାନ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ।",
+    "keys": "↑ ↓ ବାଛନ୍ତୁ · Enter ଖୋଲନ୍ତୁ · Esc ବନ୍ଦ କରନ୍ତୁ",
+    "obligationMissing": "ଏହି ଦାୟିତ୍ୱ ରେଜିଷ୍ଟରରେ ନାହିଁ।",
+    "obligationDomain": "କ୍ଷେତ୍ର",
+    "obligationFrequency": "ବାରମ୍ବାରତା",
+    "obligationCitation": "ଉଦ୍ଧୃତି",
+    "group": {
+      "recent": "ସାମ୍ପ୍ରତିକ ସନ୍ଧାନ",
+      "mines": "ଖଣି",
+      "contractors": "ଠିକାଦାର",
+      "grievances": "ଅଭିଯୋଗ",
+      "obligations": "ଦାୟିତ୍ୱ"
+    }
   }
 }

@@ -9,7 +9,7 @@ All paths are under `http://127.0.0.1:8080`. **token**: `Authorization: Bearer <
 `POST /v1/auth/login`; out-of-scope records answer 404, a missing permission 403. **public**: no token
 (rate-limited where it matters). **API key**: `X-Api-Key` (the sensor simulator).
 
-111 endpoints.
+112 endpoints.
 
 | Method | Path | Auth | Permission checked | Action |
 |---|---|---|---|---|
@@ -48,6 +48,7 @@ All paths are under `http://127.0.0.1:8080`. **token**: `Authorization: Bearer <
 | GET | `/v1/views/obligations` | token | `obligation.view`, `obligation.summary`, each part's own check | `view/obligations` |
 | GET | `/v1/views/map` | token | each part's own check | `view/map` |
 | GET | `/v1/views/priority` | token | `inspection.viewQueue`, each part's own check | `view/priority` |
+| GET | `/v1/search` | token | `search.global`, `obligation.view` | `search/index` |
 | GET | `/v1/anomalies` | token | `risk.view` | `risk/anomalies` |
 | GET | `/v1/mines/{id}/risk` | token | `risk.view` | `risk/mine` |
 | GET | `/v1/risk/model` | token | `risk.view` | `risk/model` |

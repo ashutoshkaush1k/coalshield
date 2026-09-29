@@ -9,6 +9,7 @@ import { Loader } from "../../../components/common/Loader";
 import { StateFilter } from "../../../components/common/StateFilter";
 import { ContractorDetail } from "../../../components/contractors/ContractorDetail";
 import { ContractorList } from "../../../components/contractors/ContractorList";
+import { useLinkedId } from "../../../hooks/useLinkedId";
 import { usePolling } from "../../../hooks/usePolling";
 import { contractorReason } from "../../../i18n/contractors";
 import { useT } from "../../../i18n/t";
@@ -53,6 +54,9 @@ export function ContractorSummaryCard({ data, onOpen }) {
 export function ContractorsPanel({ summary, state, states, onStateChange }) {
   const t = useT();
   const [selected, setSelected] = useState(null);
+  // A contractor named in the URL (from the search panel) opens its detail.
+  const linked = useLinkedId("contractor");
+  const shown = selected ?? (linked.value ? Number(linked.value) : null);
   const list = usePolling(() => listContractors({ per_page: 200 }), { interval: 30000 });
   if (list.loading && !list.data) return <Loader label={t("contractor.loading")} />;
   const s = summary;
@@ -98,7 +102,7 @@ export function ContractorsPanel({ summary, state, states, onStateChange }) {
           <ContractorList contractors={list.data} onSelect={(c) => setSelected(c.id)} />
         </div>
       </section>
-      {selected && <ContractorDetail contractorId={selected} onClose={() => setSelected(null)} />}
+      {shown && <ContractorDetail contractorId={shown} onClose={() => { setSelected(null); linked.clear(); }} />}
     </div>
   );
 }
