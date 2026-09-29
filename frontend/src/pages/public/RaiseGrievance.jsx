@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CATEGORIES, LANGUAGES, SAFETY_CATEGORIES, SUBMITTER_TYPES, listPublicMines, submitGrievance } from "../../api/grievances";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
-import { SiteFooter } from "../../components/common/SiteFooter";
 import { BrandBackground } from "../../components/common/BrandBackground";
 import { categoryLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
@@ -170,7 +169,6 @@ export default function RaiseGrievance() {
           <Link to="/grievance/track">{t("login.trackGrievance")}</Link>
           <Link to="/login">{t("grievance.public.backToLogin")}</Link>
         </div>
-        <SiteFooter />
       </div>
     </div>
   );

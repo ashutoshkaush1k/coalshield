@@ -4,8 +4,8 @@ Target: the multi-mine comparison story, since PRD Section 8 names it the primar
 scenario. Stack: Yii2 API (port 8080) + PostgreSQL, ai-service (8001) for PPE vision, React (5173).
 Every score on screen is computed from synthetic data (`data/DATASETS.md`). The UI is production-styled:
 it no longer labels figures as demo values, so say it out loud - mine names and locations are real
-(Global Energy Monitor, Global Coal Mine Tracker, August 2026, CC BY 4.0; credited under "Data sources"
-in the footer), the numbers attached to them are not. The login page's quick-fill buttons appear because
+(Global Energy Monitor, Global Coal Mine Tracker, August 2026, CC BY 4.0; credited on the map's
+attribution line), the numbers attached to them are not. The login page's quick-fill buttons appear because
 run_all.bat starts the dashboard in demo mode (`frontend/.env.demo`, `VITE_DEMO_MODE=true`).
 
 ---
@@ -264,9 +264,9 @@ continuing** (`scripts\demo_reset.bat`).
     score still beside it - say the score itself has not changed. Scroll to **Patterns found**: seven
     automated checks, each finding with its numbers ("12 roof and strata violations of 33 in 45
     days, about 2.5 expected"). Open **Bhubaneswari**: the index sits beside the score; the panel
-    below shows how it is made up (count × points, capped), the **predicted risk** with what raises
-    it, and the statement that the model is **trained on US regulator data and transferred** -
-    read it out; it is a prompt to look, not a finding. If asked how good the checks are:
+    below shows how it is made up (a bar per component), and the **predicted risk** with what raises
+    it. Say it out loud: the model is **trained on US regulator data and transferred** - a prompt to
+    look, not a finding (the screen no longer carries that note). If asked how good the checks are:
     `docs/AI_EVALUATION.md` (every planted scenario found, every decoy ignored, the false positives
     explained; the model beats last year's accident rate on later US years, AUC 0.82 against 0.77).
     To show the fallback, close the `SIH-AI` window and run `api\yii.bat jobs/anomaly`: the same

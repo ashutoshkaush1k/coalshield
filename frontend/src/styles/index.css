@@ -326,10 +326,6 @@ html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
 .meter i.risk-high { background: var(--risk-high-dot); }
 .meter i.risk-medium { background: var(--risk-medium-dot); }
 .meter i.risk-low { background: var(--risk-low-dot); }
-.formula {
-  font-size: var(--text-sm); color: var(--ink-2); font-variant-numeric: tabular-nums;
-  background: var(--sunk); padding: var(--space-3); border-radius: var(--radius-sm);
-}
 
 /* --- tables --- */
 table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
@@ -719,19 +715,8 @@ body { overflow-x: hidden; }
   color: var(--on-navy-muted);
   font-size: var(--text-xs);
 }
-.login-card .site-footer { border-top: 0; padding: 0; text-align: center; }
-.data-sources summary { display: inline; cursor: pointer; color: var(--on-navy); text-decoration: underline; text-underline-offset: 2px; }
-.data-sources summary::-webkit-details-marker { display: none; }
-.data-sources summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.data-sources ul { color: var(--ink-2); }
-.data-sources ul {
-  margin: var(--space-2) 0 0; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-6); max-width: 60ch;
-  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm); text-align: left;
-  display: grid; gap: var(--space-1);
-}
 
 /* Records row under the score (violations, corrective actions, incidents, audit). */
-.score-how { margin-top: var(--space-4); }
 /* A mine's records as one row of equal tiles (components/records/MineRecords.jsx): five across when
    the card is wide enough, otherwise two per row with the odd last tile spanning the row, so the
    rows always wrap evenly. */
@@ -846,7 +831,6 @@ html:lang(hi) body, html:lang(bn) body, html:lang(or) body, html:lang(te) body, 
 .risk-section { display: flex; flex-direction: column; gap: var(--space-5); }
 /* The two risk cards share a row of the 12-column grid (.grid-12, span-6 each) at equal height; the
    "computed" line sits at the foot of the prediction card. */
-#prediction-computed { margin-top: auto; }
 .risk-card-head { flex-wrap: wrap; align-items: flex-start; row-gap: var(--space-2); }
 .risk-card-head > div { flex: 1 1 14rem; min-width: 0; }
 .risk-kind { flex: none; }
@@ -879,13 +863,6 @@ html:lang(hi) body, html:lang(bn) body, html:lang(or) body, html:lang(te) body, 
 .info-line { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; font-size: var(--text-sm); color: var(--ink-2); }
 .info-line svg { flex: none; margin-top: 2px; color: var(--muted); }
 
-.risk-more { border-top: 1px solid var(--line-soft); padding-top: var(--space-3); }
-.risk-more summary { cursor: pointer; font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); }
-.risk-more[open] summary { margin-bottom: var(--space-3); }
-.risk-more p { margin: 0; }
-.calc-list { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: grid; gap: var(--space-2); font-size: var(--text-sm); }
-.calc-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--space-3); }
-.calc-list .num { color: var(--muted); }
 
 .pattern-list { list-style: none; margin: 0; padding: 0; }
 .pattern-list li { padding: var(--space-4) var(--panel-pad); border-bottom: 1px solid var(--line); display: grid; gap: 3px; }
@@ -955,7 +932,7 @@ fieldset.field-card { border: 1px solid var(--line); }
 .truncate { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* A mine's alerts beside its summary: the list fills the card and scrolls, so the two cards keep
    the same height and the list never stretches the row. Stacked (narrow), it scrolls at 360 px. */
-.alerts-body { flex: 1 1 0; min-height: 280px; overflow-y: auto; contain: size; }
+.alerts-body { flex: 1 1 0; min-height: 160px; overflow-y: auto; contain: size; }
 @media (max-width: 1150px) { .alerts-body { contain: none; flex: none; min-height: 0; max-height: 360px; } }
 .mine-stats .hero-score { font-size: var(--text-display); line-height: 1.15; margin-top: 2px; }
 /* Progress uses the accent. */
@@ -1004,4 +981,5 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .has-bg .brandline h1, .has-bg .brandline span { color: var(--on-navy); }
 .has-bg .public-links, .has-bg .public-links .faint, .has-bg .public-links a:not(.btn) { color: var(--on-navy); }
 .has-bg .public-links a:not(.btn) { text-decoration: underline; text-underline-offset: 2px; }
-.has-bg .site-footer { border-radius: var(--radius-sm); }
+/* A worked figure (the contractor detail's score breakdown): normal font, tabular numerals. */
+.formula { font-size: var(--text-sm); color: var(--ink-2); font-variant-numeric: tabular-nums; background: var(--sunk); padding: var(--space-3); border-radius: var(--radius-sm); }

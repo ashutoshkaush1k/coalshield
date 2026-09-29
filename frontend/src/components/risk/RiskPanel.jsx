@@ -97,19 +97,6 @@ export function GovernanceRisk({ gri }) {
 
         {user?.role === "mine_head" && <InfoLine id="gri-viewer-note">{t("gri.viewerNote")}</InfoLine>}
 
-        <details className="risk-more" id="gri-how">
-          <summary>{t("gri.howCalculated")}</summary>
-          <ul className="calc-list">
-            {gri.components.map((c) => (
-              <li key={c.key}>
-                <span>{label(c)}</span>
-                <span className="num">{t("gri.componentLine", { count: fmtNumber(c.count, 0), points: c.points, value: fmtNumber(c.value, 0), cap: c.cap })}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="small num">{t("gri.totalLine", { raw: fmtNumber(gri.raw, 0), multiplier: fmtNumber(gri.multiplier, 1), gri: fmtNumber(gri.gri, 0) })}</p>
-          <p className="small muted">{t("gri.settingsNote")}</p>
-        </details>
       </div>
     </section>
   );
@@ -162,20 +149,8 @@ export function PredictedRisk({ prediction: p }) {
               ) : <p className="muted small">{t("prediction.noFactors")}</p>}
             </div>
 
-            <InfoLine id="prediction-disclaimer">{t("prediction.transferNote")}</InfoLine>
 
-            <details className="risk-more" id="prediction-about">
-              <summary>{t("prediction.aboutTitle")}</summary>
-              <div className="stack tight small">
-                <p>{t("prediction.target")}</p>
-                <p>{t("prediction.about", { auc: fmtNumber(p.test_auc, 2), baseline: fmtNumber(p.baseline_auc, 2) })}</p>
-                <p className="muted">{t("prediction.version", { version: p.model_version })}</p>
-              </div>
-            </details>
 
-            <span className="faint small" id="prediction-computed">
-              {t("prediction.computed", { when: fmtWhen(p.predicted_at), engine: t(`anomaly.engine.${p.engine}`, { defaultValue: p.engine }) })}
-            </span>
           </>
         )}
       </div>

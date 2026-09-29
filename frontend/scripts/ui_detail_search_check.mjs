@@ -80,13 +80,13 @@ async function run(p) {
       const last = [...body.children].at(-1);
       return { actions, tiles: tiles.length, widths: [...new Set(tiles.map((t) => Math.round(r(t).width)))], rows: new Set(tiles.map((t) => Math.round(r(t).top))).size,
         gap: Math.round(r(card).bottom - r(last).bottom), loneButtons: body.querySelectorAll(":scope > .row > button, .records-bar").length,
-        formulaHidden: !document.querySelector("#score-how").open, text: document.body.innerText };
+        formulaHidden: !document.querySelector("#score-how, .formula"), text: document.body.innerText };
     })()`);
     expect(d.actions.length === 2 && /Back/.test(d.actions[0]) && /Flag for inspection/.test(d.actions[1]), `header actions: ${d.actions.join(" | ")}`);
     expect(d.tiles === 5 && d.widths.length === 1 && d.rows === 1, `five equal tiles in one row (${d.tiles}, widths ${d.widths}, rows ${d.rows})`);
     expect(d.loneButtons === 0, "no lone buttons in the summary card");
-    expect(d.gap <= 24, `card fits its content (${d.gap}px below the last item)`);
-    expect(d.formulaHidden, "the score formula is in a closed expander");
+    expect(d.gap <= 26, `card fits its content (${d.gap}px below the last item: the card padding and border)`);
+    expect(d.formulaHidden, "no score formula on the page");
     expect(!/drafts: -/.test(d.text) && !/[A-Z]{3}-\d{2},[A-Z]/.test(d.text), "alert text: no empty parts, list separators with spaces");
     await shot("mine-detail-gov-1366");
     await p.evaluate(`document.getElementById("gri-explain-link").click()`); await sleep(1200);

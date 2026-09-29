@@ -36,7 +36,7 @@ of Phase 8. Test names are in `api/tests/` (Codeception) and `ai-service/tests/`
 | 15 | **IoT monitoring with threshold alerts** (PRD 4.2) | Simulator replays readings through an API-key ingest endpoint; legal limits from `rules.yaml` (each tied to a cited obligation); breaches raise alerts and age out of the score | [sensors](screenshots/phase2/04-gov-sensors.png), [trends](screenshots/phase2/12-gov-sensor-trends.png) | `SensorCest`, `SensorRulesTest` | No real hardware (out of scope); readings are synthetic, calibrated to CPCB air-quality statistics. |
 | 16 | **Compliance score and risk bands** (PRD 4.3, 6.1) | `100 - violations x 5 - breaches in window x 3`, bands low 80+, medium 50+, high; the Governance Risk Index beside it | [score and index](screenshots/phase7/01-gov-mine-score-and-index.png) | `ComplianceScoreServiceTest` (the prototype's numbers), `DemoScoreCest` (100 / 80 / 70 / 60 / 45, fleet 83.2), `yii demo/check` | The weights are product settings, not a regulatory formula; the index's weights are not fitted to outcomes. |
 | 17 | **AI anomaly detection** | Seven detectors (production spikes, flatlined sensors, night-shift concentration, repeat violations, late corrective actions, contractor outliers, grievance clusters), in the ai-service with identical PHP twins | [findings](screenshots/phase7/05-priority-fleet-findings.png) | Against the planted scenarios: 7 of 7 found, 3 of 3 decoys ignored, 10 unplanted flags explained (`docs/AI_EVALUATION.md` section 1, `AiEvaluationTest`, `DetectorParityTest`) | Evaluated on synthetic data only; the ten extra flags are real patterns the generator did not label. |
-| 18 | **Predictive risk indicator** (PRD 4 (7)) | Gradient boosting on real US regulator data (MSHA coal mine-years), time split, calibrated, with top factors in plain language | [predicted risk](screenshots/phase7/02-gov-risk-panel-fallback.png) | Test years 2022-2024: AUC 0.816 against 0.766 for last year's accident rate (`docs/AI_EVALUATION.md` section 2) | **Trained on US data and transferred**; not validated on Indian mines. Shown as a prompt, never a finding. |
+| 18 | **Predictive risk indicator** (PRD 4 (7)) | Gradient boosting on real US regulator data (MSHA coal mine-years), time split, calibrated, with top factors in plain language | [predicted risk](screenshots/phase7/02-gov-risk-panel-fallback.png) | Test years 2022-2024: AUC 0.816 against 0.766 for last year's accident rate (`docs/AI_EVALUATION.md` section 2) | **Trained on US data and transferred**; not validated on Indian mines. A prompt, never a finding (said in the demo; the screen shows the figure and its factors only). |
 
 ## Questions judges may ask
 
@@ -46,7 +46,7 @@ the company production totals, DGMS accident statistics and CPCB air-quality fig
 operations - production entries, sensor readings, violations, grievances - are synthetic, generated
 with a fixed seed and calibrated to those public statistics (`data/DATASETS.md`, "Data provenance
 for judges"). The screens no longer tag scores as demo values (production-styled UI); the data
-sources whose licences require credit are listed under "Data sources" in every page's footer.
+sources whose licences require credit are credited on the map's attribution line.
 
 **Which law does it follow?** The OSH Code 2020, in force from 21.11.2025, the OSH (Central) Rules
 2026 and the Coal Mines Regulations 2017 (saved under the Code). The Mines Act 1952 and the Contract

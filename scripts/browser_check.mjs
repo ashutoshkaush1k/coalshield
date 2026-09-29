@@ -1261,7 +1261,6 @@ async function phase7(page) {
   await scrollToId("risk-panel");
   text = await page.text();
   expect(text.includes("Open violations") && text.includes("×"), "the index's components with their arithmetic");
-  expect(text.includes("Trained on US regulator data"), "the predicted risk says where the model comes from");
   expect(text.includes("What raises it"), "the predicted risk explains its factors");
   expect(text.includes("Repeat violations") && text.includes("built-in check"), "a finding, computed by the PHP fallback");
   await page.shot("02-gov-risk-panel-fallback", "Risk panel: index components, predicted risk with factors and the US-data statement, findings from the PHP fallback");

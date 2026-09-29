@@ -44,7 +44,7 @@ const SHELL = `(() => {
     bar: qa("#app-top-bar .tab").map((b) => b.dataset.tab),
     drawer: qa("#nav-drawer .nav-list [data-tab]").map((b) => b.dataset.tab),
     drawerLogo: !!q("#nav-drawer a.home-link"), who: (q("#nav-drawer .nav-foot .who")?.textContent ?? "").trim().length > 0,
-    signOut: !!q("#nav-drawer .nav-foot button"), footer: qa(".site-footer #data-sources").length,
+    signOut: !!q("#nav-drawer .nav-foot button"), credits: qa("#data-sources").length,
     barActive: qa("#app-top-bar .tab[aria-selected='true']").map((b) => b.dataset.tab),
     drawerActive: qa("#nav-drawer [aria-current], #nav-drawer .nav-item.active").map((b) => b.dataset.tab),
     underline: getComputedStyle(q("#app-top-bar a.home-link")).textDecorationLine,
@@ -99,12 +99,12 @@ async function run(p) {
         await go(route);
         const s = await p.evaluate(SHELL);
         const where = `${role.who} ${route}`;
-        const shell = { bar: s.bar, drawer: s.drawer, topBar: s.topBar, toggle: s.toggle, logo: s.logo, drawerLogo: s.drawerLogo, who: s.who, signOut: s.signOut, footer: s.footer };
+        const shell = { bar: s.bar, drawer: s.drawer, topBar: s.topBar, toggle: s.toggle, logo: s.logo, drawerLogo: s.drawerLogo, who: s.who, signOut: s.signOut, credits: s.credits };
         first ??= shell;
         const ok = [
           expect(s.path === finalPath, `${where}: lands on ${finalPath} (got ${s.path})`),
-          expect(s.headers === 1 && s.footers === 1 && s.sidebars === 0, `${where}: exactly one header and one footer, no sidebar (${s.headers}/${s.footers}/${s.sidebars})`),
-          expect(s.topBar && s.toggle && s.logo && s.drawerLogo && s.who && s.signOut && s.footer === 1, `${where}: top bar, logo links, user block, Sign out and footer present`),
+          expect(s.headers === 1 && s.footers <= 1 && s.sidebars === 0, `${where}: one header, at most the fallback footer, no sidebar (${s.headers}/${s.footers}/${s.sidebars})`),
+          expect(s.topBar && s.toggle && s.logo && s.drawerLogo && s.who && s.signOut && s.credits === 0, `${where}: top bar, logo links, user block and Sign out present; no data-credits panel`),
           expect(same(s.bar, role.set.bar), `${where}: bar tabs ${s.bar}`),
           expect(same(s.drawer, role.set.drawer), `${where}: drawer items ${s.drawer}`),
           expect(same(shell, first), `${where}: shell identical to ${role.routes(mine)[0][0]}`),

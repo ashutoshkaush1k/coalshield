@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { Card } from "../components/common/Card";
 import { ErrorNotice } from "../components/common/ErrorNotice";
-import { SiteFooter } from "../components/common/SiteFooter";
 import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
 import { useT } from "../i18n/t";
@@ -97,7 +96,6 @@ export default function Login() {
             <Link className="btn" to="/grievance/track">{t("login.trackGrievance")}</Link>
           </div>
         </div>
-        <SiteFooter />
       </div>
     </div>
   );

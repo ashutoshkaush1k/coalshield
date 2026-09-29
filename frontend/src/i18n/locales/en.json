@@ -481,8 +481,6 @@
     "score": "Compliance score",
     "openViolations": "Open violations",
     "openAlerts": "Open alerts",
-    "violationsShort": "violations",
-    "breachesShort": "breaches",
     "loading": "Loading mine...",
     "detail": "Mine detail",
     "back": "Back",
@@ -503,8 +501,7 @@
     "reopened": "Directive reopened",
     "reopenedBody": "The mine head has been asked to resubmit.",
     "reopenFailed": "Could not reopen",
-    "scoreShort": "Score",
-    "howCalculated": "How is this calculated?"
+    "scoreShort": "Score"
   },
   "records": {
     "latest_one": "{{count}} most recent",
@@ -1495,7 +1492,6 @@
     "kind": "Measured now",
     "short": "Risk index",
     "explain": "What makes it up",
-    "componentLine": "{{count}} × {{points}} = {{value}} (max {{cap}})",
     "barAria": "{{label}}: {{value}} of {{cap}} points",
     "noIssues": "No issues: {{items}}",
     "multiplierBecause": "because of repeat violations:",
@@ -1508,9 +1504,6 @@
       "ageing_corrective_actions": "Overdue corrective actions"
     },
     "noRepeat": "No repeat violations - no multiplier",
-    "howCalculated": "How is this calculated?",
-    "totalLine": "Sum {{raw}} × {{multiplier}} for repeat violations = {{gri}} (at most 100)",
-    "settingsNote": "Points and caps are product settings. The index is a separate measure: the compliance score does not change.",
     "viewerNote": "Sensitive grievances are not counted in your view; the regulator's index includes them, so it can be higher."
   },
   "prediction": {
@@ -1518,7 +1511,6 @@
     "subtitle": "Next 12 months",
     "kind": "Model estimate",
     "headline": "chance of a high-accident year",
-    "target": "Chance of a high-accident year ahead: lost-time and fatal accidents at 3 or more per 100 workers",
     "none": "No prediction yet. The daily score job computes it.",
     "fleet": "Higher than {{pct}} % of the monitored mines",
     "factors": "What raises it",
@@ -1527,11 +1519,6 @@
     "factorViolationDetail": "{{value}} per 100 workers a year, higher than {{pct}} % of the monitored mines",
     "factorOtherDetail": "{{value}}, typical {{typical}}",
     "noFactors": "Nothing raises it above a typical mine.",
-    "transferNote": "Trained on US regulator data and transferred: a prompt to look closer, not a forecast.",
-    "aboutTitle": "About this model",
-    "about": "Gradient-boosted trees, fitted on US coal mine-years from the regulator (MSHA) for 2017-2020, calibrated on 2021 and tested on 2022-2024, years it had never seen. On those years it ranked mines better than last year's accident rate alone: AUC {{auc}} against {{baseline}}. It reaches these mines by matching violation categories; it was not trained on Indian mines.",
-    "version": "Model version {{version}}",
-    "computed": "Computed {{when}} ({{engine}})",
     "feature": {
       "log_workers": "Workforce size",
       "underground": "Underground working",
@@ -1704,11 +1691,6 @@
   "nav": {
     "menu": "Menu",
     "more": "More views"
-  },
-  "footer": {
-    "dataSources": "Data sources",
-    "sourceGem": "Mine names, locations and capacities: Global Energy Monitor, Global Coal Mine Tracker, August 2026 (CC BY 4.0).",
-    "sourceOsm": "Map tiles: © OpenStreetMap contributors (ODbL)"
   },
   "search": {
     "open": "Open search",

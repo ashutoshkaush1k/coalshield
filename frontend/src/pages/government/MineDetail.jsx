@@ -82,13 +82,6 @@ export function ComplianceSummary({ mine, gri = null }) {
       <div className="meter" style={{ marginTop: "var(--space-5)" }}>
         <i className={cls} style={{ width: `${Math.max(0, Math.min(100, c.score))}%` }} />
       </div>
-      <details className="risk-more score-how" id="score-how">
-        <summary>{t("mine.howCalculated")}</summary>
-        <div className="formula">
-          100 - ({c.violation_count} {t("mine.violationsShort")} x {c.weight_ppe}) - ({c.breach_count} {t("mine.breachesShort")} x{" "}
-          {c.weight_env}) = {fmtScore(c.score)}
-        </div>
-      </details>
     </>
   );
 }
