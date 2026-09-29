@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { CATEGORIES, LANGUAGES, SAFETY_CATEGORIES, SUBMITTER_TYPES, listPublicMines, submitGrievance } from "../../api/grievances";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { SiteFooter } from "../../components/common/SiteFooter";
+import { BrandBackground } from "../../components/common/BrandBackground";
 import { categoryLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
 import { LanguageSwitcher } from "../../components/common/LanguageSwitcher";
@@ -53,7 +54,8 @@ export default function RaiseGrievance() {
   };
 
   return (
-    <div className="login-wrap">
+    <div className="login-wrap has-bg">
+      <BrandBackground />
       <div className="public-card stack">
         <LanguageSwitcher id="public-language" />
         <div className="brandline">

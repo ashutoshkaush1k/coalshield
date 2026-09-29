@@ -986,3 +986,22 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 /* Recharts axis numbers: the normal font, tabular. */
 .recharts-cartesian-axis-tick-value { font-variant-numeric: tabular-nums; }
 .mine-stats { margin: calc(-1 * var(--space-3)); }
+
+/* --- Login and public grievance pages: the photo behind them (components/common/BrandBackground.jsx) ---
+   Fixed full-window cover, positioned to keep the lower-middle machinery in view; navy at once,
+   the photo fading in. A navy gradient, darker behind the form, keeps every text on it at WCAG AA:
+   white text over the lightest possible pixel under 60 % navy is 4.7:1, so all text on the photo
+   is white (the lighter slate would drop below AA at the edges). */
+.login-wrap.has-bg { position: relative; background: var(--navy); isolation: isolate; }
+.brand-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--navy); pointer-events: none; }
+.brand-bg img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 65%;
+  opacity: 0; transition: opacity 600ms ease-out;
+}
+.brand-bg img.is-loaded { opacity: 1; }
+.brand-bg-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 80% at 50% 50%, var(--bg-shade-center) 0%, var(--bg-shade-center) 35%, var(--bg-shade-edge) 100%); }
+@media (prefers-reduced-motion: reduce) { .brand-bg img { transition: none; } }
+.has-bg .brandline h1, .has-bg .brandline span { color: var(--on-navy); }
+.has-bg .public-links, .has-bg .public-links .faint, .has-bg .public-links a:not(.btn) { color: var(--on-navy); }
+.has-bg .public-links a:not(.btn) { text-decoration: underline; text-underline-offset: 2px; }
+.has-bg .site-footer { border-radius: var(--radius-sm); }

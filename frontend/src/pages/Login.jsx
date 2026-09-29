@@ -8,6 +8,7 @@ import { useAuth } from "../hooks/useAuth";
 import { homeFor } from "../auth/roles";
 import { useT } from "../i18n/t";
 import { LanguageSwitcher } from "../components/common/LanguageSwitcher";
+import { BrandBackground } from "../components/common/BrandBackground";
 import { PasswordInput } from "../components/common/PasswordInput";
 
 // One form for both roles: the account decides the scope, not the login screen. The quick-fill
@@ -48,7 +49,8 @@ export default function Login() {
   }
 
   return (
-    <div className="login-wrap">
+    <div className="login-wrap has-bg">
+      <BrandBackground />
       <div className="login-card stack">
         <LanguageSwitcher id="login-language" />
         <div className="brandline">

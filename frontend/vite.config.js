@@ -13,7 +13,9 @@ function serviceWorker() {
     name: 'smg-service-worker',
     apply: 'build',
     generateBundle(_, bundle) {
-      const files = Object.keys(bundle).filter((f) => !f.endsWith('.map') && !f.endsWith('.woff') && f !== 'sw.js')
+      // The login photo is precached in AVIF only (what current browsers pick); the WebP and JPEG
+      // fallbacks load from the network when needed.
+      const files = Object.keys(bundle).filter((f) => !f.endsWith('.map') && !f.endsWith('.woff') && f !== 'sw.js' && !/login-bg-\d+-[\w-]+\.(webp|jpg)$/.test(f))
       const precache = ['/index.html', ...[...files, ...PUBLIC_FILES].filter((f) => f !== 'index.html').map((f) => `/${f}`)]
       const version = createHash('sha256').update(precache.join('\n'))
         .update(bundle['index.html']?.source ?? '').digest('hex').slice(0, 12)

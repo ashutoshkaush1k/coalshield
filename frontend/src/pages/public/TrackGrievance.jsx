@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { trackGrievance } from "../../api/grievances";
 import { SiteFooter } from "../../components/common/SiteFooter";
+import { BrandBackground } from "../../components/common/BrandBackground";
 import { ErrorNotice } from "../../components/common/ErrorNotice";
 import { GrievanceStatus, fmtWhen } from "../../components/grievances/common";
 import { useT } from "../../i18n/t";
@@ -35,7 +36,8 @@ export default function TrackGrievance() {
   useEffect(() => { if (params.get("ticket") && location.state?.code) look(params.get("ticket"), location.state.code); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="login-wrap">
+    <div className="login-wrap has-bg">
+      <BrandBackground />
       <div className="public-card stack">
         <LanguageSwitcher id="public-language" />
         <div className="brandline">

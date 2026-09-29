@@ -64,6 +64,9 @@
   --cyan-on-navy: #22d3ee;
   --navy-line: rgba(255, 255, 255, .12);
   --navy-tint: #eef2f7;
+  /* The navy wash over the login photo: 72 % behind the form, never under 60 % at the edges. */
+  --bg-shade-center: rgba(15, 23, 42, .72);
+  --bg-shade-edge: rgba(15, 23, 42, .6);
 
   /* ---- Data series: an identity, not a judgement (one series per chart). */
   --sensor-gas: #0891b2;
