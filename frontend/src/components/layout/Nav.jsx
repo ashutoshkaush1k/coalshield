@@ -53,13 +53,20 @@ export function TopBar() {
   const { barTabs, drawerTabs, active, onHome, goTo } = useHomeTabs();
   const ref = useRef(null);
   useMastheadHeight(ref);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const inDrawer = drawerTabs.find((tab) => tab.id === active);
   const current = inDrawer
     ? { id: inDrawer.id, label: inDrawer.label }
     : location.pathname === PROFILE_PATH ? { id: "profile", label: t("shell.profile") } : null;
   const fromMouse = (e) => e.pointerType === "mouse";
   return (
-    <header className="masthead" ref={ref} id="app-top-bar">
+    <header className={`masthead${scrolled ? " is-scrolled" : ""}`} ref={ref} id="app-top-bar">
       <div className="masthead-brand">
         <button type="button" className="nav-toggle" id="nav-toggle" aria-label={t("nav.menu")} title={t("nav.menu")}
                 aria-expanded={nav.open} aria-controls="nav-drawer"

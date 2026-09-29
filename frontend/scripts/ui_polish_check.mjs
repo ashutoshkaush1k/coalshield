@@ -27,13 +27,27 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const source = readFileSync(join(ROOT, "scripts", "browser_check.mjs"), "utf8");
 const OVERFLOW_PROBE = new Function(`return \`${source.match(/const OVERFLOW_PROBE = `([\s\S]*?)`;\r?\n/)[1]}\`;`)();
 
-// [name, account, path, element that shows the page is ready]
-const PAGES = [
+// [name, account (null: signed out), path, element that shows the page is ready]
+const PASS1 = [
   ["gov-overview", GOV, "/gov", ".board .core"],
   ["mine-detail-gov", GOV, "/gov/mines/5", "#mine-records"],
   ["mine-detail-head", HEAD, "/mine", "#mine-records"],
   ["obligations", GOV, "/gov?tab=obligations", "#panel-obligations .panel-block"],
 ];
+const tab = (who, home, id) => [`${who === GOV ? "gov" : "head"}-${id}`, who, `${home}?tab=${id}`, `#panel-${id} .panel-block, #panel-${id} .empty`];
+const PASS2 = [
+  ["login", null, "/login", "#login-language"],
+  ["grievance-raise", null, "/grievance", "#grievance-form"],
+  ["grievance-track", null, "/grievance/track", "form"],
+  tab(GOV, "/gov", "ranking"), tab(GOV, "/gov", "production"), tab(GOV, "/gov", "map"), tab(GOV, "/gov", "sensors"),
+  tab(GOV, "/gov", "trends"), tab(GOV, "/gov", "contractors"), tab(GOV, "/gov", "grievances"),
+  tab(HEAD, "/mine", "production"), tab(HEAD, "/mine", "map"), tab(HEAD, "/mine", "sensors"), tab(HEAD, "/mine", "trends"),
+  tab(HEAD, "/mine", "contractors"), tab(HEAD, "/mine", "grievances"), tab(HEAD, "/mine", "obligations"),
+  ["profile", GOV, "/profile", "#profile-language"],
+  ["field", null, "/field", "#field-sign-in, .field-app"],
+];
+const PAGES = (process.env.PASS ?? "pass1") === "pass2" ? PASS2 : PASS1;
+const WIDTHS = (process.env.PASS ?? "pass1") === "pass2" ? [360, 1366, 1440, 1920] : [360, 1366, 1920];
 
 // Same-row cards (tops within 2 px, sharing a grid or flex parent) must match in height; tables must
 // not scroll sideways at >= 1366 px; mine codes must stay on one line.
@@ -100,9 +114,14 @@ async function run(p) {
   let current = null;
   const signIn = async (who, lang) => {
     if (current === `${who}|${lang}`) return;
-    const token = await login(who); await api(token, "/users/me", { preferred_language: lang });
-    await p.send("Page.navigate", { url: `${APP}/login` }); await sleep(900);
-    await p.evaluate(`sessionStorage.setItem("smg.token", ${JSON.stringify(token)}); localStorage.setItem("smg.lang", ${JSON.stringify(lang)})`);
+    if (!who) {
+      await p.send("Page.navigate", { url: `${APP}/login` }); await sleep(900);
+      await p.evaluate(`sessionStorage.clear(); localStorage.setItem("smg.lang", ${JSON.stringify(lang)})`);
+    } else {
+      const token = await login(who); await api(token, "/users/me", { preferred_language: lang });
+      await p.send("Page.navigate", { url: `${APP}/login` }); await sleep(900);
+      await p.evaluate(`sessionStorage.setItem("smg.token", ${JSON.stringify(token)}); localStorage.setItem("smg.lang", ${JSON.stringify(lang)})`);
+    }
     current = `${who}|${lang}`;
   };
   const open = async ([, who, path, ready], lang = "en") => {
@@ -124,6 +143,11 @@ async function run(p) {
     if (MODE === "shots") {
       await width(1440);
       for (const page of PAGES) { await open(page); await fullShot(`${WHEN}-${page[0]}-1440`); }
+      if (PAGES === PASS2) {
+        await width(360);
+        for (const page of PAGES.filter((pg) => ["login", "grievance-raise", "gov-ranking", "head-production", "profile", "field"].includes(pg[0]))) { await open(page); await fullShot(`${WHEN}-${page[0]}-360`); }
+        return;
+      }
       await open(PAGES[0]);
       await p.evaluate(`document.getElementById("nav-toggle").click()`); await sleep(600);
       await viewShot(`${WHEN}-drawer-1440`);
@@ -139,7 +163,7 @@ async function run(p) {
     } else {
       const findings = {};
       for (const lang of ["en", "hi"]) {
-        for (const w of [360, 1366, 1920]) {
+        for (const w of WIDTHS) {
           await width(w);
           for (const page of PAGES) {
             await open(page, lang);

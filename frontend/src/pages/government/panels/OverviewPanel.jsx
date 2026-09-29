@@ -24,9 +24,9 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
 
   return (
     <div className="stack">
-      <section className="panel-block">
+      <div className="grid-12">
+      <section className="panel-block hero-card span-4" id="overview-hero">
         <div className="panel-body">
-          <div className="hero-figure">
             <div>
               {/* The label names the scope, so a number can never be read as national
                   when it is actually one state's. */}
@@ -38,7 +38,10 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
                   : t("overview.meanOfScope", { n: fmtNumber(stats?.mine_count ?? 0, 0), where: scopeWhere(user) })}
               </p>
             </div>
-
+        </div>
+      </section>
+      <section className="panel-block fill span-8" id="overview-stats">
+        <div className="panel-body">
             <div className="tally-set">
               <Tally label={t("risk.high")} value={stats?.high_risk_count ?? 0} tone="high" />
               <Tally label={t("risk.medium")} value={stats?.medium_risk_count ?? 0} tone="medium" />
@@ -47,9 +50,9 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
               <Tally label={breachesLabel(stats?.breach_window_hours)} hint={breachesHint(stats?.breach_window_hours)}
                      value={stats?.total_breaches ?? 0} />
             </div>
-          </div>
         </div>
       </section>
+      </div>
 
       <section className="panel-block">
         <div className="panel-head">

@@ -43,8 +43,22 @@
   --focus: #06b6d4;
   --focus-ring: 0 0 0 3px rgba(6, 182, 212, .35);
   /* The top bar: translucent white over the page (solid white where backdrop-filter is missing). */
-  --glass: rgba(255, 255, 255, .72);
+  --glass: rgba(255, 255, 255, .6);
   --glass-blur: 12px;
+  --shadow-bar-scrolled: 0 4px 16px rgba(15, 23, 42, .10);
+  --line-bar-scrolled: #cbd5e1;
+
+  /* ---- Navy as a brand surface (about 60 % white, 30 % navy, 10 % cyan): the drawer, the hero
+     stat cards, primary buttons, the login panel, table headers (a light tint) and the footer.
+     Text on navy (AA): on-navy 17.9:1, on-navy-muted 12.0:1, on-navy-faint 6.9:1, cyan-on-navy 9.9:1. */
+  --navy: #0f172a;
+  --navy-2: #1e293b;
+  --on-navy: #ffffff;
+  --on-navy-muted: #cbd5e1;
+  --on-navy-faint: #94a3b8;
+  --cyan-on-navy: #22d3ee;
+  --navy-line: rgba(255, 255, 255, .12);
+  --navy-tint: #eef2f7;
 
   /* ---- Data series: an identity, not a judgement (one series per chart). */
   --sensor-gas: #0891b2;

@@ -58,8 +58,8 @@ a:hover { text-decoration: underline; }
 .nav-drawer {
   position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; width: min(300px, 86vw);
   display: flex; flex-direction: column; gap: var(--space-5); overflow-y: auto;
-  padding: var(--space-5) var(--space-4); background: var(--card);
-  border-right: 1px solid var(--line); box-shadow: var(--shadow-lg);
+  padding: var(--space-5) var(--space-4); background: var(--navy); color: var(--on-navy);
+  border-right: 1px solid var(--navy); box-shadow: var(--shadow-lg);
   transform: translateX(-105%); visibility: hidden;
   transition: transform .2s ease, visibility 0s linear .2s;
 }
@@ -73,17 +73,19 @@ a:hover { text-decoration: underline; }
 .nav-item {
   display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 40px;
   padding: var(--space-2) var(--space-3); border: none; border-radius: var(--radius-sm);
-  background: none; color: var(--ink-2); font: inherit; font-size: var(--text-md); font-weight: 500;
+  background: none; color: var(--on-navy-muted); font: inherit; font-size: var(--text-md); font-weight: 500;
   text-align: left; cursor: pointer; text-decoration: none;
 }
-.nav-item:hover { background: var(--sunk); color: var(--ink); text-decoration: none; }
-.nav-item[aria-current], .nav-item.active { background: var(--accent-soft); color: var(--ink); font-weight: 600; box-shadow: inset 3px 0 0 var(--cyan); }
+.nav-item:hover { background: var(--navy-2); color: var(--on-navy); text-decoration: none; }
+.nav-item[aria-current], .nav-item.active { background: var(--navy-2); color: var(--on-navy); font-weight: 600; box-shadow: inset 3px 0 0 var(--cyan); }
 .nav-item:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.nav-item svg { flex: none; color: var(--muted); }
-.nav-item[aria-current] svg, .nav-item.active svg { color: var(--ink); }
-.nav-foot { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--line); display: grid; gap: 2px; }
-.nav-foot .who { font-size: var(--text-sm); font-weight: 600; padding: 0 var(--space-3); overflow-wrap: anywhere; }
-.nav-foot .role { font-size: var(--text-xs); color: var(--muted); padding: 0 var(--space-3) var(--space-2); overflow-wrap: anywhere; }
+.nav-item svg { flex: none; color: var(--on-navy-faint); }
+.nav-item:hover svg, .nav-item[aria-current] svg, .nav-item.active svg { color: var(--cyan-on-navy); }
+.nav-drawer .home-link, .nav-drawer .home-link strong { color: var(--on-navy); }
+.nav-drawer .label { color: var(--on-navy-faint); }
+.nav-foot { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--navy-line); display: grid; gap: 2px; }
+.nav-foot .who { font-size: var(--text-sm); font-weight: 600; padding: 0 var(--space-3); overflow-wrap: anywhere; color: var(--on-navy); }
+.nav-foot .role { font-size: var(--text-xs); color: var(--on-navy-faint); padding: 0 var(--space-3) var(--space-2); overflow-wrap: anywhere; }
 
 .main { min-width: 0; min-height: 100vh; display: flex; flex-direction: column; }
 /* One page margin for the top bar, the page title, the content and the footer, so every edge lines up. */
@@ -102,6 +104,8 @@ a:hover { text-decoration: underline; }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .masthead { background: var(--glass); backdrop-filter: saturate(1.4) blur(var(--glass-blur)); -webkit-backdrop-filter: saturate(1.4) blur(var(--glass-blur)); }
 }
+.masthead { transition: box-shadow .15s ease, border-color .15s ease; }
+.masthead.is-scrolled { box-shadow: var(--shadow-bar-scrolled); border-bottom-color: var(--line-bar-scrolled); }
 /* Hamburger, logo and app name, and the current tab's name when that tab is in the drawer. */
 .masthead-brand { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
 .nav-toggle {
@@ -302,7 +306,7 @@ html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
 .meter i.risk-medium { background: var(--risk-medium-dot); }
 .meter i.risk-low { background: var(--risk-low-dot); }
 .formula {
-  font-family: var(--font-mono); font-size: var(--text-xs); color: var(--muted);
+  font-size: var(--text-sm); color: var(--ink-2); font-variant-numeric: tabular-nums;
   background: var(--sunk); padding: var(--space-3); border-radius: var(--radius-sm);
 }
 
@@ -313,7 +317,7 @@ table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
    page; below that the wrapper scrolls sideways with the first column held in place. */
 th {
   text-align: left; font-size: var(--text-xs); font-weight: 500; color: var(--muted);
-  padding: var(--space-3) var(--space-4); background: var(--sunk);
+  padding: var(--space-3) var(--space-4); background: var(--navy-tint); color: var(--ink-2);
   border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 1;
 }
 th:first-child, td:first-child { padding-left: var(--panel-pad); }
@@ -339,7 +343,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 @media (max-width: 1023px) {
   .scroll-x th:first-child, .scroll-x td:first-child { position: sticky; left: 0; z-index: 2; background: var(--card); }
-  .scroll-x th:first-child { background: var(--sunk); z-index: 3; }
+  .scroll-x th:first-child { background: var(--navy-tint); z-index: 3; }
   .scroll-x th { top: 0; }
 }
 /* Compact empty state: an icon and one line. */
@@ -359,7 +363,7 @@ button, .btn {
   display: inline-flex; align-items: center; gap: var(--space-2);
 }
 button:hover, .btn:hover { background: var(--hover); border-color: var(--faint); text-decoration: none; }
-button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-navy); font-weight: 500; }
 button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 button:disabled { opacity: .5; cursor: not-allowed; }
 button:disabled:hover { background: var(--card); border-color: var(--line); }
@@ -496,7 +500,7 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
 .board-axis { position: relative; flex: none; width: 26px; height: var(--track-h); margin-top: 12px; }
 .board-axis span {
   position: absolute; right: 0; transform: translateY(50%);
-  font-family: var(--font-mono); font-size: var(--text-xs); color: var(--faint); line-height: 1;
+  font-size: var(--text-xs); color: var(--faint); line-height: 1; font-variant-numeric: tabular-nums;
 }
 /* Top padding: room for the "100" gridline; overflow-y hidden so only the lane scrolls sideways. */
 .board-scroll { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; padding: 12px 0 var(--space-2); }
@@ -689,15 +693,16 @@ body { overflow-x: hidden; }
    credits) behind one small link. */
 .site-footer {
   margin-top: auto;
-  padding: var(--space-3) var(--page-margin);
-  border-top: 1px solid var(--line);
-  color: var(--muted);
+  padding: var(--space-2) var(--page-margin);
+  background: var(--navy);
+  color: var(--on-navy-muted);
   font-size: var(--text-xs);
 }
 .login-card .site-footer { border-top: 0; padding: 0; text-align: center; }
-.data-sources summary { display: inline; cursor: pointer; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.data-sources summary { display: inline; cursor: pointer; color: var(--on-navy); text-decoration: underline; text-underline-offset: 2px; }
 .data-sources summary::-webkit-details-marker { display: none; }
 .data-sources summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.data-sources ul { color: var(--ink-2); }
 .data-sources ul {
   margin: var(--space-2) 0 0; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-6); max-width: 60ch;
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm); text-align: left;
@@ -764,7 +769,7 @@ tr.is-flagged { background: var(--risk-high-bg); }
 .public-card { width: 100%; max-width: 640px; }
 .public-links { justify-content: center; margin-top: var(--space-3); }
 .public-links a { font-size: var(--text-sm); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-navy); }
 .btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .ticket-no { font-size: var(--text-xl); font-weight: 600; letter-spacing: 0.02em; }
 .check-row { display: flex; align-items: flex-start; gap: var(--space-2); font-weight: 400; }
@@ -807,7 +812,7 @@ tr.is-flagged { background: var(--risk-high-bg); }
 .lang-option { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); cursor: pointer; font-weight: 400; margin: 0; position: relative; }
 .lang-option input { position: absolute; opacity: 0; pointer-events: none; }
 .lang-option.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.lang-option:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+.lang-option:has(:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
 .lang-native { font-size: var(--text-md, 15px); font-weight: 600; color: var(--ink); }
 /* Indic scripts need more line height than Latin for matras and conjuncts: the body text only;
    elements that set their own line height (hero numbers, tags) keep it. */
@@ -941,3 +946,22 @@ fieldset.field-card { border: 1px solid var(--line); }
 .figure-list dt { color: var(--muted); }
 .figure-list dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
 .stat-card .tally-v { margin: 0; }
+
+/* --- Focus: the cyan ring for keyboard focus only - never after a mouse click. --- */
+:focus:not(:focus-visible) { outline: none; }
+button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tab:focus:not(:focus-visible) { background: none; }
+.tab[aria-selected="true"]:focus:not(:focus-visible) { box-shadow: none; }
+
+/* --- Navy brand surfaces: hero stat cards (white number and labels; the risk chip keeps its band colours). --- */
+.hero-card, .stat-hero { background: var(--navy); border-color: var(--navy); color: var(--on-navy); }
+.hero-card .label, .stat-hero .label { color: var(--on-navy-muted); }
+.hero-card .hero-caption { color: var(--on-navy-muted); }
+.hero-card .hero-number, .stat-hero .hero-score { color: var(--on-navy); }
+.hero-card .panel-body { height: 100%; }
+.mine-stats > * { padding: var(--space-3); border-radius: var(--radius); }
+.stat-hero { align-self: stretch; }
+.stat-hero .text-link { color: var(--cyan-on-navy); }
+/* Recharts axis numbers: the normal font, tabular. */
+.recharts-cartesian-axis-tick-value { font-variant-numeric: tabular-nums; }
+.mine-stats { margin: calc(-1 * var(--space-3)); }

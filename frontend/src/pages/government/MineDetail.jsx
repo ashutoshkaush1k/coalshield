@@ -51,7 +51,7 @@ export function ComplianceSummary({ mine, gri = null }) {
   return (
     <>
       <div className="stat-row mine-stats">
-        <div>
+        <div className="stat-hero" id="score-hero">
           <span className="label">{t("mine.score")}</span>
           <div className={`hero-score ${cls}`}>{fmtScore(c.score)}</div>
           <div style={{ marginTop: "var(--space-3)" }}>
