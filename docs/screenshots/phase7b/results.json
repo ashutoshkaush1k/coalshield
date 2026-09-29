@@ -1,7 +1,7 @@
 [
   {
     "name": "01-signed-in-online",
-    "note": "Signed in with signal; 89 files kept offline by the service worker",
+    "note": "Signed in with signal; 91 files kept offline by the service worker",
     "errors": []
   },
   {
@@ -38,7 +38,7 @@
   },
   {
     "name": "08-gov-new-findings",
-    "note": "Government, no reload: open violations 0 -> 2 within 8 s of the sync; the field captures listed with their flag",
+    "note": "Government, no reload: open violations 0 -> 2 within 7 s of the sync; the field captures listed with their flag",
     "errors": []
   },
   {
@@ -53,7 +53,7 @@
   },
   {
     "name": "11-resent-no-duplicates",
-    "note": "Resent the same queue: all 5 answered \"already on the server\"; the mine still has 19 violations (17 before the visit)",
+    "note": "Resent the same queue: all 5 answered \"already on the server\"; the mine still has 40 violations (38 before the visit)",
     "errors": []
   },
   {

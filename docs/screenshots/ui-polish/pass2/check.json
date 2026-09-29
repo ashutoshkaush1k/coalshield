@@ -1,0 +1,6302 @@
+{
+  "gov-ranking-en-360": [
+    {
+      "kind": "past-window",
+      "px": 3,
+      "where": "span.queue-figures > span.queue-pair > span.queue-score.risk-medium",
+      "text": "55",
+      "count": 1
+    },
+    {
+      "kind": "past-window",
+      "px": 3,
+      "where": "button.queue-row > span.queue-right > span.risk-mark.risk-medium",
+      "text": "Medium risk",
+      "count": 1
+    },
+    {
+      "kind": "past-window",
+      "px": 4,
+      "where": "span.queue-figures > span.queue-pair > span.queue-score.risk-high",
+      "text": "45",
+      "count": 1
+    },
+    {
+      "kind": "past-window",
+      "px": 4,
+      "where": "button.queue-row > span.queue-right > span.risk-mark.risk-high",
+      "text": "High risk",
+      "count": 1
+    },
+    {
+      "kind": "past-window",
+      "px": 3,
+      "where": "span.queue-figures > span.queue-pair > span.queue-score.risk-low",
+      "text": "100",
+      "count": 2
+    },
+    {
+      "kind": "past-window",
+      "px": 3,
+      "where": "button.queue-row > span.queue-right > span.risk-mark.risk-low",
+      "text": "Low risk",
+      "count": 2
+    },
+    {
+      "kind": "page-scrolls-sideways",
+      "px": 22,
+      "where": "html",
+      "text": "",
+      "count": 1
+    }
+  ],
+  "gov-production-en-360": [
+    {
+      "kind": "spills",
+      "px": 71,
+      "where": "div.tally-set > div > span.tally-v",
+      "text": "3,26,65,904.1",
+      "count": 1
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-RAI-38"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "UP-SON-69"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-67"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-46"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "AS-TIN-70"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-BOK-33"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "WB-BAR-12"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-JHA-13"
+    }
+  ],
+  "gov-contractors-en-360": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-RAI-38"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-42"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-MAN-14"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-66"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-BAR-12"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-37"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-61"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-PED-62"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-CHA-11"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-SUR-20"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-JHA-67"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1559 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4423 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4963 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3692 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6268 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8406 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0569 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8315 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9657 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 8 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6773 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7574 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6055 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4248 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7202 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7661 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3184 · 9 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2519 · 7 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8382 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1785 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5329 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4645 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1539 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8408 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0125 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7886 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4487 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0553 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4827 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9435 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3889 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4419 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7850 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6891 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2725 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9227 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5734 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4723 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7640 · 0 co"
+    }
+  ],
+  "gov-grievances-en-360": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-62"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-67"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-38"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-11"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-11"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-37"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-MAN-14"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-66"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-12"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-MAN-14"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-GIR-34"
+    }
+  ],
+  "head-contractors-en-360": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 1 co"
+    }
+  ],
+  "gov-production-en-1366": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MH-NAG-24"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-JHA-13"
+    }
+  ],
+  "gov-contractors-en-1366": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1559 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4423 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4963 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3692 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6268 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8406 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0569 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8315 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9657 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 8 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6773 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7574 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6055 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4248 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7202 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7661 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3184 · 9 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2519 · 7 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8382 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1785 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5329 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4645 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1539 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8408 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0125 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7886 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4487 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0553 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4827 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9435 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3889 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4419 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7850 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6891 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2725 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9227 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5734 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4723 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7640 · 0 co"
+    }
+  ],
+  "gov-grievances-en-1366": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-37"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    }
+  ],
+  "head-contractors-en-1366": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 1 co"
+    }
+  ],
+  "gov-production-en-1440": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-JHA-13"
+    }
+  ],
+  "gov-contractors-en-1440": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1559 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4423 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4963 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3692 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6268 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8406 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0569 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8315 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9657 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 8 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6773 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7574 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6055 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4248 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7202 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7661 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3184 · 9 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2519 · 7 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8382 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1785 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5329 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4645 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1539 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8408 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0125 · 5 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7886 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4487 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0553 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4827 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9435 · 6 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3889 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4419 · 4 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7850 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6891 · 2 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2725 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9227 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5734 · 3 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4723 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7640 · 0 co"
+    }
+  ],
+  "gov-grievances-en-1440": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    }
+  ],
+  "head-contractors-en-1440": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 1 co"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 1 co"
+    }
+  ],
+  "gov-production-en-1920": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-SUN-64"
+    }
+  ],
+  "gov-ranking-hi-360": [
+    {
+      "kind": "past-window",
+      "px": 18,
+      "where": "span.queue-figures > span.queue-pair > span.queue-score.risk-low",
+      "text": "100",
+      "count": 1
+    },
+    {
+      "kind": "past-window",
+      "px": 18,
+      "where": "button.queue-row > span.queue-right > span.risk-mark.risk-low",
+      "text": "कम जोखिम",
+      "count": 1
+    },
+    {
+      "kind": "page-scrolls-sideways",
+      "px": 18,
+      "where": "html",
+      "text": "",
+      "count": 1
+    }
+  ],
+  "gov-production-hi-360": [
+    {
+      "kind": "spills",
+      "px": 71,
+      "where": "div.tally-set > div > span.tally-v",
+      "text": "3,26,65,904.1",
+      "count": 1
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-RAI-38"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "UP-SON-69"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-67"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-46"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "AS-TIN-70"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-BOK-33"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "WB-BAR-12"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-JHA-13"
+    }
+  ],
+  "gov-contractors-hi-360": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-RAI-38"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-42"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-MAN-14"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-66"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-BAR-12"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-37"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-61"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-PED-62"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-CHA-11"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-SUR-20"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "OD-JHA-67"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1559 · 5 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4423 · 6 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4963 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3692 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6268 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8406 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0569 · 1 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8315 · 6 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9657 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 8 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6773 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7574 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6055 · 5 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4248 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7202 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7661 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3184 · 9 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2519 · 7 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8382 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1785 · 5 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5329 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4645 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-1539 · 5 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8408 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0125 · 5 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7886 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4487 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-0553 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4827 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9435 · 6 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-3889 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4419 · 4 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7850 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-6891 · 2 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-2725 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-9227 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-5734 · 3 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-4723 · 1 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7640 · 0 ठे"
+    }
+  ],
+  "gov-grievances-hi-360": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-62"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-67"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-26"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-19"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-49"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-41"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-38"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-09"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-13"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-28"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SHA-52"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-11"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-CHA-11"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-15"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAN-43"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-25"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-37"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-GIR-34"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-45"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-07"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-MAN-14"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-68"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-59"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-NAG-63"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-21"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-RAI-36"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-32"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-73"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-66"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-ANU-74"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-PAS-27"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-UMA-50"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KRB-03"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-08"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-48"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-BAR-12"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-40"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SGR-02"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-MAN-14"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-44"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-CHA-58"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MP-SIN-54"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-GIR-34"
+    }
+  ],
+  "head-contractors-hi-360": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-8211 · 1 ठे"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-contractors",
+      "text": "REG-XXXX-7508 · 1 ठे"
+    }
+  ],
+  "gov-production-hi-1366": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MH-NAG-24"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-57"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-JHA-13"
+    }
+  ],
+  "gov-grievances-hi-1366": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-by-mine",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-SUN-60"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "JH-DHN-01"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "OD-ANG-47"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "UP-SON-65"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "MP-CHH-55"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "MH-YAV-18"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SAM-23"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-ANG-39"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "WB-RNG-04"
+    }
+  ],
+  "gov-production-hi-1440": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "panel-production",
+      "text": "MP-ANU-53"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-56"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "JH-RAM-06"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-TLC-05"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "TS-KHA-51"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-ANG-10"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-KOR-31"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "CG-SUR-30"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-JHA-13"
+    }
+  ],
+  "gov-grievances-hi-1440": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-escalated",
+      "text": "TS-PED-72"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-JHA-22"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-16"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KHA-71"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "TS-KAR-29"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-HAZ-35"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "JH-DHA-17"
+    },
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "grievance-all",
+      "text": "OD-SUN-64"
+    }
+  ],
+  "gov-production-hi-1920": [
+    {
+      "kind": "code-wraps",
+      "px": 0,
+      "where": "production-requests",
+      "text": "OD-SUN-64"
+    }
+  ]
+}

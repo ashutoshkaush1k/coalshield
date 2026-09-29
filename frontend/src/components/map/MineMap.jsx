@@ -14,6 +14,8 @@ const INDIA = [[6.5, 68], [36, 97.5]];
 const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors';
 const BAND_TOKEN = { high: "--risk-high-dot", medium: "--risk-medium-dot", low: "--risk-low-dot" };
+// A touch screen without hover (a phone): details open on tap instead of on hover.
+const TOUCH = () => typeof window !== "undefined" && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 export function MineMap({ mines, states, districts, onOpen, height = 560 }) {
@@ -71,12 +73,16 @@ export function MineMap({ mines, states, districts, onOpen, height = 560 }) {
         className: `mine-marker risk-${p.risk_level}`, radius: mines.features.length === 1 ? 11 : 7, weight: 2, color: "#ffffff", dashArray: exact ? null : "3 2",
         fillColor: token(BAND_TOKEN[p.risk_level] ?? "--muted", "#888"), fillOpacity: 0.95,
       });
-      marker.bindTooltip(
-        `<strong>${esc(p.name)}</strong> <span>${esc(p.code)}</span><br>${esc(band)} · ${esc(t("map.score", { score: p.score }))}`
-          + `<br>${esc(t("map.openAlerts", { count: p.open_alerts ?? 0 }))}<br>${esc(p.district ?? "")}, ${esc(p.state ?? "")}<br><em>${esc(t("map.qualityLabel", { quality }))}</em>`,
-        { direction: "top", permanent: mines.features.length === 1 },
-      );
-      marker.on("click", () => onOpen?.(p));
+      const details = `<strong>${esc(p.name)}</strong> <span>${esc(p.code)}</span><br>${esc(band)} · ${esc(t("map.score", { score: p.score }))}`
+        + `<br>${esc(t("map.openAlerts", { count: p.open_alerts ?? 0 }))}<br>${esc(p.district ?? "")}, ${esc(p.state ?? "")}<br><em>${esc(t("map.qualityLabel", { quality }))}</em>`;
+      if (TOUCH()) {
+        // No hover on a phone: a tap shows the details, and a button in them opens the mine.
+        marker.bindPopup(`${details}<br><button type="button" class="map-open">${esc(t("map.openMine"))}</button>`, { autoPanPadding: [16, 16] });
+        marker.on("popupopen", (e) => { e.popup.getElement()?.querySelector(".map-open")?.addEventListener("click", () => onOpen?.(p), { once: true }); });
+      } else {
+        marker.bindTooltip(details, { direction: "top", permanent: mines.features.length === 1 });
+        marker.on("click", () => onOpen?.(p));
+      }
       marker.on("add", () => marker.getElement()?.setAttribute("data-mine", p.code));
       group.addLayer(marker);
     }

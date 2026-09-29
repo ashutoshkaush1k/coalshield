@@ -1132,7 +1132,7 @@
     "qualityLabel": "অবস্থান: {{quality}}",
     "score": "স্কোর {{score}}",
     "open": "খুলুন",
-    "openMine": "খনিটি খুলুন",
+    "openMine": "খনি খুলুন",
     "mines": "{{count}}টি খনি",
     "offline": "টাইল উপলব্ধ নয় - কেবল স্থানীয় সীমারেখা দেখানো হচ্ছে।",
     "attributionGem": "খনি: Global Energy Monitor, Global Coal Mine Tracker (CC BY 4.0)",
@@ -1140,7 +1140,10 @@
     "qualityNote": "ড্যাশ দেওয়া সীমারেখা আনুমানিক অবস্থান নির্দেশ করে।",
     "openAlerts": "{{count}}টি অনিষ্পন্ন অ্যালার্ট",
     "zoomIn": "বড় করুন",
-    "zoomOut": "ছোট করুন"
+    "zoomOut": "ছোট করুন",
+    "mapView": "মানচিত্র",
+    "listView": "তালিকা",
+    "viewLabel": "খনিগুলি দেখান"
   },
   "common": {
     "loading": "লোড হচ্ছে...",
@@ -1149,7 +1152,9 @@
     "dismiss": "খারিজ করুন",
     "submitting": "জমা হচ্ছে...",
     "nothingYet": "এখনও দেখানোর মতো কিছু নেই।",
-    "clear": "মুছে দিন"
+    "clear": "মুছে দিন",
+    "more": "আরও",
+    "details": "বিস্তারিত"
   },
   "directive": {
     "raised": "নির্দেশ জারি হয়েছে",
@@ -1690,7 +1695,8 @@
   },
   "nav": {
     "menu": "মেনু",
-    "more": "আরও দৃশ্য"
+    "more": "আরও দৃশ্য",
+    "main": "প্রধান দৃশ্য"
   },
   "search": {
     "open": "অনুসন্ধান খুলুন",

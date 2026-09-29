@@ -56,7 +56,7 @@ export function EntryForm({ open, entry, date, onClose, onSaved }) {
         </Field>
         {NUMBER_FIELDS.map((f) => (
           <Field key={f} id={`pe-${f}`} label={t(`production.field.${f}`)}>
-            <input id={`pe-${f}`} type="number" min="0" step={f === "manpower_present" ? 1 : 0.1} max={f === "breakdown_hours" ? 8 : undefined}
+            <input id={`pe-${f}`} type="number" inputMode={f === "manpower_present" ? "numeric" : "decimal"} min="0" step={f === "manpower_present" ? 1 : 0.1} max={f === "breakdown_hours" ? 8 : undefined}
                    value={form[f]} onChange={set(f)} required />
           </Field>
         ))}

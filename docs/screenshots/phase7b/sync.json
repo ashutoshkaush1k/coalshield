@@ -1,10 +1,10 @@
 {
-  "mine": "OD-SAM-23",
-  "inspection": 66,
+  "mine": "UP-SON-69",
+  "inspection": 191,
   "violations": {
-    "before": 17,
-    "after": 19,
-    "afterResend": 19
+    "before": 38,
+    "after": 40,
+    "afterResend": 40
   },
   "inspection_status": "visited",
   "dashboards": {
@@ -16,6 +16,6 @@
       0,
       2
     ],
-    "seconds_after_sync": 8
+    "seconds_after_sync": 7
   }
 }

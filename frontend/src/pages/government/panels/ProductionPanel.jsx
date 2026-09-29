@@ -76,7 +76,7 @@ export function ProductionPanel({ state, states, onStateChange }) {
           <p className="note">{t("production.gov.flaggedCount", { count: s.flagged })}. {t("production.anomaly.rule")}</p>
         </div>
         <div className="panel-body flush scroll-x">
-          <table className="production-table">
+          <table className="production-table table-scroll">
             <thead>
               <tr>
                 <th rowSpan={2}>{t("detailRequest.mine")}</th>

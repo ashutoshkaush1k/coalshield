@@ -5,6 +5,10 @@ import App from "./App";
 import "./i18n";
 import "./styles/theme.css";
 import "./styles/index.css";
+import { startTableCards } from "./utils/tableCards";
+
+// Phones: table rows as stacked cards (utils/tableCards.js).
+startTableCards();
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

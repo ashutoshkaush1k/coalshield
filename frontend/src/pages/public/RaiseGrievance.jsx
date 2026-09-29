@@ -162,7 +162,7 @@ export default function RaiseGrievance() {
                 <input id="gr-website" name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={set("website")} />
               </div>
               <ErrorNotice error={error} />
-              <button className="primary" type="submit" disabled={busy}>{busy ? t("grievance.public.submitting") : t("grievance.public.submit")}</button>
+              <button className="primary sticky-submit" type="submit" disabled={busy}>{busy ? t("grievance.public.submitting") : t("grievance.public.submit")}</button>
             </div>
           </form>
         )}

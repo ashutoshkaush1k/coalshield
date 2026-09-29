@@ -26,10 +26,10 @@ function ContractFields({ value, onChange, idPrefix }) {
         <input id={`${idPrefix}-wo`} value={value.work_order_no} onChange={set("work_order_no")} required />
       </Field>
       <Field id={`${idPrefix}-val`} label={t("contractor.value")}>
-        <input id={`${idPrefix}-val`} type="number" min="0" value={value.value} onChange={set("value")} required />
+        <input id={`${idPrefix}-val`} type="number" inputMode="decimal" min="0" value={value.value} onChange={set("value")} required />
       </Field>
       <Field id={`${idPrefix}-max`} label={t("contractor.maxWorkers")}>
-        <input id={`${idPrefix}-max`} type="number" min="1" value={value.max_workers} onChange={set("max_workers")} required />
+        <input id={`${idPrefix}-max`} type="number" inputMode="numeric" min="1" value={value.max_workers} onChange={set("max_workers")} required />
       </Field>
       <Field id={`${idPrefix}-start`} label={t("contractor.start")}>
         <input id={`${idPrefix}-start`} type="date" value={value.start_date} onChange={set("start_date")} required />
@@ -152,7 +152,7 @@ export function UploadDocumentButton({ contracts, preset, onDone, label }) {
           </Field>
         </div>
         <Field id="dn-file" label={t("contractor.file")}>
-          <input id="dn-file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+          <input id="dn-file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
         </Field>
       </FormModal>
     </>

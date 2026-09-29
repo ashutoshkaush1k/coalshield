@@ -108,7 +108,7 @@ export function GrievancesPanel({ state, states, onStateChange }) {
       <section className="panel-block" id="grievance-by-mine">
         <div className="panel-head"><h2>{t("grievance.stats.byMine")}</h2></div>
         <div className="panel-body flush scroll-x">
-          <table>
+          <table className="table-scroll">
             <thead><tr><th>{t("grievance.list.mine")}</th><th className="num">{t("grievance.stats.total")}</th><th className="num">{t("grievance.stats.open")}</th>
               <th className="num">{t("grievance.stats.breaches")}</th><th className="num">{t("grievance.stats.escalatedOpen")}</th>
               <th className="num">{t("grievance.stats.avgResolution")}</th><th>{t("grievance.stats.cluster")}</th></tr></thead>

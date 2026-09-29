@@ -10,7 +10,7 @@
 //                     plus two header checks: a card title reached through its link is not under the
 //                     sticky header, and no header tab is cut off
 // --strict fails on any finding. The accounts' saved languages are put back afterwards.
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -202,6 +202,19 @@ async function run(page) {
   if (STRICT && (total || page.errors.length)) throw new Error(`${total} finding(s), ${page.errors.length} browser error(s)`);
 }
 
+// Stop the headless browser and every process it started: on Windows killing the launcher alone
+// leaves Edge's child processes (and its debugging port) running.
+function stopBrowser(child) {
+  if (process.platform !== "win32") { child.kill(); return; }
+  try { execFileSync("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore" }); } catch { /* already gone */ }
+  // Edge's launcher can hand off and exit, orphaning the real browser: end every process that uses
+  // this run's temporary profile.
+  const dir = child.spawnargs.find((a) => a.startsWith("--user-data-dir="))?.slice("--user-data-dir=".length);
+  if (!dir) return;
+  const filter = `Get-CimInstance Win32_Process -Filter "Name='msedge.exe' or Name='chrome.exe'" | Where-Object { $_.CommandLine -like '*${dir.replace(/'/g, "''")}*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
+  try { execFileSync("powershell", ["-NoProfile", "-Command", filter], { stdio: "ignore" }); } catch { /* nothing left */ }
+}
+
 async function main() {
   mkdirSync(OUT, { recursive: true });
   const exe = BROWSERS.find(existsSync);
@@ -222,7 +235,7 @@ async function main() {
     await run(page);
     ws.close();
   } finally {
-    browser.kill();
+    stopBrowser(browser);
   }
 }
 

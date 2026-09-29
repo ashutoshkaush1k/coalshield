@@ -55,7 +55,7 @@ function HomeLink({ className = "", children }) {
   const { home } = useHomeTabs();
   const nav = useNav();
   return (
-    <Link to={home} className={`home-link ${className}`} onClick={() => nav.closeNow()}>
+    <Link to={home} className={`home-link ${className}`} onClick={() => nav.closeNow()} aria-label={APP_NAME}>
       <Logo />{children ?? <span className="brand-name">{APP_NAME}</span>}
     </Link>
   );
@@ -111,7 +111,7 @@ export function NavDrawer({ who, scope, onSignOut }) {
   const nav = useNav();
   const ref = useRef(null);
   const { open, closeNow } = nav;
-  const { drawerTabs, active, onHome, goTo } = useHomeTabs();
+  const { barTabs, drawerTabs, active, onHome, goTo } = useHomeTabs();
 
   useEffect(() => {
     if (!open) return undefined;
@@ -142,6 +142,22 @@ export function NavDrawer({ who, scope, onSignOut }) {
          onPointerEnter={(e) => { if (e.pointerType === "mouse") nav.cancelClose(); }}
          onPointerLeave={(e) => { if (e.pointerType === "mouse") nav.closeSoon(); }}>
       <div {...stagger()}><HomeLink className="nav-drawer-brand"><strong>{APP_NAME}</strong></HomeLink></div>
+
+      {/* Phones only (below 768 px the top bar shows no tabs): the five bar tabs, here. */}
+      <div className="nav-section nav-main-views">
+        <span className="label nav-stagger" style={{ "--i": order++ }}>{t("nav.main")}</span>
+        <ul className="nav-list nav-list-main">
+          {barTabs.map((tab) => (
+            <li key={tab.id} {...stagger()}>
+              <button type="button" className="nav-item" data-main-tab={tab.id}
+                      aria-current={active === tab.id ? "true" : undefined}
+                      onClick={() => { goTo(tab.id); closeNow(); }}>
+                <TabIcon id={tab.id} />{tab.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="nav-section">
         <span className="label nav-stagger" style={{ "--i": order++ }}>{t("nav.more")}</span>

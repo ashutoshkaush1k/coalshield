@@ -99,7 +99,7 @@ export function TaskDrawer({ taskId, onClose, onChanged }) {
               <input id="ob-file" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
               <label htmlFor="ob-note">{t("obligation.task.note")}</label>
               <textarea id="ob-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} />
-              <button type="button" className="primary" disabled={busy || !file}
+              <button type="button" className="primary sticky-submit" disabled={busy || !file}
                       onClick={() => act(() => submitEvidence(task.id, { file, note }), t("obligation.task.submitted"))}>
                 {t("obligation.task.submit")}
               </button>
@@ -110,7 +110,7 @@ export function TaskDrawer({ taskId, onClose, onChanged }) {
             <section className="stack tight" id="obligation-review">
               <label htmlFor="ob-reason">{t("obligation.task.reason")}</label>
               <textarea id="ob-reason" rows={2} value={reason} onChange={(e) => setReason(e.target.value)} maxLength={1000} />
-              <div className="row wrap-row">
+              <div className="row wrap-row sticky-actions">
                 <button type="button" className="primary" disabled={busy}
                         onClick={() => act(() => reviewEvidence(pending.id, "accept", reason), t("obligation.task.reviewed"))}>{t("obligation.task.accept")}</button>
                 <button type="button" disabled={busy}

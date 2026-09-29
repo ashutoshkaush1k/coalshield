@@ -34,7 +34,7 @@
 // DevTools protocol with Node's built-in fetch and WebSocket - no packages to install.
 // It changes data the way a user would: raises a directive, resolves it, records and closes a
 // corrective action. Reseed afterwards for a clean demo.
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -1125,7 +1125,7 @@ async function phase7b(page) {
     const gov = await dashboardTab("gov@dgms.gov.in", `/gov/mines/${mine.id}`);
     const headTab = await dashboardTab(head, "/mine");
     await fetch(`http://127.0.0.1:${PORT}/json/activate/${page.targetId}`, { method: "PUT" }).catch(() => null);
-    const openViolations = async (tab) => Number((await tab.eval(`[...document.querySelectorAll(".tally-set > div")].find((d) => /Open violations/.test(d.textContent))?.querySelector(".tally-v")?.textContent ?? "-1"`)).replace(/\D/g, ""));
+    const openViolations = async (tab) => Number((await tab.eval(`[...document.querySelectorAll(".tally-set > div, .stat-row > div")].find((d) => /Open violations/.test(d.textContent))?.querySelector(".tally-v")?.textContent ?? "-1"`)).replace(/\D/g, ""));
     const govBefore = await openViolations(gov.tab);
     const headBefore = await openViolations(headTab.tab);
 
@@ -1344,6 +1344,19 @@ async function openSideTabs() {
   return tabs;
 }
 
+// Stop the headless browser and every process it started: on Windows killing the launcher alone
+// leaves Edge's child processes (and its debugging port) running.
+function stopBrowser(child) {
+  if (process.platform !== "win32") { child.kill(); return; }
+  try { execFileSync("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore" }); } catch { /* already gone */ }
+  // Edge's launcher can hand off and exit, orphaning the real browser: end every process that uses
+  // this run's temporary profile.
+  const dir = child.spawnargs.find((a) => a.startsWith("--user-data-dir="))?.slice("--user-data-dir=".length);
+  if (!dir) return;
+  const filter = `Get-CimInstance Win32_Process -Filter "Name='msedge.exe' or Name='chrome.exe'" | Where-Object { $_.CommandLine -like '*${dir.replace(/'/g, "''")}*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
+  try { execFileSync("powershell", ["-NoProfile", "-Command", filter], { stdio: "ignore" }); } catch { /* nothing left */ }
+}
+
 async function main() {
   mkdirSync(OUT, { recursive: true });
   const exe = BROWSERS.find(existsSync);
@@ -1393,7 +1406,7 @@ async function main() {
       tab.ws.close();
     }
   } finally {
-    browser.kill();
+    stopBrowser(browser);
   }
   writeFileSync(join(OUT, "results.json"), JSON.stringify(results, null, 2));
   const withErrors = results.filter((r) => r.errors.length);

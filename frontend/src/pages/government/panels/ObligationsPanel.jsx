@@ -108,7 +108,7 @@ export function ObligationsPanel({ state, states, onStateChange }) {
         </div>
         <div className="panel-body flush scroll-x" id="obligation-by-company">
           <span className="label pad-label">{t("obligation.gov.byCompany")}</span>
-          <table>
+          <table className="table-scroll">
             <Head first={t("obligation.gov.company")} />
             <tbody>{s.by_company.map((c) => <tr key={c.company}><Row label={c.company} sub={c.name} r={c} /></tr>)}</tbody>
           </table>
@@ -125,7 +125,7 @@ export function ObligationsPanel({ state, states, onStateChange }) {
       <section className="panel-block" id="obligation-by-mine">
         <div className="panel-head"><div><h2>{t("obligation.gov.byMine")}</h2></div></div>
         <div className="panel-body flush scroll-x">
-          <table>
+          <table className="table-scroll">
             <Head first={t("obligation.list.mine")} />
             <tbody>{s.by_mine.slice(0, 20).map((m) => <tr key={m.mine_id} data-mine={m.code}><Row label={m.name} sub={m.code} subIsCode r={m} /></tr>)}</tbody>
           </table>

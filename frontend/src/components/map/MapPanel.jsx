@@ -10,12 +10,15 @@ import { useTranslation } from "react-i18next";
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Loader } from "../common/Loader";
 import { StateFilter } from "../common/StateFilter";
+import { RiskMark } from "../compliance/RiskMark";
 import { MineMap } from "./MineMap";
 
 export function MapPanel({ state = null, states, onStateChange, onOpenMine = null }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [outlines, setOutlines] = useState({ states: null, districts: null, error: null });
+  // The same mines as a list: easier to scan and tap on a phone than markers.
+  const [view, setView] = useState("map");
   const { data, error, loading } = usePolling(() => getMapView(state), { deps: [state] });
 
   useEffect(() => {
@@ -42,9 +45,27 @@ export function MapPanel({ state = null, states, onStateChange, onOpenMine = nul
       </div>
       <div className="panel-body">
         <ErrorNotice error={error ?? outlines.error} />
-        {/* Keyed by language: the map's own controls, credits and tooltips are built when it mounts. */}
-        <MineMap key={i18n.language} mines={data?.mines} states={outlines.states} districts={outlines.districts}
-                 onOpen={(p) => (onOpenMine ? onOpenMine(p) : navigate(`/gov/mines/${p.id}`))} />
+        <div className="segmented" role="group" aria-label={t("map.viewLabel")} id="map-view-toggle">
+          <button type="button" aria-pressed={view === "map"} onClick={() => setView("map")}>{t("map.mapView")}</button>
+          <button type="button" aria-pressed={view === "list"} onClick={() => setView("list")}>{t("map.listView")}</button>
+        </div>
+        {view === "list" ? (
+          <ul className="mine-list" id="map-mine-list">
+            {[...(data?.mines?.features ?? [])].sort((a, b) => a.properties.score - b.properties.score).map(({ properties: p }) => (
+              <li key={p.id}>
+                <button type="button" className="mine-list-item" onClick={() => (onOpenMine ? onOpenMine(p) : navigate(`/gov/mines/${p.id}`))}>
+                  <span className="mine-cell"><span className="mine-name">{p.name}</span><span className="mine-code">{p.code}</span></span>
+                  <span className="faint">{p.district}, {p.state}</span>
+                  <span className="row"><RiskMark level={p.risk_level} /><span className="num">{t("map.score", { score: p.score })}</span></span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          /* Keyed by language: the map's own controls, credits and tooltips are built when it mounts. */
+          <MineMap key={i18n.language} mines={data?.mines} states={outlines.states} districts={outlines.districts}
+                   onOpen={(p) => (onOpenMine ? onOpenMine(p) : navigate(`/gov/mines/${p.id}`))} />
+        )}
         <p className="note">{t("map.qualityNote")}</p>
       </div>
     </section>

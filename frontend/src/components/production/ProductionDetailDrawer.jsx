@@ -70,7 +70,7 @@ export function EntryTable({ entries, actions }) {
   const t = useT();
   return (
     <div className="scroll-x">
-      <table className="entry-table">
+      <table className="entry-table table-scroll">
         <thead>
           <tr>
             <th>{t("production.field.date")}</th><th>{t("production.field.shift")}</th>

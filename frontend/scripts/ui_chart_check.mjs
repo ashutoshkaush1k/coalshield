@@ -3,7 +3,7 @@
 // government overview at 1366 and 360 px in English and Hindi; screenshots in docs/screenshots/ui-chart/.
 //
 //   node frontend/scripts/ui_chart_check.mjs [--strict]     (needs the stack running: run_all.bat)
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -122,6 +122,19 @@ async function run(p) {
   if (process.argv.includes("--strict") && (total || failures.length || p.errors.length)) throw new Error("check failed");
 }
 
+// Stop the headless browser and every process it started: on Windows killing the launcher alone
+// leaves Edge's child processes (and its debugging port) running.
+function stopBrowser(child) {
+  if (process.platform !== "win32") { child.kill(); return; }
+  try { execFileSync("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore" }); } catch { /* already gone */ }
+  // Edge's launcher can hand off and exit, orphaning the real browser: end every process that uses
+  // this run's temporary profile.
+  const dir = child.spawnargs.find((a) => a.startsWith("--user-data-dir="))?.slice("--user-data-dir=".length);
+  if (!dir) return;
+  const filter = `Get-CimInstance Win32_Process -Filter "Name='msedge.exe' or Name='chrome.exe'" | Where-Object { $_.CommandLine -like '*${dir.replace(/'/g, "''")}*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
+  try { execFileSync("powershell", ["-NoProfile", "-Command", filter], { stdio: "ignore" }); } catch { /* nothing left */ }
+}
+
 async function main() {
   mkdirSync(OUT, { recursive: true });
   const exe = BROWSERS.find(existsSync);
@@ -136,6 +149,6 @@ async function main() {
     await p.send("Page.enable"); await p.send("Runtime.enable");
     await run(p);
     ws.close();
-  } finally { browser.kill(); }
+  } finally { stopBrowser(browser); }
 }
 main().catch((e) => { console.error(e.message); process.exit(1); });

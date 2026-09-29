@@ -1002,3 +1002,108 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .site-footer a { color: var(--on-navy); text-decoration: underline; text-underline-offset: 2px; }
 .site-footer a:hover { color: var(--cyan-on-navy); }
 .footer-bottom { margin-top: var(--space-5); padding-top: var(--space-3); border-top: 1px solid var(--navy-line); font-size: var(--text-xs); color: var(--on-navy-faint); }
+
+/* ===== Phones (below 768 px): every page works at 360-414 px =====
+   Text at least 14 px (the small type steps rise to 14 px), touch targets at least 44 x 44 px,
+   the top bar reduced to hamburger, logo and search (the tabs move into the drawer), search and
+   overlays full-screen with sticky actions, tables as stacked cards, page actions full width. */
+.nav-main-views { display: none; }
+@media (max-width: 767px) {
+  :root { --text-xs: 14px; --text-sm: 14px; --text-md: 15px; --page-margin: 16px; --panel-pad: 16px; }
+  body { font-size: 15px; }
+
+  /* Top bar: hamburger, logo, search. The tabs are in the drawer ("Main views"). */
+  .masthead { min-height: 60px; flex-wrap: nowrap; }
+  .masthead .tabs, .masthead .brand-name, .masthead .nav-current { display: none; }
+  .masthead-brand { flex: 1; flex-wrap: nowrap; }
+  .masthead-brand .search-trigger { margin-left: auto; }
+  .nav-main-views { display: grid; }
+  .nav-toggle, .search-trigger { width: 44px; height: 44px; }
+  .home-link { min-height: 44px; min-width: 44px; justify-content: center; }
+
+  /* Touch targets. */
+  button, .btn, select, input:not([type="checkbox"]):not([type="radio"]), textarea { min-height: 44px; }
+  .public-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .mine-cell .mine-name { white-space: normal; }
+  .tally-v { font-size: var(--text-xl); overflow-wrap: anywhere; }
+  button, .btn { min-width: 44px; }
+  .nav-item { min-height: 48px; }
+  summary { min-height: 44px; display: flex; align-items: center; }
+  .small-btn, button.small-btn { min-height: 44px; padding-inline: var(--space-3); font-size: var(--text-sm); }
+  .overlay-close { min-width: 44px; min-height: 44px; }
+  .site-footer a { display: inline-flex; align-items: center; min-height: 44px; }
+  .check-row { min-height: 44px; }
+  .text-link { display: inline-flex; align-items: center; min-height: 44px; }
+  .risk-mark, .tag, .sev { font-size: var(--text-xs); }
+
+  /* Page actions: full width, easy to reach. */
+  .page-title-actions { width: 100%; }
+  .page-title-actions > * { flex: 1 1 0; justify-content: center; }
+
+  /* Search: a full-screen panel. */
+  .scrim.is-modal.search-scrim { padding: 0; }
+  .search-panel { width: 100%; height: 100%; max-height: none; border-radius: 0; }
+  .search-option { min-height: 48px; }
+
+  /* Drawers and dialogs: full screen, the actions stuck to the bottom. */
+  .scrim, .scrim.is-modal { padding: 0; }
+  .drawer, .modal, .modal.is-wide { width: 100%; max-width: 100%; height: 100%; max-height: none; border-radius: 0; }
+  .overlay-foot { position: sticky; bottom: 0; background: var(--card); padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom)); }
+  .overlay-foot > button, .overlay-foot > .btn { flex: 1 1 0; justify-content: center; }
+  .sticky-submit { position: sticky; bottom: var(--space-3); z-index: 2; box-shadow: var(--shadow-lg); }
+  .sticky-actions { position: sticky; bottom: 0; z-index: 2; padding: var(--space-3) 0; background: var(--card); }
+  .sticky-actions > button { flex: 1 1 0; }
+
+  /* Tables as stacked cards (utils/tableCards.js labels the cells): label and value on a line,
+     the first four values shown, "More" (or "Details" for rows that open a drawer) below. */
+  table[data-cards], table[data-cards] tbody, table[data-cards] tr, table[data-cards] td { display: block; width: 100%; }
+  table[data-cards] thead { display: none; }   /* each value carries its column name (data-label) */
+  table[data-cards] tr { margin: 0 0 var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+  table[data-cards] tbody tr:hover { background: var(--card); }
+  table[data-cards] td, table[data-cards] td:first-child, table[data-cards] td:last-child { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); padding: var(--space-1) 0; border: 0; text-align: right; }
+  table[data-cards] td::before { content: attr(data-label); flex: none; max-width: 45%; color: var(--muted); font-size: var(--text-sm); text-align: left; }
+  table[data-cards] td:first-child { display: block; text-align: left; font-weight: 500; padding-bottom: var(--space-2); }
+  table[data-cards] td:first-child::before { content: none; }
+  table[data-cards] td[data-label=""]::before { content: none; }
+  table[data-cards] tr[data-more]:not([data-expanded]):not([data-opens]) td:nth-child(n + 5) { display: none; }
+  table[data-cards] tr[data-more]::after { content: attr(data-more) " \203A"; display: flex; align-items: center; min-height: 44px; color: var(--accent-ink); font-weight: 500; }
+  table[data-cards] tr[data-more][data-expanded]::after { content: none; }
+  table[data-cards] tr[data-opens] td:nth-child(n + 5) { display: none; }
+  table[data-cards] tr { cursor: pointer; }
+  .scroll-x:has(table[data-cards]) { overflow: visible; }
+
+  /* Wide numeric tables stay tables: they scroll inside their card with the first column pinned. */
+  .table-scroll th:first-child, .table-scroll td:first-child { position: sticky; left: 0; z-index: 2; background: var(--card); }
+  .table-scroll td:first-child, .table-scroll th:first-child { min-width: 150px; }
+  .table-scroll .mono, .table-scroll .mine-code { white-space: nowrap; }
+  .table-scroll th:first-child { background: var(--navy-tint); z-index: 3; }
+
+  /* Charts and the map: the width of the screen; zoom buttons big enough to tap; readable text. */
+  .recharts-wrapper, .recharts-surface { max-width: 100%; }
+  .recharts-text, .recharts-cartesian-axis-tick-value, .recharts-legend-item-text { font-size: 14px; }
+  .leaflet-touch .leaflet-bar a, .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; font-size: 20px; }
+  .leaflet-control-attribution, .leaflet-control-attribution a { font-size: 14px; }
+  .leaflet-popup-content { font-size: 14px; }
+  .mine-map { height: 420px !important; }
+
+  /* Risk Ranking: the rank, then the mine, with its figures wrapping underneath. */
+  .queue-row { grid-template-columns: 32px minmax(0, 1fr); gap: var(--space-2) var(--space-3); }
+  .queue-right { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; }
+  .queue-figures { flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+  /* Card values may break long words rather than spill. */
+  table[data-cards] td { overflow-wrap: anywhere; min-width: 0; }
+
+  /* Mine record tiles: titles wrap rather than cut on a phone (no hover for a tooltip). */
+  .record-tile-head .truncate { white-space: normal; overflow: visible; text-overflow: clip; }
+}
+
+/* Map / list switch and the mine list (all widths). */
+.segmented { display: inline-flex; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--card); }
+.segmented button { border: 0; border-radius: 0; background: none; min-height: 40px; padding: 0 var(--space-4); color: var(--muted); font-weight: 500; }
+.segmented button + button { border-left: 1px solid var(--line); }
+.segmented button[aria-pressed="true"] { background: var(--navy); color: var(--on-navy); }
+.mine-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.mine-list-item { width: 100%; display: grid; gap: var(--space-1); justify-items: start; text-align: left; padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); min-height: 44px; }
+.mine-list-item:hover { background: var(--hover); }
+.map-open { margin-top: var(--space-2); min-height: 44px; width: 100%; background: var(--navy); color: var(--on-navy); border-color: var(--navy); }
+@media (max-width: 767px) { .segmented { width: 100%; } .segmented button { flex: 1 1 0; min-height: 44px; } }

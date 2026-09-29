@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { resolveAlert } from "../../api/alerts";
 // The API stores proof images as JPG, PNG or WEBP (FileStorage whitelist).
 const PROOF_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const ACCEPT_ATTR = ".jpg,.jpeg,.png,.webp";
+const ACCEPT_ATTR = "image/jpeg,image/png,image/webp";   // MIME types: Android offers camera and files
 import { ErrorNotice } from "../common/ErrorNotice";
 import { Modal } from "../overlay/Overlay";
 import { useToast } from "../overlay/ToastHost";

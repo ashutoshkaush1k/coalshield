@@ -406,7 +406,7 @@ function ResolveActionButton({ action, onResolved }) {
           </div>
           <div>
             <label htmlFor={`ca-file-${action.id}`}>{t("correctiveAction.photoLabel")}</label>
-            <input id={`ca-file-${action.id}`} type="file" accept=".jpg,.jpeg,.png,.webp"
+            <input id={`ca-file-${action.id}`} type="file" accept="image/jpeg,image/png,image/webp"
                    onChange={(e) => {
                      const f = e.target.files?.[0] ?? null;
                      setFile(f && PROOF_TYPES.includes(f.type) ? f : null);

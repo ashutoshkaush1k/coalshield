@@ -1132,7 +1132,7 @@
     "qualityLabel": "Location: {{quality}}",
     "score": "Score {{score}}",
     "open": "Open",
-    "openMine": "Open the mine",
+    "openMine": "Open mine",
     "mines": "{{count}} mine(s)",
     "offline": "Tiles unavailable - showing the local outlines only.",
     "attributionGem": "Mines: Global Energy Monitor, Global Coal Mine Tracker (CC BY 4.0)",
@@ -1140,7 +1140,10 @@
     "qualityNote": "A dashed outline marks an approximate location.",
     "openAlerts": "{{count}} open alert(s)",
     "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out"
+    "zoomOut": "Zoom out",
+    "mapView": "Map",
+    "listView": "List",
+    "viewLabel": "Show the mines as"
   },
   "common": {
     "loading": "Loading...",
@@ -1149,7 +1152,9 @@
     "dismiss": "Dismiss",
     "submitting": "Submitting...",
     "nothingYet": "Nothing to show yet.",
-    "clear": "Clear"
+    "clear": "Clear",
+    "more": "More",
+    "details": "Details"
   },
   "directive": {
     "raised": "Directive raised",
@@ -1690,7 +1695,8 @@
   },
   "nav": {
     "menu": "Menu",
-    "more": "More views"
+    "more": "More views",
+    "main": "Main views"
   },
   "search": {
     "open": "Open search",
