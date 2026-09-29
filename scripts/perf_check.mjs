@@ -43,7 +43,7 @@ const VIEWS = {
     "mine head obligations": { who: HEAD, paths: ["/views/obligations"] },
     "government map": { who: GOV, paths: ["/views/map"] },
     "mine head map": { who: HEAD, paths: ["/views/map"] },
-    // Phase 7: the priority tab (queue by Governance Risk Index + patterns); the mine views above now carry `risk`
+    // Phase 7: the Risk Ranking tab (mines by Governance Risk Index + patterns; endpoint /views/priority); the mine views above now carry `risk`
     "government priority": { who: GOV, paths: ["/views/priority"] },
     "corporate priority": { who: CORP, paths: ["/views/priority"] },
     // Fetched once when the map opens (then revalidated by ETag), not polled.

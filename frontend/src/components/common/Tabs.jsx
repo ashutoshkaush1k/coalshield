@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 const ICONS = {
-  overview: LayoutDashboard, priority: ListOrdered, sensors: Activity, trends: TrendingUp, production: Factory,
+  overview: LayoutDashboard, ranking: ListOrdered, sensors: Activity, trends: TrendingUp, production: Factory,
   contractors: HardHat, grievances: MessageSquareWarning, obligations: ClipboardCheck, map: Map,
 };
 

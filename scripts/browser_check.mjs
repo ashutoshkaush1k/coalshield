@@ -21,7 +21,7 @@
 // phase7: automation - the jobs run with the ai-service unreachable (PHP fallback) and then with it
 //         up; the Governance Risk Index beside the score and its components, the predicted risk
 //         with its factors and the US-data statement, the detectors' findings with their engine,
-//         the priority queue ordered by the index, ANOMALY_DETECTED and escalated alerts, the mine
+//         the risk ranking ordered by the index, ANOMALY_DETECTED and escalated alerts, the mine
 //         head's view, and the panel in Hindi. Needs the ai-service running (run_all.bat).
 // phase7b: the field app on a 360 px phone - sign in, go truly offline (its own field server is
 //         stopped and the network emulated off), record two findings with photos and GPS (one far
@@ -170,8 +170,8 @@ async function phase2(page) {
   text = await page.text();
   expect(text.includes("83.2") && text.includes("Bhubaneswari Coal Mine"), "national overview shows 83.2 and the demo mines");
   await page.shot("02-gov-overview", "national overview: average 83.2, 6 / 21 / 47, the five worst mines");
-  await page.click("Priority Queue");
-  await page.shot("03-gov-priority", "inspection priority queue with translated reasons");
+  await page.click("Risk Ranking");
+  await page.shot("03-gov-priority", "Risk Ranking tab with translated reasons");
   await page.click("Sensors");
   await page.shot("04-gov-sensors", "fleet sensor standing against the rules.yaml limits");
   await page.click("Trends");
@@ -1278,7 +1278,7 @@ async function phase7(page) {
   await page.goto(`${APP}/gov/inspections`, 4500);
   text = await page.until((t) => t.includes("Governance Risk Index") && t.includes("Risk index"));
   expect(text.includes("largest part"), "each queue row gives the index's largest component");
-  await page.shot("04-priority-by-index", "Priority queue ordered by the Governance Risk Index (compliance score still shown)");
+  await page.shot("04-priority-by-index", "Risk Ranking ordered by the Governance Risk Index (compliance score still shown)");
   await scrollToId("fleet-patterns");
   text = await page.text();
   for (const d of ["Production anomaly", "Flatlined sensor", "Night-shift concentration", "Repeat violations", "Late corrective actions", "Contractor outlier", "Grievance cluster"]) {

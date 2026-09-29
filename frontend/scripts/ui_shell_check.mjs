@@ -19,12 +19,12 @@ const PORT = 9227;
 const BROWSERS = ["C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", "C:/Program Files/Google/Chrome/Application/chrome.exe"];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const MULTI = { bar: ["overview", "priority", "obligations", "production", "map"], drawer: ["sensors", "trends", "contractors", "grievances", "profile"] };
+const MULTI = { bar: ["overview", "ranking", "obligations", "production", "map"], drawer: ["sensors", "trends", "contractors", "grievances", "profile"] };
 const HEAD = { bar: ["overview", "production", "obligations", "contractors", "grievances"], drawer: ["sensors", "trends", "map", "profile"] };
 // [route, bar tab highlighted, drawer item highlighted, final path]
 const multiRoutes = (mine) => [
   ["/gov", "overview", null, "/gov"], ["/gov?tab=production", "production", null, "/gov"], ["/gov?tab=sensors", null, "sensors", "/gov"],
-  ["/gov/inspections", "priority", null, "/gov"], [`/gov/mines/${mine}`, null, null, `/gov/mines/${mine}`], ["/profile", null, "profile", "/profile"],
+  ["/gov/inspections", "ranking", null, "/gov"], ["/gov?tab=priority", "ranking", null, "/gov"], [`/gov/mines/${mine}`, null, null, `/gov/mines/${mine}`], ["/profile", null, "profile", "/profile"],
 ];
 const ROLES = [
   { who: "gov@dgms.gov.in", set: MULTI, home: "/gov", routes: multiRoutes },

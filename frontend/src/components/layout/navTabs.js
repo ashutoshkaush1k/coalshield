@@ -9,17 +9,19 @@ import { useAuth } from "../../hooks/useAuth";
 import { t } from "../../i18n/t";
 
 const LABEL_KEYS = {
-  overview: "tabs.overview", priority: "tabs.priority", sensors: "tabs.sensors", trends: "tabs.trends",
+  overview: "tabs.overview", ranking: "tabs.ranking", sensors: "tabs.sensors", trends: "tabs.trends",
   production: "production.tabLabel", contractors: "contractor.tabLabel", grievances: "grievance.tabLabel",
   obligations: "obligation.tabLabel", map: "map.tabLabel",
 };
 
-// Five on the bar; the rest in the drawer, in this order. Mine head never gets the Priority Queue:
+// Five on the bar; the rest in the drawer, in this order. Mine head never gets Risk Ranking:
 // cross-mine ranking is authority-only (the API answers 403 for that role).
 const MULTI_MINE = {
-  tabs: ["overview", "priority", "sensors", "trends", "production", "contractors", "grievances", "obligations", "map"],
-  bar: ["overview", "priority", "obligations", "production", "map"],
+  tabs: ["overview", "ranking", "sensors", "trends", "production", "contractors", "grievances", "obligations", "map"],
+  bar: ["overview", "ranking", "obligations", "production", "map"],
 };
+// Old tab values that still open their tab: the Priority Queue became Risk Ranking.
+const ALIASES = { priority: "ranking" };
 const MINE_HEAD = {
   tabs: ["overview", "sensors", "trends", "production", "contractors", "grievances", "obligations", "map"],
   bar: ["overview", "production", "obligations", "contractors", "grievances"],
@@ -35,7 +37,7 @@ export function useHomeTabs() {
   const home = homeFor(user);
   const tabs = set.tabs.map((id) => ({ id, label: t(LABEL_KEYS[id]) }));
   const onHome = location.pathname === home;
-  const asked = params.get("tab");
+  const asked = ALIASES[params.get("tab")] ?? params.get("tab");
   const active = onHome ? (set.tabs.includes(asked) ? asked : "overview") : null;
   const goTo = (id) => navigate(id === "overview" ? home : `${home}?tab=${id}`);
   return {

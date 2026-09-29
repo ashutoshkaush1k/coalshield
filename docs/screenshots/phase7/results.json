@@ -16,7 +16,7 @@
   },
   {
     "name": "04-priority-by-index",
-    "note": "Priority queue ordered by the Governance Risk Index (compliance score still shown)",
+    "note": "Risk Ranking ordered by the Governance Risk Index (compliance score still shown)",
     "errors": []
   },
   {

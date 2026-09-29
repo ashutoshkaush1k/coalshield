@@ -1,6 +1,6 @@
 // Mine Head dashboard: own mine only, two tabs.
 //
-// There is deliberately no Priority Queue tab. Cross-mine ranking is for multi-mine roles
+// There is deliberately no Risk Ranking tab. Cross-mine ranking is for multi-mine roles
 // (PRD 4.1), and it is refused server-side as well - GET /v1/inspections/priority returns
 // 403 for this role. Hiding the tab removes the entry point; the API is the boundary.
 import { useState } from "react";

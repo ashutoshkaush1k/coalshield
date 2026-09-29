@@ -53,7 +53,7 @@ export default function GovernmentDashboard() {
           <OverviewPanel data={data} contractorSummary={contractorSummary} state={state} onStateChange={setState} onOpenContractors={() => setTab("contractors")} />
         </TabPanel>
 
-        <TabPanel id="priority" active={tab}>
+        <TabPanel id="ranking" active={tab}>
           <PriorityPanel state={state} states={data?.states} onStateChange={setState} />
         </TabPanel>
 

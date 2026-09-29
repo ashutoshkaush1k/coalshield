@@ -241,10 +241,10 @@
     "PRIORITY_RECENT_VIOLATIONS": "{{count}} violation(s) in the last {{hours}} h",
     "PRIORITY_RECENT_BREACHES": "{{count}} threshold breach(es) in the last {{hours}} h",
     "PRIORITY_NO_RECENT_EVENTS": "No new events in the last {{hours}} h",
-    "empty": "Nothing queued for inspection.",
+    "empty": "No mines to rank.",
     "rowAria": "Rank {{rank}}, {{name}}, risk index {{gri}}, score {{score}}. Open drill-down.",
     "loading": "Ranking mines...",
-    "singleMine": "The inspection queue compares mines, so it is not available to a single-mine account.",
+    "singleMine": "Risk Ranking compares mines, so it is not available to a single-mine account.",
     "rankedState": "{{n}} mines ranked in {{state}}",
     "rankedScope": "{{n}} mines ranked {{where}}",
     "hint": "Ordered by the Governance Risk Index; the compliance score and the rise in events over the last {{hours}} hours are shown for each mine",
@@ -1203,7 +1203,7 @@
   },
   "tabs": {
     "overview": "Overview",
-    "priority": "Priority Queue",
+    "ranking": "Risk Ranking",
     "sensors": "Sensors",
     "trends": "Trends"
   },

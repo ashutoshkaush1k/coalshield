@@ -122,8 +122,8 @@ continuing** (`scripts\demo_reset.bat`).
 
    **Then use the State dropdown.** Pick Odisha: the board fills with all 19 Odisha mines and
    every number rescopes - the average moves from 83.2 national to 86.8 for Odisha. The
-   selection follows you to the Priority Queue, Sensors and Trends tabs.
-2. **Priority Queue tab** → every mine ranked most urgent first, each with its reasoning and a
+   selection follows you to the Risk Ranking, Sensors and Trends tabs.
+2. **Risk Ranking tab** → every mine ranked most urgent first, each with its reasoning and a
    trend. The ranking is urgency = (100 - score) + rising-event pressure.
 3. **PPE vision - in the product.** Switch to the **Mine Head tab** (Jayant) and press **Run PPE
    detection**; choose `ai-service\samples\heldout\heldout_06_violations.jpg` - **a held-out
@@ -162,7 +162,7 @@ continuing** (`scripts\demo_reset.bat`).
 7. **Sensors tab (Government)** → which mines are breaching right now, per sensor type, with the
    legal limit and "No verified limit" where none exists.
 8. **Sign out, Mine Head login** (quick-fill "Mine Head - Bhubaneswari") → own mine only. No
-   board, no comparison, no Priority Queue tab.
+   board, no comparison, no Risk Ranking tab.
 9. **Close the loop** → resolve the directive with a written action and a photograph. Then open
    **Violations**, pick an open one, **Record corrective action**, and close it from **Corrective
    actions** with proof: the violation is resolved and the score rises **45 → 50, High → Medium**.
@@ -260,7 +260,7 @@ continuing** (`scripts\demo_reset.bat`).
     in a compliance system - so out-of-scope is always a 404, never a filtered empty result.
 
 18. **Automation and risk (Phase 7).** `run_all.bat` has already run the scheduled jobs once. Open
-    **Priority Queue**: the mines are ordered by the **Governance Risk Index**, with the compliance
+    **Risk Ranking**: the mines are ordered by the **Governance Risk Index**, with the compliance
     score still beside it - say the score itself has not changed. Scroll to **Patterns found**: seven
     automated checks, each finding with its numbers ("12 roof and strata violations of 33 in 45
     days, about 2.5 expected"). Open **Bhubaneswari**: the index sits beside the score; the panel
