@@ -82,8 +82,8 @@ async function run(p) {
       const overflow = await p.evaluate(OVERFLOW_PROBE);
       const contrast = await p.evaluate(CONTRAST);
       const worst = contrast.reduce((m, c) => Math.min(m, c.ratio), 99);
-      expect(ok && g.fit === "cover" && g.pos === "50% 65%" && g.fixed === "fixed" && g.cover && !g.sideways && g.navy === "rgb(15, 23, 42)",
-        `${name} ${w} px: ${g.src} loaded, cover at 50% 65%, fixed, navy underneath, no sideways scroll`);
+      expect(ok && g.fit === "cover" && g.pos === "50% 55%" && g.fixed === "fixed" && g.cover && !g.sideways && g.navy === "rgb(15, 23, 42)",
+        `${name} ${w} px: ${g.src} loaded, cover at 50% 55%, fixed, navy underneath, no sideways scroll`);
       expect(overflow.length === 0, `${name} ${w} px: overflow probe ${overflow.length} finding(s)${overflow.length ? " " + JSON.stringify(overflow.slice(0, 3)) : ""}`);
       expect(contrast.length > 0 && worst >= 4.5, `${name} ${w} px: ${contrast.length} text(s) on the photo, worst case ${worst}:1 (AA 4.5)`);
       if (name === "login" && (w === 1440 || w === 360)) {
