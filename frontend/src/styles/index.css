@@ -55,15 +55,37 @@ a:hover { text-decoration: underline; }
 .shell { min-height: 100vh; }
 
 /* --- navigation drawer (components/layout/Nav.jsx): over the page, never docked --- */
+/* Only transform and opacity animate (the compositor does the work; nothing reflows). Opening:
+   280 ms, fast start and gentle stop; closing: 200 ms, accelerating away. The drawer stays mounted
+   off-screen (64 px further than its width, so its shadow cannot show) and inert while closed -
+   no visibility flip, which would cost a layout at the end of the close. */
 .nav-drawer {
   position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; width: min(300px, 86vw);
   display: flex; flex-direction: column; gap: var(--space-5); overflow-y: auto;
   padding: var(--space-5) var(--space-4); background: var(--navy); color: var(--on-navy);
   border-right: 1px solid var(--navy); box-shadow: var(--shadow-lg);
-  transform: translateX(-105%); visibility: hidden;
-  transition: transform .2s ease, visibility 0s linear .2s;
+  transform: translate3d(calc(-100% - 64px), 0, 0); will-change: transform; contain: layout style;
+  transition: transform var(--drawer-close-ms) var(--ease-in);
 }
-.nav-drawer.is-open { transform: none; visibility: visible; transition: transform .2s ease; }
+.nav-drawer.is-open { transform: translate3d(0, 0, 0); transition: transform var(--drawer-open-ms) var(--ease-out); }
+/* A light navy wash behind the drawer, fading in step with it. Purely visual: clicks outside the
+   drawer are handled by the drawer itself, and the page behind never moves. */
+.nav-backdrop {
+  position: fixed; inset: 0; z-index: 40; background: var(--navy); opacity: 0; pointer-events: none; will-change: opacity;
+  transition: opacity var(--drawer-close-ms) var(--ease-in);
+}
+.nav-backdrop.is-open { opacity: .25; transition: opacity var(--drawer-open-ms) var(--ease-out); }
+/* The items arrive one after another on open only: each fades and slides 8 px, 20 ms apart, the
+   last starting within 200 ms. */
+.nav-drawer.is-open .nav-stagger { animation: nav-item-in 180ms var(--ease-out) both; animation-delay: calc(min(var(--i, 0), 10) * 20ms); }
+@keyframes nav-item-in { from { opacity: 0; transform: translate3d(-8px, 0, 0); } to { opacity: 1; transform: none; } }
+/* Reduced motion: no slide, no stagger - a quick fade. */
+@media (prefers-reduced-motion: reduce) {
+  .nav-drawer { transform: none; opacity: 0; transition: opacity 120ms linear; }
+  .nav-drawer.is-open { transform: none; opacity: 1; transition: opacity 120ms linear; }
+  .nav-drawer.is-open .nav-stagger { animation: none; }
+  .nav-backdrop, .nav-backdrop.is-open { transition-duration: 120ms; transition-timing-function: linear; }
+}
 .home-link { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--ink); cursor: pointer; border-radius: var(--radius-sm); }
 .home-link, .home-link:hover { text-decoration: none; }
 .home-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
