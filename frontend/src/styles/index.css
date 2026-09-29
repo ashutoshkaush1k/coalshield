@@ -76,13 +76,20 @@ a:hover { text-decoration: underline; }
   background: var(--page); padding: var(--space-6) var(--space-8) 0;
   display: flex; align-items: flex-end; gap: var(--space-6);
   position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line);
+  /* When the title and the tabs do not fit on one line the tabs take their own line (and wrap
+     there): a tab is never pushed past the window, where body's overflow-x would hide it. */
+  flex-wrap: wrap; row-gap: var(--space-2);
 }
-.masthead-title h1 { font-size: var(--text-xl); }
+/* A link to a card (#governance-risk) and scrollIntoView stop below the sticky masthead, not under
+   it. --masthead-h is its measured height (components/layout/useMastheadHeight.js). */
+html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
+.masthead-title { min-width: 0; }
+.masthead-title h1 { font-size: var(--text-xl); overflow-wrap: anywhere; }
 .masthead-title .sub { font-size: var(--text-sm); color: var(--muted); margin-top: 2px; }
 .masthead .spacer { flex: 1; }
 .masthead-meta { display: flex; align-items: center; gap: var(--space-2); padding-bottom: var(--space-3); }
 
-.tabs { display: flex; gap: var(--space-1); align-self: flex-end; }
+.tabs { display: flex; flex-wrap: wrap; gap: 0 var(--space-1); align-self: flex-end; min-width: 0; max-width: 100%; margin-left: auto; }
 .tab {
   font-size: var(--text-sm); font-weight: 500; color: var(--muted);
   background: none; border: none; padding: var(--space-2) var(--space-3);
@@ -511,20 +518,19 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
   .shell { flex-direction: column; }
   .sidebar {
     width: 100%; flex: none; height: auto; position: static;
-    flex-direction: row; align-items: center; gap: var(--space-4);
+    flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4);
     border-right: none; border-bottom: 1px solid var(--line);
     padding: var(--space-3) var(--space-4);
   }
   .sidebar .brand { padding: 0; flex: 1; min-width: 0; }
   .sidebar .foot {
-    margin-top: 0; padding: 0; border-top: none;
-    display: flex; align-items: center; gap: var(--space-3);
+    margin-top: 0; padding: 0; border-top: none; min-width: 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3);
   }
   .sidebar .foot .role { margin-bottom: 0; }
   .sidebar .foot button { width: auto; }
 
-  .masthead { padding: var(--space-4) var(--space-4) 0; flex-wrap: wrap; }
-  .tabs { flex-wrap: wrap; }
+  .masthead { padding: var(--space-4) var(--space-4) 0; }
   .content { padding: var(--space-4) var(--space-4) var(--space-8); }
 
   /* A drawer wider than the screen would sit half off it. */
@@ -657,15 +663,53 @@ tr.is-flagged { background: var(--risk-high-bg); }
 html:lang(hi) body, html:lang(bn) body, html:lang(or) body, html:lang(te) body, html:lang(mr) body { line-height: 1.6; }
 
 /* Phase 7: Governance Risk Index, predicted risk, detector findings */
-.grid.three-col { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
-.grid.three-col > * { min-width: 0; }
 .gri-figure { padding-left: var(--space-5); margin-left: var(--space-5); border-left: 1px solid var(--line); }
-.gri-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
-.gri-table td { padding: 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-.gri-table td.num { text-align: right; white-space: nowrap; padding-left: var(--space-3); }
-.gri-table tr.is-zero td { color: var(--muted); }
-.gri-table tr.is-total td { border-bottom: 0; font-weight: 600; }
-.factor-list { margin: 0; padding-left: 1.1em; font-size: var(--text-sm); display: grid; gap: 4px; }
+
+/* The mine risk section (components/risk/RiskPanel.jsx): the index and the prediction side by side
+   from 1280 px and stacked below, the findings under them. Every text wraps; nothing is cut. */
+.risk-section { display: flex; flex-direction: column; gap: var(--space-5); }
+.risk-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+@media (min-width: 1280px) { .risk-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.risk-card-head { flex-wrap: wrap; align-items: flex-start; row-gap: var(--space-2); }
+.risk-card-head > div { flex: 1 1 14rem; min-width: 0; }
+.risk-kind { flex: none; }
+.risk-headline { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
+.hero-score.risk-big { font-size: var(--text-jumbo); line-height: 1; }
+.risk-big-unit { font-size: var(--text-lg); font-weight: 500; color: var(--muted); margin-left: calc(-1 * var(--space-2)); align-self: flex-end; padding-bottom: 6px; }
+.risk-headline .risk-mark { font-size: var(--text-sm); padding: 4px 12px; }
+.risk-caption { margin-top: var(--space-2); font-size: var(--text-lg); color: var(--ink-2); }
+
+/* Bars are measurements, drawn in ink on the sunk tone: band colour stays on the headline. */
+.bar-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+.bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-3); row-gap: 6px; align-items: baseline; }
+.bar-label { overflow-wrap: anywhere; }
+.bar-figure { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar-track { grid-column: 1 / -1; height: 8px; background: var(--sunk); border-radius: var(--radius-pill); overflow: hidden; }
+.bar-track i { display: block; height: 100%; background: var(--ink-2); border-radius: inherit; }
+.bar-detail { grid-column: 1 / -1; font-size: var(--text-sm); color: var(--muted); overflow-wrap: anywhere; }
+
+.risk-callout { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4); background: var(--sunk); border-radius: var(--radius-sm); }
+.risk-callout-figure { font-size: var(--text-xl); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.risk-callout-tags { display: inline-flex; flex-wrap: wrap; gap: var(--space-1); }
+.risk-callout .tag { background: var(--card); color: var(--ink-2); }
+
+.fleet-position { display: grid; gap: var(--space-2); }
+.pct-track { position: relative; height: 8px; margin: 4px 0; background: var(--sunk); border-radius: var(--radius-pill); }
+.pct-track i { position: absolute; inset: 0 auto 0 0; background: var(--faint); border-radius: inherit; }
+.pct-track b { position: absolute; top: -4px; width: 4px; height: 16px; margin-left: -2px; background: var(--ink); border-radius: 2px; }
+
+.info-line { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; font-size: var(--text-sm); color: var(--ink-2); }
+.info-line svg { flex: none; margin-top: 2px; color: var(--muted); }
+
+.risk-more { border-top: 1px solid var(--line-soft); padding-top: var(--space-3); }
+.risk-more summary { cursor: pointer; font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); }
+.risk-more[open] summary { margin-bottom: var(--space-3); }
+.risk-more p { margin: 0; }
+.calc-list { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: grid; gap: var(--space-2); font-size: var(--text-sm); }
+.calc-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--space-3); }
+.calc-list .num { color: var(--muted); }
+
 .pattern-list { list-style: none; margin: 0; padding: 0; }
 .pattern-list li { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); display: grid; gap: 3px; }
 .pattern-list li:last-child { border-bottom: 0; }

@@ -62,6 +62,8 @@ export const fmtNumber = (n, digits = null) => {
 export const fmtScore = (n) => (n === null || n === undefined ? "-" : fmtNumber(n, 0));
 
 /** 0.42 -> "42%" (a share); fmtPct(42.5) -> "42.5%" (already a percentage). */
+/** A list in the UI language: "a, b and c" (and its own words for "and"). */
+export const fmtList = (items) => new Intl.ListFormat(intlLocale(), { style: "long", type: "conjunction" }).format(items);
 export const fmtPercent = (n) => formatter("number", { style: "percent", maximumFractionDigits: 0 }).format(n || 0);
 export const fmtPct = (n) => (n === null || n === undefined ? "-" : formatter("number", { style: "percent", maximumFractionDigits: 1 }).format(Number(n) / 100));
 

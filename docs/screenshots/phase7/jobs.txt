@@ -1,18 +1,18 @@
 $ AI_SERVICE_URL=http://127.0.0.1:8009 yii jobs/anomaly
-anomaly          ok         5.85s  {"production_anomaly":{"engine":"php","flags":5,"new":0,"cleared":0},"sensor_flatline":{"engine":"php","flags":1,"new":0,"cleared":0},"night_shift":{"engine":"php","flags":1,"new":0,"cleared":0},"repeat_violations":{"engine":"php","flags":5,"new":0,"cleared":0},"late_actions":{"engine":"php","flags":1,"new":0,"cleared":0},"contractor_outlier":{"engine":"php","flags":3,"new":0,"cleared":0},"grievance_cluster":{"engine":"php","flags":1,"new":0,"cleared":0}}
+anomaly          ok         7.01s  {"production_anomaly":{"engine":"php","flags":5,"new":0,"cleared":0},"sensor_flatline":{"engine":"php","flags":1,"new":0,"cleared":0},"night_shift":{"engine":"php","flags":1,"new":0,"cleared":0},"repeat_violations":{"engine":"php","flags":5,"new":0,"cleared":0},"late_actions":{"engine":"php","flags":1,"new":0,"cleared":0},"contractor_outlier":{"engine":"php","flags":3,"new":0,"cleared":0},"grievance_cluster":{"engine":"php","flags":1,"new":0,"cleared":0}}
 $ AI_SERVICE_URL=http://127.0.0.1:8009 yii jobs/score
-score            ok         4.61s  {"snapshot":{"day":"2026-09-29","mines":74},"prediction":{"mines":74,"engine":"php","model_version":"msha-hgb-2026-09-28"}}
+score            ok         5.22s  {"snapshot":{"day":"2026-09-29","mines":74},"prediction":{"mines":74,"engine":"php","model_version":"msha-hgb-2026-09-28"}}
 $ yii jobs/anomaly
-anomaly          ok         2.03s  {"production_anomaly":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"sensor_flatline":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"night_shift":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"repeat_violations":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"late_actions":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"contractor_outlier":{"engine":"ai-service","flags":3,"new":0,"cleared":0},"grievance_cluster":{"engine":"ai-service","flags":1,"new":0,"cleared":0}}
+anomaly          ok         1.93s  {"production_anomaly":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"sensor_flatline":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"night_shift":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"repeat_violations":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"late_actions":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"contractor_outlier":{"engine":"ai-service","flags":3,"new":0,"cleared":0},"grievance_cluster":{"engine":"ai-service","flags":1,"new":0,"cleared":0}}
 $ yii jobs/score
-score            ok         0.57s  {"snapshot":{"day":"2026-09-29","mines":74},"prediction":{"mines":74,"engine":"ai-service","model_version":"msha-hgb-2026-09-28"}}
+score            ok         0.35s  {"snapshot":{"day":"2026-09-29","mines":74},"prediction":{"mines":74,"engine":"ai-service","model_version":"msha-hgb-2026-09-28"}}
 $ yii jobs/all   (again: idempotent - nothing new)
-reminders        ok         0.18s  {"contractor_alerts":0,"obligations":{"created":0,"reminders":0,"overdue":0,"escalated":0},"production":{"date":"2026-09-28","raised":0,"resolved":0}}
+reminders        ok         0.16s  {"contractor_alerts":0,"obligations":{"created":0,"reminders":0,"overdue":0,"escalated":0},"production":{"date":"2026-09-28","raised":0,"resolved":0}}
 sla              ok         0.02s  {"grievances":{"breached":0,"escalated":0},"detail_requests":{"overdue":0,"escalated":0}}
-escalate-alerts  ok         0.00s  {"to_level_1":0,"to_level_2":0}
-score            ok         0.50s  {"snapshot":{"day":"2026-09-29","mines":74},"prediction":{"mines":74,"engine":"ai-service","model_version":"msha-hgb-2026-09-28"}}
-anomaly          ok         2.09s  {"production_anomaly":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"sensor_flatline":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"night_shift":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"repeat_violations":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"late_actions":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"contractor_outlier":{"engine":"ai-service","flags":3,"new":0,"cleared":0},"grievance_cluster":{"engine":"ai-service","flags":1,"new":0,"cleared":0}}
+escalate-alerts  ok         0.01s  {"to_level_1":0,"to_level_2":0}
+score            ok         0.20s  {"snapshot":{"day":"2026-09-29","mines":74},"prediction":{"mines":74,"engine":"ai-service","model_version":"msha-hgb-2026-09-28"}}
+anomaly          ok         1.79s  {"production_anomaly":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"sensor_flatline":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"night_shift":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"repeat_violations":{"engine":"ai-service","flags":5,"new":0,"cleared":0},"late_actions":{"engine":"ai-service","flags":1,"new":0,"cleared":0},"contractor_outlier":{"engine":"ai-service","flags":3,"new":0,"cleared":0},"grievance_cluster":{"engine":"ai-service","flags":1,"new":0,"cleared":0}}
 contractor       ok         0.01s  {"alerts":0}
-obligation       ok         0.00s  {"created":0,"reminders":0,"overdue":0,"escalated":0}
+obligation       ok         0.01s  {"created":0,"reminders":0,"overdue":0,"escalated":0}
 production       ok         0.00s  {"locked":0,"detail_requests":{"overdue":0,"escalated":0}}
 grievance        ok         0.00s  {"breached":0,"escalated":0}

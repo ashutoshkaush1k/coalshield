@@ -22,7 +22,7 @@ export const obligationTitle = (o) => (o ? t(`obligationTitle.${o.code}`, { defa
 export const riskText = (level) => label("risk.", String(level || "").toLowerCase());
 
 /** A label used mid-sentence: "Roof and strata" -> "roof and strata"; "PPE" stays (scripts without case are unchanged). */
-const midSentence = (text) => (/^\p{Lu}\p{Ll}/u.test(text) ? text[0].toLocaleLowerCase() + text.slice(1) : text);
+export const midSentence = (text) => (/^\p{Lu}\p{Ll}/u.test(text) ? text[0].toLocaleLowerCase() + text.slice(1) : text);
 
 /** A p-value for people: "< 0.001" below that, else three decimals. */
 const pValue = (p) => (p < 0.001 ? "< 0.001" : fmtNumber(p, 3));

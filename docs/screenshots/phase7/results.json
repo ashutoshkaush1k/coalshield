@@ -38,15 +38,5 @@
     "name": "08-risk-panel-hindi",
     "note": "The risk panel in Hindi",
     "errors": []
-  },
-  {
-    "name": "side-tab gov@dgms.gov.in",
-    "note": "21 API requests in 72 s",
-    "errors": []
-  },
-  {
-    "name": "side-tab head.od-tlc-05@coalmine.in",
-    "note": "16 API requests in 66 s",
-    "errors": []
   }
 ]

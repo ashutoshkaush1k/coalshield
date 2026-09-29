@@ -1,7 +1,12 @@
 // Masthead without tabs, for pages that are not tabbed (the drill-down).
+import { useRef } from "react";
+import { useMastheadHeight } from "./useMastheadHeight";
+
 export function Topbar({ title, subtitle, children }) {
+  const ref = useRef(null);
+  useMastheadHeight(ref);
   return (
-    <header className="masthead">
+    <header className="masthead" ref={ref}>
       <div className="masthead-title">
         <h1>{title}</h1>
         {subtitle && <div className="sub">{subtitle}</div>}

@@ -1,0 +1,160 @@
+{
+  "anchor-governance-risk-1024": [
+    {
+      "kind": "title-under-header",
+      "px": 60,
+      "where": "#governance-risk h2",
+      "text": ""
+    }
+  ],
+  "anchor-predicted-risk-1024": [
+    {
+      "kind": "title-under-header",
+      "px": 60,
+      "where": "#predicted-risk h2",
+      "text": ""
+    }
+  ],
+  "anchor-governance-risk-360": [
+    {
+      "kind": "title-under-header",
+      "px": 125,
+      "where": "#governance-risk h2",
+      "text": ""
+    }
+  ],
+  "anchor-predicted-risk-360": [
+    {
+      "kind": "title-under-header",
+      "px": 125,
+      "where": "#predicted-risk h2",
+      "text": ""
+    }
+  ],
+  "head-en-1024": [
+    {
+      "kind": "past-window",
+      "px": 49,
+      "where": "header.masthead > div.tabs > button.tab",
+      "text": "Obligations",
+      "count": 2
+    },
+    {
+      "kind": "page-scrolls-sideways",
+      "px": 104,
+      "where": "html",
+      "text": "",
+      "count": 1
+    },
+    {
+      "kind": "tab-cut",
+      "px": 49,
+      "where": "masthead .tab",
+      "text": "Obligations"
+    },
+    {
+      "kind": "tab-cut",
+      "px": 104,
+      "where": "masthead .tab",
+      "text": "Map"
+    }
+  ],
+  "head-bn-1024": [
+    {
+      "kind": "past-window",
+      "px": 10,
+      "where": "header.masthead > div.tabs > button.tab",
+      "text": "মানচিত্র",
+      "count": 1
+    },
+    {
+      "kind": "page-scrolls-sideways",
+      "px": 10,
+      "where": "html",
+      "text": "",
+      "count": 1
+    },
+    {
+      "kind": "tab-cut",
+      "px": 10,
+      "where": "masthead .tab",
+      "text": "মানচিত্র"
+    }
+  ],
+  "head-or-360": [
+    {
+      "kind": "past-window",
+      "px": 22,
+      "where": "aside.sidebar > div.foot > button",
+      "text": "ଲଗଆଉଟ",
+      "count": 1
+    },
+    {
+      "kind": "page-scrolls-sideways",
+      "px": 22,
+      "where": "html",
+      "text": "",
+      "count": 1
+    }
+  ],
+  "head-te-1024": [
+    {
+      "kind": "past-window",
+      "px": 24,
+      "where": "header.masthead > div.tabs > button.tab",
+      "text": "మ్యాప్",
+      "count": 1
+    },
+    {
+      "kind": "page-scrolls-sideways",
+      "px": 24,
+      "where": "html",
+      "text": "",
+      "count": 1
+    },
+    {
+      "kind": "tab-cut",
+      "px": 24,
+      "where": "masthead .tab",
+      "text": "మ్యాప్"
+    }
+  ],
+  "gov-overview-tabs-en-1024": [
+    {
+      "kind": "tab-cut",
+      "px": 74,
+      "where": "masthead .tab",
+      "text": "Obligations"
+    },
+    {
+      "kind": "tab-cut",
+      "px": 129,
+      "where": "masthead .tab",
+      "text": "Map"
+    }
+  ],
+  "gov-overview-tabs-en-1128": [
+    {
+      "kind": "tab-cut",
+      "px": 25,
+      "where": "masthead .tab",
+      "text": "Map"
+    }
+  ],
+  "gov-overview-tabs-bn-1024": [
+    {
+      "kind": "tab-cut",
+      "px": 51,
+      "where": "masthead .tab",
+      "text": "মানচিত্র"
+    }
+  ],
+  "gov-overview-tabs-te-1024": [
+    {
+      "kind": "tab-cut",
+      "px": 51,
+      "where": "masthead .tab",
+      "text": "మ్యాప్"
+    }
+  ]
+}

@@ -59,6 +59,7 @@
   --font: "Inter", var(--font-indic), -apple-system, "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", var(--font-indic), ui-monospace, Consolas, monospace;
 
+  --text-jumbo: 60px;   /* the one number a risk card is about (components/risk/RiskPanel.jsx) */
   --text-hero: 44px;
   --text-display: 30px;
   --text-xl: 20px;
