@@ -21,6 +21,8 @@ import { t } from "../../i18n/t";
 import { fmtNumber } from "../../utils/format";
 
 // Built at render, so the labels follow a language switch.
+// Five tabs on the bar, the rest in the navigation drawer.
+const BAR_TABS = ["overview", "priority", "obligations", "production", "map"];
 const tabs = () => [
   { id: "overview", label: t("tabs.overview") },
   { id: "priority", label: t("tabs.priority") },
@@ -56,6 +58,7 @@ export default function GovernmentDashboard({ initialTab = "overview" }) {
             : t("overview.subtitleScope", { n: fmtNumber(data?.stats?.mine_count ?? 0, 0), where: scopeWhere(user) })
         }
         tabs={tabs()}
+        barIds={BAR_TABS}
         active={tab}
         onTabChange={setTab}
       />

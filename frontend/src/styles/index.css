@@ -52,34 +52,61 @@ a:hover { text-decoration: underline; }
 .small { font-size: var(--text-sm); }
 
 /* --- shell --- */
-.shell { display: flex; min-height: 100vh; }
+.shell { min-height: 100vh; }
 
-.sidebar {
-  width: 232px; flex: 0 0 232px; background: var(--card);
-  border-right: 1px solid var(--line);
-  display: flex; flex-direction: column; padding: var(--space-5) var(--space-3);
-  position: sticky; top: 0; height: 100vh; align-self: flex-start;
+/* --- navigation drawer (components/layout/Nav.jsx): over the page, never docked --- */
+.nav-drawer {
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; width: min(300px, 86vw);
+  display: flex; flex-direction: column; gap: var(--space-5); overflow-y: auto;
+  padding: var(--space-5) var(--space-4); background: var(--card);
+  border-right: 1px solid var(--line); box-shadow: var(--shadow-lg);
+  transform: translateX(-105%); visibility: hidden;
+  transition: transform .2s ease, visibility 0s linear .2s;
 }
-.sidebar .brand { padding: var(--space-2) var(--space-3) var(--space-5); }
-.sidebar .brand strong { display: block; font-size: var(--text-md); font-weight: 600; letter-spacing: var(--tracking-tight); }
-.sidebar .brand span { display: block; margin-top: 2px; font-size: var(--text-xs); color: var(--faint); }
-.sidebar .foot { margin-top: auto; padding: var(--space-4) var(--space-3) 0; border-top: 1px solid var(--line); }
-.sidebar .foot .who { font-size: var(--text-sm); font-weight: 600; }
-.sidebar .foot .role { font-size: var(--text-xs); color: var(--muted); margin-bottom: var(--space-3); }
-.sidebar .foot button { width: 100%; }
+.nav-drawer.is-open { transform: none; visibility: visible; transition: transform .2s ease; }
+.nav-drawer-brand { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); letter-spacing: var(--tracking-tight); }
+.nav-section { display: grid; gap: var(--space-2); }
+.nav-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.nav-item {
+  display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 40px;
+  padding: var(--space-2) var(--space-3); border: none; border-radius: var(--radius-sm);
+  background: none; color: var(--ink-2); font: inherit; font-size: var(--text-md); font-weight: 500;
+  text-align: left; cursor: pointer; text-decoration: none;
+}
+.nav-item:hover { background: var(--sunk); color: var(--ink); text-decoration: none; }
+.nav-item[aria-selected="true"], .nav-item.active { background: var(--sunk); color: var(--ink); font-weight: 600; }
+.nav-item:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.nav-item svg { flex: none; color: var(--muted); }
+.nav-item[aria-selected="true"] svg, .nav-item.active svg { color: var(--ink); }
+.nav-foot { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--line); display: grid; gap: 2px; }
+.nav-foot .who { font-size: var(--text-sm); font-weight: 600; padding: 0 var(--space-3); overflow-wrap: anywhere; }
+.nav-foot .role { font-size: var(--text-xs); color: var(--muted); padding: 0 var(--space-3) var(--space-2); overflow-wrap: anywhere; }
 
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .content { padding: var(--space-6) var(--space-8) var(--space-10); }
 
 /* --- masthead + tabs --- */
 .masthead {
-  background: var(--page); padding: var(--space-6) var(--space-8) 0;
-  display: flex; align-items: flex-end; gap: var(--space-6);
+  background: var(--page); padding: var(--space-4) var(--space-8) 0;
   position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line);
-  /* When the title and the tabs do not fit on one line the tabs take their own line (and wrap
-     there): a tab is never pushed past the window, where body's overflow-x would hide it. */
-  flex-wrap: wrap; row-gap: var(--space-2);
 }
+/* Hamburger, logo and app name, and the current tab's name when that tab is in the drawer. */
+.masthead-brand { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-3); }
+.nav-toggle {
+  display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0;
+  margin-left: calc(-1 * var(--space-2)); border: none; border-radius: var(--radius-sm); background: none; color: var(--ink); cursor: pointer;
+}
+.nav-toggle:hover, .nav-toggle[aria-expanded="true"] { background: var(--sunk); }
+.nav-toggle:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.app-logo { flex: none; display: block; }
+.brand-name { font-weight: 600; font-size: var(--text-md); letter-spacing: var(--tracking-tight); }
+.nav-current {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--radius-pill);
+  background: var(--sunk); color: var(--ink); font-size: var(--text-sm); font-weight: 600;
+}
+/* Title left, tabs right; when they do not fit on one line the tabs take their own line (and wrap
+   there): a tab is never pushed past the window, where body's overflow-x would hide it. */
+.masthead-row { display: flex; align-items: flex-end; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
 /* A link to a card (#governance-risk) and scrollIntoView stop below the sticky masthead, not under
    it. --masthead-h is its measured height (components/layout/useMastheadHeight.js). */
 html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
@@ -91,6 +118,7 @@ html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
 
 .tabs { display: flex; flex-wrap: wrap; gap: 0 var(--space-1); align-self: flex-end; min-width: 0; max-width: 100%; margin-left: auto; }
 .tab {
+  display: inline-flex; align-items: center; gap: 6px;
   font-size: var(--text-sm); font-weight: 500; color: var(--muted);
   background: none; border: none; padding: var(--space-2) var(--space-3);
   margin-bottom: var(--space-2); border-radius: var(--radius-sm);
@@ -99,6 +127,13 @@ html { scroll-padding-top: calc(var(--masthead-h, 0px) + var(--space-4)); }
 .tab:hover { color: var(--ink); background: var(--sunk); }
 .tab[aria-selected="true"] { color: var(--ink); background: var(--sunk); font-weight: 600; }
 .tab:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+.tab .tab-icon { flex: none; }
+/* Below 768 px the bar shows icons only; the label stays the tooltip and the accessible name. */
+@media (max-width: 767px) {
+  .tab .tab-text { display: none; }
+  .tab { padding: var(--space-2); }
+  .tabs { gap: 0 2px; }
+}
 
 .panel { animation: panel-in 180ms ease-out; }
 @keyframes panel-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -377,7 +412,7 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
 .core-readout-above .core-score.risk-high { color: var(--risk-high); }
 .core-readout-above .core-score.risk-medium { color: var(--risk-medium); }
 .core-readout-above .core-score.risk-low { color: var(--risk-low); }
-.core-foot { padding-top: var(--space-3); text-align: left; }
+.core-foot { padding-top: var(--space-3); text-align: left; overflow-wrap: anywhere; hyphens: auto; }
 .core-name { font-size: var(--text-sm); font-weight: 500; line-height: 1.3; min-height: 2.6em; }
 .core-code { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--faint); margin-top: 2px; }
 .core-place { font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
@@ -510,26 +545,8 @@ label { font-size: var(--text-sm); font-weight: 500; color: var(--ink-2); displa
 .demo-accounts { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--line); }
 .demo-accounts button { width: 100%; text-align: left; margin-top: var(--space-2); justify-content: flex-start; }
 
-/* --- narrow viewports ---
-   The sidebar is a fixed 232px column, which on a phone leaves the content too narrow
-   to fit and pushes the page into horizontal scroll. Below this width the shell stacks
-   and the sidebar becomes a strip across the top. */
+/* --- narrow viewports --- */
 @media (max-width: 900px) {
-  .shell { flex-direction: column; }
-  .sidebar {
-    width: 100%; flex: none; height: auto; position: static;
-    flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4);
-    border-right: none; border-bottom: 1px solid var(--line);
-    padding: var(--space-3) var(--space-4);
-  }
-  .sidebar .brand { padding: 0; flex: 1; min-width: 0; }
-  .sidebar .foot {
-    margin-top: 0; padding: 0; border-top: none; min-width: 0;
-    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3);
-  }
-  .sidebar .foot .role { margin-bottom: 0; }
-  .sidebar .foot button { width: auto; }
-
   .masthead { padding: var(--space-4) var(--space-4) 0; }
   .content { padding: var(--space-4) var(--space-4) var(--space-8); }
 
@@ -650,8 +667,6 @@ tr.is-flagged { background: var(--risk-high-bg); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .lang-switch { display: flex; justify-content: flex-end; }
 .lang-switch select { width: auto; min-width: 9rem; font-size: var(--text-sm); padding: 4px 8px; }
-.sidebar .foot .profile-link { display: block; font-size: var(--text-sm); margin-bottom: var(--space-3); color: var(--accent-ink); }
-.sidebar .foot .profile-link.active { font-weight: 600; }
 .lang-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-3); }
 .lang-option { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-sm); cursor: pointer; font-weight: 400; margin: 0; position: relative; }
 .lang-option input { position: absolute; opacity: 0; pointer-events: none; }

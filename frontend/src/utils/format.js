@@ -122,7 +122,10 @@ export const humanise = (token) => {
 export const breachesLabel = (windowHours) => {
   if (!windowHours) return i18n.t("breaches.all");
   const seconds = windowHours * 3600;
-  if (seconds < 90) return i18n.t("breaches.lastSeconds", { n: fmtNumber(Math.round(seconds), 0) });
+  if (seconds < 90) return i18n.t("breaches.live");   // the demo's seconds-long window: breachesHint says so
   if (seconds < 5400) return i18n.t("breaches.lastMinutes", { n: fmtNumber(Math.round(seconds / 60), 0) });
   return i18n.t("breaches.lastHours", { n: fmtNumber(Math.round(windowHours), 0) });
 };
+/** Tooltip for the "Live sensor breaches" label: the window it counts (null for longer windows). */
+export const breachesHint = (windowHours) =>
+  windowHours && windowHours * 3600 < 90 ? i18n.t("breaches.liveHint", { n: fmtNumber(Math.round(windowHours * 3600), 0) }) : null;

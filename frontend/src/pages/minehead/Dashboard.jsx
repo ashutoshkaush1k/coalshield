@@ -22,6 +22,8 @@ import { MapPanel } from "../../components/map/MapPanel";
 import { t } from "../../i18n/t";
 
 // Built at render, so the labels follow a language switch.
+// Five tabs on the bar, the rest in the navigation drawer.
+const BAR_TABS = ["overview", "production", "obligations", "contractors", "grievances"];
 const tabs = () => [
   { id: "overview", label: t("tabs.overview") },
   { id: "sensors", label: t("tabs.sensors") },
@@ -72,6 +74,7 @@ export default function MineHeadDashboard() {
         title={data.mine.name}
         subtitle={mineSubtitle(data.mine)}
         tabs={tabs()}
+        barIds={BAR_TABS}
         active={tab}
         onTabChange={setTab}
       />

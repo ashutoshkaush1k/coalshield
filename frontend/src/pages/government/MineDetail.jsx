@@ -25,7 +25,7 @@ import { usePolling } from "../../hooks/usePolling";
 import { sensorLabel } from "../../i18n/labels";
 import { useT } from "../../i18n/t";
 import { getMineView } from "../../api/views";
-import { breachesLabel, fmtScore, fmtNumber } from "../../utils/format";
+import { breachesHint, breachesLabel, fmtScore, fmtNumber } from "../../utils/format";
 import { riskClass } from "../../utils/risk";
 
 /**
@@ -35,10 +35,10 @@ import { riskClass } from "../../utils/risk";
 export const loadMineBundle = (mineId) =>
   getMineView(mineId).then(({ corrective_actions: correctiveActions, ...parts }) => ({ ...parts, correctiveActions }));
 
-function Stat({ label, value, tone }) {
+function Stat({ label, value, tone, hint }) {
   return (
     <div>
-      <span className="label">{label}</span>
+      <span className="label" title={hint ?? undefined}>{label}</span>
       <span className={`tally-v${tone ? ` ${tone}` : ""}`}>{typeof value === "number" ? fmtNumber(value) : value}</span>
     </div>
   );
@@ -74,7 +74,7 @@ export function ComplianceSummary({ mine, gri = null }) {
         <div className="spacer" />
         <div className="tally-set">
           <Stat label={t("mine.openViolations")} value={c.violation_count} />
-          <Stat label={breachesLabel(c.breach_window_hours)} value={c.breach_count} />
+          <Stat label={breachesLabel(c.breach_window_hours)} hint={breachesHint(c.breach_window_hours)} value={c.breach_count} />
           <Stat label={t("mine.openAlerts")} value={mine.open_alerts} tone={mine.open_alerts ? "risk-high" : undefined} />
         </div>
       </div>

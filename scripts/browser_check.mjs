@@ -1253,7 +1253,7 @@ async function phase7(page) {
 
   await page.as(GOV, "/gov/mines/5");
   await waitFor("#gri-beside-score");
-  let text = await page.until((t) => t.includes("Governance Risk Index") && t.includes("Predicted risk"));
+  let text = await page.until((t) => t.includes("Governance Risk Index") && t.includes("Predicted accident risk"));
   expect(text.includes("Risk index") && text.includes("What makes it up"), "the index beside the compliance score");
   await page.shot("01-gov-mine-score-and-index", "Government mine detail: compliance score (unchanged) with the Governance Risk Index beside it");
   await scrollToId("risk-panel");

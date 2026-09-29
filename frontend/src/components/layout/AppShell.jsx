@@ -1,9 +1,11 @@
-// Page frame: sidebar, topbar, content outlet.
-import { NavLink, Outlet } from "react-router-dom";
+// Page frame: navigation drawer (opened from the hamburger in each page's top bar), content outlet.
+// The content uses the full width; nothing is docked on the left.
+import { Outlet } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES, normalizeRole } from "../../auth/roles";
 import { DemoFooter } from "../common/DemoFooter";
 import { useT } from "../../i18n/t";
+import { NavDrawer, NavProvider } from "./Nav";
 
 // Scope line under the user name: what the API lets this account see.
 function scopeLabel(t, user) {
@@ -19,24 +21,14 @@ export function AppShell() {
   const t = useT();
 
   return (
-    <div className="shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <strong>Smart Mine Governance</strong>
-          <span>{t("shell.problemStatement", { id: "SIH26024" })}</span>
+    <NavProvider>
+      <div className="shell">
+        <NavDrawer who={user?.full_name || user?.email} scope={scopeLabel(t, user)} onSignOut={signOut} />
+        <div className="main">
+          <Outlet />
+          <DemoFooter />
         </div>
-        <div className="foot">
-          <div className="who">{user?.full_name || user?.email}</div>
-          <div className="role">{scopeLabel(t, user)}</div>
-          <NavLink to="/profile" className="profile-link" id="profile-link">{t("shell.profile")}</NavLink>
-          <button onClick={signOut}>{t("shell.signOut")}</button>
-        </div>
-      </aside>
-
-      <div className="main">
-        <Outlet />
-        <DemoFooter />
       </div>
-    </div>
+    </NavProvider>
   );
 }

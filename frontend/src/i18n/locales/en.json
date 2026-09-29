@@ -22,7 +22,6 @@
     "scopeMine": "{{role}} · {{name}}",
     "signOut": "Sign out",
     "noScreen": "There is no screen for this role yet.",
-    "problemStatement": "Problem statement {{id}}",
     "profile": "Profile and language"
   },
   "scope": {
@@ -1168,9 +1167,10 @@
   },
   "breaches": {
     "all": "Breaches",
-    "lastSeconds": "Breaches, last {{n}}s",
     "lastMinutes": "Breaches, last {{n}} min",
-    "lastHours": "Breaches, last {{n}}h"
+    "lastHours": "Breaches, last {{n}}h",
+    "live": "Live sensor breaches",
+    "liveHint": "Sensor threshold breaches in the last {{n}} seconds: the live window of the demo sensor feed"
   },
   "chart": {
     "totalBreaches": "Total breaches",
@@ -1691,5 +1691,9 @@
     "fallbackTitle": "Automated detection is running on the built-in checks.",
     "fallbackDown": "The AI service is not answering, so the same detectors run in the API instead and PPE photo analysis is unavailable. It restarts on its own; findings are unchanged.",
     "fallbackConfigured": "The AI service is switched off in the settings (AI_ENGINE=php), so the same detectors run in the API and PPE photo analysis is unavailable."
+  },
+  "nav": {
+    "menu": "Menu",
+    "more": "More views"
   }
 }

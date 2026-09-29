@@ -2,16 +2,16 @@
 import { CoreSampleBoard } from "../../../components/compliance/CoreSampleBoard";
 import { StateFilter } from "../../../components/common/StateFilter";
 import { DemoTag } from "../../../components/common/DemoTag";
-import { breachesLabel, fmtNumber } from "../../../utils/format";
+import { breachesHint, breachesLabel, fmtNumber } from "../../../utils/format";
 import { t } from "../../../i18n/t";
 import { scopeWhere } from "../../../i18n/labels";
 import { useAuth } from "../../../hooks/useAuth";
 import { ContractorSummaryCard } from "./ContractorsPanel";
 
-function Tally({ label, value, tone }) {
+function Tally({ label, value, tone, hint }) {
   return (
     <div>
-      <span className="label">{label}</span>
+      <span className="label" title={hint ?? undefined}>{label}</span>
       <span className={`tally-v${tone ? ` risk-${tone}` : ""}`}>{typeof value === "number" ? fmtNumber(value) : value}</span>
     </div>
   );
@@ -47,7 +47,7 @@ export function OverviewPanel({ data, contractorSummary, state, onStateChange, o
               <Tally label={t("risk.medium")} value={stats?.medium_risk_count ?? 0} tone="medium" />
               <Tally label={t("risk.low")} value={stats?.low_risk_count ?? 0} tone="low" />
               <Tally label={t("overview.violations")} value={stats?.total_violations ?? 0} />
-              <Tally label={breachesLabel(stats?.breach_window_hours)}
+              <Tally label={breachesLabel(stats?.breach_window_hours)} hint={breachesHint(stats?.breach_window_hours)}
                      value={stats?.total_breaches ?? 0} />
             </div>
           </div>
