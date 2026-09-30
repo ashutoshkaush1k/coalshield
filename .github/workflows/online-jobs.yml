@@ -1,0 +1,41 @@
+# The online version's scheduled jobs (docs/DEPLOYMENT.md). The free Render server has no
+# scheduler, so every hour this wakes it and calls POST /v1/system/jobs - what Task Scheduler's
+# `yii jobs/*` does on the laptop. Needs the repository variable ONLINE_API_URL
+# (https://<service>.onrender.com/v1) and the secret JOBS_TOKEN; without them it does nothing.
+name: Online scheduled jobs
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: online-jobs
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Run the jobs on the online API
+        env:
+          API_URL: ${{ vars.ONLINE_API_URL }}
+          JOBS_TOKEN: ${{ secrets.JOBS_TOKEN }}
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$JOBS_TOKEN" ]; then
+            echo "ONLINE_API_URL or JOBS_TOKEN is not set: nothing to do."
+            exit 0
+          fi
+          # A sleeping free server takes about a minute to start.
+          for i in $(seq 1 18); do
+            if curl -fsS --max-time 20 "$API_URL/health" -o /dev/null; then echo "server awake"; break; fi
+            echo "waiting for the server to start ($i)"; sleep 10
+          done
+          curl -sS --max-time 900 -X POST "$API_URL/system/jobs" \
+            -H "X-Jobs-Token: $JOBS_TOKEN" -H "Content-Type: application/json" -d '{}' \
+            -o result.json -w "HTTP %{http_code}\n"
+          cat result.json; echo
+          test "$(jq -r '.failed' result.json)" = "0"

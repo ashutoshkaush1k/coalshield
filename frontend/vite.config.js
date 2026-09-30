@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -9,9 +10,26 @@ import react from '@vitejs/plugin-react'
 const PUBLIC_FILES = ['favicon.svg', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png']
 
 function serviceWorker() {
+  // VITE_SW_SCOPE (the online build, .env.online: /field): the service worker and the installed app
+  // cover the field app only, so the dashboard on the same address is never served from a cache.
+  // Unset (the laptop): the whole site, as before.
+  let scope = '/'
+  let manifestPath = null
   return {
     name: 'smg-service-worker',
     apply: 'build',
+    configResolved(config) {
+      scope = config.env.VITE_SW_SCOPE || '/'
+      manifestPath = resolve(config.root, config.build.outDir, 'manifest.webmanifest')
+      if (config.mode === 'online' && !config.env.VITE_API_URL) {
+        throw new Error('The online build needs VITE_API_URL (the Render API, e.g. https://<service>.onrender.com/v1) - docs/DEPLOYMENT.md')
+      }
+    },
+    closeBundle() {
+      if (scope === '/') return
+      const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+      writeFileSync(manifestPath, JSON.stringify({ ...manifest, start_url: scope, scope }, null, 2) + '\n')
+    },
     generateBundle(_, bundle) {
       // The login photo is precached in AVIF only (what current browsers pick); the WebP and JPEG
       // fallbacks load from the network when needed.

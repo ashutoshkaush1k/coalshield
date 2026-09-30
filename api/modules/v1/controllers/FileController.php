@@ -32,13 +32,21 @@ class FileController extends ApiController
         if ($file === null || !$storage->validSignature($id, (int) $request->get('expires'), (string) $request->get('signature'))) {
             throw ApiException::notFound();
         }
+        $response = Yii::$app->response;
+        $response->headers->set('Cache-Control', 'private, max-age=300');
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+        if ($storage->isRemote()) {
+            // Online: the bytes come from the Supabase Storage bucket (FileStorage).
+            $bytes = $storage->read($file);
+            if ($bytes === null) {
+                throw ApiException::notFound();
+            }
+            return $response->sendContentAsFile($bytes, basename($file->path), ['mimeType' => $file->mime, 'inline' => true]);
+        }
         $path = $storage->absolutePath($file->path);
         if (!is_file($path)) {
             throw ApiException::notFound();
         }
-        $response = Yii::$app->response;
-        $response->headers->set('Cache-Control', 'private, max-age=300');
-        $response->headers->set('X-Content-Type-Options', 'nosniff');
         return $response->sendFile($path, basename($file->path), ['mimeType' => $file->mime, 'inline' => true]);
     }
 }

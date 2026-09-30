@@ -8,7 +8,7 @@ use app\models\AuditLog;
 use app\tests\Support\ApiTester;
 use app\tests\Support\Helper\Auth;
 
-/** GET / PATCH /v1/users/me */
+/** GET / PATCH /v1/users/me, POST /v1/users/me/password */
 class UsersMeCest
 {
     public function meNeedsAToken(ApiTester $I): void
@@ -77,6 +77,52 @@ class UsersMeCest
         $I->sendPatch('/v1/users/me', ['preferred_language' => 'fr']);
         $I->seeApiError(422, 'VALIDATION_FAILED');
         $I->seeResponseContainsJson(['error' => ['fields' => ['preferred_language' => ['INVALID_VALUE']]]]);
+    }
+
+    public function changePasswordThenSignInWithTheNewOne(ApiTester $I): void
+    {
+        $user = Auth::user(Auth::INSPECTOR);
+        $I->amBearerOf(Auth::INSPECTOR);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPost('/v1/users/me/password', ['current_password' => Auth::PASSWORD, 'new_password' => 'a-much-longer-test-passphrase']);
+        $I->seeResponseCodeIs(204);
+
+        $I->sendPost('/v1/auth/login', ['email' => Auth::INSPECTOR, 'password' => Auth::PASSWORD]);
+        $I->seeApiError(401, 'INVALID_CREDENTIALS');
+        $I->sendPost('/v1/auth/login', ['email' => Auth::INSPECTOR, 'password' => 'a-much-longer-test-passphrase']);
+        $I->seeResponseCodeIs(200);
+
+        /** @var AuditLog $entry */
+        $entry = AuditLog::find()->where(['entity' => 'user', 'entity_id' => $user->id, 'action' => 'update'])->orderBy(['id' => SORT_DESC])->one();
+        $I->assertNotNull($entry, 'the change is in the audit chain');
+        $I->assertStringNotContainsString('a-much-longer-test-passphrase', json_encode([$entry->old_values, $entry->new_values]));
+        $I->assertStringNotContainsString('$2y$', json_encode([$entry->old_values, $entry->new_values]), 'hash redacted');
+    }
+
+    public function changePasswordChecksTheCurrentOneAndTheLength(ApiTester $I): void
+    {
+        $I->amBearerOf(Auth::GOVERNMENT);
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPost('/v1/users/me/password', ['current_password' => 'not-the-password', 'new_password' => 'a-much-longer-test-passphrase']);
+        $I->seeApiError(422, 'VALIDATION_FAILED');
+        $I->seeResponseContainsJson(['error' => ['fields' => ['current_password' => ['WRONG_PASSWORD']]]]);
+
+        $I->sendPost('/v1/users/me/password', ['current_password' => Auth::PASSWORD, 'new_password' => 'short-11ch!']);
+        $I->seeApiError(422, 'VALIDATION_FAILED');
+        $I->seeResponseContainsJson(['error' => ['params' => ['min_length' => 12], 'fields' => ['new_password' => ['TOO_SHORT']]]]);
+
+        $I->sendPost('/v1/users/me/password', []);
+        $I->seeResponseContainsJson(['error' => ['fields' => ['current_password' => ['REQUIRED'], 'new_password' => ['REQUIRED']]]]);
+
+        $I->sendPost('/v1/auth/login', ['email' => Auth::GOVERNMENT, 'password' => Auth::PASSWORD]);
+        $I->seeResponseCodeIs(200);
+    }
+
+    public function changePasswordNeedsAToken(ApiTester $I): void
+    {
+        $I->haveHttpHeader('Content-Type', 'application/json');
+        $I->sendPost('/v1/users/me/password', ['current_password' => Auth::PASSWORD, 'new_password' => 'a-much-longer-test-passphrase']);
+        $I->seeApiError(401, 'UNAUTHENTICATED');
     }
 
     public function patchNeedsTheField(ApiTester $I): void

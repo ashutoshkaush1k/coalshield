@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace app\commands;
 
 use app\components\JobRunner;
-use app\services\AnomalyService;
-use app\services\AutomationService;
-use app\services\ContractorAlertService;
-use app\services\DetailRequestService;
-use app\services\GrievanceService;
-use app\services\ObligationService;
-use app\services\ProductionService;
-use app\services\RiskModelService;
+use app\components\ScheduledJobs;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\db\Query;
 
 /**
- * Scheduled jobs (Phase 7). Each is idempotent, logged (job_run and runtime/logs/jobs.log) and
+ * Scheduled jobs (Phase 7; the work itself is in components/ScheduledJobs.php, shared with
+ * POST /v1/system/jobs online). Each is idempotent, logged (job_run and runtime/logs/jobs.log) and
  * safe to start while another copy runs (it is then skipped). Registered in Windows Task
  * Scheduler by scripts/register_tasks.ps1; run once at startup by run_all.bat (jobs/all).
  *
@@ -38,55 +32,51 @@ use yii\db\Query;
  */
 class JobsController extends Controller
 {
-    public const JOBS = ['reminders', 'sla', 'escalate-alerts', 'score', 'anomaly', 'contractor', 'obligation', 'production', 'grievance'];
+    public const JOBS = ScheduledJobs::JOBS;
 
     public function actionReminders(): int
     {
-        return $this->job('reminders', fn() => [
-            'contractor_alerts' => count(ContractorAlertService::run()),
-            'obligations' => ObligationService::check(),
-            'production' => AutomationService::productionReminders(),
-        ]);
+        return $this->job('reminders');
     }
 
     public function actionSla(): int
     {
-        return $this->job('sla', fn() => ['grievances' => GrievanceService::escalateDue(), 'detail_requests' => DetailRequestService::escalateDue()]);
+        return $this->job('sla');
     }
 
     public function actionEscalateAlerts(): int
     {
-        return $this->job('escalate-alerts', fn() => AutomationService::escalateAlerts());
+        return $this->job('escalate-alerts');
     }
 
     public function actionScore(): int
     {
-        return $this->job('score', fn() => ['snapshot' => AutomationService::snapshot(), 'prediction' => RiskModelService::refresh()]);
+        return $this->job('score');
     }
 
     public function actionAnomaly(): int
     {
-        return $this->job('anomaly', fn() => AnomalyService::run());
+        return $this->job('anomaly');
     }
 
     public function actionContractor(): int
     {
-        return $this->job('contractor', fn() => ['alerts' => count(ContractorAlertService::run())]);
+        return $this->job('contractor');
     }
 
     public function actionObligation(): int
     {
-        return $this->job('obligation', fn() => ObligationService::check());
+        return $this->job('obligation');
     }
 
     public function actionProduction(): int
     {
-        return $this->job('production', fn() => ['locked' => ProductionService::lockPastPeriods(), 'detail_requests' => DetailRequestService::escalateDue()]);
+        return $this->job('production');
     }
 
     public function actionGrievance(): int
     {
-        return $this->job('grievance', fn() => GrievanceService::escalateDue());
+        return $this->job('grievance');
     }
 
     public function actionAll(): int
@@ -108,9 +98,9 @@ class JobsController extends Controller
         return ExitCode::OK;
     }
 
-    private function job(string $name, callable $work): int
+    private function job(string $name): int
     {
-        $r = JobRunner::run($name, $work);
+        $r = JobRunner::run($name, ScheduledJobs::work($name));
         $this->stdout(sprintf("%-16s %-8s %6.2fs  %s\n", $name, $r['status'], $r['seconds'], json_encode($r['summary'])));
         return $r['status'] === 'failed' ? ExitCode::UNSPECIFIED_ERROR : ExitCode::OK;
     }

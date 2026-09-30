@@ -179,3 +179,25 @@ Phase 2 the frontend talks only to the new API (`VITE_API_URL`, default
 | `GET /v1/search?q=` | read-only; `{q, mines: [{id, code, name, district, state, operator}], contractors: [{id, name, registration_no}], grievances: [{id, ticket_no, category, status, mine_id, mine_name}], obligations: [{id, code, title, domain}]}`, at most 5 per group, case-insensitive substring (mines: name, code, district, state, company name or code; contractors: name, registration no.; grievances: ticket number; obligations: code, title). Fewer than 2 characters: empty groups. Each group is scoped like its list endpoint (`forCurrentUser`): corporate sees only its companies; sensitive grievances only for roles that may see them |
 | RBAC | `search.global`: government, corporate (mine head and inspector: 403) |
 | tests | `SearchCest` (authentication, 403, scoping per role, sensitive grievances, limits, read-only) |
+
+## Online version (docs/DEPLOYMENT.md)
+
+Everything below is switched on by environment settings only; with none of them set (the laptop) the
+API behaves exactly as before, except that every role can now change its own password.
+
+| New | Notes |
+|---|---|
+| `POST /v1/users/me/password` | signed in; `{current_password, new_password}` -> 204. 422 `VALIDATION_FAILED` with `fields.current_password: [WRONG_PASSWORD]`, `fields.new_password: [TOO_SHORT]` (params `min_length: 12`), `[TOO_LONG]` (over 128), `[SAME_AS_CURRENT]`, or `REQUIRED`. A wrong current password counts against the per-account sign-in limit (429 `RATE_LIMITED` once over it). Audited with the hash redacted; tokens already issued stay valid until they expire |
+| `POST /v1/system/jobs` | header `X-Jobs-Token`; optional body `{"jobs": [...]}` (default: every job, in `yii jobs/all` order) -> 200 `{failed, jobs: {name: {status: ok\|failed\|skipped, seconds}}}`. No `JOBS_TOKEN` set (the laptop): 404 `NOT_FOUND`; wrong or missing token: 403 `FORBIDDEN`; unknown job: 422. Called hourly by `.github/workflows/online-jobs.yml` |
+| error code | `VISION_FULL_VERSION_ONLY` (503) from `POST /v1/vision/analyze` when `VISION_AVAILABLE=0` (online: no ai-service). Nothing is stored and no alert is raised |
+| RBAC | `user.changeOwnPassword`: every role |
+
+| Setting (environment) | Default (laptop) | Online |
+|---|---|---|
+| `DB_SSLMODE` | unset: not added to the DSN | `require` |
+| `DB_PERSISTENT` | on under Apache | `0` (Supabase's pooler holds the connections) |
+| `STORAGE_DRIVER`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_BUCKET` | `local`: bytes under `FILE_STORAGE_DIR` | `supabase`: a private Storage bucket; `GET /v1/files/{id}/content` streams from it; a file's link is given only for rows written by the store (seeded rows without bytes get none, as on the laptop) |
+| `VISION_AVAILABLE` | on | `0` |
+| `JOBS_TOKEN` | unset: no `/v1/system/jobs` | a long random secret (Render and the GitHub secret) |
+| `LOG_STDERR` | off: `runtime/logs/*.log` | `1`: the platform's log view |
+| `CACHE_DIR` | `@runtime/cache` | `scripts\online.bat` uses `@runtime/cache-online` |

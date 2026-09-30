@@ -13,6 +13,8 @@ use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 
 $params = require __DIR__ . '/params.php';
+// LOG_STDERR=1 (online): logs go to the platform's log view; its disk is wiped on every restart.
+$logStderr = filter_var(env('LOG_STDERR', false), FILTER_VALIDATE_BOOL);
 
 return [
     'basePath' => dirname(__DIR__),
@@ -29,7 +31,8 @@ return [
         // `yii rbac/init` flush it (app\components\CacheReset); `yii cache/flush-all` does by hand.
         'cache' => [
             'class' => yii\caching\FileCache::class,
-            'cachePath' => defined('COALSHIELD_TEST') ? '@runtime/cache-test' : '@runtime/cache',
+            // CACHE_DIR: scripts\online.bat keeps the online database's cache apart from the laptop's.
+            'cachePath' => defined('COALSHIELD_TEST') ? '@runtime/cache-test' : (string) env('CACHE_DIR', '@runtime/cache'),
         ],
         'authManager' => [
             'class' => yii\rbac\DbManager::class,
@@ -71,13 +74,16 @@ return [
                     'levels' => ['error', 'warning'],
                     'logVars' => [],
                     'except' => ['yii\web\HttpException:4*', 'JwtHttpBearerAuth'],
+                    'logFile' => $logStderr ? 'php://stderr' : '@runtime/logs/app.log',
+                    'enableRotation' => !$logStderr,
                 ],
                 // Phase 7: every scheduled job's run (yii jobs/*), also in the job_run table.
                 [
                     'class' => yii\log\FileTarget::class,
                     'categories' => ['jobs'],
                     'levels' => ['error', 'warning', 'info'],
-                    'logFile' => '@runtime/logs/jobs.log',
+                    'logFile' => $logStderr ? 'php://stderr' : '@runtime/logs/jobs.log',
+                    'enableRotation' => !$logStderr,
                     'logVars' => [],
                 ],
             ],

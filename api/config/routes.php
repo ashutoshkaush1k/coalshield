@@ -10,13 +10,15 @@ declare(strict_types=1);
 return [
     'OPTIONS v1/<path:.*>' => 'v1/default/options',
     'GET v1/health' => 'v1/default/health',
-    'GET v1/system/status' => 'v1/default/status',   // Phase 8: detection engine for the dashboards' footer
+    'GET v1/system/status' => 'v1/default/status',
+    'POST v1/system/jobs' => 'v1/default/jobs',   // online only (JOBS_TOKEN): the hourly scheduled jobs   // Phase 8: detection engine for the dashboards' footer
 
     // Auth and profile
     'POST v1/auth/login' => 'v1/auth/login',
     'GET v1/auth/me' => 'v1/user/me',
     'GET v1/users/me' => 'v1/user/me',
     'PATCH v1/users/me' => 'v1/user/update-me',
+    'POST v1/users/me/password' => 'v1/user/change-password',
 
     // Mines, dashboard, compliance
     'GET v1/mines' => 'v1/mine/index',

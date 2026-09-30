@@ -3,6 +3,7 @@
 // otherwise, shown here as the explanation). Charts, the mine's response, and every shift entry
 // with its corrections.
 import { useEffect, useState } from "react";
+import { assetUrl } from "../../api/client";
 import { getProductionDetail } from "../../api/production";
 import { useT } from "../../i18n/t";
 import { fmtDateTime } from "../../utils/format";
@@ -48,7 +49,7 @@ export function ProductionDetailDrawer({ mineId, from, to, title, onClose }) {
                 {t("detailRequest.respondedAt", { when: fmtDateTime(data.request.responded_at), name: data.request.responder_name ?? "-" })}
                 {" · "}
                 {data.request.response_url
-                  ? <a href={data.request.response_url} target="_blank" rel="noreferrer">{t("production.detail.responseFile")}</a>
+                  ? <a href={assetUrl(data.request.response_url)} target="_blank" rel="noreferrer">{t("production.detail.responseFile")}</a>
                   : t("production.detail.noFile")}
               </span>
             </section>

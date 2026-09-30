@@ -13,6 +13,12 @@ return [
     'fileStorage.dir' => (string) env('FILE_STORAGE_DIR', '@app/storage/files'),
     'fileStorage.maxBytes' => (int) env('FILE_MAX_BYTES', 10 * 1024 * 1024),
     'fileStorage.mimeTypes' => ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
+    // Online only (docs/DEPLOYMENT.md): STORAGE_DRIVER=supabase keeps the bytes in a private Supabase
+    // Storage bucket instead of the local disk. Unset: local disk, as on the laptop.
+    'fileStorage.driver' => (string) env('STORAGE_DRIVER', 'local'),
+    'fileStorage.supabaseUrl' => (string) env('SUPABASE_URL', ''),
+    'fileStorage.supabaseKey' => (string) env('SUPABASE_SERVICE_KEY', ''),
+    'fileStorage.bucket' => (string) env('SUPABASE_BUCKET', 'files'),
     // Where data/schema lives (rules.yaml: legal sensor limits; violation_categories.yaml).
     'dataSchemaDir' => (string) env('DATA_SCHEMA_DIR', '../data/schema'),
     // data/reference: the offline map's state and district outlines (Phase 5B).
@@ -51,6 +57,14 @@ return [
     'auth.failureWindowSeconds' => 900,
     // Phase 8: exception details in error answers ("debug"), only when asked for (never on a demo LAN)
     'api.debugErrors' => (bool) env('API_DEBUG_ERRORS', false),
+    // Online only (docs/DEPLOYMENT.md): the secret that POST /v1/system/jobs needs. Unset (the laptop):
+    // the endpoint does not exist; Task Scheduler runs `yii jobs/*` instead.
+    'jobs.token' => (string) env('JOBS_TOKEN', ''),
+    // Online only: VISION_AVAILABLE=0 - the free server has no ai-service, so a PPE photo upload
+    // answers 503 VISION_FULL_VERSION_ONLY ("available in the full version") and changes nothing.
+    'vision.available' => filter_var(env('VISION_AVAILABLE', true), FILTER_VALIDATE_BOOL),
+    // Change password (Profile): the shortest new password accepted.
+    'auth.passwordMinLength' => 12,
     'grievance.submitPerHour' => (int) env('GRIEVANCE_SUBMIT_PER_HOUR', 5),
     'grievance.trackPerMinute' => (int) env('GRIEVANCE_TRACK_PER_MINUTE', 20),
     'grievance.maxFileBytes' => 5 * 1024 * 1024,

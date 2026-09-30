@@ -12,6 +12,7 @@ $permissions = [
     // Phase 1
     'user.viewOwn' => 'Read own profile',
     'user.updateOwnLanguage' => 'Change own preferred language',
+    'user.changeOwnPassword' => 'Change own password',
     'mine.view' => 'List and read mines in scope',
     // Phase 2
     'dashboard.view' => 'Dashboard for the mines in scope',
@@ -67,7 +68,7 @@ $permissions = [
     'search.global' => 'Search the mines, contractors, grievances and obligations in scope (GET /v1/search)',
 ];
 
-$read = ['user.viewOwn', 'user.updateOwnLanguage', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
+$read = ['user.viewOwn', 'user.updateOwnLanguage', 'user.changeOwnPassword', 'mine.view', 'dashboard.view', 'sensor.view', 'violation.view',
     'correctiveAction.view', 'inspection.view', 'alert.view', 'alert.acknowledge', 'audit.view', 'compliance.view',
     'incident.view', 'contractor.view', 'detailRequest.view', 'grievance.view', 'obligation.view', 'risk.view'];
 $productionOversight = ['production.summary', 'production.viewRequested'];

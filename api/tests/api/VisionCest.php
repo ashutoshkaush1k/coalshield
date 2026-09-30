@@ -27,6 +27,17 @@ class VisionCest
         $I->assertNotNull(Alert::findOne(['code' => 'AI_SERVICE_UNAVAILABLE', 'mine_id' => 5]));
     }
 
+    /** Online (VISION_AVAILABLE=0): a friendly "full version" answer; nothing stored, no alert. */
+    public function onlineWithoutAiServiceSaysFullVersionOnly(ApiTester $I): void
+    {
+        Yii::$app->params['vision.available'] = false;
+        $alerts = (int) Alert::find()->count();
+        $I->amBearerOf(Auth::MINE_HEAD_BHUBANESWARI);
+        $I->sendPost('/v1/vision/analyze', ['mine_id' => 5], ['file' => codecept_data_dir('pixel.png')]);
+        $I->seeApiError(503, 'VISION_FULL_VERSION_ONLY');
+        $I->assertSame($alerts, (int) Alert::find()->count());
+    }
+
     public function otherMineIs404(ApiTester $I): void
     {
         $I->amBearerOf(Auth::MINE_HEAD_BHUBANESWARI);

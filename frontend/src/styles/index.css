@@ -1107,3 +1107,22 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .mine-list-item:hover { background: var(--hover); }
 .map-open { margin-top: var(--space-2); min-height: 44px; width: 100%; background: var(--navy); color: var(--on-navy); border-color: var(--navy); }
 @media (max-width: 767px) { .segmented { width: 100%; } .segmented button { flex: 1 1 0; min-height: 44px; } }
+
+/* Online version only (components/common/ServerWakeNotice.jsx): the free API server is waking up. */
+.wake-notice {
+  position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+  z-index: calc(var(--z-overlay) + 10); width: min(440px, calc(100vw - 32px));
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius);
+  background: var(--accent-soft); color: var(--accent-ink); box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+}
+.wake-spinner {
+  flex: none; width: 18px; height: 18px; margin-top: 2px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; animation: wake-spin .9s linear infinite;
+}
+@keyframes wake-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .wake-spinner { animation: none; border-right-color: currentColor; opacity: .6; } }
+
+/* Profile: change password */
+.password-form { max-width: 26rem; }

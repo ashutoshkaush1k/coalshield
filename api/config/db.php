@@ -11,7 +11,9 @@ $name = defined('COALSHIELD_TEST') ? (string) env('DB_TEST_NAME', 'coalshield_te
 
 return [
     'class' => yii\db\Connection::class,
-    'dsn' => sprintf('pgsql:host=%s;port=%s;dbname=%s', env('DB_HOST', '127.0.0.1'), env('DB_PORT', '5432'), $name),
+    // DB_SSLMODE (online: require) is added only when set; the laptop's database has no TLS.
+    'dsn' => sprintf('pgsql:host=%s;port=%s;dbname=%s', env('DB_HOST', '127.0.0.1'), env('DB_PORT', '5432'), $name)
+        . (env('DB_SSLMODE') !== null ? ';sslmode=' . env('DB_SSLMODE') : ''),
     'username' => (string) env('DB_USER', 'coalshield'),
     'password' => (string) env('DB_PASSWORD', ''),
     'charset' => 'utf8',
@@ -21,7 +23,9 @@ return [
     // lock is transaction-scoped. Console commands and tests connect per run as before.
     // (null, not [ATTR_PERSISTENT => false], elsewhere: ArrayHelper::merge renumbers integer keys
     // when config/test.php merges this file a second time.)
-    'attributes' => PHP_SAPI === 'apache2handler' ? [PDO::ATTR_PERSISTENT => true] : null,
+    // DB_PERSISTENT=0 turns this off (online: the database is reached through Supabase's connection
+    // pooler, which holds the server connections itself - docs/DEPLOYMENT.md).
+    'attributes' => PHP_SAPI === 'apache2handler' && filter_var(env('DB_PERSISTENT', true), FILTER_VALIDATE_BOOL) ? [PDO::ATTR_PERSISTENT => true] : null,
     // Table metadata is read once and kept until the next migrate / seed flushes the cache.
     'enableSchemaCache' => true,
     'schemaCacheDuration' => 0,

@@ -68,9 +68,13 @@ Tests (rebuilds the test database, then every suite):
 cd api && run_tests.bat
 ```
 
+**Online version** (Vercel + Render + Supabase, free plans): [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+The laptop setup above is unchanged and stays the main demo.
+
 ## Demo accounts
 
-Loaded by `yii seed`. Demo fixtures only - not real credentials. Mine names are real (Global Energy
+Loaded by `yii seed`, on the laptop. Demo fixtures only - not real credentials. The online version
+uses other passwords, never published (docs/DEPLOYMENT.md, "Sign-ins"). Mine names are real (Global Energy
 Monitor, Global Coal Mine Tracker, August 2026, CC BY 4.0); every score is a demo value computed from
 synthetic data.
 

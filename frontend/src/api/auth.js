@@ -21,3 +21,8 @@ export async function updateMe(changes) {
   const { data } = await client.patch("/users/me", changes);
   return data;
 }
+
+/** POST /v1/users/me/password - {current_password, new_password}; 204 when changed. */
+export async function changePassword(currentPassword, newPassword) {
+  await client.post("/users/me/password", { current_password: currentPassword, new_password: newPassword });
+}

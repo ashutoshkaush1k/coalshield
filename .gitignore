@@ -64,3 +64,8 @@ scripts/.cache/
 
 # Phase 7B: local HTTPS certificates for the field server (the CA key must never leave this PC)
 certs/
+
+# Online version (docs/DEPLOYMENT.md): the online database's connection settings and the judges'
+# sign-ins stay on this laptop only - never committed.
+deploy/*.local.*
+deploy/*.local

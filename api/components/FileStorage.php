@@ -13,6 +13,9 @@ use yii\web\UploadedFile;
  * Local-disk file storage outside the web root. Checks size and the real MIME type (finfo, not the
  * client's claim) against the whitelist in params, stores the bytes under <dir>/YYYY/MM/<sha256>.<ext>
  * and records a `file` row (audited like every model).
+ *
+ * Online (STORAGE_DRIVER=supabase, docs/DEPLOYMENT.md) the same bytes go to a private Supabase
+ * Storage bucket at the same path instead (SupabaseBucket); nothing else changes. Unset: local disk.
  */
 class FileStorage extends Component
 {
@@ -22,6 +25,10 @@ class FileStorage extends Component
     public ?int $maxBytes = null;
     /** @var string[]|null */
     public ?array $mimeTypes = null;
+    /** local | supabase */
+    public ?string $driver = null;
+    /** The bucket when the driver is supabase (built from params when not given). */
+    public ?SupabaseBucket $bucket = null;
 
     public function init(): void
     {
@@ -30,6 +37,17 @@ class FileStorage extends Component
         $this->dir = Yii::getAlias($this->dir ?? $params['fileStorage.dir']);
         $this->maxBytes ??= $params['fileStorage.maxBytes'];
         $this->mimeTypes ??= $params['fileStorage.mimeTypes'];
+        $this->driver ??= $params['fileStorage.driver'] ?? 'local';
+        if ($this->isRemote() && $this->bucket === null) {
+            $this->bucket = new SupabaseBucket(['url' => (string) $params['fileStorage.supabaseUrl'],
+                'key' => (string) $params['fileStorage.supabaseKey'], 'bucket' => (string) $params['fileStorage.bucket']]);
+        }
+    }
+
+    /** True when the bytes live in Supabase Storage rather than on this machine's disk. */
+    public function isRemote(): bool
+    {
+        return $this->driver === 'supabase';
     }
 
     public function storeUpload(UploadedFile $upload, string $entity, int $entityId, ?int $userId): File
@@ -58,12 +76,16 @@ class FileStorage extends Component
 
         $sha256 = hash_file('sha256', $sourcePath);
         $relative = gmdate('Y/m') . '/' . $sha256 . '.' . (self::EXTENSIONS[$mime] ?? 'bin');
-        $target = $this->absolutePath($relative);
-        if (!is_dir(dirname($target)) && !mkdir(dirname($target), 0775, true) && !is_dir(dirname($target))) {
-            throw new \RuntimeException('Cannot create storage directory');
-        }
-        if (!is_file($target) && !copy($sourcePath, $target)) {
-            throw new \RuntimeException('Cannot write stored file');
+        if ($this->isRemote()) {
+            $this->bucket->put($relative, $sourcePath, $mime);
+        } else {
+            $target = $this->absolutePath($relative);
+            if (!is_dir(dirname($target)) && !mkdir(dirname($target), 0775, true) && !is_dir(dirname($target))) {
+                throw new \RuntimeException('Cannot create storage directory');
+            }
+            if (!is_file($target) && !copy($sourcePath, $target)) {
+                throw new \RuntimeException('Cannot write stored file');
+            }
         }
 
         $file = new File([
@@ -122,10 +144,27 @@ class FileStorage extends Component
         return rtrim($this->dir, '/\\') . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
     }
 
-    /** True when the stored bytes still match the recorded checksum. */
+    /**
+     * True when the stored bytes still match the recorded checksum. Online the bytes are not fetched
+     * for this (it runs for every listed file): a row whose path is its own checksum was written by
+     * storeFile after the upload succeeded, so it is there; seeded rows, with no bytes anywhere, are not.
+     */
     public function verify(File $file): bool
     {
+        if ($this->isRemote()) {
+            return str_contains($file->path, '/' . $file->sha256 . '.') && preg_match('~^\d{4}/\d{2}/[0-9a-f]{64}\.\w+$~', $file->path) === 1;
+        }
         $path = $this->absolutePath($file->path);
         return is_file($path) && hash_file('sha256', $path) === $file->sha256;
+    }
+
+    /** The stored bytes (for the signed download link), or null when they are missing. */
+    public function read(File $file): ?string
+    {
+        if ($this->isRemote()) {
+            return $this->verify($file) ? $this->bucket->get($file->path) : null;
+        }
+        $path = $this->absolutePath($file->path);
+        return is_file($path) ? (string) file_get_contents($path) : null;
     }
 }

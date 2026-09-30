@@ -22,6 +22,10 @@ class VisionController extends ApiController
     public function actionAnalyze(): array
     {
         $this->requirePermission('vision.analyze');
+        if (!Yii::$app->params['vision.available']) {
+            // Online (VISION_AVAILABLE=0): no ai-service; nothing is stored, no alert is raised.
+            throw new ApiException(503, 'VISION_FULL_VERSION_ONLY');
+        }
         $mineId = Yii::$app->request->post('mine_id');
         if (!is_numeric($mineId)) {
             throw ApiException::fields(['mine_id' => ['REQUIRED']]);

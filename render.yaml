@@ -1,0 +1,44 @@
+# Render Blueprint for the online API (docs/DEPLOYMENT.md): one free Docker web service in
+# Singapore, deployed from live-sprint on every push. Values marked "sync: false" are asked for
+# once in the Render dashboard and stay there - never in this file or anywhere in the repository.
+services:
+  - type: web
+    name: coalshield-api
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: live-sprint
+    autoDeploy: true
+    dockerfilePath: ./deploy/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /v1/health
+    envVars:
+      # A new signing key for the online sign-ins, made by Render (never the laptop's).
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ISSUER
+        value: coalshield-online
+      # Supabase > Connect > Session pooler (see deploy/online.env.example for which is which).
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        value: postgres
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      # Supabase Storage: the project URL and the secret (service_role) key; the bucket is private.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET
+        value: files
+      # The dashboard's Vercel address, e.g. https://coalshield.vercel.app (no trailing slash).
+      - key: CORS_ORIGINS
+        sync: false
+      # The same value as the GitHub secret JOBS_TOKEN (the hourly scheduled jobs).
+      - key: JOBS_TOKEN
+        sync: false

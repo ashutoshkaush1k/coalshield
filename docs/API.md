@@ -9,16 +9,18 @@ All paths are under `http://127.0.0.1:8080`. **token**: `Authorization: Bearer <
 `POST /v1/auth/login`; out-of-scope records answer 404, a missing permission 403. **public**: no token
 (rate-limited where it matters). **API key**: `X-Api-Key` (the sensor simulator).
 
-112 endpoints.
+114 endpoints.
 
 | Method | Path | Auth | Permission checked | Action |
 |---|---|---|---|---|
 | GET | `/v1/health` | public | - | `default/health` |
 | GET | `/v1/system/status` | token | any signed-in account | `default/status` |
+| POST | `/v1/system/jobs` | public | - | `default/jobs` |
 | POST | `/v1/auth/login` | public | - | `auth/login` |
 | GET | `/v1/auth/me` | token | `user.viewOwn` | `user/me` |
 | GET | `/v1/users/me` | token | `user.viewOwn` | `user/me` |
 | PATCH | `/v1/users/me` | token | `user.updateOwnLanguage` | `user/update-me` |
+| POST | `/v1/users/me/password` | token | `user.changeOwnPassword` | `user/change-password` |
 | GET | `/v1/mines` | token | `mine.view` | `mine/index` |
 | GET | `/v1/mines/geojson` | token | `mine.view` | `mine/geojson` |
 | GET | `/v1/mines/{id}` | token | `mine.view` | `mine/view` |

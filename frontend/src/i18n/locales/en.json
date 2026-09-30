@@ -84,7 +84,8 @@
     "CLIENT_ID_CONFLICT": "This item's id is already used by another account.",
     "INSPECTION_NOT_ASSIGNED": "That inspection is assigned to another inspector.",
     "TOO_MANY_PHOTOS": "At most {{max}} photos per finding.",
-    "API_UNREACHABLE": "The server cannot reach the API right now."
+    "API_UNREACHABLE": "The server cannot reach the API right now.",
+    "VISION_FULL_VERSION_ONLY": "PPE photo analysis is available in the full version (the laptop setup with the AI service). Everything else works here."
   },
   "fields": {
     "REQUIRED": "required",
@@ -110,7 +111,9 @@
     "INVALID_NUMBER": "not a number",
     "INVALID_DATE": "invalid date",
     "FILE_EMPTY": "the file is empty",
-    "UPLOAD_FAILED": "the upload failed"
+    "UPLOAD_FAILED": "the upload failed",
+    "WRONG_PASSWORD": "the current password is wrong",
+    "SAME_AS_CURRENT": "must differ from the current password"
   },
   "sensor": {
     "ch4": "Methane",
@@ -1263,7 +1266,19 @@
     "none": "-",
     "language": "Language",
     "languageHint": "The interface switches at once and the choice is saved to your account, on any browser.",
-    "saved": "Language saved"
+    "saved": "Language saved",
+    "password": {
+      "title": "Change password",
+      "hint": "At least {{min}} characters. You stay signed in on this device.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Repeat the new password",
+      "submit": "Change password",
+      "saving": "Saving...",
+      "saved": "Password changed",
+      "tooShort": "The new password needs at least {{min}} characters.",
+      "mismatch": "The two new passwords do not match."
+    }
   },
   "obligationTitle": {
     "RPT-01": "Register the mine as an establishment",
@@ -1489,7 +1504,9 @@
     "related_violation_id": "linked violation",
     "contractor_id": "contractor",
     "user_id": "person",
-    "to": "new status"
+    "to": "new status",
+    "current_password": "current password",
+    "new_password": "new password"
   },
   "gri": {
     "title": "Governance Risk Index",
@@ -1731,5 +1748,9 @@
     "grievances": "Grievances",
     "safety": "In an emergency",
     "emergency": "At a mine, follow the mine's emergency plan and alert its control room first. This dashboard is not an emergency service."
+  },
+  "wake": {
+    "title": "Starting server, about 1 minute",
+    "detail": "The online version sleeps when nobody is using it. The page carries on by itself as soon as the server answers."
   }
 }

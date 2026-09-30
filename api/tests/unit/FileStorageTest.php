@@ -6,6 +6,8 @@ namespace app\tests\unit;
 
 use app\components\ApiException;
 use app\components\FileStorage;
+use app\components\SupabaseBucket;
+use app\models\File;
 use app\tests\Support\Helper\Auth;
 use Codeception\Test\Unit;
 use Yii;
@@ -75,6 +77,46 @@ class FileStorageTest extends Unit
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->storage->absolutePath('../../.env');
+    }
+
+    /** Online (STORAGE_DRIVER=supabase): the bytes go to the bucket, never to the local disk. */
+    public function testSupabaseDriverKeepsTheBytesInTheBucket(): void
+    {
+        $bucket = new class (['url' => 'https://example.supabase.co', 'key' => 'test-only']) extends SupabaseBucket {
+            public array $objects = [];
+
+            public function put(string $path, string $sourcePath, string $mime): void
+            {
+                $this->objects[$path] = [(string) file_get_contents($sourcePath), $mime];
+            }
+
+            public function get(string $path): ?string
+            {
+                return $this->objects[$path][0] ?? null;
+            }
+        };
+        $storage = new FileStorage(['dir' => $this->dir, 'maxBytes' => 2048, 'driver' => 'supabase', 'bucket' => $bucket]);
+        $bytes = "%PDF-1.4
+online
+%%EOF
+";
+        $file = $storage->storeFile($this->tempFile($bytes), 'x', 1, Auth::user(Auth::GOVERNMENT)->id);
+
+        $this->assertTrue($storage->isRemote());
+        $this->assertSame([$file->path => [$bytes, 'application/pdf']], $bucket->objects);
+        $this->assertDirectoryDoesNotExist($this->dir);
+        $this->assertTrue($storage->verify($file));
+        $this->assertSame($bytes, $storage->read($file));
+        // A seeded row (no bytes anywhere) gets no link, as on the laptop.
+        $seeded = new File(['path' => 'uploads/contractor_docs/2/2026-07_wage_register.pdf', 'sha256' => str_repeat('a', 64)]);
+        $this->assertFalse($storage->verify($seeded));
+        $this->assertNull($storage->read($seeded));
+    }
+
+    public function testLocalIsTheDefaultDriver(): void
+    {
+        $this->assertFalse($this->storage->isRemote());
+        $this->assertFalse(Yii::$app->fileStorage->isRemote());
     }
 
     private function tempFile(string $content): string

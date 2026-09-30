@@ -15,6 +15,15 @@ phone trusts, or `http://localhost`. There are two ways to get one:
 Both serve the same app from the same server, `run_field.bat`, which also passes `/v1` through to the
 API - the phone never talks to port 8080 and needs no other address.
 
+**The online version needs none of this.** Its address is already `https://` with a certificate every
+phone trusts (Vercel), so there is no certificate to install, no USB cable and no PC: open
+`https://<the Vercel address>/field` on the phone, sign in with an online account, and install it
+from the browser menu (**Add to Home screen** / **Install app**). Camera, GPS, offline capture and
+sync work as below, syncing with the online server (Render) whenever there is signal; the first sync
+after a quiet spell can take about a minute while that server wakes up. The online service worker
+covers `/field` only. Setup and accounts: [DEPLOYMENT.md](DEPLOYMENT.md). The rest of this page is
+the laptop setup, which is unchanged.
+
 ## 1. On the PC (both ways)
 
 The stack must be running (`run_all.bat`: PostgreSQL, API on 8080). Then:

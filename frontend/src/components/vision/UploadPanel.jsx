@@ -118,10 +118,10 @@ export function UploadPanel({ mineId, onAnalysed }) {
           </figure>
         )}
 
-        <ErrorNotice
-          error={error}
-          context={t("vision.ownMineOnly")}
-        />
+        {/* Online (no ai-service): a note, not an error - the photo was not analysed on purpose. */}
+        {error?.code === "VISION_FULL_VERSION_ONLY"
+          ? <div className="notice info" role="status">{error.message}</div>
+          : <ErrorNotice error={error} context={t("vision.ownMineOnly")} />}
 
         <DetectionPreview result={result} />
       </div>
