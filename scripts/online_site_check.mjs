@@ -46,8 +46,20 @@ async function connect() {
     if (m.method === "Runtime.exceptionThrown") errors.push(m.params.exceptionDetails.exception?.description ?? m.params.exceptionDetails.text);
     if (m.method === "Network.responseReceived" && m.params.response.status >= 500) failed.push(`${m.params.response.status} ${m.params.response.url}`);
   });
-  const send = (method, params = {}) => new Promise((res) => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params })); });
-  const ev = async (expression) => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result?.result?.value;
+  // Every call answers within 2 minutes or fails; a closed window fails every pending call at once.
+  const send = (method, params = {}) => new Promise((res, rej) => {
+    if (ws.readyState !== WebSocket.OPEN) return rej(new Error("the Edge window was closed"));
+    const i = ++id;
+    const timer = setTimeout(() => { pending.delete(i); rej(new Error(`${method}: no answer from Edge in 2 minutes`)); }, 120000);
+    pending.set(i, (m) => { clearTimeout(timer); res(m); });
+    ws.send(JSON.stringify({ id: i, method, params }));
+  });
+  ws.addEventListener("close", () => { for (const [, done] of pending) done({ error: { message: "the Edge window was closed" } }); pending.clear(); });
+  const ev = async (expression) => {
+    const m = await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
+    if (m.error?.message === "the Edge window was closed") throw new Error(m.error.message);
+    return m.result?.result?.value;
+  };
   await send("Page.enable"); await send("Runtime.enable"); await send("Network.enable");
   return { ws, send, ev, errors, failed };
 }
@@ -180,6 +192,8 @@ async function signedInPages(p) {
   await shot(p, "field-signed-in-phone");
 }
 
+process.on("unhandledRejection", (e) => { console.error(`
+Stopped: ${e.message}`); stop(); process.exit(1); });
 try {
   const p = await connect();
   await publicPages(p);
