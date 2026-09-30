@@ -45,6 +45,8 @@ const VIEWS = {
     "mine head map": { who: HEAD, paths: ["/views/map"] },
     // Phase 7: the Risk Ranking tab (mines by Governance Risk Index + patterns; endpoint /views/priority); the mine views above now carry `risk`
     "government priority": { who: GOV, paths: ["/views/priority"] },
+    // The overview's sensor panel polls the fleet standing (it read every reading until 2026-09-30).
+    "government sensor fleet": { who: GOV, paths: ["/sensors"] },
     "corporate priority": { who: CORP, paths: ["/views/priority"] },
     // Fetched once when the map opens (then revalidated by ETag), not polled.
     "map outlines, first load": { who: GOV, paths: ["/geo/states", "/geo/districts"] },
