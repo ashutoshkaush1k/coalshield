@@ -24,7 +24,7 @@ const TEXT_ATTRS = new Set(["label", "title", "placeholder", "alt", "aria-label"
 const TEXT_PROPS = new Set(["label", "title", "caption", "subtitle", "hint", "heading", "description", "placeholder", "empty",
   "body", "message", "context"]);
 // Not translated: product and brand names, and single symbols.
-const ALLOW = new Set(["Smart Mine Governance", "SIH26024", "Leaflet", "OpenStreetMap", "CoalShield", "DGMS", "PPE", "GEM", "ID"]);
+const ALLOW = new Set(["COALSHIELD", "Smart Mine Governance", "SIH26024", "Leaflet", "OpenStreetMap", "CoalShield", "DGMS", "PPE", "GEM", "ID"]);
 
 const prose = (s) => {
   const v = s.replace(/\s+/g, " ").trim();

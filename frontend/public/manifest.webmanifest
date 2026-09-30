@@ -1,6 +1,6 @@
 {
-  "name": "Smart Mine Governance - Field",
-  "short_name": "Mine Field",
+  "name": "COALSHIELD Field",
+  "short_name": "COALSHIELD",
   "description": "Offline field inspection: checklist, photos, location; syncs when there is signal.",
   "start_url": "/field",
   "scope": "/",

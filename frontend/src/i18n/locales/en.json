@@ -69,7 +69,7 @@
     "VIOLATION_ALREADY_RESOLVED": "This violation is already resolved.",
     "NOT_A_DIRECTIVE": "Only directives can be reopened.",
     "INTERNAL_ERROR": "Something went wrong on the server. Please try again.",
-    "NETWORK": "Cannot reach the API. Is it running on port 8080?",
+    "NETWORK": "Cannot reach the server. Check the connection and try again.",
     "UNKNOWN": "Something went wrong.",
     "DETAIL_REQUEST_REQUIRED": "Detailed records for this mine and period open only once the mine has answered a Call for Detailed Report covering it.",
     "ENTRY_LOCKED": "This entry has been submitted. Correct it with a reason instead.",
@@ -470,7 +470,7 @@
     "raiseGrievance": "Raise a grievance",
     "trackGrievance": "Track a grievance",
     "grievanceHint": "Workers and the community can raise a grievance without an account.",
-    "tagline": "AI compliance monitoring for coal mines",
+    "tagline": "AI-based smart governance and compliance monitoring for coal mines",
     "email": "Email",
     "password": "Password",
     "checkCredentials": "Check the email and password.",
@@ -1707,8 +1707,7 @@
   },
   "system": {
     "fallbackTitle": "Automated detection is running on the built-in checks.",
-    "fallbackDown": "The AI service is not answering, so the same detectors run in the API instead and PPE photo analysis is unavailable. It restarts on its own; findings are unchanged.",
-    "fallbackConfigured": "The AI service is switched off in the settings (AI_ENGINE=php), so the same detectors run in the API and PPE photo analysis is unavailable."
+    "fallbackDown": "The AI service is not answering, so the built-in checks are running instead and PPE photo analysis is unavailable. It restarts on its own; findings are unchanged."
   },
   "nav": {
     "menu": "Menu",

@@ -17,14 +17,16 @@ const MASKED_HELPLINE = "XXXXX XXXXX";
 const HELPLINE = import.meta.env.VITE_HELPLINE || MASKED_HELPLINE;
 const EMAIL = import.meta.env.VITE_SUPPORT_EMAIL || "helpdesk@smartmine.example";
 
+// Only when the AI service is expected but not answering (the laptop with ai-service down). Switched
+// off on purpose (reason CONFIGURED_PHP - the online version) is not a fault: no banner; the PPE
+// upload says itself that photo analysis is in the full version.
 function FallbackNotice() {
   const t = useT();
   const { data } = usePolling(getSystemStatus, { interval: 30000 });
-  if (!data || data.detection_engine !== "php") return null;
+  if (!data || data.detection_engine !== "php" || data.reason !== "AI_SERVICE_DOWN") return null;
   return (
     <div className="system-warning" role="status" id="detection-fallback">
-      <strong>{t("system.fallbackTitle")}</strong>{" "}
-      {data.reason === "CONFIGURED_PHP" ? t("system.fallbackConfigured") : t("system.fallbackDown")}
+      <strong>{t("system.fallbackTitle")}</strong>{" "}{t("system.fallbackDown")}
     </div>
   );
 }

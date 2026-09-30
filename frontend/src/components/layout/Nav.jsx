@@ -20,7 +20,7 @@ import { useMastheadHeight } from "./useMastheadHeight";
 const NavContext = createContext(null);
 const OPEN_DELAY_MS = 120;   // hover intent: the pointer must rest on the hamburger this long
 const CLOSE_DELAY_MS = 300;  // after leaving both the hamburger and the drawer
-export const APP_NAME = "Smart Mine Governance";
+export const APP_NAME = "COALSHIELD";
 const PROFILE_PATH = "/profile";
 
 export function NavProvider({ children }) {

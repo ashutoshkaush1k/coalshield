@@ -10,6 +10,7 @@ import { LanguageSwitcher } from "../components/common/LanguageSwitcher";
 import { BrandBackground } from "../components/common/BrandBackground";
 import { SiteFooter } from "../components/common/SiteFooter";
 import { PasswordInput } from "../components/common/PasswordInput";
+import { APP_NAME } from "../components/layout/Nav";
 
 // One form for both roles: the account decides the scope, not the login screen. The quick-fill
 // buttons (and a pre-filled form) exist only in demo mode - VITE_DEMO_MODE=true, set by
@@ -54,7 +55,7 @@ export default function Login() {
       <div className="login-card stack">
         <LanguageSwitcher id="login-language" />
         <div className="brandline">
-          <h1>Smart Mine Governance</h1>
+          <h1>{APP_NAME}</h1>
           <span>{t("login.tagline")}</span>
         </div>
 
