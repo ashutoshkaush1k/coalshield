@@ -537,7 +537,7 @@
     "forbidden": "Not permitted.",
     "notFound": "Not available.",
     "serverEnforced": "Access is enforced by the server, not hidden in this page.",
-    "network": "Cannot reach the API.",
+    "network": "No connection.",
     "failed": "Request failed."
   },
   "alertList": {

@@ -9,6 +9,18 @@ services:
     region: singapore
     branch: live-sprint
     autoDeploy: true
+    # Redeploy only when something the API image contains changes: a frontend-only push must not
+    # restart the API (a free server is unreachable for a minute or two while it switches over).
+    buildFilter:
+      paths:
+        - api/**
+        - deploy/api/**
+        - data/schema/**
+        - data/reference/**
+        - ai-service/risk/model.json
+        - render.yaml
+      ignoredPaths:
+        - api/tests/**
     dockerfilePath: ./deploy/api/Dockerfile
     dockerContext: .
     healthCheckPath: /v1/health

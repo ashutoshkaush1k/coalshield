@@ -60,7 +60,8 @@ async function connect() {
 async function load(p, path, ready = "main, .field-app, form", needsApi = SIGNED_IN_PAGE) {
   await p.send("Page.navigate", { url: `${SITE}${path}` });
   await sleep(300);
-  const ms = await p.ev(`new Promise((done) => {
+  // Retried: an evaluation that starts while the old page is being replaced returns nothing.
+  const readyScript = `new Promise((done) => {
     const start = performance.now();
     const tick = () => {
       const answered = performance.getEntriesByType("resource").some((r) => r.name.includes("/v1/") && !r.name.includes("/health"));
@@ -70,7 +71,12 @@ async function load(p, path, ready = "main, .field-app, form", needsApi = SIGNED
       setTimeout(tick, 50);
     };
     tick();
-  })`);
+  })`;
+  let ms;
+  for (let attempt = 0; attempt < 5 && typeof ms !== "number"; attempt++) {
+    ms = await p.ev(readyScript).catch(() => undefined);
+    if (typeof ms !== "number") await sleep(500);
+  }
   const api = await p.ev(`performance.getEntriesByType("resource").filter((r) => r.name.includes("/v1/")).map((r) => Math.round(r.duration))`);
   return { ms, api: api ?? [] };
 }
@@ -125,13 +131,15 @@ async function signedInPages(p) {
   const home = await p.ev("location.pathname");
   const role = await p.ev("JSON.parse(sessionStorage.getItem('smg.user') || localStorage.getItem('smg.user') || 'null')?.role ?? document.body.dataset.role ?? ''");
   console.log(`signed in; home ${home}${role ? ` (${role})` : ""}`);
-  const tabs = await p.ev(`[...document.querySelectorAll('a.nav-item[href^="/"], nav a[href^="/"]')].map((a) => a.getAttribute('href')).filter((h, i, all) => all.indexOf(h) === i && !h.startsWith('/field') && h !== '/profile').slice(0, 10)`);
-  const pages = [home, ...(tabs ?? []).filter((h) => h !== home), "/profile"];
+    // The tabs (top bar and drawer) are buttons that open <home>?tab=<id>.
+  const tabs = await p.ev(`[...new Set([...document.querySelectorAll('[data-tab]')].map((b) => b.dataset.tab))].filter((id) => id !== 'profile' && id !== 'overview')`);
+  const pages = [home, ...(tabs ?? []).map((id) => `${home}?tab=${id}`), "/profile"];
   for (const path of pages) {
     for (const mobile of [false, true]) {
       await phone(p, mobile);
       const r = await load(p, path);
       const label = `${path} ${mobile ? "390 px" : "1280 px"}`;
+      if (typeof r.ms !== "number" || r.ms >= 90000) expect(false, `${label}: ready within 90 s`);
       const api = r.api.length ? `; API calls median ${r.api.sort((a, b) => a - b)[Math.floor(r.api.length / 2)]} ms, slowest ${Math.max(...r.api)} ms` : "";
       console.log(`  ${label}: ${(r.ms / 1000).toFixed(1)} s${api}`);
       expect(!(await sideways(p)), `${label}: no sideways scroll`);
