@@ -1,6 +1,6 @@
 """Stage D4 entry point: generate every table for one preset, check calibration, write data/out/<preset>/.
 
-    data\\.venv\\Scripts\\python.exe data\\generators\\generate.py [--preset small|demo|full]
+    data\\.venv\\Scripts\\python.exe data\\generators\\generate.py [--preset small|demo|online|full]
 
 Writes <table>.csv for every schema, _manifest.json (rows, bytes, sha256 per table, time) and
 _checks.json (calibration checks, pass/fail). Exits 1 if any check fails - including the demo-score
@@ -178,7 +178,7 @@ def calibration(ctx) -> list[dict]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--preset", default=None, help="small | demo | full (default: config.yaml scale)")
+    ap.add_argument("--preset", default=None, help="small | demo | online | full (default: config.yaml scale)")
     ap.add_argument("--roster", default=None, choices=["real", "seed"], help="override config.yaml mine_roster")
     ap.add_argument("--out", default=None, help="output root instead of data/out (the preset folder goes inside)")
     args = ap.parse_args()

@@ -44,6 +44,15 @@ scales:
     grievances_per_mine: 5
     detail_requests: 12
     sensor_interval_minutes: {underground: 15, opencast: 60}
+  online:           # the demo, smaller: the free online database (Supabase, 500 MB) - docs/DEPLOYMENT.md
+    mines: all      # 52 days, not 90: sensor readings are most of the size. 52 keeps every
+    days: 52        # scenario's timing exactly as in demo (inject_scenarios.py uses >= 30/40/50).
+    contractors: 40
+    contracts_per_mine: 2
+    workers_per_contract: [8, 24]
+    grievances_per_mine: 5
+    detail_requests: 12
+    sensor_interval_minutes: {underground: 15, opencast: 60}
   full:
     mines: all
     days: 365

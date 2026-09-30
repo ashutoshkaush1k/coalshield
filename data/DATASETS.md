@@ -774,6 +774,14 @@ back to the nearest eligible mine.
 | demo, real roster | 14 of 14 | Byte-identical |
 | full, real roster | 14 of 14 | Byte-identical |
 | demo, seed roster | 14 of 14 | Byte-identical |
+| online, real roster (2026-09-30) | 16 of 16 | Byte-identical |
+
+**The `online` preset (2026-09-30).** The same data as `demo` with 52 days instead of 90 (window
+2026-08-05..2026-09-25), for the free online database (500 MB; `docs/DEPLOYMENT.md`). Sensor
+readings are most of the size: loaded, the database is 247 MB against 343 MB for `demo`. 52 days keeps
+every scenario's timing as in `demo` (`inject_scenarios.py` switches at 30, 40 and 50 days), and the
+same scores (100/80/70/60/45, 6/21/47, 83.2). `yii ai/evaluate --preset=online` finds all 7 scenarios
+and ignores all 3 decoys; the laptop keeps `demo`.
 
 **Changes after the D5 review (2026-09-26)**
 - **Stock.** Closing stock is an exact running balance in tenths of a tonne. It is recomputed after

@@ -10,9 +10,9 @@ REM                                 extract the repo's 74 mines to data\referenc
 REM    data\run_data.bat download   stage D2 - fetch every non-manual source
 REM    data\run_data.bat clean      stage D3 - build data\reference from data\raw
 REM    data\run_data.bat generate   stage D4 - write synthetic data to data\out\<preset>
-REM                                 optional preset small, demo or full; default: config.yaml scale
+REM                                 optional preset small, demo, online or full; default: config.yaml scale
 REM    data\run_data.bat validate   stage D5 - schema, FK, scenario, score and determinism checks
-REM                                 optional preset small, demo or full; default: config.yaml scale
+REM                                 optional preset small, demo, online or full; default: config.yaml scale
 REM    data\run_data.bat all        every stage above, in order, stopping at a failure
 REM
 REM  Runs from any directory: every path is resolved from this file's location.
@@ -171,8 +171,8 @@ echo.
 echo  data\run_data.bat setup      create data\.venv, install packages, extract the 74 mines
 echo  data\run_data.bat download   stage D2 - fetch every non-manual source
 echo  data\run_data.bat clean      stage D3 - build data\reference from data\raw
-echo  data\run_data.bat generate   stage D4 - synthetic data to data\out\PRESET  - small, demo or full
-echo  data\run_data.bat validate   stage D5 - validate data\out\PRESET - small, demo or full
+echo  data\run_data.bat generate   stage D4 - synthetic data to data\out\PRESET  - small, demo, online or full
+echo  data\run_data.bat validate   stage D5 - validate data\out\PRESET - small, demo, online or full
 echo  data\run_data.bat all        every stage in order, stopping at the first failure
 echo.
 exit /b 0

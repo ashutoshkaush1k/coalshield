@@ -14,7 +14,7 @@ use yii\console\ExitCode;
  * The detectors and their evaluation (Phase 7).
  *
  *   yii ai/detect [--engine=auto|php|ai-service] [--as-of=ISO]   run every detector, print the flags (stores nothing)
- *   yii ai/evaluate [--engine=php] [--write]                     score them against data/out/demo/scenario_expectations.json
+ *   yii ai/evaluate [--engine=php] [--write] [--preset=demo]     score them against data/out/<preset>/scenario_expectations.json
  *                                                                at the data's own "now"; --write updates docs/AI_EVALUATION.md
  *   yii ai/fixtures                                              write each detector's demo payload to tests/_data/detectors/
  *                                                                (the ai-service and PHP parity tests read them)
@@ -25,6 +25,8 @@ class AiController extends Controller
     public ?string $engine = null;
     public ?string $asOf = null;
     public bool $write = false;
+    /** ai/evaluate: whose scenario_expectations.json to score against (online: the online database's preset). */
+    public string $preset = 'demo';
 
     public const DOC = '/../docs/AI_EVALUATION.md';
     public const START = '<!-- detector-evaluation:start -->';
@@ -32,7 +34,7 @@ class AiController extends Controller
 
     public function options($actionID): array
     {
-        return array_merge(parent::options($actionID), ['engine', 'asOf', 'write']);
+        return array_merge(parent::options($actionID), ['engine', 'asOf', 'write', 'preset']);
     }
 
     public function actionDetect(): int
@@ -51,7 +53,7 @@ class AiController extends Controller
 
     public function actionEvaluate(): int
     {
-        $result = AiEvaluation::score(...array_values(self::evaluation($this->engine ?? 'php')));
+        $result = AiEvaluation::score(...array_values(self::evaluation($this->engine ?? 'php', $this->preset)));
         $table = AiEvaluation::markdown($result);
         $this->stdout($table);
         foreach ($result['scenarios'] as $s) {
@@ -74,10 +76,10 @@ class AiController extends Controller
     }
 
     /** @return array{flags: array, engines: array, scenarios: array} at the demo data's own "now" */
-    public static function evaluation(string $engine = 'php'): array
+    public static function evaluation(string $engine = 'php', string $preset = 'demo'): array
     {
-        $detected = AnomalyService::detect(AiEvaluation::asOf(), $engine);
-        return ['flags' => $detected['flags'], 'engines' => $detected['engines'], 'scenarios' => AiEvaluation::scenarios()];
+        $detected = AnomalyService::detect(AiEvaluation::asOf($preset), $engine);
+        return ['flags' => $detected['flags'], 'engines' => $detected['engines'], 'scenarios' => AiEvaluation::scenarios($preset)];
     }
 
     public function actionFixtures(): int
