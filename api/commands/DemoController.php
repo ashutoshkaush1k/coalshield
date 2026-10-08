@@ -99,12 +99,15 @@ class DemoController extends Controller
     public function actionAccount(): int
     {
         $db = Yii::$app->db;
+        // The account and its audit entry together, or neither.
+        $transaction = $db->beginTransaction();
         $existed = $db->createCommand('SELECT 1 FROM {{%user}} WHERE lower(email) = :e', [':e' => DemoAccount::EMAIL])->queryScalar() !== false;
         $id = DemoAccount::insertIfMissing($db);
-        DemoAccount::assignRole($id);
         if (!$existed) {
-            AuditChain::append('user', $id, 'create', null, ['email' => DemoAccount::EMAIL, 'full_name' => DemoAccount::NAME, 'role' => DemoAccount::ROLE], $db, null, 'console');
+            AuditChain::append('user', $id, 'create', null, ['email' => DemoAccount::EMAIL, 'full_name' => DemoAccount::NAME, 'role' => DemoAccount::ROLE], $db);
         }
+        $transaction->commit();
+        DemoAccount::assignRole($id);
         $this->stdout(sprintf("%s: %s (user %d, role %s). The demo login itself is on only with DEMO_LOGIN_ENABLED=true.\n",
             DemoAccount::NAME, $existed ? 'already there' : 'created', $id, DemoAccount::ROLE), Console::FG_GREEN);
         return ExitCode::OK;
