@@ -28,6 +28,13 @@ export const getToken = () => store.getItem(TOKEN_KEY);
 export const setToken = (t) => store.setItem(TOKEN_KEY, t);
 export const clearToken = () => store.removeItem(TOKEN_KEY);
 
+// "Continue as admin (demo)" (components/auth/DemoAccess.jsx): a demo session that runs out is not
+// a silent sign-out - the app shows "Your demo session has ended" and offers a new one.
+const DEMO_KEY = "smg.demo";
+export const DEMO_ENDED_EVENT = "smg:demo-session-ended";
+export const isDemoSession = () => store.getItem(DEMO_KEY) === "1";
+export const setDemoSession = (on) => (on ? store.setItem(DEMO_KEY, "1") : store.removeItem(DEMO_KEY));
+
 client.interceptors.request.use((config) => {
   const token = getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -55,7 +62,11 @@ client.interceptors.response.use(
 
     if (status === 401 && normalised.code !== "INVALID_CREDENTIALS") {
       clearToken();
-      if (!window.location.pathname.startsWith("/login")) window.location.href = "/login";
+      if (isDemoSession()) {
+        normalised.isDemoEnded = true;   // ErrorNotice shows nothing: the "demo session has ended" popup speaks
+        window.dispatchEvent(new Event(DEMO_ENDED_EVENT));
+      }
+      else if (!window.location.pathname.startsWith("/login")) window.location.href = "/login";
     }
     return Promise.reject(normalised);
   },

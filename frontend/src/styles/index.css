@@ -1126,3 +1126,16 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [tabindex]:focus-v
 
 /* Profile: change password */
 .password-form { max-width: 26rem; }
+
+/* "Continue as admin (demo)" (components/auth/DemoAccess.jsx) */
+.demo-login { display: grid; gap: var(--space-2); margin-top: var(--space-3); }
+.demo-login-or { display: flex; align-items: center; gap: var(--space-2); color: var(--muted); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .08em; }
+.demo-login-or::before, .demo-login-or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.demo-login-btn { width: 100%; min-height: 44px; border-color: var(--cyan); color: var(--navy); font-weight: 600; background: var(--accent-soft); }
+.demo-login-btn:hover { background: var(--accent-soft); border-color: var(--navy); }
+.demo-text { margin: 0; line-height: 1.55; }
+.demo-waking { display: flex; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius); background: var(--accent-soft); color: var(--accent-ink); font-size: var(--text-sm); }
+.demo-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px;
+  background: var(--cyan); color: var(--navy); font-size: var(--text-xs); font-weight: 700; letter-spacing: .02em; white-space: nowrap; }
+@media (max-width: 560px) { .demo-badge { padding: 0 8px; } }

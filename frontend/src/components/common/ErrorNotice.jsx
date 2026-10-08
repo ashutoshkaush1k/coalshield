@@ -7,7 +7,7 @@ import { useT } from "../../i18n/t";
 
 export function ErrorNotice({ error, context }) {
   const t = useT();
-  if (!error) return null;
+  if (!error || error.isDemoEnded) return null;
 
   if (error.isForbidden || error.isNotFound) {
     return (

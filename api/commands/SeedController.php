@@ -115,6 +115,11 @@ class SeedController extends Controller
                 $this->stdout(sprintf("  %-28s %8d rows\n", $table, $rows));
             }
 
+            // The demo admin account (components/DemoAccount.php): in every seeded database, so the
+            // demo login works wherever it is switched on. Not audited: the chain starts below.
+            if (isset($loaded['user'])) {
+                \app\components\DemoAccount::insertIfMissing($db);
+            }
             $assigned = RbacController::syncAssignments($db);
             // Open violations per mine right after seeding: the baseline the simulator pre-flight
             // (GET /v1/admin/baseline-check) compares live scores with.

@@ -201,3 +201,13 @@ API behaves exactly as before, except that every role can now change its own pas
 | `JOBS_TOKEN` | unset: no `/v1/system/jobs` | a long random secret (Render and the GitHub secret) |
 | `LOG_STDERR` | off: `runtime/logs/*.log` | `1`: the platform's log view |
 | `CACHE_DIR` | `@runtime/cache` | `scripts\online.bat` uses `@runtime/cache-online` |
+
+## "Continue as admin (demo)" (online and laptop)
+
+| New | Notes |
+|---|---|
+| `GET /v1/auth/demo` | public; 200 `{enabled: true, session_minutes: 30}` when `DEMO_LOGIN_ENABLED=true`, else 404 `NOT_FOUND`. The login page asks this before showing the button |
+| `POST /v1/auth/demo` | public, no body, no password; 200 `{access_token, token_type, expires_in: 1800, demo: true, user}` for the demo admin account (Demo Admin (DGMS), `demo.admin@dgms.example`, role government: every mine). 404 when off (or when the database has no demo account); 429 `RATE_LIMITED` (with `Retry-After`) after `DEMO_LOGIN_PER_HOUR` (20) sign-ins per address per hour. Each sign-in is an audit entry: entity `user`, action `demo_login`, the demo account as actor |
+| `user.is_demo` | in every user payload (`/v1/users/me`, sign-in answers): true only for the demo account; the frontend shows a "Demo access" badge and, when the 30-minute session runs out, "Your demo session has ended" with a new-session button |
+| demo account | created by `yii seed` in every database (not audited: the chain starts with the seed), and by `yii demo/account` for a database seeded before; its password is random and recorded nowhere, so `/v1/auth/login` cannot sign it in |
+| tests | `DemoLoginCest`: off -> 404, on -> 30-minute government session, audit entry, an expired token refused (401), rate limit (429) |

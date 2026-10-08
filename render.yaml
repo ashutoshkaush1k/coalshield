@@ -51,6 +51,9 @@ services:
       # The dashboard's Vercel address, e.g. https://coalshield.vercel.app (no trailing slash).
       - key: CORS_ORIGINS
         sync: false
+      # "Continue as admin (demo)" on the login page (docs/DEPLOYMENT.md); false to remove it.
+      - key: DEMO_LOGIN_ENABLED
+        value: "true"
       # The same value as the GitHub secret JOBS_TOKEN (the hourly scheduled jobs).
       - key: JOBS_TOKEN
         sync: false

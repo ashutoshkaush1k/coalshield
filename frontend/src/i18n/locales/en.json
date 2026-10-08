@@ -359,7 +359,8 @@
       "escalate": "escalated (SLA breach)",
       "assign": "assigned",
       "accepted": "accepted",
-      "rejected": "rejected"
+      "rejected": "rejected",
+      "demo_login": "demo login"
     },
     "entity": {
       "alert": "Alert",
@@ -1751,5 +1752,19 @@
   "wake": {
     "title": "Starting server, about 1 minute",
     "detail": "The online version sleeps when nobody is using it. The page carries on by itself as soon as the server answers."
+  },
+  "demo": {
+    "or": "or",
+    "button": "Continue as admin (demo)",
+    "title": "Demo access",
+    "text": "This admin login is only for demonstration purposes and will be removed later. You'll see the regulator's view of all 74 mines. The data shown is sample data for the demo.",
+    "continue": "Continue to dashboard",
+    "opening": "Opening…",
+    "waking": "Starting server, this can take up to a minute…",
+    "badge": "Demo access",
+    "badgeHint": "Signed in with the demo admin account (30-minute session)",
+    "endedTitle": "Your demo session has ended",
+    "endedText": "Demo sessions last 30 minutes. Start a new one to carry on, or go back to the sign-in page.",
+    "toSignIn": "Back to sign-in"
   }
 }

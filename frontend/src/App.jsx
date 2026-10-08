@@ -2,6 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
+import { DemoEndedModal } from "./components/auth/DemoAccess";
 import { ServerWakeNotice } from "./components/common/ServerWakeNotice";
 import { ToastHost } from "./components/overlay/ToastHost";
 import { AppRoutes } from "./routes";
@@ -16,6 +17,7 @@ export default function App() {
         <ToastHost>
           <AppRoutes />
           <ServerWakeNotice />
+          <DemoEndedModal />
         </ToastHost>
       </AuthProvider>
     </BrowserRouter>

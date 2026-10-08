@@ -24,8 +24,18 @@ class SeedTest extends Unit
         $manifest = $this->manifest(self::seededPreset());
         foreach (self::LOADED_TABLES as $table) {
             $count = (int) Yii::$app->db->createCommand("SELECT count(*) FROM \"$table\"")->queryScalar();
-            $this->assertSame($manifest['tables'][$table]['rows'], $count, $table);
+            // The seed adds one account the data does not have: the demo admin (DemoAccount).
+            $this->assertSame($manifest['tables'][$table]['rows'] + ($table === 'user' ? 1 : 0), $count, $table);
         }
+    }
+
+    public function testTheSeedAddsTheDemoAdminAccount(): void
+    {
+        $demo = \app\models\User::findOne(['email' => \app\components\DemoAccount::EMAIL]);
+        $this->assertNotNull($demo);
+        $this->assertSame(['Demo Admin (DGMS)', 'government', null, 'active'], [$demo->full_name, $demo->role, $demo->mine_id, $demo->status]);
+        $this->assertNotNull(Yii::$app->authManager->getAssignment('government', (string) $demo->id));
+        $this->assertFalse($demo->validatePassword(Auth::PASSWORD), 'no known password');
     }
 
     public function testDemoPasswordsAreHashedNotStored(): void

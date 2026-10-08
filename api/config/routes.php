@@ -15,6 +15,8 @@ return [
 
     // Auth and profile
     'POST v1/auth/login' => 'v1/auth/login',
+    'GET v1/auth/demo' => 'v1/auth/demo-status',   // "Continue as admin (demo)": DEMO_LOGIN_ENABLED only
+    'POST v1/auth/demo' => 'v1/auth/demo',
     'GET v1/auth/me' => 'v1/user/me',
     'GET v1/users/me' => 'v1/user/me',
     'PATCH v1/users/me' => 'v1/user/update-me',

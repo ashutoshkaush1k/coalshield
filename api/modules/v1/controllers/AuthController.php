@@ -6,18 +6,23 @@ namespace app\modules\v1\controllers;
 
 use app\components\ApiController;
 use app\components\ApiException;
+use app\components\AuditChain;
+use app\components\DemoAccount;
 use app\components\RateLimiter;
 use app\models\User;
 use Yii;
 
-/** POST /v1/auth/login -> {access_token, token_type, expires_in, user}. */
+/**
+ * POST /v1/auth/login -> {access_token, token_type, expires_in, user}.
+ * GET / POST /v1/auth/demo - "Continue as admin (demo)", only with DEMO_LOGIN_ENABLED=true (else 404).
+ */
 class AuthController extends ApiController
 {
-    protected array $publicActions = ['login'];
+    protected array $publicActions = ['login', 'demo', 'demo-status'];
 
     protected function verbs(): array
     {
-        return ['login' => ['POST']];
+        return ['login' => ['POST'], 'demo' => ['POST'], 'demo-status' => ['GET']];
     }
 
     public function actionLogin(): array
@@ -63,6 +68,43 @@ class AuthController extends ApiController
             'access_token' => $user->issueToken(),
             'token_type' => 'bearer',
             'expires_in' => (int) Yii::$app->params['jwt.ttlHours'] * 3600,
+            'user' => $user->toArray(),
+        ];
+    }
+
+    /** GET /v1/auth/demo - whether the login page offers "Continue as admin (demo)": 200, or 404 when off. */
+    public function actionDemoStatus(): array
+    {
+        if (!DemoAccount::enabled()) {
+            throw ApiException::notFound();
+        }
+        return ['enabled' => true, 'session_minutes' => (int) Yii::$app->params['demo.sessionMinutes']];
+    }
+
+    /**
+     * POST /v1/auth/demo - signs in the demo admin account (government role, every mine) with no
+     * password: a session of demo.sessionMinutes. At most demo.perHour per address per hour
+     * (429 RATE_LIMITED). Each sign-in is in the audit trail as "demo_login".
+     */
+    public function actionDemo(): array
+    {
+        if (!DemoAccount::enabled()) {
+            throw ApiException::notFound();
+        }
+        $params = Yii::$app->params;
+        RateLimiter::hit('auth.demo|' . RateLimiter::clientKey(), (int) $params['demo.perHour'], 3600);
+        $user = User::findOne(['email' => DemoAccount::EMAIL, 'status' => User::STATUS_ACTIVE]);
+        if ($user === null) {
+            throw ApiException::notFound();   // the database has no demo account (yii demo/account)
+        }
+        $ttl = (int) $params['demo.sessionMinutes'] * 60;
+        Yii::$app->user->setIdentity($user);   // the audit entry's actor
+        AuditChain::append('user', (int) $user->id, 'demo_login', null, ['session_minutes' => (int) $params['demo.sessionMinutes']]);
+        return [
+            'access_token' => $user->issueToken(null, $ttl),
+            'token_type' => 'bearer',
+            'expires_in' => $ttl,
+            'demo' => true,
             'user' => $user->toArray(),
         ];
     }

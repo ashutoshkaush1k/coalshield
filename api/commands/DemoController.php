@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace app\commands;
 
 use app\components\AuditChain;
+use app\components\DemoAccount;
 use app\models\Mine;
 use app\services\ComplianceScoreService;
 use Yii;
@@ -18,6 +19,8 @@ use yii\helpers\Console;
  *   yii demo/check           the five named mines' scores and bands, the fleet's average and band
  *                            split, no breach in the window, and the audit chain; exit 0 when all hold
  *   yii demo/check --json    the same as one JSON object (for the scripts)
+ *   yii demo/account         create the "Continue as admin (demo)" account if it is missing (the
+ *                            seed creates it; this is for a database seeded before it existed)
  *
  * The numbers are those of the demo script (docs/demo-script.md) and DemoScoreCest, after
  * `yii seed demo` (and `yii jobs/all`, which changes none of them). A live demo moves them -
@@ -90,5 +93,20 @@ class DemoController extends Controller
         $broken = AuditChain::verify();
         $audit = ['ok' => $broken === [], 'entries' => (int) Yii::$app->db->createCommand('SELECT count(*) FROM audit_log')->queryScalar()];
         return ['ok' => $ok && $audit['ok'], 'mines' => $mines, 'fleet' => $fleet, 'audit' => $audit];
+    }
+
+    /** yii demo/account - the "Continue as admin (demo)" account, if missing; audited when created. */
+    public function actionAccount(): int
+    {
+        $db = Yii::$app->db;
+        $existed = $db->createCommand('SELECT 1 FROM {{%user}} WHERE lower(email) = :e', [':e' => DemoAccount::EMAIL])->queryScalar() !== false;
+        $id = DemoAccount::insertIfMissing($db);
+        DemoAccount::assignRole($id);
+        if (!$existed) {
+            AuditChain::append('user', $id, 'create', null, ['email' => DemoAccount::EMAIL, 'full_name' => DemoAccount::NAME, 'role' => DemoAccount::ROLE], $db, null, 'console');
+        }
+        $this->stdout(sprintf("%s: %s (user %d, role %s). The demo login itself is on only with DEMO_LOGIN_ENABLED=true.\n",
+            DemoAccount::NAME, $existed ? 'already there' : 'created', $id, DemoAccount::ROLE), Console::FG_GREEN);
+        return ExitCode::OK;
     }
 }

@@ -10,6 +10,7 @@
 // Tabs come from navTabs.js; choosing one opens it on the user's home page (?tab=).
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { DemoBadge } from "../auth/DemoAccess";
 import { LogOut, Menu, UserRound } from "lucide-react";
 import { useT } from "../../i18n/t";
 import { TabIcon, Tabs } from "../common/Tabs";
@@ -93,6 +94,7 @@ export function TopBar() {
           <Menu size={22} aria-hidden="true" />
         </button>
         <HomeLink />
+        <DemoBadge />
         {current && (
           <span className="nav-current" id="nav-current">
             {current.id === "profile" ? <UserRound size={18} aria-hidden="true" /> : <TabIcon id={current.id} />}{current.label}

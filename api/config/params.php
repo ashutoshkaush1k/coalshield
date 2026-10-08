@@ -63,6 +63,11 @@ return [
     // Online only: VISION_AVAILABLE=0 - the free server has no ai-service, so a PPE photo upload
     // answers 503 VISION_FULL_VERSION_ONLY ("available in the full version") and changes nothing.
     'vision.available' => filter_var(env('VISION_AVAILABLE', true), FILTER_VALIDATE_BOOL),
+    // "Continue as admin (demo)" (POST /v1/auth/demo): only with DEMO_LOGIN_ENABLED=true; sessions
+    // last demo.sessionMinutes; at most demo.perHour sign-ins per address per hour.
+    'demo.loginEnabled' => filter_var(env('DEMO_LOGIN_ENABLED', false), FILTER_VALIDATE_BOOL),
+    'demo.sessionMinutes' => 30,
+    'demo.perHour' => (int) env('DEMO_LOGIN_PER_HOUR', 20),
     // Change password (Profile): the shortest new password accepted.
     'auth.passwordMinLength' => 12,
     'grievance.submitPerHour' => (int) env('GRIEVANCE_SUBMIT_PER_HOUR', 5),

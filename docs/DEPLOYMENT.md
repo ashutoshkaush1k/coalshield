@@ -130,6 +130,16 @@ Online scheduled jobs > Run workflow** once; it should end green with `"failed":
 - **Sign everyone out:** Render > service > Environment > `JWT_SECRET` > generate a new value, save.
 - Failed sign-ins are limited per account and per address, online as on the laptop.
 
+## "Continue as admin (demo)"
+
+The login page offers a passwordless demo sign-in (the Demo Admin (DGMS) account, the regulator's view
+of all 74 mines, 30-minute sessions) only while the API has `DEMO_LOGIN_ENABLED=true`: Render > the
+service > **Environment**, and `api\.env` on the laptop. To remove it, set it to `false` (or delete it)
+and save - Render restarts the API and the button disappears; nothing needs rebuilding. The demo
+account can change data like any government account; `scripts\online.bat online/reset-data` puts
+the online data back. Sign-ins are limited to 20 per address per hour and each is in the audit trail
+("demo login").
+
 ## Going back to "pre-deploy"
 
 The git tag `pre-deploy` marks the code before any of this work. The laptop never depends on the

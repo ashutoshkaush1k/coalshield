@@ -110,6 +110,8 @@ class User extends ActiveRecord implements IdentityInterface
                 array_keys(Yii::$app->authManager->getPermissionsByUser($this->id)))),
             'created_at' => fn() => self::isoUtc($this->created_at),
             'updated_at' => fn() => self::isoUtc($this->updated_at),
+            // The "Continue as admin (demo)" account: the frontend shows a "Demo access" badge.
+            'is_demo' => fn() => \app\components\DemoAccount::is($this),
         ];
     }
 
@@ -140,17 +142,18 @@ class User extends ActiveRecord implements IdentityInterface
 
     /** A signed token for this user: sub = id, plus role for clients that want it. */
     /** $issuedAt: tests only (an expired token is one issued more than jwt.ttlHours ago). */
-    public function issueToken(?DateTimeImmutable $issuedAt = null): string
+    /** $ttlSeconds: a shorter life than jwt.ttlHours (the demo login's 30 minutes). */
+    public function issueToken(?DateTimeImmutable $issuedAt = null, ?int $ttlSeconds = null): string
     {
         $jwt = Yii::$app->jwt;
         $now = $issuedAt ?? new DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $hours = (int) Yii::$app->params['jwt.ttlHours'];
+        $ttl = $ttlSeconds ?? (int) Yii::$app->params['jwt.ttlHours'] * 3600;
         return $jwt->getBuilder()
             ->issuedBy(Yii::$app->params['jwt.issuer'])
             ->relatedTo((string) $this->id)
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now)
-            ->expiresAt($now->modify("+{$hours} hours"))
+            ->expiresAt($now->modify("+{$ttl} seconds"))
             ->withClaim('role', $this->role)
             ->getToken($jwt->getConfiguration()->signer(), $jwt->getConfiguration()->signingKey())
             ->toString();

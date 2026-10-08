@@ -11,6 +11,7 @@ import { BrandBackground } from "../components/common/BrandBackground";
 import { SiteFooter } from "../components/common/SiteFooter";
 import { PasswordInput } from "../components/common/PasswordInput";
 import { APP_NAME } from "../components/layout/Nav";
+import { DemoLoginButton } from "../components/auth/DemoAccess";
 
 // One form for both roles: the account decides the scope, not the login screen. The quick-fill
 // buttons (and a pre-filled form) exist only in demo mode - VITE_DEMO_MODE=true, set by
@@ -78,6 +79,7 @@ export default function Login() {
               {busy ? t("login.signingIn") : t("login.signIn")}
             </button>
           </form>
+          <DemoLoginButton />
 
           {DEMO_MODE && (
             <div className="demo-accounts">
