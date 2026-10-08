@@ -463,7 +463,7 @@
   },
   "login": {
     "demo": {
-      "government": "Government (DGMS) - all 74 mines",
+      "government": "Government (DGMS) - all mines",
       "corporate": "Corporate - SECL mines",
       "headHigh": "Mine Head - Bhubaneswari, MCL (high risk)",
       "headLow": "Mine Head - Moonidih, BCCL (low risk)"
@@ -1757,7 +1757,7 @@
     "or": "or",
     "button": "Continue as admin (demo)",
     "title": "Demo access",
-    "text": "This admin login is only for demonstration purposes and will be removed later. You'll see the regulator's view of all 74 mines. The data shown is sample data for the demo.",
+    "text": "This admin login is only for demonstration purposes and will be removed later. You'll see the regulator's view of all monitored mines. The data shown is sample data for the demo.",
     "continue": "Continue to dashboard",
     "opening": "Opening…",
     "waking": "Starting server, this can take up to a minute…",
